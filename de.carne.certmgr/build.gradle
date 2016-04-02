@@ -13,6 +13,7 @@ def formatBuildDate() {
 }
 
 apply plugin: 'java'
+apply plugin: 'distribution'
 
 sourceCompatibility = 1.8
 
@@ -39,4 +40,12 @@ jar {
 		)
 	}
 	from configurations.runtime
+}
+
+distributions {
+	main {
+		contents {
+			from jar
+		}
+	}
 }
