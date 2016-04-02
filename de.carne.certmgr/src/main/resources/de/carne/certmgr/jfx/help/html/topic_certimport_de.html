@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="default.css">
+<title>Zertifikat-Import</title>
+<body>
+<div class="navigation">
+<a href="topic_storemanager_de.html">Start</a> 
+<hr/>
+</div>
+<h1>Importieren</h1>
+&Uml;ber diesen Dialog k&ouml;nnen Zertifikate aus externen Datenquellen importiert werden.
+<p/>
+<img src="topic_certimport_de.png"/>
+<p/>
+F&uml;r den Import k&ouml;nnen verschiedene Datenquellen ausgew&auml;hlt werden:
+<ul>
+<li>Datei</li>
+Zertifkate werden aus einer Datei gelesen.
+<li>Verzeichnis</li>
+Zertifkate werden aus den Dateien in einem Verzeichnis (inkl. Unter-Verzeichnissen) gelesen.
+<li>URL</li>
+Zertifikate werden aus den &uml;ber eine URL erreichbaren Daten gelesen. 
+<li>Zwischenablage</li>
+Zertifikate werden aus den aktuell in der Zwischenablage befindlichen Daten gelesen.
+</ul>
+<p/>
+Nach der Auswahl der Datenquelle wertet die Anwendung die Daten auf unterst&uuml;tzte Datenformate (PEM und PKCS#12)
+hin aus und zeigt die gefundenen Zertifkate zur Auswahl an. Wird dabei ein verschl&uuml;sseltes Zertifikat-Objekt
+gefunden, wird ein <a href="topic_passwordprompt_de.html">Passwort</a> f&uuml;r den Zugriff abgefragt.
+Neu laden wertet die Daten erneut aus (z.B. nach einer manuellen Anpassung des Dateinamens).
+<p/>
+Die gefundenen Zertifikate k&ouml;nnen im Anschluss ausgewertet und importiert werden. Das Standardverhalte beim
+Import ist, dass bereits existierende Zertifkat-Elemente beim Import ignoriert werden. Durch die &UumL;berschreiben-Option
+kann Anwendung angewiesen werden, bereits existierende Zertifkat-Element immer zu &uuml;berschreiben.
+</body>
+</html>

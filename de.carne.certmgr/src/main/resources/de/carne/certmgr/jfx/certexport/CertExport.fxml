@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane hgap="8.0" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certexport.CertExportController">
+  <children>
+      <Label layoutX="14.0" layoutY="52.0" text="%label.exportcert" textAlignment="LEFT" wrapText="true" />
+      <AnchorPane GridPane.columnIndex="1">
+         <children>
+            <ComboBox fx:id="ctlExportCertSelection" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" />
+         </children>
+      </AnchorPane>
+      <Label text="%label.encoding" textAlignment="LEFT" wrapText="true" GridPane.rowIndex="1" />
+      <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <ChoiceBox fx:id="ctlEncodingSelection" prefHeight="25.0" prefWidth="251.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <RadioButton fx:id="ctlFileTargetOption" mnemonicParsing="false" text="%label.file" GridPane.rowIndex="2">
+         <toggleGroup>
+            <ToggleGroup fx:id="dest" />
+         </toggleGroup>
+      </RadioButton>
+      <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <children>
+            <TextField fx:id="ctlFileTargetInput" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlChooseFileTargetButton" mnemonicParsing="false" onAction="#onChooseFileTarget">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../iconFile16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <RadioButton fx:id="ctlFolderTargetOption" layoutX="14.0" layoutY="76.0" mnemonicParsing="false" text="%label.folder" toggleGroup="$dest" GridPane.rowIndex="3" />
+      <HBox layoutX="127.0" layoutY="72.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <children>
+            <TextField fx:id="ctlFolderTargetInput" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlChooseFolderTargetButton" mnemonicParsing="false" onAction="#onChooseFolderTarget">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../iconFile16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <RadioButton fx:id="ctlClipboardTargetOption" layoutX="14.0" layoutY="76.0" mnemonicParsing="false" text="%label.clipboard" toggleGroup="$dest" GridPane.columnSpan="2147483647" GridPane.rowIndex="4" />
+      <Separator layoutX="14.0" layoutY="201.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="5" />
+      <CheckBox fx:id="ctlEncryptExportOption" mnemonicParsing="false" text="%label.encryptexport" GridPane.columnSpan="2147483647" GridPane.rowIndex="6" />
+      <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="7" />
+      <GridPane hgap="4.0" vgap="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
+         <columnConstraints>
+            <ColumnConstraints hgrow="NEVER" />
+            <ColumnConstraints hgrow="NEVER" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints vgrow="SOMETIMES" />
+            <RowConstraints vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <CheckBox fx:id="ctlIncludeCRTOption" layoutX="14.0" layoutY="402.0" mnemonicParsing="false" text="%label.includecrt" />
+            <CheckBox fx:id="ctlIncludeCRTChainOption" mnemonicParsing="false" text="%label.includecrtchain" GridPane.columnIndex="1" />
+            <CheckBox fx:id="ctlIncludeCRTAnchorOption" layoutX="126.0" layoutY="10.0" mnemonicParsing="false" text="%label.includecrtanchor" GridPane.columnIndex="2" />
+            <CheckBox fx:id="ctlIncludeKeyOption" mnemonicParsing="false" text="%label.includekey" GridPane.rowIndex="1" />
+            <CheckBox fx:id="ctlIncludeCSROption" mnemonicParsing="false" text="%label.includecsr" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <CheckBox fx:id="ctlIncludeCRLOption" mnemonicParsing="false" text="%label.includecrl" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+    <HBox alignment="CENTER_RIGHT" spacing="8.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="9">
+      <children>
+            <HBox fx:id="ctlProgressGroup" alignment="CENTER_LEFT" spacing="4.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="%label.exporting" HBox.hgrow="NEVER" />
+                  <ProgressBar maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+      <Button minWidth="80.0" mnemonicParsing="false" onAction="#onExport" text="%button.export" HBox.hgrow="NEVER">
+        <HBox.margin>
+          <Insets left="14.0" />
+        </HBox.margin>
+      </Button>
+        <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%button.cancel" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets />
+          </HBox.margin>
+        </Button>
+            <Button cancelButton="true" layoutX="324.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHelp">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../iconHelp16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+      </children>
+    </HBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" />
+    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+    <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+    <RowConstraints valignment="CENTER" vgrow="NEVER" />
+  </rowConstraints>
+   <padding>
+      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+   </padding>
+</GridPane>

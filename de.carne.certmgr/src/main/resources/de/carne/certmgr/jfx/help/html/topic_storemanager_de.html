@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="default.css">
+<title>Zertifikatverwaltung</title>
+<body>
+<div class="navigation">
+<a href="topic_storemanager_de.html">Start</a> 
+<hr/>
+</div>
+<h1>&Uuml;berblick Zertifikatverwaltung</h1>
+Die Zertifikatverwaltung unterst&uuml;tzt die Erzeugung und die Verwaltung von X.509 Zertifikaten und der zugeh&ouml;rigen
+Elemente.
+<p/>
+Die Anwendung organisiert Zertifikate hierf&uuml;r in einem sogenannten Zertifikatspeicher. Dabei handelts es sich
+technisch einfach um ein Datei-Verzeichnis. Der Name des Zertifikatspeichers wird dabei als Name f&uuml;r das
+Verzeichnis verwendet. Die verschiedenen Zertifikat-Elemente sind innerhalb dieses Verzeichnisses in Unterverzeichnissen
+organisiert. 
+<h2>Zertifikatspeicher-Anzeige</h2>
+Dies ist das Hauptfenster der Anwendung. Der linke Bereich zeigt die im aktuell ge&ouml;ffneten Zertifikatspeicher
+hinterlegten Zertifikate. Die Zertifikate sind dabei in einer Baumstruktur gem&auml;&szlig; ihres Ausstellungs-Pfads
+organisiert. Der rechte Bereich zeigt Detailinformationen zum aktuell ausgew&auml;hlten Zertifikat. Im unteren Bereich
+des Fensters werden Fehler- und Warn-Meldungen der Anwendung angezeigt
+<p/>
+<img src="topic_storemanager_de.png"/>
+<h2>Zertifikatspeicher-Operationen</h2>
+Um eine der folgenden Operationen zu starten, gen&uuml;gt den entsprechenden Men&uuml;eintrag auszuw&auml;hlen oder
+aber die entsprechende Schaltfl&auml;che in der Werkzeugleiste auszuw&auml;hlen.
+<ul>
+<li>Neuen Zertifikatspeicher anlegen</li>
+Legt einen <a href="topic_storeoptions_de.html">neuen Zertifikatspeicher</a> an. 
+<li>Existierenden Zertifikatspeicher &ouml;ffnen</li>
+&Ouml;ffnet einen existierenden Zertifikatspeicher indem das entsprechende Verzeichnis ausgew&auml;hlt wird.
+<li>Zertifikatspeicher-Einstellungen bearbeiten</li>
+&Ouml;ffnet den "<a href="topic_storeoptions_de.html">Zertifikatspeicher-Einstellungen bearbieten</a>"-Dialog zum Anpassen
+der Einstellung des aktuell ge&ouml;ffneten Zertifikatspeichers.
+<li>Zertifikat-Einstellungen bearbeiten</li>
+&Ouml;ffnet den "<a href="topic_entryoptions_de.html">Zertifikat-Einstellungen bearbieten</a>"-Dialog zum Anpassen
+der Einstellung des aktuell ausgew&auml;hlten Zertifikats.
+<li>Eintrag kopieren</li>
+Kopiert den aktuell ausgew&auml;hlten Eintrag in die Zwischenablage. 
+<li>Eintrag l&ouml;schen</li>
+L&ouml;scht den aktuell ausgew&auml;hlten Eintrag inklusive aller untergeordneten Eintr&auml;ge.
+<li>Neues Zertifikat erstellen</li>
+&Ouml;ffnet den "<a href="topic_crtoptions_de.html">Zertifikat erzeugen</a>"-Dialog zur Erzeugung eines neuen Zertifikats.
+<li>Zertifikat neu signieren</li>
+&Ouml;ffnet den "<a href="topic_crtoptions_de.html">Zertifikat neu signieren</a>"-Dialog zum erneuten Signieren des
+Zertifikats.
+<li>Zertifikat sperren</li>
+&Ouml;ffnet den "<a href="topic_crloptions_de.html">Zertifikatsperre (CRL) anlegen/aktualisieren</a>"-Dialog zur
+Sperrung des aktuell ausgew&auml;hlten Zertifikats.
+<li>Zertifikatsperrliste (CRL) verwalten</li>
+&Ouml;ffnet den "<a href="topic_crloptions_de.html">Zertifikatsperre (CRL) anlegen/aktualisieren</a>"-Dialog zur
+Bearbeitung der Zertifikatsperrliste des aktuell ausgew&auml;hlten Zertifikats
+<li>Zertifikatantrag (CSR) erzeugen</li>
+&Ouml;ffnet den "<a href="topic_crtoptions_de.html">Zertifikatantrag (CSR) erzeugen</a>"-Dialog zur Erstellung eines
+neuen Zertifikatantrags (CSR).
+<li>Zertifikatantrag (CSR) neu signieren</li>
+&Ouml;ffnet den "<a href="topic_crtoptions_de.html">Zertifikatantrag (CSR) neu signieren</a>"-Dialog zum erneuten
+Signieren des ausgew&auml;hlten Zertifikatantrags (CSR).
+<li>Zertifikate importieren</li>
+&Ouml;ffnet den "<a href="topic_certimport_de.html">Zertifikate importieren</a>"-Dialog, um existerende
+Zertifikat-Objekte in den Zertifikatspeicher zu importieren.
+<li>Zertifikate exportieren</li>
+&Ouml;ffnet den "<a href="topic_certexport_de.html">Zertifikate exportieren</a>"-Dialog, um das ausgew&auml;hlte
+Zertifikat zu exportieren.
+</ul>
+</body>
+</html>

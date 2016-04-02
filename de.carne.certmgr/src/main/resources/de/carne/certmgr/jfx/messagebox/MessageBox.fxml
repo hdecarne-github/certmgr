@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane hgap="8.0" maxHeight="+Infinity" maxWidth="+Infinity" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.messagebox.MessageBoxController">
+  <children>
+    <ImageView fx:id="ctlIcon" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.rowSpan="2147483647" GridPane.valignment="TOP">
+      <image>
+        <!-- place holder -->
+      </image>
+    </ImageView>
+  <Label fx:id="ctlMessage" text="message" textAlignment="LEFT" wrapText="true" GridPane.columnIndex="1" />
+  <Label fx:id="ctlDetailsLabel" text="%label.details" textAlignment="LEFT" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <TextArea fx:id="ctlDetails" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <HBox maxHeight="-Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <children>
+            <ToggleButton fx:id="ctlButtonDetails" mnemonicParsing="false" onAction="#onToggleDetails" text="%button.details" />
+        <Pane HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlButtonCmd3" minWidth="80.0" mnemonicParsing="false" onAction="#onButton3" text="Button3" />
+        <Button fx:id="ctlButtonCmd2" cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onButton2" text="Button2" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets />
+          </HBox.margin>
+        </Button>
+      <Button fx:id="ctlButtonCmd1" minWidth="80.0" mnemonicParsing="false" onAction="#onButton1" text="Button1" HBox.hgrow="NEVER">
+        <HBox.margin>
+          <Insets />
+        </HBox.margin>
+      </Button>
+      </children>
+    </HBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" />
+    <ColumnConstraints hgrow="ALWAYS" />
+  </columnConstraints>
+  <padding>
+    <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+  </padding>
+  <rowConstraints>
+    <RowConstraints valignment="TOP" />
+      <RowConstraints valignment="TOP" vgrow="NEVER" />
+      <RowConstraints vgrow="ALWAYS" />
+    <RowConstraints valignment="BOTTOM" vgrow="NEVER" />
+  </rowConstraints>
+</GridPane>

@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="default.css">
+<title>Certificate Import</title>
+<body>
+<div class="navigation">
+<a href="topic_storemanager.html">Start</a> 
+<hr/>
+</div>
+<h1>Import</h1>
+This dialog is used to import one or more certificates from an external source.
+<p/>
+<img src="topic_certimport.png"/>
+<p/>
+Certificate data can be imported from different sources:
+<ul>
+<li>File</li>
+Certificate objects are read from a single file.
+<li>Folder</li>
+Certificate objects are read from multiple files contained in the chosen folder (including sub-folders).
+<li>URL</li>
+Certificate objects are read from the data provided via an URL. 
+<li>Clipboard</li>
+Certificate objects are read from data currently available in the clipboard.
+</ul>
+<p/>
+After choosing the input source the application scans the available data for any known format (PEM and PKCS#12
+are supported) and displays the found certificate objects for import selection. If an encrypted object is encountered
+a <a href="topic_passwordprompt.html">password prompt</a> is displayed to enter the required password. The re-load
+button triggers a re-scan of the import source (e.g. after entering a file name manually).
+<p/>
+Based upon the scan result the certificate objects to import can be selected. Standard behavior is that already known
+certificate objects are skipped during import. By selecting the overwrite option the application can be forced to
+overwrite already existing certificate objects. 
+</body>
+</html>

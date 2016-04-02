@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<link type="text/css" rel="stylesheet" href="default.css">
+<title>Zertifikat Einstellungen</title>
+<body>
+<div class="navigation">
+<a href="topic_storemanager_de.html">Start</a> 
+<hr/>
+</div>
+<h1>Zertifikat erzeugen/Zertifikatsantrag (CSR) erzeugen</h1>
+&Uuml;ber diesen Dialog werden verschiedene Zertifikat-Operationen gesteuert. Das Erzeugen und Erneuern von Zertifikaten,
+sowie das Erzeugen und Erneuern von Zertifikatantr&auml;gen. Abh&auml;ngig vom jeweiligen Kontext sind nur ein Teil der
+im Folgenden beschriebenen Einstellungen verf&uuml;gbar.
+<h2>Allgemeine Einstellungen</h2>
+Im oberen Bereich des Dialogs werden die allgemeinen Einstellungen festgelegt.
+<p/>
+<img src="topic_crtoptions_de.png"/>
+<p/>
+Mittels der Auswahl einer der angebotenen Vorbelegungen kann der Dialog f&uuml;r einen bestimmten Bedarf auf Basis
+einer Einstellungs-Vorlage oder einem existierenden Zertifikat vorbelegt werden. 
+<p/>
+Der Bezeichner (DN) legt den Namen des zu erzeugenden Zertifikats fest. Dieser Name ist als "Distinguished Name" (DN)
+einzugeben. Zur Eingabeunterst&uuml;tzung kann dabei der <a href="topic_dneditor_de.html">DN bearbeiten</a> Dialog
+genutzt werden. Ein g&auml;ngiger Bezeichner-Aufbau ist CN=&lt;Zertifikat-Name/Verwendung&gt;,OU=&lt;Dom&auml;ne&gt;,SERIALNUMBER=&lt;Zeitstempel zur Unterscheidungen von mehreren Versionen&gt;.
+<p/>
+Der Name (Alias) legt den Dateinamen fest, unter welchem die Zertifikat-Elemente gespeichert werden. Dieser Name
+musst daher ein g&uuml;ltiger Dateiname und eindeutig innerhalb des Zertifikatsspeichers sein.
+<p/>
+Mit Schl&uuml;ssel-Algorithmus und -Gr&ouml;&szlig;e werden die Parameter f&uuml;r die Schl&uuml;ssel-Generierung festgelegt.
+Beide Optionen sind beim Erneuern nicht verf&uuml;gbar, da in diesem Fall der existierende Schl&uuml;ssel wiederverwendet wird.  
+<p/>
+Die Aussteller-Einstellungen definieren durch wen und wie das neue Zertifikat signiert wird. F&uuml;r einen
+Zertifikatsantrag sind diese Einstellungen nicht verf&uuml;gbar, da dieser durch eine externe Zertifierungsstelle (CA)
+signiert wird.
+<h2>Zertifikat-Erweiterungen</h2>
+Der Dialog erm&ouml;glicht die Angabe von verschiedenen Zertifikat-Erweiterungen. Die g&auml;ngigen Erweiterungen sind:
+"Basic Constraints", "Key Usage" und "Extended Key Usage".
+<h3>Basic Constraints</h3>
+<img src="topic_crtoptions_ext1_de.png"/>
+<p/>
+Die "Basic Constraints"-Erweiterung gibt an, ob es sich bei dem Zertifikat um eine Zertifizierungsstelle (CA) handelt
+oder nicht. Im Falle einer Zertifierungsstelle gibt die maximale Pfadl&auml;nge die maximale L&auml;nge für einen
+Zertifierungspfad an. Bei einer maximalen Pfadl&auml;nge von 0, kann das Zertifikat selbst noch weitere Zertifikate
+ausstellen. Die ausgestellten Zertifikate aber nicht mehr.
+<h3>Key Usage</h3>
+<img src="topic_crtoptions_ext2_de.png"/>
+<p/>
+Die "Key Usage"-Erweiterung gibt die Standard-Verwendungszwecke des zu erstellenden Zertifikats an.
+<h3>Extended Key Usage</h3>
+<img src="topic_crtoptions_ext3_de.png"/>
+<p/>
+Die "Extended Key Usage"-Erweiterung gibt die erweiterten Verwendungszwecke des zu erstellenden Zertifikats an.
+<h3>Subject Alternative Name</h3>
+<img src="topic_crtoptions_ext4_de.png"/>
+<p/>
+Die "Subject Alternative Name"-Erweiterung (SNA) wird verwendet, um Alternativ-Namen für das Zertifikat festzulegen.
+Für einen Web-Server z.B. sollten hier alle DNS-Namen aufgelistet werden, unter welchen der Server erreichbar ist.
+Sobald wenigstens ein SNA-Eintrag existiert, wird der Zertifikats-Bezeichner nicht mehr betrachtet. D.h. der CN-Name
+aus dem Bezeichner muss bei Bedarf ebenfalls als SNA eingetragen werden.
+<h3>CRL Distribution Points</h3>
+<img src="topic_crtoptions_ext5_de.png"/>
+<p/>
+Die "CRL Distribution Points"-Erweiterung gibt an, wie die Zertifikatsperrlisten (CRL) des zu erstellenden Zertifikats
+publiziert werden. Die Anwendung erm&ouml;glicht die Pflege einer einfachen Liste von Zertifikatsperrlisten-Namen und
+geht dabei davon aus, dass der Zertifikat-Aussteller auch der Aussteller der Sperrliste ist. 
+</body>
+</html>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane hgap="8.0" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
+  <children>
+      <RadioButton fx:id="ctlFileSourceOption" mnemonicParsing="false" text="%label.file">
+         <toggleGroup>
+            <ToggleGroup fx:id="source" />
+         </toggleGroup>
+      </RadioButton>
+      <HBox GridPane.columnIndex="1">
+         <children>
+            <TextField fx:id="ctlFileSourceInput" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlChooseFileSourceButton" mnemonicParsing="false" onAction="#onChooseFileSource">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../iconFile16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <RadioButton fx:id="ctlFolderSourceOption" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" text="%label.folder" toggleGroup="$source" GridPane.rowIndex="1" />
+      <HBox layoutX="115.0" layoutY="14.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <TextField fx:id="ctlFolderSourceInput" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlChooseFolderSourceButton" mnemonicParsing="false" onAction="#onChooseFolderSource">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../iconFile16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <RadioButton fx:id="ctlURLSourceOption" layoutX="14.0" layoutY="47.0" mnemonicParsing="false" text="%label.url" toggleGroup="$source" GridPane.rowIndex="2" />
+      <TextField fx:id="ctlURLSourceInput" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="14.0" layoutY="76.0" mnemonicParsing="false" text="%label.clipboard" toggleGroup="$source" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+      <HBox alignment="CENTER_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
+         <children>
+            <HBox fx:id="ctlProgressGroup" alignment="CENTER_LEFT" spacing="4.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="%label.loading" HBox.hgrow="NEVER" />
+                  <ProgressBar maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+            <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onReload" text="%button.reload" />
+         </children>
+      </HBox>
+      <HBox spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
+         <children>
+            <ImageView fx:id="ctlImportStatusIcon" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
+               <image>
+                  <Image url="@../iconInfo16.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="ctlImportStatusMessage" text="%certimport.setupsource" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+      <Label layoutX="14.0" layoutY="220.0" text="%label.importselection" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" />
+      <TreeTableView fx:id="ctlImportSelection" editable="true" prefHeight="200.0" prefWidth="500.0" showRoot="false" GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
+        <columns>
+          <TreeTableColumn fx:id="ctlImportSelectionSelected" prefWidth="-1.0" sortable="false">
+               <graphic>
+                  <CheckBox fx:id="ctlImportSelectionSelectedAll" mnemonicParsing="false" />
+               </graphic></TreeTableColumn>
+            <TreeTableColumn fx:id="ctlImportSelectionName" minWidth="200.0" prefWidth="-1.0" sortable="false" text="%label.importselectionname" />
+          <TreeTableColumn fx:id="ctlImportSelectionHasKey" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhaskey" />
+            <TreeTableColumn fx:id="ctlImportSelectionHasCRT" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhascrt" />
+            <TreeTableColumn fx:id="ctlImportSelectionHasCSR" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhascsr" />
+            <TreeTableColumn fx:id="ctlImportSelectionHasCRL" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhascrl" />
+        </columns>
+         <columnResizePolicy>
+            <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TreeTableView>
+      <CheckBox fx:id="ctlImportOverwriteOption" mnemonicParsing="false" text="%label.importoverwrite" GridPane.columnSpan="2147483647" GridPane.rowIndex="9" />
+    <HBox alignment="CENTER_RIGHT" spacing="8.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="10">
+      <children>
+      <Button minWidth="80.0" mnemonicParsing="false" onAction="#onImport" text="%button.import" HBox.hgrow="NEVER">
+        <HBox.margin>
+          <Insets left="14.0" />
+        </HBox.margin>
+      </Button>
+        <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%button.cancel" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets />
+          </HBox.margin>
+        </Button>
+            <Button cancelButton="true" layoutX="412.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHelp">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../iconHelp16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+      </children>
+    </HBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" />
+    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+    <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+    <RowConstraints valignment="CENTER" vgrow="NEVER" />
+  </rowConstraints>
+   <padding>
+      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+   </padding>
+</GridPane>

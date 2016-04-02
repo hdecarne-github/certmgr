@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<GridPane hgap="8.0" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.crloptions.CRLOptionsController">
+  <children>
+      <Label fx:id="ctlCRLAliasLabel" layoutX="14.0" layoutY="52.0" text="%label.issuerentry" textAlignment="LEFT" wrapText="true" />
+      <AnchorPane GridPane.columnIndex="1">
+         <children>
+            <ComboBox fx:id="ctlIssuerEntrySelection" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="14.0" layoutY="83.0" text="%label.sigalg" textAlignment="LEFT" wrapText="true" GridPane.rowIndex="1" />
+      <AnchorPane layoutX="116.0" layoutY="14.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <ComboBox fx:id="ctlSigAlgSelection" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" GridPane.columnIndex="1" />
+         </children>
+      </AnchorPane>
+      <Label text="%label.lastupdate" textAlignment="LEFT" wrapText="true" GridPane.rowIndex="2" />
+      <AnchorPane GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <children>
+            <DatePicker fx:id="ctlLastUpdateInput" layoutX="16.0" layoutY="-6.0" prefHeight="19.0" prefWidth="244.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="14.0" layoutY="54.0" text="%label.nextupdate" textAlignment="LEFT" wrapText="true" GridPane.rowIndex="3" />
+      <AnchorPane layoutX="102.0" layoutY="50.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <children>
+            <DatePicker fx:id="ctlNextUpdateInput" layoutX="16.0" layoutY="-6.0" prefHeight="19.0" prefWidth="244.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+      <Separator layoutX="14.0" layoutY="43.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4" />
+      <Label layoutX="14.0" layoutY="141.0" text="%label.crlentries" textAlignment="LEFT" wrapText="true" GridPane.columnSpan="2147483647" GridPane.rowIndex="5" />
+      <TableView fx:id="ctlCRLEntriesInput" editable="true" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
+        <columns>
+          <TableColumn fx:id="ctlCRLEntriesInputRevoked" minWidth="-1.0" prefWidth="-1.0" text="%label.revoked" />
+          <TableColumn fx:id="ctlCRLEntriesInputEntry" editable="false" minWidth="-1.0" prefWidth="-1.0" text="%label.entry" />
+            <TableColumn fx:id="ctlCRLEntriesInputReason" minWidth="-1.0" prefWidth="-1.0" text="%label.reason" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+    <HBox alignment="CENTER_RIGHT" spacing="8.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="7">
+      <children>
+      <Button minWidth="80.0" mnemonicParsing="false" onAction="#onSave" text="%button.save" HBox.hgrow="NEVER">
+        <HBox.margin>
+          <Insets left="14.0" />
+        </HBox.margin>
+      </Button>
+        <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%button.cancel" HBox.hgrow="NEVER">
+          <HBox.margin>
+            <Insets />
+          </HBox.margin>
+        </Button>
+            <Button cancelButton="true" layoutX="258.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHelp">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../iconHelp16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+      </children>
+    </HBox>
+  </children>
+  <columnConstraints>
+    <ColumnConstraints hgrow="NEVER" />
+    <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="NEVER" />
+      <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+    <RowConstraints valignment="CENTER" vgrow="NEVER" />
+  </rowConstraints>
+   <padding>
+      <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+   </padding>
+</GridPane>

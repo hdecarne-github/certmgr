@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package de.carne.certmgr.store;
+
+import java.io.IOException;
+
+/**
+ * Class representing a certificate store entry.
+ */
+public abstract class CertStoreEntry extends CertEntry {
+
+	/**
+	 * Get the certificate entry's store.
+	 *
+	 * @return The certificate entry's store.
+	 */
+	public abstract CertStore getStore();
+
+	/**
+	 * Get the certificate entry's alias.
+	 *
+	 * @return The certificate entry's alias or null if the entry has no alias.
+	 */
+	public abstract String getAlias();
+
+	/**
+	 * Check whether this entry represents an external certificate not actually available in the store.
+	 *
+	 * @return true, if this entry represents an external certificate not actually available in the store.
+	 */
+	public abstract boolean isExternal();
+
+	/**
+	 * Copy this entry to an export target.
+	 *
+	 * @param exportTarget The target to export to.
+	 * @throws IOException if an I/O error occurs while copying the entry.
+	 */
+	public abstract void copy(ExportTarget exportTarget) throws IOException;
+
+}
