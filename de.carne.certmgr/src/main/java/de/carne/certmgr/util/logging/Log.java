@@ -22,12 +22,14 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
- * Simple wrapper for JDK's {@link Logger} class to have a minimum level of abstraction and a clear level semantics.
+ * Simple wrapper for JDK's {@link Logger} class to have a minimum level of
+ * abstraction and a clear level semantics.
  */
 public final class Log {
 
 	/**
-	 * Log level for notice messages used to record fundamental application states and events.
+	 * Log level for notice messages used to record fundamental application
+	 * states and events.
 	 */
 	public static final Level LEVEL_NOTICE = Level.OFF;
 
@@ -51,15 +53,30 @@ public final class Log {
 	 */
 	public static final Level LEVEL_DEBUG = Level.FINER;
 
+	private long loggerConfigTime;
+
 	private Logger logger;
 
 	/**
-	 * Construct Log.
+	 * Construct {@code Log}.
 	 *
 	 * @param clazz The class to derive the log name from.
 	 */
 	public Log(Class<?> clazz) {
+		this.loggerConfigTime = LogConfig.configTime();
 		this.logger = Logger.getLogger(clazz.getName());
+	}
+
+	/**
+	 * Construct {@code Log}.
+	 *
+	 * @param clazz The class to derive the log name from.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
+	 */
+	public Log(Class<?> clazz, ResourceBundle bundle) {
+		this.loggerConfigTime = LogConfig.configTime();
+		this.logger = Logger.getLogger(clazz.getName(), bundle.getBaseBundleName());
 	}
 
 	/**
@@ -68,6 +85,14 @@ public final class Log {
 	 * @return The underlying JDK Logger.
 	 */
 	public Logger getLogger() {
+		long configTime = LogConfig.configTime();
+
+		if (this.loggerConfigTime != configTime) {
+			synchronized (this) {
+				this.loggerConfigTime = configTime;
+				this.logger = Logger.getLogger(this.logger.getName(), this.logger.getResourceBundleName());
+			}
+		}
 		return this.logger;
 	}
 
@@ -78,40 +103,46 @@ public final class Log {
 	 * @return True, if the log level is currently logged.
 	 */
 	public boolean isLoggable(Level level) {
-		return this.logger.isLoggable(level);
+		return getLogger().isLoggable(level);
 	}
 
 	/**
 	 * Log a message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...)} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)} for format
+	 * options.
 	 * </p>
 	 *
 	 * @param level The log level.
 	 * @param thrown The (optional) {@link Throwable} to log.
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
 	public void log(Level level, Throwable thrown, ResourceBundle bundle, String format, Object... args) {
-		if (this.logger.isLoggable(level)) {
+		Logger currentLogger = getLogger();
+
+		if (currentLogger.isLoggable(level)) {
 			LogRecord record = new LogRecord(level, format);
 
 			record.setResourceBundle(bundle);
 			record.setParameters(args);
 			record.setThrown(thrown);
-			record.setLoggerName(this.logger.getName());
-			this.logger.log(record);
+			record.setLoggerName(currentLogger.getName());
+			currentLogger.log(record);
 		}
 	}
 
 	/**
 	 * Log a notice message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...)} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)} for format
+	 * options.
 	 * </p>
 	 *
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -122,11 +153,14 @@ public final class Log {
 	/**
 	 * Log a notice message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...) MessageFormat.format} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)
+	 * MessageFormat.format} for format options.
 	 * </p>
 	 *
-	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to log.
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to
+	 *        log.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -137,10 +171,12 @@ public final class Log {
 	/**
 	 * Log a error message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...)} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)} for format
+	 * options.
 	 * </p>
 	 *
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -151,11 +187,14 @@ public final class Log {
 	/**
 	 * Log a error message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...) MessageFormat.format} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)
+	 * MessageFormat.format} for format options.
 	 * </p>
 	 *
-	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to log.
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to
+	 *        log.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -166,10 +205,12 @@ public final class Log {
 	/**
 	 * Log a warning message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...)} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)} for format
+	 * options.
 	 * </p>
 	 *
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -180,11 +221,14 @@ public final class Log {
 	/**
 	 * Log a warning message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...) MessageFormat.format} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)
+	 * MessageFormat.format} for format options.
 	 * </p>
 	 *
-	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to log.
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to
+	 *        log.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -204,10 +248,12 @@ public final class Log {
 	/**
 	 * Log a info message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...)} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)} for format
+	 * options.
 	 * </p>
 	 *
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -218,11 +264,14 @@ public final class Log {
 	/**
 	 * Log a info message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...) MessageFormat.format} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)
+	 * MessageFormat.format} for format options.
 	 * </p>
 	 *
-	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to log.
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to
+	 *        log.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -242,10 +291,12 @@ public final class Log {
 	/**
 	 * Log a debug message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...)} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)} for format
+	 * options.
 	 * </p>
 	 *
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */
@@ -256,11 +307,14 @@ public final class Log {
 	/**
 	 * Log a debug message.
 	 * <p>
-	 * See {@link java.text.MessageFormat#format(String, Object...) MessageFormat.format} for format options.
+	 * See {@link java.text.MessageFormat#format(String, Object...)
+	 * MessageFormat.format} for format options.
 	 * </p>
 	 *
-	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to log.
-	 * @param bundle The (optional) {@link ResourceBundle} to use for message localization.
+	 * @param thrown The (optional) {@link java.lang.Throwable Throwable} to
+	 *        log.
+	 * @param bundle The (optional) {@link ResourceBundle} to use for message
+	 *        localization.
 	 * @param format The log message.
 	 * @param args The (optional) log message parameters.
 	 */

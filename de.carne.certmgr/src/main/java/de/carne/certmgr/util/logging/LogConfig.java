@@ -30,6 +30,8 @@ public final class LogConfig {
 
 	private static String currentConfig = null;
 
+	private static long currentConfigTime = 0;
+
 	/**
 	 * Default logging configuration.
 	 */
@@ -48,8 +50,9 @@ public final class LogConfig {
 	/**
 	 * Apply initial logging configuration.
 	 * <p>
-	 * To invoke this constructor during JDK logging initialization the <code>java.util.logging.config.class</code>
-	 * system property must point to this class.
+	 * To invoke this constructor during JDK logging initialization the
+	 * {@code java.util.logging.config.class} system property must point to this
+	 * class.
 	 * </p>
 	 */
 	public LogConfig() {
@@ -59,8 +62,9 @@ public final class LogConfig {
 	/**
 	 * Apply a logging configuration.
 	 * <p>
-	 * The config parameter names the file or resource containing the logging configuration. First we try to read the
-	 * config from a file based upon the current working directory. If this fails we try to read it as a resource.
+	 * The config parameter names the file or resource containing the logging
+	 * configuration. First we try to read the config from a file based upon the
+	 * current working directory. If this fails we try to read it as a resource.
 	 * </p>
 	 *
 	 * @param config The configuration file or resource to apply.
@@ -93,6 +97,7 @@ public final class LogConfig {
 					LogManager.getLogManager().readConfiguration(configIS);
 					configApplied = true;
 					currentConfig = config;
+					currentConfigTime = System.currentTimeMillis();
 				} else {
 					System.err.println("Unable to open logging configuration: " + config);
 				}
@@ -102,6 +107,16 @@ public final class LogConfig {
 			}
 		}
 		return configApplied;
+	}
+
+	/**
+	 * Get the timestamp the currently active logging configuration was applied.
+	 *
+	 * @return The timestamp the currently active logging configuration was
+	 *         applied.
+	 */
+	public static long configTime() {
+		return currentConfigTime;
 	}
 
 }
