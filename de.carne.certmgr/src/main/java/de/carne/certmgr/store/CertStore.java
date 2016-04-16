@@ -47,8 +47,8 @@ import de.carne.certmgr.store.x509.KeyParams;
 import de.carne.certmgr.store.x509.RevokeReason;
 import de.carne.certmgr.store.x509.X509CRLParams;
 import de.carne.certmgr.store.x509.X509CertificateParams;
-import de.carne.certmgr.util.logging.Log;
-import de.carne.certmgr.util.prefs.PropertiesPreferencesFactory;
+import de.carne.util.logging.Log;
+import de.carne.util.prefs.PropertiesPreferencesFactory;
 
 /**
  * Class used to create and maintain a certificate store.

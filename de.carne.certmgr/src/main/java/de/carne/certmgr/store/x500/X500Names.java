@@ -27,7 +27,7 @@ import java.util.Properties;
 
 import javax.security.auth.x500.X500Principal;
 
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.logging.Log;
 
 /**
  * Utility class used to handle X.500 names.

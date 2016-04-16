@@ -27,7 +27,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.logging.Log;
 
 /**
  * Model class to display log records in a table.

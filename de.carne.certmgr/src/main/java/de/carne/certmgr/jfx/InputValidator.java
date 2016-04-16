@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.store.x500.X500Names;
-import de.carne.certmgr.util.Strings;
+import de.carne.util.Strings;
 
 /**
  * Utility class for input validation.

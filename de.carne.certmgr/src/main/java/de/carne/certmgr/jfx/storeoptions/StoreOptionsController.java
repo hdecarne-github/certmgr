@@ -40,7 +40,7 @@ import de.carne.certmgr.jfx.help.Help;
 import de.carne.certmgr.jfx.help.HelpController;
 import de.carne.certmgr.jfx.messagebox.MessageBoxStyle;
 import de.carne.certmgr.store.CertStore;
-import de.carne.certmgr.util.Strings;
+import de.carne.util.Strings;
 
 /**
  * Dialog controller for editing the store options of a new or an existing certificate store.

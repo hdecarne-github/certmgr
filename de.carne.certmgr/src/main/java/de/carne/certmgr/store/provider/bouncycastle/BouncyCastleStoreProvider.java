@@ -103,7 +103,7 @@ import de.carne.certmgr.store.x509.RevokeReason;
 import de.carne.certmgr.store.x509.X509CRLParams;
 import de.carne.certmgr.store.x509.X509CertificateParams;
 import de.carne.certmgr.store.x509.X509Extension;
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.logging.Log;
 
 /**
  * BouncyCastle Provider.

@@ -36,7 +36,7 @@ import javafx.stage.WindowEvent;
 import de.carne.certmgr.jfx.messagebox.MessageBoxController;
 import de.carne.certmgr.jfx.messagebox.MessageBoxResult;
 import de.carne.certmgr.jfx.messagebox.MessageBoxStyle;
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.logging.Log;
 
 /**
  * Abstract base class for controlling JFX stages (including scene setup).

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.util.prefs;
+package de.carne.util.prefs;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

@@ -45,8 +45,8 @@ import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
 
 import de.carne.certmgr.store.PasswordCallback;
 import de.carne.certmgr.store.PasswordRequiredException;
-import de.carne.certmgr.util.Pair;
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.Pair;
+import de.carne.util.logging.Log;
 
 /**
  * Decode PKCS#12 data.

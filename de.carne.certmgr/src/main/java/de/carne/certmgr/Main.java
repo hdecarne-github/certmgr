@@ -31,9 +31,9 @@ public abstract class Main {
 
 	private final static String[] INIT_SYSTEM_PROPERTIES = {
 
-			"java.util.logging.config.class", THIS_PACKAGE + ".util.logging.LogConfig",
+			"java.util.logging.config.class", "de.carne.util.logging.LogConfig",
 
-			"java.util.prefs.PreferencesFactory", THIS_PACKAGE + ".util.prefs.PropertiesPreferencesFactory"
+			"java.util.prefs.PreferencesFactory", "de.carne.util.prefs.PropertiesPreferencesFactory"
 
 	};
 

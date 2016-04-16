@@ -34,7 +34,7 @@ import de.carne.certmgr.jfx.help.HelpController;
 import de.carne.certmgr.jfx.messagebox.MessageBoxStyle;
 import de.carne.certmgr.jfx.passwordprompt.PasswordPromptCallback;
 import de.carne.certmgr.store.CertStoreEntry;
-import de.carne.certmgr.util.Strings;
+import de.carne.util.Strings;
 
 /**
  * Dialog controller for editing certificate store entry options.

@@ -27,8 +27,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import de.carne.certmgr.jfx.storemanager.StoreManagerController;
 import de.carne.certmgr.store.CertStore;
-import de.carne.certmgr.util.logging.Log;
-import de.carne.certmgr.util.logging.LogConfig;
+import de.carne.util.logging.Log;
+import de.carne.util.logging.LogConfig;
 
 /**
  * JavaFX application class responsible for starting up the GUI.

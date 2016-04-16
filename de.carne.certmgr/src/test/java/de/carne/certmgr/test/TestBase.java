@@ -46,7 +46,7 @@ import de.carne.certmgr.store.x509.X509BasicConstraintsExtension;
 import de.carne.certmgr.store.x509.X509CertificateParams;
 import de.carne.certmgr.store.x509.X509ExtendedKeyUsageExtension;
 import de.carne.certmgr.store.x509.X509KeyUsageExtension;
-import de.carne.certmgr.util.logging.LogConfig;
+import de.carne.util.logging.LogConfig;
 
 /**
  * Base class providing functions common to all test.

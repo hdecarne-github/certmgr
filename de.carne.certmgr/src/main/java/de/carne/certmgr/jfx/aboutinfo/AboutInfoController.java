@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.StageController;
-import de.carne.certmgr.util.Version;
+import de.carne.util.Version;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;

@@ -28,7 +28,7 @@ import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.InvalidInputException;
 import de.carne.certmgr.jfx.help.Help;
 import de.carne.certmgr.jfx.help.HelpController;
-import de.carne.certmgr.util.Strings;
+import de.carne.util.Strings;
 
 /**
  * Dialog controller for password prompt display to ask for a new password.

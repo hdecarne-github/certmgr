@@ -64,8 +64,8 @@ import de.carne.certmgr.store.CertStoreEntry;
 import de.carne.certmgr.store.ImportSource;
 import de.carne.certmgr.store.ImportStore;
 import de.carne.certmgr.store.PasswordCallback;
-import de.carne.certmgr.util.Strings;
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.Strings;
+import de.carne.util.logging.Log;
 
 /**
  * Dialog controller for importing certificate data.

@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.logging.Log;
 
 /**
  * Helper class used to scan the files inside a certificate store.

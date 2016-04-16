@@ -136,7 +136,7 @@ public final class ApplicationLoader extends URLClassLoader {
 
 	// Prefix of class names that need to be loaded via system classloader (e.g.
 	// log handlers).
-	private static String[] SYSTEM_CLASSES = new String[] { THIS_CLASS, THIS_PACKAGE + ".util.logging" };
+	private static String[] SYSTEM_CLASSES = new String[] { THIS_CLASS, "de.carne.util.logging" };
 
 	private ClassLoader systemClassloader = getSystemClassLoader();
 

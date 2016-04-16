@@ -41,7 +41,7 @@ import de.carne.certmgr.store.x509.KeyParams;
 import de.carne.certmgr.store.x509.RevokeReason;
 import de.carne.certmgr.store.x509.X509CRLParams;
 import de.carne.certmgr.store.x509.X509CertificateParams;
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.logging.Log;
 
 /**
  * Abstract base class for certificate store providers.

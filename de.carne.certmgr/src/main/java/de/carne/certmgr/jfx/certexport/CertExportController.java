@@ -57,7 +57,7 @@ import de.carne.certmgr.store.ExportTarget;
 import de.carne.certmgr.store.FileExportTarget;
 import de.carne.certmgr.store.FolderExportTarget;
 import de.carne.certmgr.store.PasswordCallback;
-import de.carne.certmgr.util.Strings;
+import de.carne.util.Strings;
 
 /**
  * Dialog controller for esporting certificate data.

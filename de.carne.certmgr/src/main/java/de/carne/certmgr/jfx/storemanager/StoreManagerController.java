@@ -87,10 +87,10 @@ import de.carne.certmgr.store.x509.X509ExtendedKeyUsageExtension;
 import de.carne.certmgr.store.x509.X509Extension;
 import de.carne.certmgr.store.x509.X509KeyUsageExtension;
 import de.carne.certmgr.store.x509.X509SubjectAlternativeNameExtension;
-import de.carne.certmgr.util.Pair;
-import de.carne.certmgr.util.Strings;
-import de.carne.certmgr.util.logging.Log;
-import de.carne.certmgr.util.logging.LogBufferHandler;
+import de.carne.util.Pair;
+import de.carne.util.Strings;
+import de.carne.util.logging.Log;
+import de.carne.util.logging.LogBufferHandler;
 
 /**
  * Dialog controller for certificate store management dialog.

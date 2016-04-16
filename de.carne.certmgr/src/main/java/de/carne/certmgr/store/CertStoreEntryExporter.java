@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import de.carne.certmgr.store.provider.StoreProvider;
-import de.carne.certmgr.util.logging.Log;
+import de.carne.util.logging.Log;
 
 /**
  * Helper class for exporting a certificate store entry to an export target.

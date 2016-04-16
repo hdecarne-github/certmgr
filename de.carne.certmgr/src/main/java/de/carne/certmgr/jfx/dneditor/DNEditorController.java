@@ -34,7 +34,7 @@ import de.carne.certmgr.jfx.help.Help;
 import de.carne.certmgr.jfx.help.HelpController;
 import de.carne.certmgr.store.x500.RDN;
 import de.carne.certmgr.store.x500.X500Names;
-import de.carne.certmgr.util.Strings;
+import de.carne.util.Strings;
 
 /**
  * Dialog controller for DN editing.
