@@ -31,9 +31,9 @@ public abstract class Main {
 
 	private final static String[] INIT_SYSTEM_PROPERTIES = {
 
-		"java.util.logging.config.class", THIS_PACKAGE + ".util.logging.LogConfig",
+			"java.util.logging.config.class", THIS_PACKAGE + ".util.logging.LogConfig",
 
-		"java.util.prefs.PreferencesFactory", THIS_PACKAGE + ".util.prefs.PropertiesPreferencesFactory"
+			"java.util.prefs.PreferencesFactory", THIS_PACKAGE + ".util.prefs.PropertiesPreferencesFactory"
 
 	};
 
@@ -48,14 +48,21 @@ public abstract class Main {
 		int status = -1;
 
 		try {
-			for (int propertyIndex = 0; propertyIndex < INIT_SYSTEM_PROPERTIES.length; propertyIndex += 2) {
-				System.setProperty(INIT_SYSTEM_PROPERTIES[propertyIndex], INIT_SYSTEM_PROPERTIES[propertyIndex + 1]);
-			}
+			init();
 			status = Class.forName(JFX_MAIN_CLASS).asSubclass(Main.class).newInstance().run(args);
 		} catch (Throwable e) {
 			printUnhandledException(e);
 		}
 		System.exit(status);
+	}
+
+	/**
+	 * Perform global initialization steps.
+	 */
+	public static void init() {
+		for (int propertyIndex = 0; propertyIndex < INIT_SYSTEM_PROPERTIES.length; propertyIndex += 2) {
+			System.setProperty(INIT_SYSTEM_PROPERTIES[propertyIndex], INIT_SYSTEM_PROPERTIES[propertyIndex + 1]);
+		}
 	}
 
 	/**
@@ -79,8 +86,9 @@ public abstract class Main {
 	/**
 	 * Print unhandled exception to a specific <code>PrintStream</code>.
 	 * <p>
-	 * This function prints the actual stack trace of the causing exception as well as the current program state
-	 * including running threads, runtime information and system properties.
+	 * This function prints the actual stack trace of the causing exception as
+	 * well as the current program state including running threads, runtime
+	 * information and system properties.
 	 * </p>
 	 *
 	 * @param ps The <code>PrintStream</code> to print to.

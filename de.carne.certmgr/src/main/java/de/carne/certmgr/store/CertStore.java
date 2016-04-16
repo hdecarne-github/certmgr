@@ -62,7 +62,6 @@ import de.carne.certmgr.util.prefs.PropertiesPreferencesFactory;
  * ./csr/*.csr     (certificate signing requests)
  * ./private/*.key (key files)
  * </pre>
- *
  * </p>
  */
 public final class CertStore {
@@ -155,7 +154,8 @@ public final class CertStore {
 	/**
 	 * Get the default signature algorithm.
 	 *
-	 * @param keyAlg The key algorithm to get the default signature algorithm for.
+	 * @param keyAlg The key algorithm to get the default signature algorithm
+	 *        for.
 	 * @return The default signature algorithm.
 	 */
 	public static String getDefaultSigAlg(String keyAlg) {
@@ -246,9 +246,11 @@ public final class CertStore {
 	/**
 	 * Create a new certificate store.
 	 *
-	 * @param storeHomeName The directory path where to create the new store (must not yet exist).
+	 * @param storeHomeName The directory path where to create the new store
+	 *        (must not yet exist).
 	 * @return The created certificate store.
-	 * @throws IOException if an I/O error occurs while creating the certificate store.
+	 * @throws IOException if an I/O error occurs while creating the certificate
+	 *         store.
 	 */
 	public static CertStore create(String storeHomeName) throws IOException {
 		assert storeHomeName != null;
@@ -259,9 +261,11 @@ public final class CertStore {
 	/**
 	 * Create a new certificate store.
 	 *
-	 * @param storeHomePath The directory path where to create the new store (must not yet exist).
+	 * @param storeHomePath The directory path where to create the new store
+	 *        (must not yet exist).
 	 * @return The created certificate store.
-	 * @throws IOException if an I/O error occurs while creating the certificate store.
+	 * @throws IOException if an I/O error occurs while creating the certificate
+	 *         store.
 	 */
 	public static CertStore create(Path storeHomePath) throws IOException {
 		assert storeHomePath != null;
@@ -276,15 +280,27 @@ public final class CertStore {
 	 *
 	 * @param storeHomeName The directory path where to read the store from.
 	 * @return The opened certificate store.
-	 * @throws IOException if an I/O error occurs while reading the certificate store.
+	 * @throws IOException if an I/O error occurs while reading the certificate
+	 *         store.
 	 */
 	public static CertStore open(String storeHomeName) throws IOException {
 		assert storeHomeName != null;
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_OPENSTORE, storeHomeName);
+		return open(Paths.get(storeHomeName));
+	}
 
-		Path storeHomePath = Paths.get(storeHomeName);
+	/**
+	 * Read an existing certificate store.
+	 *
+	 * @param storeHomePath The directory path where to read the store from.
+	 * @return The opened certificate store.
+	 * @throws IOException if an I/O error occurs while reading the certificate
+	 *         store.
+	 */
+	public static CertStore open(Path storeHomePath) throws IOException {
+		assert storeHomePath != null;
 
+		LOG.notice(I18N.bundle(), I18N.MESSAGE_OPENSTORE, storeHomePath);
 		return new CertStore(storeHomePath);
 	}
 
@@ -322,7 +338,8 @@ public final class CertStore {
 					mergeEntry0(entry);
 				} catch (IOException e) {
 					LOG.warning(e, I18N.bundle(), I18N.MESSAGE_CERTENTRYERROR, alias, e.getLocalizedMessage());
-					LOG.warning(I18N.bundle(), I18N.MESSAGE_INVALIDCERTENTRY, alias, keyFile, crtFile, csrFile, crlFile);
+					LOG.warning(I18N.bundle(), I18N.MESSAGE_INVALIDCERTENTRY, alias, keyFile, crtFile, csrFile,
+							crlFile);
 				}
 			} else {
 				LOG.warning(I18N.bundle(), I18N.MESSAGE_INCOMPLETECERTENTRY, alias, keyFile, crtFile, csrFile, crlFile);
@@ -412,14 +429,15 @@ public final class CertStore {
 	/**
 	 * Get a certificate entry's issued certificate entries.
 	 *
-	 * @param entry The certificate entry to get the issued certificate entries for.
+	 * @param entry The certificate entry to get the issued certificate entries
+	 *        for.
 	 * @return The submitted certificate entry's issued certificate entries.
 	 */
 	public synchronized Collection<CertStoreEntry> getIssuedEntries(CertStoreEntry entry) {
 		assert entry != null;
 
-		return Collections.unmodifiableCollection(this.storeEntries.values(e -> !e.isRoot()
-				&& entry.equals(e.getIssuer())));
+		return Collections
+				.unmodifiableCollection(this.storeEntries.values(e -> !e.isRoot() && entry.equals(e.getIssuer())));
 	}
 
 	/**
@@ -427,7 +445,8 @@ public final class CertStore {
 	 *
 	 * @param entry The certificate store entry to rename.
 	 * @param newAlias The new alias name.
-	 * @throws IOException if an I/O error occurs while renaming the entry files.
+	 * @throws IOException if an I/O error occurs while renaming the entry
+	 *         files.
 	 */
 	public synchronized void renameEntry(CertStoreEntry entry, String newAlias) throws IOException {
 		Entry renameEntry = this.storeEntries.get(entry);
@@ -492,7 +511,8 @@ public final class CertStore {
 	 * Get a store entry.
 	 *
 	 * @param entry The the certificate entry to retrieve from the store.
-	 * @return The found store entry or null, if the certificate entry is not known in the store.
+	 * @return The found store entry or null, if the certificate entry is not
+	 *         known in the store.
 	 */
 	public synchronized CertStoreEntry getEntry(CertEntry entry) {
 		return this.storeEntries.get(entry);
@@ -503,7 +523,8 @@ public final class CertStore {
 	 *
 	 * @param entry The certificate entry to match.
 	 * @return The matching entry or null if none matches.
-	 * @throws IOException If an I/O exception occurs while accessing the certificate data.
+	 * @throws IOException If an I/O exception occurs while accessing the
+	 *         certificate data.
 	 */
 	public synchronized CertStoreEntry matchEntry(CertEntry entry) throws IOException {
 		assert entry != null;
@@ -514,11 +535,15 @@ public final class CertStore {
 	/**
 	 * Import certificate entry into the store.
 	 *
-	 * @param entry The certificate entry to import (must contain either CRT or CSR object).
-	 * @param password The password callback to use for key encryption (may be null).
-	 * @param overwrite Whether to overwrite certificate objects already available in the store or not.
+	 * @param entry The certificate entry to import (must contain either CRT or
+	 *        CSR object).
+	 * @param password The password callback to use for key encryption (may be
+	 *        null).
+	 * @param overwrite Whether to overwrite certificate objects already
+	 *        available in the store or not.
 	 * @return The imported certificate store entry.
-	 * @throws PasswordRequiredException if a password callback was submitted but provided no password.
+	 * @throws PasswordRequiredException if a password callback was submitted
+	 *         but provided no password.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
 	public synchronized CertStoreEntry importEntry(CertEntry entry, PasswordCallback password, boolean overwrite)
@@ -551,8 +576,8 @@ public final class CertStore {
 				LOG.notice(I18N.bundle(), I18N.MESSAGE_NOTHINGTOIMPORT, name);
 			}
 		} else if (entry.hasCRT() || entry.hasCSR()) {
-			String name = (entry.hasCRT() ? CertObject.getCRTName(entry.getCRT().getObject()) : CertObject
-					.getCSRName(entry.getCSR().getObject()));
+			String name = (entry.hasCRT() ? CertObject.getCRTName(entry.getCRT().getObject())
+					: CertObject.getCSRName(entry.getCSR().getObject()));
 			String alias = createAlias();
 			Path keyFile = null;
 			Path crtFile = null;
@@ -586,17 +611,19 @@ public final class CertStore {
 	 * @param keyParams The parameters to use for key creation.
 	 * @param certificateParams The parameters to use for CRT creation.
 	 * @param certificateValidity The validity range for the certificate.
-	 * @param password The password callback to use to query the password for the certificate.
+	 * @param password The password callback to use to query the password for
+	 *        the certificate.
 	 * @param issuerEntry The (optional) issuer entry.
-	 * @param issuerPassword The password callback to user to query the issuer entry's key password.
+	 * @param issuerPassword The password callback to user to query the issuer
+	 *        entry's key password.
 	 * @return The created certificate store entry.
 	 * @throws IOException if an I/O error occurs during entry creation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public synchronized CertStoreEntry generateAndSignCRT(String alias, KeyParams keyParams,
-			X509CertificateParams certificateParams, CertificateValidity certificateValidity,
-			PasswordCallback password, CertStoreEntry issuerEntry, PasswordCallback issuerPassword) throws IOException,
-			GeneralSecurityException {
+			X509CertificateParams certificateParams, CertificateValidity certificateValidity, PasswordCallback password,
+			CertStoreEntry issuerEntry, PasswordCallback issuerPassword) throws IOException, GeneralSecurityException {
 		assert alias != null;
 		assert keyParams != null;
 		assert certificateParams != null;
@@ -632,14 +659,16 @@ public final class CertStore {
 	 * @param entry The certificate store entry to re-generate and re-sign.
 	 * @param certificateParams The parameters to use for CRT creation.
 	 * @param certificateValidity The validity range for the certificate.
-	 * @param issuerPassword The password callback to user to query the issuer entry's key password.
+	 * @param issuerPassword The password callback to user to query the issuer
+	 *        entry's key password.
 	 * @return The updated certificate store entry.
 	 * @throws IOException if an I/O error occurs during entry creation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
-	public synchronized CertStoreEntry generateAndSignCRT(CertStoreEntry entry,
-			X509CertificateParams certificateParams, CertificateValidity certificateValidity,
-			PasswordCallback issuerPassword) throws IOException, GeneralSecurityException {
+	public synchronized CertStoreEntry generateAndSignCRT(CertStoreEntry entry, X509CertificateParams certificateParams,
+			CertificateValidity certificateValidity, PasswordCallback issuerPassword)
+			throws IOException, GeneralSecurityException {
 		assert entry != null;
 		assert certificateParams != null;
 		assert certificateValidity != null;
@@ -658,14 +687,16 @@ public final class CertStore {
 	 * @param alias The alias to use for certificate store entry creation.
 	 * @param keyParams The parameters to use for key creation.
 	 * @param certificateParams The parameters to use for CRT creation.
-	 * @param password The password callback to use to query the password for the certificate.
+	 * @param password The password callback to use to query the password for
+	 *        the certificate.
 	 * @return The created certificate store entry.
 	 * @throws IOException if an I/O error occurs during entry creation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public synchronized CertStoreEntry generateAndSignCSR(String alias, KeyParams keyParams,
-			X509CertificateParams certificateParams, PasswordCallback password) throws IOException,
-			GeneralSecurityException {
+			X509CertificateParams certificateParams, PasswordCallback password)
+			throws IOException, GeneralSecurityException {
 		assert alias != null;
 		assert keyParams != null;
 		assert certificateParams != null;
@@ -687,14 +718,15 @@ public final class CertStore {
 	 *
 	 * @param entry The certificate store entry to re-generate and re-sign.
 	 * @param certificateParams The parameters to use for CRT creation.
-	 * @param password The password callback to use to query the password for the certificate.
+	 * @param password The password callback to use to query the password for
+	 *        the certificate.
 	 * @return The update certificate store entry.
 	 * @throws IOException if an I/O error occurs during entry creation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
-	public synchronized CertStoreEntry generateAndSignCSR(CertStoreEntry entry,
-			X509CertificateParams certificateParams, PasswordCallback password) throws IOException,
-			GeneralSecurityException {
+	public synchronized CertStoreEntry generateAndSignCSR(CertStoreEntry entry, X509CertificateParams certificateParams,
+			PasswordCallback password) throws IOException, GeneralSecurityException {
 		assert entry != null;
 		assert certificateParams != null;
 		assert password != null;
@@ -712,15 +744,17 @@ public final class CertStore {
 	 * @param entry The certificate store entry to generate the CRL for.
 	 * @param crlParams The parameters to use for CRL generation.
 	 * @param revokeEntries The issued entries to revoke.
-	 * @param password The password to use to query the password for CRL signing.
+	 * @param password The password to use to query the password for CRL
+	 *        signing.
 	 * @param append Whether to append or replace the CRLs revoke list.
 	 * @return The update certificate store entry.
 	 * @throws IOException if an I/O error occurs during entry modification.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public synchronized CertStoreEntry generateAndSignCRL(CertStoreEntry entry, X509CRLParams crlParams,
 			Map<CertStoreEntry, RevokeReason> revokeEntries, PasswordCallback password, boolean append)
-					throws IOException, GeneralSecurityException {
+			throws IOException, GeneralSecurityException {
 		assert entry != null;
 		assert crlParams != null;
 		assert revokeEntries != null;
@@ -957,7 +991,9 @@ public final class CertStore {
 
 		/*
 		 * (non-Javadoc)
-		 * @see de.carne.certmgr.store.CertStoreEntry#copy(de.carne.certmgr.store.ExportTarget)
+		 * @see
+		 * de.carne.certmgr.store.CertStoreEntry#copy(de.carne.certmgr.store.
+		 * ExportTarget)
 		 */
 		@Override
 		public void copy(ExportTarget exportTarget) throws IOException {
@@ -989,13 +1025,15 @@ public final class CertStore {
 		 */
 		@Override
 		public boolean hasKey(boolean havePassword) {
-			// Store key files are always password protected, hence password is required.
+			// Store key files are always password protected, hence password is
+			// required.
 			return this.keyFile != null && havePassword;
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * @see de.carne.certmgr.store.CertEntry#getKey(de.carne.certmgr.store.PasswordCallback)
+		 * @see de.carne.certmgr.store.CertEntry#getKey(de.carne.certmgr.store.
+		 * PasswordCallback)
 		 */
 		@Override
 		public CertObject<KeyPair> getKey(PasswordCallback password) throws PasswordRequiredException, IOException {

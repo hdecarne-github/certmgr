@@ -50,11 +50,7 @@ public abstract class StoreProvider {
 
 	private static final Log LOG = new Log(StoreProvider.class);
 
-	private static final String PROVIDER_PROPERTY = StoreProvider.class.getPackage().getName();
-
-	private static final String PROVIDER_BOUNCYCASTLE = "bouncycastle.BouncyCastleStoreProvider";
-
-	private static final String PROVIDER_DEFAULT = PROVIDER_BOUNCYCASTLE;
+	private static final String THIS_PACKAGE = StoreProvider.class.getPackage().getName();
 
 	private static final String KEY_PROVIDER_INFO = "info";
 
@@ -65,14 +61,33 @@ public abstract class StoreProvider {
 	private static final String KEY_SIGALG = "sigalg";
 
 	/**
+	 * BouncyCastle provider.
+	 */
+	public static final String PROVIDER_BOUNCYCASTLE = THIS_PACKAGE + ".bouncycastle.BouncyCastleStoreProvider";
+
+	/**
+	 * Default provider (BouncyCastle).
+	 */
+	public static final String PROVIDER_DEFAULT = PROVIDER_BOUNCYCASTLE;
+
+	/**
 	 * Get an instance of the currently configured StoreProvider implementation.
 	 *
 	 * @return A StoreProvider instance.
 	 */
 	public static StoreProvider getInstance() {
-		String providerProperty = System.getProperty(PROVIDER_PROPERTY, PROVIDER_DEFAULT);
-		String providerName = PROVIDER_PROPERTY + "." + providerProperty;
+		String providerName = System.getProperty(THIS_PACKAGE, PROVIDER_DEFAULT);
 
+		return getInstance(providerName);
+	}
+
+	/**
+	 * Get an instance of a specific StoreProvider implementation.
+	 *
+	 * @param providerName The provider name to get the instance for.
+	 * @return A StoreProvider instance.
+	 */
+	public static StoreProvider getInstance(String providerName) {
 		LOG.debug(null, "Loading store provider ''{0}'' ...", providerName);
 
 		StoreProvider provider;
@@ -195,7 +210,8 @@ public abstract class StoreProvider {
 	/**
 	 * Get the provider's default signature algorithm.
 	 *
-	 * @param keyAlg The key algorithm to get the default signature algorithm for.
+	 * @param keyAlg The key algorithm to get the default signature algorithm
+	 *        for.
 	 * @return The provider's default signature algorithm.
 	 */
 	public String getDefaultSigAlg(String keyAlg) {
@@ -226,7 +242,8 @@ public abstract class StoreProvider {
 	 *
 	 * @param keyParams The parameters to use for key generation.
 	 * @return The generated key.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public KeyPair generateKey(KeyParams keyParams) throws GeneralSecurityException {
 		String keyAlg = keyParams.getKeyAlg();
@@ -272,11 +289,12 @@ public abstract class StoreProvider {
 	 * @param serial The serial for the new CRT.
 	 * @return The generated CRT.
 	 * @throws IOException if an I/O error occurs during CRT generation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public abstract X509Certificate generateAndSignCRT(KeyPair key, X509CertificateParams certificateParams,
 			CertificateValidity certificateValidity, KeyPair issuerKey, X509Certificate issuerCRT, BigInteger serial)
-					throws IOException, GeneralSecurityException;
+			throws IOException, GeneralSecurityException;
 
 	/**
 	 * Re-generate and re-sign CRT.
@@ -287,7 +305,8 @@ public abstract class StoreProvider {
 	 * @param issuerKey The issuer key.
 	 * @return The generated CRT.
 	 * @throws IOException if an I/O error occurs during CRT generation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public abstract X509Certificate generateAndSignCRT(X509Certificate crt, X509CertificateParams certificateParams,
 			CertificateValidity certificateValidity, KeyPair issuerKey) throws IOException, GeneralSecurityException;
@@ -299,7 +318,8 @@ public abstract class StoreProvider {
 	 * @param certificateParams The parameters to use for CRT generation.
 	 * @return The generated CSR.
 	 * @throws IOException if an I/O error occurs during CSR generation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public abstract PKCS10Object generateAndSignCSR(KeyPair key, X509CertificateParams certificateParams)
 			throws IOException, GeneralSecurityException;
@@ -312,7 +332,8 @@ public abstract class StoreProvider {
 	 * @param certificateParams The parameters to use for CRT generation.
 	 * @return The generated CSR.
 	 * @throws IOException if an I/O error occurs during CSR generation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public abstract PKCS10Object generateAndSignCSR(PKCS10Object csr, KeyPair key,
 			X509CertificateParams certificateParams) throws IOException, GeneralSecurityException;
@@ -320,14 +341,16 @@ public abstract class StoreProvider {
 	/**
 	 * Generate and sign CRL.
 	 *
-	 * @param currentCRL The previously generated CRL to overwrite (may be null).
+	 * @param currentCRL The previously generated CRL to overwrite (may be
+	 *        null).
 	 * @param crlParams The parameters to use for CRL generation.
 	 * @param revokeSerials The serial numbers to revoke.
 	 * @param issuerKey The issuer key.
 	 * @param issuerCRT The issuer CRT.
 	 * @return The generated CRL.
 	 * @throws IOException if an I/O error occurs during CRL generation.
-	 * @throws GeneralSecurityException if an security provider related error occurs.
+	 * @throws GeneralSecurityException if an security provider related error
+	 *         occurs.
 	 */
 	public abstract X509CRL generateAndSignCRL(X509CRL currentCRL, X509CRLParams crlParams,
 			Map<BigInteger, RevokeReason> revokeSerials, KeyPair issuerKey, X509Certificate issuerCRT)
@@ -338,9 +361,11 @@ public abstract class StoreProvider {
 	 *
 	 * @param key The key object to write.
 	 * @param keyFile The file to write to.
-	 * @param password The password callback to use for key encryption (may be null).
+	 * @param password The password callback to use for key encryption (may be
+	 *        null).
 	 * @param resource The name of the resource to encode for password queries.
-	 * @throws PasswordRequiredException if a password callback was submitted but provided no password.
+	 * @throws PasswordRequiredException if a password callback was submitted
+	 *         but provided no password.
 	 * @throws IOException if an I/O error occurs while writing the key object.
 	 */
 	public abstract void writeKey(KeyPair key, Path keyFile, PasswordCallback password, String resource)
@@ -350,10 +375,12 @@ public abstract class StoreProvider {
 	 * Read key object from file.
 	 *
 	 * @param keyFile The file to read from.
-	 * @param password The password callback to use for key decryption (may be null).
+	 * @param password The password callback to use for key decryption (may be
+	 *        null).
 	 * @param resource The name of the resource the key belongs to.
 	 * @return The read key object.
-	 * @throws PasswordRequiredException if a password is required to access the key object.
+	 * @throws PasswordRequiredException if a password is required to access the
+	 *         key object.
 	 * @throws IOException if an I/O error occurs while reading the key object.
 	 */
 	public abstract KeyPair readKey(Path keyFile, PasswordCallback password, String resource)
@@ -429,7 +456,8 @@ public abstract class StoreProvider {
 	 * Try to decode certificate objects from PEM encoded data.
 	 *
 	 * @param pemData The PEM data to decode.
-	 * @param password The password callback to use for key decryption (may be null).
+	 * @param password The password callback to use for key decryption (may be
+	 *        null).
 	 * @param resource The name of the resource to decode for password queries.
 	 * @return The list of decoded objects or null if data is not PEM encoded.
 	 * @throws IOException if an I/O error occurs during PEM decoding.
@@ -441,9 +469,11 @@ public abstract class StoreProvider {
 	 * Try to decode certificate objects from PKCS#12 encoded data.
 	 *
 	 * @param pkcs12Data The PKCS#12 data to decode.
-	 * @param password The password callback to use for key decryption (may be null).
+	 * @param password The password callback to use for key decryption (may be
+	 *        null).
 	 * @param resource The name of the resource to decode for password queries.
-	 * @return The list of decoded objects or null if data is not PKCS#12 encoded.
+	 * @return The list of decoded objects or null if data is not PKCS#12
+	 *         encoded.
 	 * @throws IOException if an I/O error occurs during PKCS#12 decoding.
 	 */
 	public abstract Collection<Object> tryDecodePKCS12(byte[] pkcs12Data, PasswordCallback password, String resource)
@@ -452,16 +482,18 @@ public abstract class StoreProvider {
 	/**
 	 * Encode certificate objects into a PEM data stream.
 	 *
-	 * @param crtChain The CRT chain to encode starting with the issued ones and (optionally) continuing with the
-	 *            issuers (may be null).
+	 * @param crtChain The CRT chain to encode starting with the issued ones and
+	 *        (optionally) continuing with the issuers (may be null).
 	 * @param key The key pair to encode (may be null).
 	 * @param csr The CSR to encode (may be null).
 	 * @param crl The CRL to encode (may be null).
-	 * @param password The password callback to use for key encryption (may be null).
+	 * @param password The password callback to use for key encryption (may be
+	 *        null).
 	 * @param resource The name of the resource to encode for password queries.
 	 * @return The encoded PEM data.
 	 * @throws IOException if an I/O error occurs during encoding.
-	 * @throws PasswordRequiredException if no password was provided during encoding.
+	 * @throws PasswordRequiredException if no password was provided during
+	 *         encoding.
 	 */
 	public abstract String encodePEM(X509Certificate[] crtChain, KeyPair key, PKCS10Object csr, X509CRL crl,
 			PasswordCallback password, String resource) throws IOException, PasswordRequiredException;
@@ -469,16 +501,18 @@ public abstract class StoreProvider {
 	/**
 	 * Encode certificate objects into a PKCS#12 data stream.
 	 *
-	 * @param crtChain The CRT chain to encode starting with the issued ones and (optionally) continuing with the
-	 *            issuers (may be null).
+	 * @param crtChain The CRT chain to encode starting with the issued ones and
+	 *        (optionally) continuing with the issuers (may be null).
 	 * @param key The key pair to encode (may be null).
 	 * @param csr The CSR to encode (may be null).
 	 * @param crl The CRL to encode (may be null).
-	 * @param password The password callback to use for key encryption (may be null).
+	 * @param password The password callback to use for key encryption (may be
+	 *        null).
 	 * @param resource The name of the resource to encode for password queries.
 	 * @return The encoded PKCS#12 data.
 	 * @throws IOException if an I/O error occurs during encoding.
-	 * @throws PasswordRequiredException if no password was provided during encoding.
+	 * @throws PasswordRequiredException if no password was provided during
+	 *         encoding.
 	 */
 	public abstract byte[] encodePKCS12(X509Certificate[] crtChain, KeyPair key, PKCS10Object csr, X509CRL crl,
 			PasswordCallback password, String resource) throws IOException, PasswordRequiredException;
