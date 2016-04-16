@@ -19,7 +19,7 @@ package de.carne.util;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
-import de.carne.certmgr.ApplicationLoader;
+import de.carne.ApplicationLoader;
 
 /**
  * Class providing version information.

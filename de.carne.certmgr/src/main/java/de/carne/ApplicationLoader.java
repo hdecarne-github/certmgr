@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr;
+package de.carne;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,6 +29,7 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -114,6 +117,7 @@ public final class ApplicationLoader extends URLClassLoader {
 				if (DEBUG) {
 					System.out.println("Loader: Adding internal JARs to classpath...");
 				}
+
 				Iterator<JarEntry> jarEntries = codeJar.stream().filter(e -> e.getName().endsWith(".jar")).iterator();
 
 				while (jarEntries.hasNext()) {
@@ -131,8 +135,26 @@ public final class ApplicationLoader extends URLClassLoader {
 		RESOURCE_URLS = libURLs.toArray(new URL[libURLs.size()]);
 	}
 
-	private final static String THIS_CLASS = ApplicationLoader.class.getName();
-	private final static String THIS_PACKAGE = ApplicationLoader.class.getPackage().getName();
+	private static final String MAIN_CLASS;
+
+	static {
+		String mainClass;
+
+		try (InputStream mainClassStream = ApplicationLoader.class.getResourceAsStream("Main-Class");
+				BufferedReader mainClassReader = new BufferedReader(
+						new InputStreamReader(mainClassStream, StandardCharsets.UTF_8))) {
+			mainClass = mainClassReader.readLine();
+
+			if (DEBUG) {
+				System.out.println("Loader: Using Main-Class: " + mainClass);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		MAIN_CLASS = mainClass;
+	}
+
+	private static final String THIS_CLASS = ApplicationLoader.class.getName();
 
 	// Prefix of class names that need to be loaded via system classloader (e.g.
 	// log handlers).
@@ -153,7 +175,7 @@ public final class ApplicationLoader extends URLClassLoader {
 		try (ApplicationLoader classLoader = new ApplicationLoader()) {
 			Thread.currentThread().setContextClassLoader(classLoader);
 
-			Class<?> mainClass = classLoader.loadClass(THIS_PACKAGE + ".Main");
+			Class<?> mainClass = classLoader.loadClass(MAIN_CLASS);
 			Method main = mainClass.getMethod("main", String[].class);
 
 			main.invoke(null, (Object) args);

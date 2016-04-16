@@ -33,7 +33,7 @@ dependencies {
 jar {
 	manifest {
 		attributes(
-			'Main-Class': 'de.carne.certmgr.ApplicationLoader',
+			'Main-Class': 'de.carne.ApplicationLoader',
 			'Implementation-Title': title,
 			'Implementation-Version' : version,
 			'Implementation-Date' : formatBuildDate()
