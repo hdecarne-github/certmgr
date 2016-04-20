@@ -19,8 +19,8 @@ package de.carne.certmgr.jfx.passwordprompt;
 import java.io.IOException;
 
 import javafx.application.Platform;
-import de.carne.certmgr.jfx.StageController;
 import de.carne.certmgr.store.PasswordCallback;
+import de.carne.jfx.StageController;
 
 /**
  * Password callback implementation presenting a password prompt dialog to the user.

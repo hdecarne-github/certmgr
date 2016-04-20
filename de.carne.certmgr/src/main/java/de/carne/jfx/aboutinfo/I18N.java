@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.jfx.aboutinfo;
+package de.carne.jfx.aboutinfo;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -24,16 +24,20 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String TEXT_TITLE = "aboutinfo.title";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static final String TEXT_INFO = "aboutinfo.version";
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
 
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	static String TEXT_TITLE(Object... arguments) {
+		return format("aboutinfo.title", arguments);
+	}
+
+	static String TEXT_INFO(Object... arguments) {
+		return format("aboutinfo.version", arguments);
 	}
 
 }

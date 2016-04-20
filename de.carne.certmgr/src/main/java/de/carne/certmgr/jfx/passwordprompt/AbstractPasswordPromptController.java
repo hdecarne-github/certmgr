@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.jfx.passwordprompt;
 
-import de.carne.certmgr.jfx.StageController;
+import de.carne.jfx.StageController;
 
 /**
  * Base class for password prompt controllers defining their common functionality.

@@ -16,13 +16,26 @@
  */
 package de.carne.certmgr.jfx;
 
-import javafx.application.Application;
 import de.carne.certmgr.Main;
+import de.carne.jfx.messagebox.MessageBoxController;
+import de.carne.jfx.messagebox.MessageBoxStyle;
+import javafx.application.Application;
 
 /**
  * Main class invoking the JFX application.
  */
 public class JFXMain extends Main {
+
+	static {
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO32);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING32);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR32);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION32);
+	}
 
 	/*
 	 * (non-Javadoc)

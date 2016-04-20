@@ -33,6 +33,42 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.prefs.Preferences;
 
+import de.carne.certmgr.jfx.ClipboardExportTarget;
+import de.carne.certmgr.jfx.ImageViewTableCell;
+import de.carne.certmgr.jfx.Images;
+import de.carne.certmgr.jfx.certexport.CertExportController;
+import de.carne.certmgr.jfx.certimport.CertImportController;
+import de.carne.certmgr.jfx.crloptions.CRLOptionsController;
+import de.carne.certmgr.jfx.crtoptions.CRTOptionsController;
+import de.carne.certmgr.jfx.entryoptions.EntryOptionsController;
+import de.carne.certmgr.jfx.help.Help;
+import de.carne.certmgr.jfx.help.HelpController;
+import de.carne.certmgr.jfx.storeoptions.StoreOptionsController;
+import de.carne.certmgr.store.CertStore;
+import de.carne.certmgr.store.CertStoreEntry;
+import de.carne.certmgr.store.PKCS10Object;
+import de.carne.certmgr.store.asn1.OIDRegistry;
+import de.carne.certmgr.store.x509.DistributionPoint;
+import de.carne.certmgr.store.x509.DistributionPointName;
+import de.carne.certmgr.store.x509.EncodedX509Extension;
+import de.carne.certmgr.store.x509.ExtendedKeyUsage;
+import de.carne.certmgr.store.x509.GeneralName;
+import de.carne.certmgr.store.x509.KeyUsage;
+import de.carne.certmgr.store.x509.RevokeReason;
+import de.carne.certmgr.store.x509.X509BasicConstraintsExtension;
+import de.carne.certmgr.store.x509.X509CRLDistributionPointsExtension;
+import de.carne.certmgr.store.x509.X509ExtendedKeyUsageExtension;
+import de.carne.certmgr.store.x509.X509Extension;
+import de.carne.certmgr.store.x509.X509KeyUsageExtension;
+import de.carne.certmgr.store.x509.X509SubjectAlternativeNameExtension;
+import de.carne.jfx.StageController;
+import de.carne.jfx.aboutinfo.AboutInfoController;
+import de.carne.jfx.messagebox.MessageBoxResult;
+import de.carne.jfx.messagebox.MessageBoxStyle;
+import de.carne.util.Pair;
+import de.carne.util.Strings;
+import de.carne.util.logging.Log;
+import de.carne.util.logging.LogBufferHandler;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -55,42 +91,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import de.carne.certmgr.jfx.ClipboardExportTarget;
-import de.carne.certmgr.jfx.ImageViewTableCell;
-import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.StageController;
-import de.carne.certmgr.jfx.aboutinfo.AboutInfoController;
-import de.carne.certmgr.jfx.certexport.CertExportController;
-import de.carne.certmgr.jfx.certimport.CertImportController;
-import de.carne.certmgr.jfx.crloptions.CRLOptionsController;
-import de.carne.certmgr.jfx.crtoptions.CRTOptionsController;
-import de.carne.certmgr.jfx.entryoptions.EntryOptionsController;
-import de.carne.certmgr.jfx.help.Help;
-import de.carne.certmgr.jfx.help.HelpController;
-import de.carne.certmgr.jfx.messagebox.MessageBoxResult;
-import de.carne.certmgr.jfx.messagebox.MessageBoxStyle;
-import de.carne.certmgr.jfx.storeoptions.StoreOptionsController;
-import de.carne.certmgr.store.CertStore;
-import de.carne.certmgr.store.CertStoreEntry;
-import de.carne.certmgr.store.PKCS10Object;
-import de.carne.certmgr.store.asn1.OIDRegistry;
-import de.carne.certmgr.store.x509.DistributionPoint;
-import de.carne.certmgr.store.x509.DistributionPointName;
-import de.carne.certmgr.store.x509.EncodedX509Extension;
-import de.carne.certmgr.store.x509.ExtendedKeyUsage;
-import de.carne.certmgr.store.x509.GeneralName;
-import de.carne.certmgr.store.x509.KeyUsage;
-import de.carne.certmgr.store.x509.RevokeReason;
-import de.carne.certmgr.store.x509.X509BasicConstraintsExtension;
-import de.carne.certmgr.store.x509.X509CRLDistributionPointsExtension;
-import de.carne.certmgr.store.x509.X509ExtendedKeyUsageExtension;
-import de.carne.certmgr.store.x509.X509Extension;
-import de.carne.certmgr.store.x509.X509KeyUsageExtension;
-import de.carne.certmgr.store.x509.X509SubjectAlternativeNameExtension;
-import de.carne.util.Pair;
-import de.carne.util.Strings;
-import de.carne.util.logging.Log;
-import de.carne.util.logging.LogBufferHandler;
 
 /**
  * Dialog controller for certificate store management dialog.
@@ -521,6 +521,10 @@ public class StoreManagerController extends StageController {
 		try {
 			AboutInfoController aboutInfoController = openStage(AboutInfoController.class);
 
+			aboutInfoController.setInfoIcon(Images.IMAGE_STORE32);
+			aboutInfoController.addInfo(I18N.format(I18N.TEXT_ABOUTTITLE1), I18N.format(I18N.TEXT_ABOUTINFO1));
+			aboutInfoController.addInfo(I18N.format(I18N.TEXT_ABOUTTITLE2), I18N.format(I18N.TEXT_ABOUTINFO2));
+			aboutInfoController.addInfo(I18N.format(I18N.TEXT_ABOUTTITLE3), I18N.format(I18N.TEXT_ABOUTINFO3));
 			aboutInfoController.getStage().showAndWait();
 		} catch (IOException e) {
 			reportUnexpectedException(e);
@@ -691,7 +695,8 @@ public class StoreManagerController extends StageController {
 			// Update all siblings and collect the processed entries
 			Set<CertStoreEntry> processedEntries = updateStoreViewHelper(rootItem, this.store.getRootEntries());
 
-			// Remove view entry no longer available in the store (copy first to avoid concurrent modifcation)
+			// Remove view entry no longer available in the store (copy first to
+			// avoid concurrent modifcation)
 			ArrayList<CertStoreEntry> mappedEntries = new ArrayList<>(this.storeViewItemMap.keySet());
 
 			for (CertStoreEntry mappedEntry : mappedEntries) {
@@ -739,7 +744,8 @@ public class StoreManagerController extends StageController {
 				insertItemChild = true;
 				this.storeViewItemMap.put(storeEntry, itemChild);
 			} else {
-				// An existing entry, update entry and parent relationship if needed
+				// An existing entry, update entry and parent relationship if
+				// needed
 				itemChild.getValue().updateTreeItem(itemChild);
 				if (!itemChild.getParent().equals(item)) {
 					itemChild.getParent().getChildren().remove(itemChild);

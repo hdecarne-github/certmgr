@@ -27,9 +27,14 @@ import de.carne.ApplicationLoader;
 public final class Version {
 
 	/**
-	 * The project name.
+	 * The project title.
 	 */
 	public static final String TITLE;
+
+	/**
+	 * The project name.
+	 */
+	public static final String PROJECT;
 
 	/**
 	 * The project version.
@@ -51,9 +56,10 @@ public final class Version {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		TITLE = getAttributeValue(attributes, "Implementation-Title");
-		VERSION = getAttributeValue(attributes, "Implementation-Version");
-		DATE = getAttributeValue(attributes, "Implementation-Date");
+		TITLE = getAttributeValue(attributes, "X-Application-Title");
+		PROJECT = getAttributeValue(attributes, "X-Application-Project");
+		VERSION = getAttributeValue(attributes, "X-Application-Version");
+		DATE = getAttributeValue(attributes, "X-Application-Date");
 	}
 
 	private static String getAttributeValue(Attributes attributes, String name) {

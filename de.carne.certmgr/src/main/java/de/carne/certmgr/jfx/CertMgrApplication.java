@@ -27,6 +27,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import de.carne.certmgr.jfx.storemanager.StoreManagerController;
 import de.carne.certmgr.store.CertStore;
+import de.carne.jfx.StageController;
 import de.carne.util.logging.Log;
 import de.carne.util.logging.LogConfig;
 

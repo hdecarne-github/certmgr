@@ -34,9 +34,10 @@ jar {
 	manifest {
 		attributes(
 			'Main-Class': 'de.carne.ApplicationLoader',
-			'Implementation-Title': title,
-			'Implementation-Version' : version,
-			'Implementation-Date' : formatBuildDate()
+			'X-Application-Title': title,
+			'X-Application-Project': rootProject.name,
+			'X-Application-Version' : version,
+			'X-Application-Date' : formatBuildDate()
 		)
 	}
 	from configurations.runtime
@@ -48,4 +49,9 @@ distributions {
 			from jar
 		}
 	}
+}
+
+tasks.withType(Tar){
+    compression = Compression.GZIP
+    extension = 'tar.gz'
 }

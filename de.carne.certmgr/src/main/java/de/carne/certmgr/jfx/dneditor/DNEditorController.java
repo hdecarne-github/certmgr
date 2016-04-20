@@ -29,11 +29,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import de.carne.certmgr.jfx.EditableComboBoxTableCell;
 import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.StageController;
 import de.carne.certmgr.jfx.help.Help;
 import de.carne.certmgr.jfx.help.HelpController;
 import de.carne.certmgr.store.x500.RDN;
 import de.carne.certmgr.store.x500.X500Names;
+import de.carne.jfx.StageController;
 import de.carne.util.Strings;
 
 /**

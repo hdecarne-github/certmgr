@@ -14,28 +14,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.jfx.aboutinfo;
+package de.carne.jfx.aboutinfo;
 
 import java.io.IOException;
 
-import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.StageController;
+import de.carne.jfx.StageController;
 import de.carne.util.Version;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * Dialog controller for about info display.
  */
 public class AboutInfoController extends StageController {
 
+	private int nextInfoIndex = 0;
+
+	@FXML
+	ImageView ctlInfoIcon;
+
 	@FXML
 	Label ctlInfoString;
 
 	@FXML
-	Accordion ctlCopyrights;
+	Accordion ctlInfos;
+
+	@FXML
+	TitledPane ctlMainInfoPane;
+
+	@FXML
+	TextArea ctlMainInfoText;
 
 	/*
 	 * (non-Javadoc)
@@ -53,9 +68,43 @@ public class AboutInfoController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(I18N.format(I18N.TEXT_TITLE));
-		controllerStage.getIcons().addAll(Images.IMAGE_INFO16, Images.IMAGE_INFO32);
-		this.ctlInfoString.setText(I18N.format(I18N.TEXT_INFO, Version.TITLE, Version.VERSION, Version.DATE));
-		this.ctlCopyrights.setExpandedPane(this.ctlCopyrights.getPanes().get(0));
+		controllerStage.setTitle(I18N.TEXT_TITLE(Version.TITLE));
+
+		Window owner = controllerStage.getOwner();
+
+		if (owner instanceof Stage) {
+			controllerStage.getIcons().addAll(((Stage) owner).getIcons());
+		}
+		this.ctlInfoString.setText(I18N.TEXT_INFO(Version.TITLE, Version.PROJECT, Version.VERSION, Version.DATE));
+		this.ctlInfos.setExpandedPane(this.ctlMainInfoPane);
 	}
+
+	/**
+	 * Set the info icon to display.
+	 *
+	 * @param image The info icon to display.
+	 */
+	public void setInfoIcon(Image image) {
+		this.ctlInfoIcon.setImage(image);
+	}
+
+	/**
+	 * Add a info text and title to the info display.
+	 *
+	 * @param title The title to add.
+	 * @param info The info text to add.
+	 */
+	public void addInfo(String title, String info) {
+		if (this.nextInfoIndex == 0) {
+			this.ctlMainInfoPane.setText(title);
+			this.ctlMainInfoText.setText(info);
+		} else {
+			TextArea infoText = new TextArea(info);
+			TitledPane infoPane = new TitledPane(title, infoText);
+
+			this.ctlInfos.getPanes().add(infoPane);
+		}
+		this.nextInfoIndex++;
+	}
+
 }

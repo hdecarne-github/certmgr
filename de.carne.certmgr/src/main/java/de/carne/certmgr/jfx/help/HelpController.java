@@ -39,8 +39,8 @@ import org.w3c.dom.html.HTMLAnchorElement;
 
 import de.carne.certmgr.jfx.CertMgrApplication;
 import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.StageController;
 import de.carne.certmgr.jfx.help.html.Htmls;
+import de.carne.jfx.StageController;
 
 /**
  * Dialog controller for help display.

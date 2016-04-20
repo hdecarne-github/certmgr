@@ -42,16 +42,16 @@ import de.carne.certmgr.jfx.CertStoreEntryOption;
 import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.InputValidator;
 import de.carne.certmgr.jfx.InvalidInputException;
-import de.carne.certmgr.jfx.StageController;
 import de.carne.certmgr.jfx.StoreOptions;
 import de.carne.certmgr.jfx.help.Help;
 import de.carne.certmgr.jfx.help.HelpController;
-import de.carne.certmgr.jfx.messagebox.MessageBoxStyle;
 import de.carne.certmgr.jfx.passwordprompt.PasswordPromptCallback;
 import de.carne.certmgr.store.CertStore;
 import de.carne.certmgr.store.CertStoreEntry;
 import de.carne.certmgr.store.x509.RevokeReason;
 import de.carne.certmgr.store.x509.X509CRLParams;
+import de.carne.jfx.StageController;
+import de.carne.jfx.messagebox.MessageBoxStyle;
 
 /**
  * Dialog controller for CRL editing.

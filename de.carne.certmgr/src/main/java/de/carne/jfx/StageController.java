@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.jfx;
+package de.carne.jfx;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -25,6 +25,10 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.carne.jfx.messagebox.MessageBoxController;
+import de.carne.jfx.messagebox.MessageBoxResult;
+import de.carne.jfx.messagebox.MessageBoxStyle;
+import de.carne.util.logging.Log;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -33,10 +37,6 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import de.carne.certmgr.jfx.messagebox.MessageBoxController;
-import de.carne.certmgr.jfx.messagebox.MessageBoxResult;
-import de.carne.certmgr.jfx.messagebox.MessageBoxStyle;
-import de.carne.util.logging.Log;
 
 /**
  * Abstract base class for controlling JFX stages (including scene setup).
@@ -45,7 +45,7 @@ public abstract class StageController {
 
 	private static final Log LOG = new Log(StageController.class);
 
-	private static final ExecutorService TASK_EXECUTOR = Executors.newCachedThreadPool();
+	private static final ExecutorService TASK_EXECUTOR = Executors.newSingleThreadScheduledExecutor();
 
 	private static final Pattern CONTROLLER_PATTERN = Pattern.compile("^(.*)\\.(.+)Controller$");
 
@@ -72,7 +72,8 @@ public abstract class StageController {
 	/**
 	 * Get the controller's optional preferences object.
 	 *
-	 * @return The controller's preferences object or null if the controller doesn't have one.
+	 * @return The controller's preferences object or null if the controller
+	 *         doesn't have one.
 	 */
 	protected Preferences getPreferences() {
 		return null;
@@ -88,7 +89,7 @@ public abstract class StageController {
 			try {
 				preferences.sync();
 			} catch (BackingStoreException e) {
-				LOG.warning(e, I18N.bundle(), I18N.MESSAGE_PREFSYNCFAILED);
+				LOG.warning(e, null, I18N.MESSAGE_PREFSYNCFAILED());
 			}
 		}
 	}
@@ -118,10 +119,11 @@ public abstract class StageController {
 	}
 
 	/**
-	 * Called during stage setup to perform the actual controller specific setup steps.
+	 * Called during stage setup to perform the actual controller specific setup
+	 * steps.
 	 * <p>
-	 * Derived classes overriding this function have to make sure to invoke the super's version prior to performing
-	 * their setup steps.
+	 * Derived classes overriding this function have to make sure to invoke the
+	 * super's version prior to performing their setup steps.
 	 * </p>
 	 *
 	 * @param controllerStage The stage to setup.
@@ -130,7 +132,8 @@ public abstract class StageController {
 	 */
 	protected void setupStage(Stage controllerStage) throws IOException {
 		this.stage = controllerStage;
-		// install on close handler to avoid scene closing while stage is disabled
+		// install on close handler to avoid scene closing while stage is
+		// disabled
 		this.stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 
 			@Override
@@ -185,12 +188,15 @@ public abstract class StageController {
 	}
 
 	/**
-	 * Setup a an existing stage with the JFX scene of the submitted controller class.
+	 * Setup a an existing stage with the JFX scene of the submitted controller
+	 * class.
 	 *
 	 * @param controllerStage The primary stage to setup.
-	 * @param controllerClass The controller class to derive the FXML resource from.
+	 * @param controllerClass The controller class to derive the FXML resource
+	 *        from.
 	 * @return The loaded {@link Scene}'s controller instance.
-	 * @throws IOException if an I/O error occurs while loading the FXML resource.
+	 * @throws IOException if an I/O error occurs while loading the FXML
+	 *         resource.
 	 */
 	public static <T extends StageController> T setupPrimaryStage(Stage controllerStage, Class<T> controllerClass)
 			throws IOException {
@@ -213,12 +219,14 @@ public abstract class StageController {
 	}
 
 	/**
-	 * Create a new stage owned by this controller's stage and set it up with the JFX scene of the submitted controller
-	 * class.
+	 * Create a new stage owned by this controller's stage and set it up with
+	 * the JFX scene of the submitted controller class.
 	 *
-	 * @param controllerClass The controller class to derive the FXML resource from.
+	 * @param controllerClass The controller class to derive the FXML resource
+	 *        from.
 	 * @return The loaded {@link Scene}'s controller instance.
-	 * @throws IOException if an I/O error occurs while loading the FXML resource.
+	 * @throws IOException if an I/O error occurs while loading the FXML
+	 *         resource.
 	 */
 	public <T extends StageController> T openStage(Class<T> controllerClass) throws IOException {
 		Stage controllerStage = new Stage();
@@ -254,7 +262,7 @@ public abstract class StageController {
 			messageBoxController.getStage().showAndWait();
 			result = messageBoxController.getResult();
 		} catch (IOException e) {
-			LOG.error(e, I18N.bundle(), I18N.MESSAGE_MESSAGEBOX_EXCEPTION, message, e.getLocalizedMessage());
+			LOG.error(e, null, I18N.MESSAGE_MESSAGEBOX_EXCEPTION(message, e.getLocalizedMessage()));
 		}
 		return result;
 	}
@@ -265,7 +273,7 @@ public abstract class StageController {
 	 * @param unexpected The exception to report.
 	 */
 	public void reportUnexpectedException(Throwable unexpected) {
-		LOG.error(unexpected, I18N.bundle(), I18N.MESSAGE_UNEXPECTED_EXCEPTION, unexpected.getLocalizedMessage());
+		LOG.error(unexpected, null, I18N.MESSAGE_UNEXPECTED_EXCEPTION(unexpected.getLocalizedMessage()));
 	}
 
 	/**

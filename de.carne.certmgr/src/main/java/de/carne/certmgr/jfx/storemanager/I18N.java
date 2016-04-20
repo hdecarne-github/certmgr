@@ -33,6 +33,13 @@ final class I18N {
 	static final String TEXT_CRL_OBJECT = "storemanager.crlobject";
 	static final String TEXT_EXTENSION_OBJECT = "storemanager.extensionobject";
 
+	static final String TEXT_ABOUTTITLE1 = "storemanager.abouttitle1";
+	static final String TEXT_ABOUTINFO1 = "storemanager.aboutinfo1";
+	static final String TEXT_ABOUTTITLE2 = "storemanager.abouttitle2";
+	static final String TEXT_ABOUTINFO2 = "storemanager.aboutinfo2";
+	static final String TEXT_ABOUTTITLE3 = "storemanager.abouttitle3";
+	static final String TEXT_ABOUTINFO3 = "storemanager.aboutinfo3";
+
 	static final String MESSAGE_CONFIRMDELETEENTRY = "storemanager.confirmdeleteentry";
 
 	static final String MESSAGE_CERTENTRYERROR = "storemanager.certentryerror";

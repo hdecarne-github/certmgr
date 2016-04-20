@@ -10,7 +10,7 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane hgap="8.0" maxHeight="+Infinity" maxWidth="+Infinity" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.messagebox.MessageBoxController">
+<GridPane hgap="8.0" maxHeight="+Infinity" maxWidth="+Infinity" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.jfx.messagebox.MessageBoxController">
   <children>
     <ImageView fx:id="ctlIcon" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.rowSpan="2147483647" GridPane.valignment="TOP">
       <image>

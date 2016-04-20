@@ -28,12 +28,12 @@ import javafx.stage.Stage;
 import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.InputValidator;
 import de.carne.certmgr.jfx.InvalidInputException;
-import de.carne.certmgr.jfx.StageController;
 import de.carne.certmgr.jfx.help.Help;
 import de.carne.certmgr.jfx.help.HelpController;
-import de.carne.certmgr.jfx.messagebox.MessageBoxStyle;
 import de.carne.certmgr.jfx.passwordprompt.PasswordPromptCallback;
 import de.carne.certmgr.store.CertStoreEntry;
+import de.carne.jfx.StageController;
+import de.carne.jfx.messagebox.MessageBoxStyle;
 import de.carne.util.Strings;
 
 /**

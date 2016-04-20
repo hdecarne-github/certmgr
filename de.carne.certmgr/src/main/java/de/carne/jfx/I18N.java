@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.jfx.messagebox;
+package de.carne.jfx;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -24,19 +24,24 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String TEXT_TITLE = "messagebox.title";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static final String TEXT_BUTTON_OK = "button.ok";
-	static final String TEXT_BUTTON_CANCEL = "button.cancel";
-	static final String TEXT_BUTTON_YES = "button.yes";
-	static final String TEXT_BUTTON_NO = "button.no";
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
 
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	static String MESSAGE_UNEXPECTED_EXCEPTION(Object... arguments) {
+		return format("application.unexpectedexception", arguments);
+	}
+
+	static String MESSAGE_MESSAGEBOX_EXCEPTION(Object... arguments) {
+		return format("application.messageboxexception", arguments);
+	}
+
+	static String MESSAGE_PREFSYNCFAILED(Object... arguments) {
+		return format("stagecontroller.prefsyncfailed", arguments);
 	}
 
 }
