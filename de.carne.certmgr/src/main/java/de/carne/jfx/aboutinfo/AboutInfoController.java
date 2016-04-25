@@ -68,14 +68,15 @@ public class AboutInfoController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(I18N.TEXT_TITLE(Version.TITLE));
+		controllerStage.setTitle(I18N.TEXT_TITLE(Version.PROJECT_ID));
 
 		Window owner = controllerStage.getOwner();
 
 		if (owner instanceof Stage) {
 			controllerStage.getIcons().addAll(((Stage) owner).getIcons());
 		}
-		this.ctlInfoString.setText(I18N.TEXT_INFO(Version.TITLE, Version.PROJECT, Version.VERSION, Version.DATE));
+		this.ctlInfoString.setText(
+				I18N.TEXT_INFO(Version.PROJECT_NAME, Version.PROJECT_ID, Version.BUILD_VERSION, Version.BUILD_DATE));
 		this.ctlInfos.setExpandedPane(this.ctlMainInfoPane);
 	}
 

@@ -14,11 +14,23 @@ def formatBuildDate() {
 
 apply plugin: 'java'
 apply plugin: 'distribution'
+apply plugin: 'de.carne.gradleplugins.java'
 
 sourceCompatibility = 1.8
 
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'de.carne:GradlePlugins:0.1.0-SNAPSHOT'
+	}
+}
+
 repositories {
-	jcenter()
+	mavenLocal()
+	mavenCentral()
 }
 
 dependencies {
@@ -34,10 +46,10 @@ jar {
 	manifest {
 		attributes(
 			'Main-Class': 'de.carne.ApplicationLoader',
-			'X-Application-Title': title,
-			'X-Application-Project': rootProject.name,
-			'X-Application-Version' : version,
-			'X-Application-Date' : formatBuildDate()
+			'X-Version-ProjectId': projectId,
+			'X-Version-ProjectName' : rootProject.name,
+			'X-Version-ProjectVersion': version,
+			'X-Version-BuildDate' : formatBuildDate()
 		)
 	}
 	from configurations.runtime
