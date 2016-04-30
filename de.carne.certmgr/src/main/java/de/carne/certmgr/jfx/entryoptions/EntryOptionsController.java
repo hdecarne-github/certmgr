@@ -20,11 +20,6 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.InputValidator;
 import de.carne.certmgr.jfx.InvalidInputException;
@@ -35,6 +30,11 @@ import de.carne.certmgr.store.CertStoreEntry;
 import de.carne.jfx.StageController;
 import de.carne.jfx.messagebox.MessageBoxStyle;
 import de.carne.util.Strings;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 /**
  * Dialog controller for editing certificate store entry options.
@@ -47,7 +47,8 @@ public class EntryOptionsController extends StageController {
 	public interface Result {
 
 		/**
-		 * Called when the user finishes editing and the selected certificate store entry was updated.
+		 * Called when the user finishes editing and the selected certificate
+		 * store entry was updated.
 		 *
 		 * @param entryParam The updated certificate store entry.
 		 */
@@ -84,7 +85,7 @@ public class EntryOptionsController extends StageController {
 		} catch (InvalidInputException e) {
 			showMessageBox(e.getLocalizedMessage(), null, MessageBoxStyle.ICON_ERROR, MessageBoxStyle.BUTTON_OK);
 		} catch (IOException e) {
-			showMessageBox(I18N.format(I18N.MESSAGE_APPLYERROR), e, MessageBoxStyle.ICON_ERROR,
+			showMessageBox(I18N.formatSTR_APPLY_FAILED_MESSAGE(), e, MessageBoxStyle.ICON_ERROR,
 					MessageBoxStyle.BUTTON_OK);
 		}
 	}
@@ -97,7 +98,7 @@ public class EntryOptionsController extends StageController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_ENTRYOPTIONS);
+			HelpController.showHelp(this, Help.TOPIC_ENTRY_OPTIONS);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -110,14 +111,15 @@ public class EntryOptionsController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(I18N.format(I18N.TEXT_TITLE));
+		controllerStage.setTitle(I18N.formatSTR_ENTRY_OPTIONS_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_ENTRYOPTIONS16, Images.IMAGE_ENTRYOPTIONS32);
 	}
 
 	/**
 	 * Begin certificate store entry option editing.
 	 *
-	 * @param entryParam The certificate store entry whose options should be edited.
+	 * @param entryParam The certificate store entry whose options should be
+	 *        edited.
 	 * @param callback The callback to report the result of the user actions.
 	 */
 	public void beginStoreOptions(CertStoreEntry entryParam, Result callback) {
@@ -133,7 +135,7 @@ public class EntryOptionsController extends StageController {
 	}
 
 	private String validateAndGetAlias() throws InvalidInputException {
-		String aliasInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOALIAS,
+		String aliasInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_ALIAS_MESSAGE,
 				Strings.safeTrim(this.ctlAliasInput.getText()));
 
 		Path storeHome = this.entry.getStore().getHome();
@@ -142,10 +144,10 @@ public class EntryOptionsController extends StageController {
 		try {
 			checkPath = storeHome.resolve(aliasInput);
 		} catch (InvalidPathException e) {
-			throw new InvalidInputException(I18N.format(I18N.MESSAGE_INVALIDALIAS, aliasInput), e);
+			throw new InvalidInputException(I18N.formatSTR_INVALID_ALIAS_MESSAGE(aliasInput), e);
 		}
 		if (!storeHome.equals(checkPath.getParent())) {
-			throw new InvalidInputException(I18N.format(I18N.MESSAGE_INVALIDALIAS, aliasInput));
+			throw new InvalidInputException(I18N.formatSTR_INVALID_ALIAS_MESSAGE(aliasInput));
 		}
 		return aliasInput;
 	}

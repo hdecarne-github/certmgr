@@ -152,7 +152,9 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#getDefaultSecurityProvider()
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#getDefaultSecurityProvider(
+	 * )
 	 */
 	@Override
 	protected String getDefaultSecurityProvider() {
@@ -161,20 +163,22 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#generateAndSignCRT(java.security.KeyPair,
-	 * de.carne.certmgr.store.x509.X509CertificateParams, de.carne.certmgr.store.x509.CertificateValidity,
-	 * java.security.KeyPair, java.security.cert.X509Certificate, java.math.BigInteger)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#generateAndSignCRT(java.
+	 * security.KeyPair, de.carne.certmgr.store.x509.X509CertificateParams,
+	 * de.carne.certmgr.store.x509.CertificateValidity, java.security.KeyPair,
+	 * java.security.cert.X509Certificate, java.math.BigInteger)
 	 */
 	@Override
 	public X509Certificate generateAndSignCRT(KeyPair key, X509CertificateParams certificateParams,
 			CertificateValidity certificateValidity, KeyPair issuerKey, X509Certificate issuerCRT, BigInteger serial)
-					throws IOException, GeneralSecurityException {
-		X500Principal issuerSubjectDN = (issuerCRT != null ? issuerCRT.getSubjectX500Principal() : certificateParams
-				.getSubjectDN());
-		Date validFrom = Date.from(certificateValidity.getValidFrom().atStartOfDay().atZone(ZoneId.systemDefault())
-				.toInstant());
-		Date validTo = Date.from(certificateValidity.getValidTo().atStartOfDay().atZone(ZoneId.systemDefault())
-				.toInstant());
+			throws IOException, GeneralSecurityException {
+		X500Principal issuerSubjectDN = (issuerCRT != null ? issuerCRT.getSubjectX500Principal()
+				: certificateParams.getSubjectDN());
+		Date validFrom = Date
+				.from(certificateValidity.getValidFrom().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+		Date validTo = Date
+				.from(certificateValidity.getValidTo().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 		X500Principal subjectDN = certificateParams.getSubjectDN();
 		X509v3CertificateBuilder crtBuilder = new JcaX509v3CertificateBuilder(issuerSubjectDN, serial, validFrom,
 				validTo, subjectDN, key.getPublic());
@@ -183,13 +187,13 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 				(issuerKey != null ? issuerKey.getPublic() : key.getPublic()));
 		addCustomExtensions(crtBuilder, certificateParams);
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_GENERATECRT, subjectDN);
+		LOG.notice(I18N.BUNDLE, I18N.STR_GENERATE_CRT, subjectDN);
 
 		ContentSigner crtSigner;
 
 		try {
-			crtSigner = new JcaContentSignerBuilder(certificateParams.getSigAlg()).build((issuerKey != null ? issuerKey
-					.getPrivate() : key.getPrivate()));
+			crtSigner = new JcaContentSignerBuilder(certificateParams.getSigAlg())
+					.build((issuerKey != null ? issuerKey.getPrivate() : key.getPrivate()));
 		} catch (OperatorCreationException e) {
 			throw new StoreProviderException(e.getMessage(), e);
 		}
@@ -198,19 +202,21 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#generateAndSignCRT(java.security.cert.X509Certificate,
-	 * de.carne.certmgr.store.x509.X509CertificateParams, de.carne.certmgr.store.x509.CertificateValidity,
-	 * java.security.KeyPair)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#generateAndSignCRT(java.
+	 * security.cert.X509Certificate,
+	 * de.carne.certmgr.store.x509.X509CertificateParams,
+	 * de.carne.certmgr.store.x509.CertificateValidity, java.security.KeyPair)
 	 */
 	@Override
 	public X509Certificate generateAndSignCRT(X509Certificate crt, X509CertificateParams certificateParams,
 			CertificateValidity certificateValidity, KeyPair issuerKey) throws IOException, GeneralSecurityException {
 		X500Principal issuerSubjectDN = crt.getIssuerX500Principal();
 		BigInteger serial = crt.getSerialNumber();
-		Date validFrom = Date.from(certificateValidity.getValidFrom().atStartOfDay().atZone(ZoneId.systemDefault())
-				.toInstant());
-		Date validTo = Date.from(certificateValidity.getValidTo().atStartOfDay().atZone(ZoneId.systemDefault())
-				.toInstant());
+		Date validFrom = Date
+				.from(certificateValidity.getValidFrom().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+		Date validTo = Date
+				.from(certificateValidity.getValidTo().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 		X500Principal subjectDN = crt.getSubjectX500Principal();
 		X509v3CertificateBuilder crtBuilder = new JcaX509v3CertificateBuilder(issuerSubjectDN, serial, validFrom,
 				validTo, subjectDN, crt.getPublicKey());
@@ -218,7 +224,7 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 		addKeyIdentifierExtensions(crtBuilder, crt.getPublicKey(), issuerKey.getPublic());
 		addCustomExtensions(crtBuilder, certificateParams);
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_GENERATECRT, subjectDN);
+		LOG.notice(I18N.BUNDLE, I18N.STR_GENERATE_CRT, subjectDN);
 
 		ContentSigner crtSigner;
 
@@ -232,19 +238,20 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#generateAndSignCSR(java.security.KeyPair,
-	 * de.carne.certmgr.store.x509.X509CertificateParams)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#generateAndSignCSR(java.
+	 * security.KeyPair, de.carne.certmgr.store.x509.X509CertificateParams)
 	 */
 	@Override
-	public PKCS10Object generateAndSignCSR(KeyPair key, X509CertificateParams certificateParams) throws IOException,
-	GeneralSecurityException {
+	public PKCS10Object generateAndSignCSR(KeyPair key, X509CertificateParams certificateParams)
+			throws IOException, GeneralSecurityException {
 		X500Principal subjectDN = certificateParams.getSubjectDN();
 		PKCS10CertificationRequestBuilder csrBuilder = new JcaPKCS10CertificationRequestBuilder(subjectDN,
 				key.getPublic());
 
 		addCustomExtensions(csrBuilder, certificateParams);
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_GENERATECSR, subjectDN);
+		LOG.notice(I18N.BUNDLE, I18N.STR_GENERATE_CSR, subjectDN);
 
 		ContentSigner csrSigner;
 
@@ -258,8 +265,10 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#generateAndSignCSR(de.carne.certmgr.store.PKCS10Object,
-	 * java.security.KeyPair, de.carne.certmgr.store.x509.X509CertificateParams)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#generateAndSignCSR(de.carne
+	 * .certmgr.store.PKCS10Object, java.security.KeyPair,
+	 * de.carne.certmgr.store.x509.X509CertificateParams)
 	 */
 	@Override
 	public PKCS10Object generateAndSignCSR(PKCS10Object csr, KeyPair key, X509CertificateParams certificateParams)
@@ -270,7 +279,7 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 		addCustomExtensions(csrBuilder, certificateParams);
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_GENERATECSR, subjectDN);
+		LOG.notice(I18N.BUNDLE, I18N.STR_GENERATE_CSR, subjectDN);
 
 		ContentSigner csrSigner;
 
@@ -284,9 +293,10 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#generateAndSignCRL(java.security.cert.X509CRL,
-	 * de.carne.certmgr.store.x509.X509CRLParams, java.util.Map, java.security.KeyPair,
-	 * java.security.cert.X509Certificate)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#generateAndSignCRL(java.
+	 * security.cert.X509CRL, de.carne.certmgr.store.x509.X509CRLParams,
+	 * java.util.Map, java.security.KeyPair, java.security.cert.X509Certificate)
 	 */
 	@Override
 	public X509CRL generateAndSignCRL(X509CRL currentCRL, X509CRLParams crlParams,
@@ -298,8 +308,8 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 		LocalDate nextUpdateParam = crlParams.getNextUpdate();
 
 		if (nextUpdateParam != null) {
-			crlBuilder.setNextUpdate(Date.from(nextUpdateParam.atStartOfDay().atZone(ZoneId.systemDefault())
-					.toInstant()));
+			crlBuilder.setNextUpdate(
+					Date.from(nextUpdateParam.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
 		}
 
 		CRLNumber crlNumber;
@@ -334,8 +344,10 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#writeKey(java.security.KeyPair, java.nio.file.Path,
-	 * de.carne.certmgr.store.PasswordCallback, java.lang.String)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#writeKey(java.security.
+	 * KeyPair, java.nio.file.Path, de.carne.certmgr.store.PasswordCallback,
+	 * java.lang.String)
 	 */
 	@Override
 	public void writeKey(KeyPair key, Path keyFile, PasswordCallback password, String resource)
@@ -345,19 +357,21 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#readKey(java.nio.file.Path,
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#readKey(java.nio.file.Path,
 	 * de.carne.certmgr.store.PasswordCallback, java.lang.String)
 	 */
 	@Override
-	public KeyPair readKey(Path keyFile, PasswordCallback password, String resource) throws PasswordRequiredException,
-			IOException {
+	public KeyPair readKey(Path keyFile, PasswordCallback password, String resource)
+			throws PasswordRequiredException, IOException {
 		return keyFromPEMObject(readPEMObject(keyFile), password, resource);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#writeCRT(java.security.cert.X509Certificate,
-	 * java.nio.file.Path)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#writeCRT(java.security.cert
+	 * .X509Certificate, java.nio.file.Path)
 	 */
 	@Override
 	public void writeCRT(X509Certificate crt, Path crtFile) throws IOException {
@@ -366,7 +380,8 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#readCRT(java.nio.file.Path)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#readCRT(java.nio.file.Path)
 	 */
 	@Override
 	public X509Certificate readCRT(Path crtFile) throws IOException {
@@ -375,8 +390,9 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#writeCSR(de.carne.certmgr.store.PKCS10Object,
-	 * java.nio.file.Path)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#writeCSR(de.carne.certmgr.
+	 * store.PKCS10Object, java.nio.file.Path)
 	 */
 	@Override
 	public void writeCSR(PKCS10Object csr, Path csrFile) throws IOException {
@@ -385,7 +401,8 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#readCSR(java.nio.file.Path)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#readCSR(java.nio.file.Path)
 	 */
 	@Override
 	public PKCS10Object readCSR(Path csrFile) throws IOException {
@@ -394,7 +411,9 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#writeCRL(java.security.cert.X509CRL, java.nio.file.Path)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#writeCRL(java.security.cert
+	 * .X509CRL, java.nio.file.Path)
 	 */
 	@Override
 	public void writeCRL(X509CRL crl, Path crlFile) throws IOException {
@@ -403,7 +422,8 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#readCRL(java.nio.file.Path)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#readCRL(java.nio.file.Path)
 	 */
 	@Override
 	public X509CRL readCRL(Path crlFile) throws IOException {
@@ -412,7 +432,9 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#decodeExtension(java.lang.String, boolean, byte[])
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#decodeExtension(java.lang.
+	 * String, boolean, byte[])
 	 */
 	@Override
 	public EncodedX509Extension decodeExtension(String oid, boolean critical, byte[] encoded) throws IOException {
@@ -423,8 +445,9 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#tryDecodePEM(java.lang.String,
-	 * de.carne.certmgr.store.PasswordCallback, java.lang.String)
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#tryDecodePEM(java.lang.
+	 * String, de.carne.certmgr.store.PasswordCallback, java.lang.String)
 	 */
 	@Override
 	public Collection<Object> tryDecodePEM(String pemData, PasswordCallback password, String resource)
@@ -467,7 +490,8 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#tryDecodePKCS12(byte[],
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#tryDecodePKCS12(byte[],
 	 * de.carne.certmgr.store.PasswordCallback, java.lang.String)
 	 */
 	@Override
@@ -488,8 +512,10 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#encodePEM(java.security.cert.X509Certificate[],
-	 * java.security.KeyPair, de.carne.certmgr.store.PKCS10Object, java.security.cert.X509CRL,
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#encodePEM(java.security.
+	 * cert.X509Certificate[], java.security.KeyPair,
+	 * de.carne.certmgr.store.PKCS10Object, java.security.cert.X509CRL,
 	 * de.carne.certmgr.store.PasswordCallback, java.lang.String)
 	 */
 	@Override
@@ -532,8 +558,10 @@ public class BouncyCastleStoreProvider extends StoreProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.provider.StoreProvider#encodePKCS12(java.security.cert.X509Certificate[],
-	 * java.security.KeyPair, de.carne.certmgr.store.PKCS10Object, java.security.cert.X509CRL,
+	 * @see
+	 * de.carne.certmgr.store.provider.StoreProvider#encodePKCS12(java.security.
+	 * cert.X509Certificate[], java.security.KeyPair,
+	 * de.carne.certmgr.store.PKCS10Object, java.security.cert.X509CRL,
 	 * de.carne.certmgr.store.PasswordCallback, java.lang.String)
 	 */
 	@Override

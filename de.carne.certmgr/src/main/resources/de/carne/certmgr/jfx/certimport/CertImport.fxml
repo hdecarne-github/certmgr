@@ -14,7 +14,7 @@
 
 <GridPane hgap="8.0" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
   <children>
-      <RadioButton fx:id="ctlFileSourceOption" mnemonicParsing="false" text="%label.file">
+      <RadioButton fx:id="ctlFileSourceOption" mnemonicParsing="false" text="%_STR_IMPORT_FILE_LABEL">
          <toggleGroup>
             <ToggleGroup fx:id="source" />
          </toggleGroup>
@@ -33,7 +33,7 @@
             </Button>
          </children>
       </HBox>
-      <RadioButton fx:id="ctlFolderSourceOption" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" text="%label.folder" toggleGroup="$source" GridPane.rowIndex="1" />
+      <RadioButton fx:id="ctlFolderSourceOption" layoutX="14.0" layoutY="18.0" mnemonicParsing="false" text="%_STR_IMPORT_FOLDER_LABEL" toggleGroup="$source" GridPane.rowIndex="1" />
       <HBox layoutX="115.0" layoutY="14.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <children>
             <TextField fx:id="ctlFolderSourceInput" GridPane.columnIndex="1" GridPane.rowIndex="1" HBox.hgrow="ALWAYS" />
@@ -48,18 +48,18 @@
             </Button>
          </children>
       </HBox>
-      <RadioButton fx:id="ctlURLSourceOption" layoutX="14.0" layoutY="47.0" mnemonicParsing="false" text="%label.url" toggleGroup="$source" GridPane.rowIndex="2" />
+      <RadioButton fx:id="ctlURLSourceOption" layoutX="14.0" layoutY="47.0" mnemonicParsing="false" text="%_STR_IMPORT_URL_LABEL" toggleGroup="$source" GridPane.rowIndex="2" />
       <TextField fx:id="ctlURLSourceInput" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="14.0" layoutY="76.0" mnemonicParsing="false" text="%label.clipboard" toggleGroup="$source" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="14.0" layoutY="76.0" mnemonicParsing="false" text="%_STR_IMPORT_URL_LABEL" toggleGroup="$source" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
       <HBox alignment="CENTER_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
          <children>
             <HBox fx:id="ctlProgressGroup" alignment="CENTER_LEFT" spacing="4.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label text="%label.loading" HBox.hgrow="NEVER" />
+                  <Label text="%_STR_LOADING_LABEL" HBox.hgrow="NEVER" />
                   <ProgressBar maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                </children>
             </HBox>
-            <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onReload" text="%button.reload" />
+            <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onReload" text="%_STR_RELOAD_BUTTON" />
          </children>
       </HBox>
       <HBox spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
@@ -69,36 +69,36 @@
                   <Image url="@../iconInfo16.png" />
                </image>
             </ImageView>
-            <Label fx:id="ctlImportStatusMessage" text="%certimport.setupsource" HBox.hgrow="ALWAYS" />
+            <Label fx:id="ctlImportStatusMessage" text="%STR_NO_IMPORT_SOURCE_MESSAGE" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
       <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="6" />
-      <Label layoutX="14.0" layoutY="220.0" text="%label.importselection" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" />
+      <Label layoutX="14.0" layoutY="220.0" text="%_STR_SELECTION_LABEL" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" />
       <TreeTableView fx:id="ctlImportSelection" editable="true" prefHeight="200.0" prefWidth="500.0" showRoot="false" GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
         <columns>
           <TreeTableColumn fx:id="ctlImportSelectionSelected" prefWidth="-1.0" sortable="false">
                <graphic>
                   <CheckBox fx:id="ctlImportSelectionSelectedAll" mnemonicParsing="false" />
                </graphic></TreeTableColumn>
-            <TreeTableColumn fx:id="ctlImportSelectionName" minWidth="200.0" prefWidth="-1.0" sortable="false" text="%label.importselectionname" />
-          <TreeTableColumn fx:id="ctlImportSelectionHasKey" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhaskey" />
-            <TreeTableColumn fx:id="ctlImportSelectionHasCRT" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhascrt" />
-            <TreeTableColumn fx:id="ctlImportSelectionHasCSR" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhascsr" />
-            <TreeTableColumn fx:id="ctlImportSelectionHasCRL" editable="false" prefWidth="-1.0" sortable="false" text="%label.importselectionhascrl" />
+            <TreeTableColumn fx:id="ctlImportSelectionName" minWidth="200.0" prefWidth="-1.0" sortable="false" text="%_STR_NAME_LABEL" />
+          <TreeTableColumn fx:id="ctlImportSelectionHasKey" editable="false" prefWidth="-1.0" sortable="false" text="%_STR_HAS_KEY_LABEL" />
+            <TreeTableColumn fx:id="ctlImportSelectionHasCRT" editable="false" prefWidth="-1.0" sortable="false" text="%_STR_HAS_CRT_LABEL" />
+            <TreeTableColumn fx:id="ctlImportSelectionHasCSR" editable="false" prefWidth="-1.0" sortable="false" text="%_STR_HAS_CSR_LABEL" />
+            <TreeTableColumn fx:id="ctlImportSelectionHasCRL" editable="false" prefWidth="-1.0" sortable="false" text="%_STR_HAS_CRL_LABEL" />
         </columns>
          <columnResizePolicy>
             <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TreeTableView>
-      <CheckBox fx:id="ctlImportOverwriteOption" mnemonicParsing="false" text="%label.importoverwrite" GridPane.columnSpan="2147483647" GridPane.rowIndex="9" />
+      <CheckBox fx:id="ctlImportOverwriteOption" mnemonicParsing="false" text="%_STR_OVERWRITE_EXISTING_LABEL" GridPane.columnSpan="2147483647" GridPane.rowIndex="9" />
     <HBox alignment="CENTER_RIGHT" spacing="8.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="10">
       <children>
-      <Button minWidth="80.0" mnemonicParsing="false" onAction="#onImport" text="%button.import" HBox.hgrow="NEVER">
+      <Button minWidth="80.0" mnemonicParsing="false" onAction="#onImport" text="%_STR_IMPORT_BUTTON" HBox.hgrow="NEVER">
         <HBox.margin>
           <Insets left="14.0" />
         </HBox.margin>
       </Button>
-        <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%button.cancel" HBox.hgrow="NEVER">
+        <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%_STR_CANCEL_BUTTON" HBox.hgrow="NEVER">
           <HBox.margin>
             <Insets />
           </HBox.margin>

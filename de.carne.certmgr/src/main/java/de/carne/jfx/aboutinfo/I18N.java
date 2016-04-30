@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.jfx.aboutinfo;
 
@@ -32,12 +21,40 @@ final class I18N {
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String TEXT_TITLE(Object... arguments) {
-		return format("aboutinfo.title", arguments);
+	/**
+	 * Resource key {@code STR_ABOUTINFO_VERSION}
+	 * <p>
+	 * {0} - {1} - v{2} ({3})
+	 * </p>
+	 */
+	static final String STR_ABOUTINFO_VERSION = "STR_ABOUTINFO_VERSION";
+
+	/**
+	 * Resource string {@code STR_ABOUTINFO_VERSION}
+	 * <p>
+	 * {0} - {1} - v{2} ({3})
+	 * </p>
+	 */
+	static String formatSTR_ABOUTINFO_VERSION(Object... arguments) {
+		return format(STR_ABOUTINFO_VERSION, arguments);
 	}
 
-	static String TEXT_INFO(Object... arguments) {
-		return format("aboutinfo.version", arguments);
+	/**
+	 * Resource key {@code STR_ABOUTINFO_TITLE}
+	 * <p>
+	 * About {0}
+	 * </p>
+	 */
+	static final String STR_ABOUTINFO_TITLE = "STR_ABOUTINFO_TITLE";
+
+	/**
+	 * Resource string {@code STR_ABOUTINFO_TITLE}
+	 * <p>
+	 * About {0}
+	 * </p>
+	 */
+	static String formatSTR_ABOUTINFO_TITLE(Object... arguments) {
+		return format(STR_ABOUTINFO_TITLE, arguments);
 	}
 
 }

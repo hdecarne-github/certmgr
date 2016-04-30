@@ -89,7 +89,7 @@ public abstract class StageController {
 			try {
 				preferences.sync();
 			} catch (BackingStoreException e) {
-				LOG.warning(e, null, I18N.MESSAGE_PREFSYNCFAILED());
+				LOG.warning(e, I18N.BUNDLE, I18N.STR_PREF_SYNC_FAILED_MESSAGE);
 			}
 		}
 	}
@@ -262,7 +262,7 @@ public abstract class StageController {
 			messageBoxController.getStage().showAndWait();
 			result = messageBoxController.getResult();
 		} catch (IOException e) {
-			LOG.error(e, null, I18N.MESSAGE_MESSAGEBOX_EXCEPTION(message, e.getLocalizedMessage()));
+			LOG.error(e, I18N.BUNDLE, I18N.STR_MESSAGEBOX_EXCEPTION_MESSAGE, message, e.getLocalizedMessage());
 		}
 		return result;
 	}
@@ -273,7 +273,7 @@ public abstract class StageController {
 	 * @param unexpected The exception to report.
 	 */
 	public void reportUnexpectedException(Throwable unexpected) {
-		LOG.error(unexpected, null, I18N.MESSAGE_UNEXPECTED_EXCEPTION(unexpected.getLocalizedMessage()));
+		LOG.error(unexpected, I18N.BUNDLE, I18N.STR_UNEXPECTED_EXCEPTION_MESSAGE, unexpected.getLocalizedMessage());
 	}
 
 	/**

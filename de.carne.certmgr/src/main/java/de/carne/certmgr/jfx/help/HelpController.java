@@ -19,17 +19,6 @@ package de.carne.certmgr.jfx.help;
 import java.io.IOException;
 import java.util.MissingResourceException;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker;
-import javafx.concurrent.Worker.State;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.web.WebView;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.events.Event;
@@ -41,6 +30,16 @@ import de.carne.certmgr.jfx.CertMgrApplication;
 import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.help.html.Htmls;
 import de.carne.jfx.StageController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Worker;
+import javafx.concurrent.Worker.State;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * Dialog controller for help display.
@@ -91,7 +90,7 @@ public class HelpController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_TITLE));
+		controllerStage.setTitle(I18N.formatSTR_HELP_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_HELP16, Images.IMAGE_HELP32);
 		controllerStage.sizeToScene();
 		controllerStage.setOnHidden(new EventHandler<WindowEvent>() {
@@ -139,8 +138,8 @@ public class HelpController extends StageController {
 	/**
 	 * Show help window with a specific topic.
 	 * <p>
-	 * Only one help window will be opened at a time. If a previous call to this function already opened a help window,
-	 * it will be reused.
+	 * Only one help window will be opened at a time. If a previous call to this
+	 * function already opened a help window, it will be reused.
 	 * </p>
 	 *
 	 * @param parentController The controller requesting the help.
@@ -148,7 +147,7 @@ public class HelpController extends StageController {
 	 * @return The help controller.
 	 * @throws IOException if an I/O error occurs.
 	 */
-	public static HelpController showHelp(StageController parentController, String topic) throws IOException {
+	public static HelpController showHelp(StageController parentController, Help topic) throws IOException {
 		if (helpController == null) {
 			helpController = parentController.openStage(HelpController.class);
 			helpController.getStage().show();
@@ -160,7 +159,7 @@ public class HelpController extends StageController {
 		String htmlName;
 
 		try {
-			htmlName = I18N.bundle().getString(topic);
+			htmlName = I18N.BUNDLE.getString(topic.key());
 		} catch (MissingResourceException e) {
 			throw new IOException("Unknown help topic '" + topic + "'");
 		}

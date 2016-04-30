@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.jfx.messagebox;
 
@@ -32,24 +21,94 @@ final class I18N {
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String TEXT_TITLE(Object... arguments) {
-		return format("messagebox.title", arguments);
+	/**
+	 * Resource key {@code STR_OK_BUTTON}
+	 * <p>
+	 * Ok
+	 * </p>
+	 */
+	static final String STR_OK_BUTTON = "STR_OK_BUTTON";
+
+	/**
+	 * Resource string {@code STR_OK_BUTTON}
+	 * <p>
+	 * Ok
+	 * </p>
+	 */
+	static String formatSTR_OK_BUTTON(Object... arguments) {
+		return format(STR_OK_BUTTON, arguments);
 	}
 
-	static String TEXT_BUTTON_OK(Object... arguments) {
-		return format("button.ok", arguments);
+	/**
+	 * Resource key {@code STR_NO_BUTTON}
+	 * <p>
+	 * No
+	 * </p>
+	 */
+	static final String STR_NO_BUTTON = "STR_NO_BUTTON";
+
+	/**
+	 * Resource string {@code STR_NO_BUTTON}
+	 * <p>
+	 * No
+	 * </p>
+	 */
+	static String formatSTR_NO_BUTTON(Object... arguments) {
+		return format(STR_NO_BUTTON, arguments);
 	}
 
-	static String TEXT_BUTTON_CANCEL(Object... arguments) {
-		return format("button.cancel", arguments);
+	/**
+	 * Resource key {@code STR_YES_BUTTON}
+	 * <p>
+	 * Yes
+	 * </p>
+	 */
+	static final String STR_YES_BUTTON = "STR_YES_BUTTON";
+
+	/**
+	 * Resource string {@code STR_YES_BUTTON}
+	 * <p>
+	 * Yes
+	 * </p>
+	 */
+	static String formatSTR_YES_BUTTON(Object... arguments) {
+		return format(STR_YES_BUTTON, arguments);
 	}
 
-	static String TEXT_BUTTON_YES(Object... arguments) {
-		return format("button.yes", arguments);
+	/**
+	 * Resource key {@code STR_CANCEL_BUTTON}
+	 * <p>
+	 * Cancel
+	 * </p>
+	 */
+	static final String STR_CANCEL_BUTTON = "STR_CANCEL_BUTTON";
+
+	/**
+	 * Resource string {@code STR_CANCEL_BUTTON}
+	 * <p>
+	 * Cancel
+	 * </p>
+	 */
+	static String formatSTR_CANCEL_BUTTON(Object... arguments) {
+		return format(STR_CANCEL_BUTTON, arguments);
 	}
 
-	static String TEXT_BUTTON_NO(Object... arguments) {
-		return format("button.no", arguments);
+	/**
+	 * Resource key {@code STR_MESSAGEBOX_TITLE}
+	 * <p>
+	 * Message
+	 * </p>
+	 */
+	static final String STR_MESSAGEBOX_TITLE = "STR_MESSAGEBOX_TITLE";
+
+	/**
+	 * Resource string {@code STR_MESSAGEBOX_TITLE}
+	 * <p>
+	 * Message
+	 * </p>
+	 */
+	static String formatSTR_MESSAGEBOX_TITLE(Object... arguments) {
+		return format(STR_MESSAGEBOX_TITLE, arguments);
 	}
 
 }

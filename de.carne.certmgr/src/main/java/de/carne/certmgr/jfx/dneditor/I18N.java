@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.certmgr.jfx.dneditor;
 
@@ -24,14 +13,30 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String TEXT_TITLE = "dneditor.title";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
+
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	/**
+	 * Resource key {@code STR_DN_EDITOR_TITLE}
+	 * <p>
+	 * Edit DN
+	 * </p>
+	 */
+	static final String STR_DN_EDITOR_TITLE = "STR_DN_EDITOR_TITLE";
+
+	/**
+	 * Resource string {@code STR_DN_EDITOR_TITLE}
+	 * <p>
+	 * Edit DN
+	 * </p>
+	 */
+	static String formatSTR_DN_EDITOR_TITLE(Object... arguments) {
+		return format(STR_DN_EDITOR_TITLE, arguments);
 	}
 
 }

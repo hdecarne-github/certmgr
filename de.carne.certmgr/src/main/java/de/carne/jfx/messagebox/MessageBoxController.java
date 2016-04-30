@@ -163,7 +163,7 @@ public class MessageBoxController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(I18N.TEXT_TITLE());
+		controllerStage.setTitle(I18N.formatSTR_MESSAGEBOX_TITLE());
 		this.ctlDetailsLabel.managedProperty().bind(this.ctlDetailsLabel.visibleProperty());
 		this.ctlDetails.managedProperty().bind(this.ctlDetails.visibleProperty());
 	}
@@ -206,37 +206,37 @@ public class MessageBoxController extends StageController {
 				this.ctlIcon.setImage(getImage(MessageBoxStyle.ICON_QUESTION));
 				break;
 			case BUTTON_OK:
-				this.ctlButtonCmd1.setText(I18N.TEXT_BUTTON_OK());
+				this.ctlButtonCmd1.setText(I18N.formatSTR_OK_BUTTON());
 				this.ctlButtonCmd1.setDefaultButton(true);
 				this.resultButton1 = MessageBoxResult.OK;
 				this.ctlButtonCmd2.setVisible(false);
 				this.ctlButtonCmd3.setVisible(false);
 				break;
 			case BUTTON_OK_CANCEL:
-				this.ctlButtonCmd1.setText(I18N.TEXT_BUTTON_CANCEL());
+				this.ctlButtonCmd1.setText(I18N.formatSTR_CANCEL_BUTTON());
 				this.ctlButtonCmd1.setCancelButton(true);
 				this.resultButton1 = MessageBoxResult.CANCEL;
-				this.ctlButtonCmd2.setText(I18N.TEXT_BUTTON_OK());
+				this.ctlButtonCmd2.setText(I18N.formatSTR_OK_BUTTON());
 				this.ctlButtonCmd2.setDefaultButton(true);
 				this.resultButton2 = MessageBoxResult.OK;
 				this.ctlButtonCmd3.setVisible(false);
 				break;
 			case BUTTON_YES_NO:
-				this.ctlButtonCmd1.setText(I18N.TEXT_BUTTON_NO());
+				this.ctlButtonCmd1.setText(I18N.formatSTR_OK_BUTTON());
 				this.ctlButtonCmd1.setCancelButton(true);
 				this.resultButton1 = MessageBoxResult.NO;
-				this.ctlButtonCmd2.setText(I18N.TEXT_BUTTON_YES());
+				this.ctlButtonCmd2.setText(I18N.formatSTR_YES_BUTTON());
 				this.ctlButtonCmd2.setDefaultButton(true);
 				this.resultButton2 = MessageBoxResult.YES;
 				this.ctlButtonCmd3.setVisible(false);
 				break;
 			case BUTTON_YES_NO_CANCEL:
-				this.ctlButtonCmd1.setText(I18N.TEXT_BUTTON_CANCEL());
+				this.ctlButtonCmd1.setText(I18N.formatSTR_CANCEL_BUTTON());
 				this.ctlButtonCmd1.setCancelButton(true);
 				this.resultButton1 = MessageBoxResult.CANCEL;
-				this.ctlButtonCmd2.setText(I18N.TEXT_BUTTON_NO());
+				this.ctlButtonCmd2.setText(I18N.formatSTR_NO_BUTTON());
 				this.resultButton2 = MessageBoxResult.NO;
-				this.ctlButtonCmd3.setText(I18N.TEXT_BUTTON_YES());
+				this.ctlButtonCmd3.setText(I18N.formatSTR_YES_BUTTON());
 				this.resultButton3 = MessageBoxResult.YES;
 				break;
 			default:

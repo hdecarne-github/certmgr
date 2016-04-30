@@ -22,10 +22,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.carne.certmgr.store.ExportTarget;
 import javafx.application.Platform;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import de.carne.certmgr.store.ExportTarget;
 
 /**
  * Clipboard based export target implementation.
@@ -38,12 +38,13 @@ public class ClipboardExportTarget implements ExportTarget.StringData, ExportTar
 	 */
 	@Override
 	public String getName() {
-		return I18N.format(I18N.TEXT_CLIPBOARDEXPORTTARGET);
+		return I18N.formatSTR_EXPORT_TARGET_CLIPBOARD();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.ExportTarget.FileList#putFileList(java.util.List)
+	 * @see
+	 * de.carne.certmgr.store.ExportTarget.FileList#putFileList(java.util.List)
 	 */
 	@Override
 	public void putFileList(List<Path> fileList) throws IOException {
@@ -93,7 +94,9 @@ public class ClipboardExportTarget implements ExportTarget.StringData, ExportTar
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.ExportTarget.StringData#putStringData(java.lang.String)
+	 * @see
+	 * de.carne.certmgr.store.ExportTarget.StringData#putStringData(java.lang.
+	 * String)
 	 */
 	@Override
 	public void putStringData(String stringData) throws IOException {
@@ -102,7 +105,8 @@ public class ClipboardExportTarget implements ExportTarget.StringData, ExportTar
 		if (Platform.isFxApplicationThread()) {
 			ClipboardContent content = new ClipboardContent();
 
-			// Replace Windows linebreak with Unix linebreak to avoid double line breaks upon pasting
+			// Replace Windows linebreak with Unix linebreak to avoid double
+			// line breaks upon pasting
 			// looks like JavaFX bug
 			String contentStringData = stringData.replace("\r\n", "\n");
 
@@ -146,7 +150,7 @@ public class ClipboardExportTarget implements ExportTarget.StringData, ExportTar
 		FxRunner() {
 			// Nothing to do here
 		}
-		
+
 		public synchronized T waitComplete() throws InterruptedException {
 			while (!this.queryCompleteFlag) {
 				wait();

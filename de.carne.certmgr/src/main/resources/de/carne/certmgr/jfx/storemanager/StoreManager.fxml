@@ -14,9 +14,9 @@
   <children>
     <MenuBar VBox.vgrow="NEVER">
       <menus>
-        <Menu mnemonicParsing="false" text="%menu.file">
+        <Menu mnemonicParsing="false" text="%_STR_FILE_MENU">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#onNewStoreAction" text="%menuitem.newstore">
+            <MenuItem mnemonicParsing="false" onAction="#onNewStoreAction" text="%_STR_NEW_STORE_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -24,7 +24,7 @@
                            </image>
                         </ImageView>
                      </graphic></MenuItem>
-            <MenuItem mnemonicParsing="false" onAction="#onOpenStoreAction" text="%menuitem.openstore">
+            <MenuItem mnemonicParsing="false" onAction="#onOpenStoreAction" text="%_STR_OPEN_STORE_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -33,7 +33,7 @@
                         </ImageView>
                      </graphic></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="ctlStoreOptionsMenuItem" mnemonicParsing="false" onAction="#onStoreOptionsAction" text="%menuitem.storeoptions">
+                  <MenuItem fx:id="ctlStoreOptionsMenuItem" mnemonicParsing="false" onAction="#onStoreOptionsAction" text="%_STR_STORE_OPTIONS_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -41,7 +41,7 @@
                            </image>
                         </ImageView>
                      </graphic></MenuItem>
-                  <MenuItem fx:id="ctlEntryOptionsMenuItem" mnemonicParsing="false" onAction="#onEntryOptionsAction" text="%menuitem.entryoptions">
+                  <MenuItem fx:id="ctlEntryOptionsMenuItem" mnemonicParsing="false" onAction="#onEntryOptionsAction" text="%_STR_ENTRY_OPTIONS_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -50,12 +50,12 @@
                         </ImageView>
                      </graphic></MenuItem>
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" onAction="#onQuitAction" text="%menuitem.quit" />
+            <MenuItem mnemonicParsing="false" onAction="#onQuitAction" text="%_STR_QUIT_MENU_ITEM" />
           </items>
         </Menu>
-            <Menu mnemonicParsing="false" text="%menu.edit">
+            <Menu mnemonicParsing="false" text="%_STR_EDIT_MENU">
                <items>
-                  <MenuItem fx:id="ctlCopyEntryMenuItem" mnemonicParsing="false" onAction="#onCopyEntryAction" text="%menuitem.copyentry">
+                  <MenuItem fx:id="ctlCopyEntryMenuItem" mnemonicParsing="false" onAction="#onCopyEntryAction" text="%_STR_COPY_ENTRY_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -64,7 +64,7 @@
                         </ImageView>
                      </graphic></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="ctlDeleteEntryMenuItem" mnemonicParsing="false" onAction="#onDeleteEntryAction" text="%menuitem.deleteentry">
+                  <MenuItem fx:id="ctlDeleteEntryMenuItem" mnemonicParsing="false" onAction="#onDeleteEntryAction" text="%_STR_DELETE_ENTRY_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -74,9 +74,9 @@
                      </graphic></MenuItem>
                </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="%menu.cert">
+            <Menu mnemonicParsing="false" text="%_STR_CERT_MENU">
                <items>
-                  <MenuItem fx:id="ctlNewCRTMenuItem" mnemonicParsing="false" onAction="#onNewCRTAction" text="%menuitem.newcrt">
+                  <MenuItem fx:id="ctlNewCRTMenuItem" mnemonicParsing="false" onAction="#onNewCRTAction" text="%_STR_NEW_CERT_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -84,7 +84,7 @@
                            </image>
                         </ImageView>
                      </graphic></MenuItem>
-                  <MenuItem fx:id="ctlReSignCRTMenuItem" mnemonicParsing="false" onAction="#onReSignCRTAction" text="%menuitem.resigncrt">
+                  <MenuItem fx:id="ctlReSignCRTMenuItem" mnemonicParsing="false" onAction="#onReSignCRTAction" text="%_STR_RESIGN_CERT_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -93,7 +93,7 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <MenuItem fx:id="ctlRevokeCRTMenuItem" mnemonicParsing="false" onAction="#onRevokeCRTAction" text="%menuitem.revokecrt">
+                  <MenuItem fx:id="ctlRevokeCRTMenuItem" mnemonicParsing="false" onAction="#onRevokeCRTAction" text="%_STR_REVOKE_CERT_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -101,7 +101,7 @@
                            </image>
                         </ImageView>
                      </graphic></MenuItem>
-                  <MenuItem fx:id="ctlManageCRLMenuItem" mnemonicParsing="false" onAction="#onManageCRLAction" text="%menuitem.managecrl">
+                  <MenuItem fx:id="ctlManageCRLMenuItem" mnemonicParsing="false" onAction="#onManageCRLAction" text="%_STR_EDIT_CRL_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -110,7 +110,7 @@
                         </ImageView>
                      </graphic></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="ctlNewCSRMenuItem" mnemonicParsing="false" onAction="#onNewCSRAction" text="%menuitem.newcsr">
+                  <MenuItem fx:id="ctlNewCSRMenuItem" mnemonicParsing="false" onAction="#onNewCSRAction" text="%_STR_NEW_CSR_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -118,7 +118,7 @@
                            </image>
                         </ImageView>
                      </graphic></MenuItem>
-                  <MenuItem fx:id="ctlReSignCSRMenuItem" mnemonicParsing="false" onAction="#onReSignCSRAction" text="%menuitem.resigncsr">
+                  <MenuItem fx:id="ctlReSignCSRMenuItem" mnemonicParsing="false" onAction="#onReSignCSRAction" text="%_STR_RESIGN_CSR_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -128,7 +128,7 @@
                      </graphic>
                   </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="ctlImportEntryMenuItem" mnemonicParsing="false" onAction="#onImportEntryAction" text="%menuitem.importentry">
+                  <MenuItem fx:id="ctlImportEntryMenuItem" mnemonicParsing="false" onAction="#onImportEntryAction" text="%_STR_IMPORT_ENTRY_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -136,7 +136,7 @@
                            </image>
                         </ImageView>
                      </graphic></MenuItem>
-                  <MenuItem fx:id="ctlExportEntryMenuItem" mnemonicParsing="false" onAction="#onExportEntryAction" text="%menuitem.exportentry">
+                  <MenuItem fx:id="ctlExportEntryMenuItem" mnemonicParsing="false" onAction="#onExportEntryAction" text="%_STR_EXPORT_ENTRY_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -146,9 +146,9 @@
                      </graphic></MenuItem>
                </items>
             </Menu>
-        <Menu mnemonicParsing="false" text="%menu.help">
+        <Menu mnemonicParsing="false" text="%_STR_HELP_MENU">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#onHelpAction" text="%menuitem.help">
+            <MenuItem mnemonicParsing="false" onAction="#onHelpAction" text="%_STR_HELP_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -157,7 +157,7 @@
                         </ImageView>
                      </graphic></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#onAboutAction" text="%menuitem.about">
+                  <MenuItem mnemonicParsing="false" onAction="#onAboutAction" text="%_STR_ABOUT_MENU_ITEM">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -172,7 +172,7 @@
     </MenuBar>
       <ToolBar>
         <items>
-            <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onNewStoreAction" text="Button">
+            <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onNewStoreAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -181,7 +181,7 @@
                   </ImageView>
                </graphic>
             </Button>
-          <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onOpenStoreAction" text="Button">
+          <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onOpenStoreAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -190,7 +190,7 @@
                   </ImageView>
                </graphic></Button>
             <Separator layoutX="118.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button fx:id="ctlStoreOptionsButton" contentDisplay="GRAPHIC_ONLY" layoutX="46.0" layoutY="13.0" mnemonicParsing="false" onAction="#onStoreOptionsAction" text="Button">
+            <Button fx:id="ctlStoreOptionsButton" contentDisplay="GRAPHIC_ONLY" layoutX="46.0" layoutY="13.0" mnemonicParsing="false" onAction="#onStoreOptionsAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -200,7 +200,7 @@
                </graphic>
             </Button>
             <Separator layoutX="176.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button fx:id="ctlEntryOptionsButton" contentDisplay="GRAPHIC_ONLY" layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onEntryOptionsAction" text="Button">
+            <Button fx:id="ctlEntryOptionsButton" contentDisplay="GRAPHIC_ONLY" layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onEntryOptionsAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -210,7 +210,7 @@
                </graphic>
             </Button>
             <Separator orientation="VERTICAL" />
-            <Button fx:id="ctlCopyEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="186.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCopyEntryAction" text="Button">
+            <Button fx:id="ctlCopyEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="186.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCopyEntryAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -219,7 +219,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="ctlDeleteEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onDeleteEntryAction" text="Button">
+            <Button fx:id="ctlDeleteEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onDeleteEntryAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -229,7 +229,7 @@
                </graphic>
             </Button>
             <Separator layoutX="176.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button fx:id="ctlNewCRTButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onNewCRTAction" text="Button">
+            <Button fx:id="ctlNewCRTButton" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#onNewCRTAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -238,7 +238,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="ctlReSignCRTButton" contentDisplay="GRAPHIC_ONLY" layoutX="362.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReSignCRTAction" text="Button">
+            <Button fx:id="ctlReSignCRTButton" contentDisplay="GRAPHIC_ONLY" layoutX="362.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReSignCRTAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -247,7 +247,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="ctlRevokeCRTButton" contentDisplay="GRAPHIC_ONLY" layoutX="104.0" layoutY="10.0" mnemonicParsing="false" onAction="#onRevokeCRTAction" text="Button">
+            <Button fx:id="ctlRevokeCRTButton" contentDisplay="GRAPHIC_ONLY" layoutX="104.0" layoutY="10.0" mnemonicParsing="false" onAction="#onRevokeCRTAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -256,7 +256,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="ctlManageCRLButton" contentDisplay="GRAPHIC_ONLY" layoutX="198.0" layoutY="10.0" mnemonicParsing="false" onAction="#onManageCRLAction" text="Button">
+            <Button fx:id="ctlManageCRLButton" contentDisplay="GRAPHIC_ONLY" layoutX="198.0" layoutY="10.0" mnemonicParsing="false" onAction="#onManageCRLAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -266,7 +266,7 @@
                </graphic>
             </Button>
             <Separator layoutX="238.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button fx:id="ctlNewCSRButton" contentDisplay="GRAPHIC_ONLY" layoutX="146.0" layoutY="10.0" mnemonicParsing="false" onAction="#onNewCSRAction" text="Button">
+            <Button fx:id="ctlNewCSRButton" contentDisplay="GRAPHIC_ONLY" layoutX="146.0" layoutY="10.0" mnemonicParsing="false" onAction="#onNewCSRAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -275,7 +275,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="ctlReSignCSRButton" contentDisplay="GRAPHIC_ONLY" layoutX="580.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReSignCSRAction" text="Button">
+            <Button fx:id="ctlReSignCSRButton" contentDisplay="GRAPHIC_ONLY" layoutX="580.0" layoutY="10.0" mnemonicParsing="false" onAction="#onReSignCSRAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -285,7 +285,7 @@
                </graphic>
             </Button>
             <Separator layoutX="188.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button fx:id="ctlImportEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="486.0" layoutY="10.0" mnemonicParsing="false" onAction="#onImportEntryAction" text="Button">
+            <Button fx:id="ctlImportEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="486.0" layoutY="10.0" mnemonicParsing="false" onAction="#onImportEntryAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -294,7 +294,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="ctlExportEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="186.0" layoutY="10.0" mnemonicParsing="false" onAction="#onExportEntryAction" text="Button">
+            <Button fx:id="ctlExportEntryButton" contentDisplay="GRAPHIC_ONLY" layoutX="186.0" layoutY="10.0" mnemonicParsing="false" onAction="#onExportEntryAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -304,7 +304,7 @@
                </graphic>
             </Button>
             <Separator layoutX="684.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button contentDisplay="GRAPHIC_ONLY" layoutX="746.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHelpAction" text="Button">
+            <Button contentDisplay="GRAPHIC_ONLY" layoutX="746.0" layoutY="10.0" mnemonicParsing="false" onAction="#onHelpAction" text="">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -330,8 +330,8 @@
                            <children>
                               <TreeTableView fx:id="ctlEntryView" prefHeight="501.0" prefWidth="446.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <columns>
-                                  <TreeTableColumn fx:id="ctlEntryViewAttribute" prefWidth="118.0" text="%treetablecolumn.attribute" />
-                                  <TreeTableColumn fx:id="ctlEntryViewValue" prefWidth="326.0" text="%treetablecolumn.value" />
+                                  <TreeTableColumn fx:id="ctlEntryViewAttribute" prefWidth="118.0" text="%_STR_DETAIL_VIEW_ATTRIBUTE_LABEL" />
+                                  <TreeTableColumn fx:id="ctlEntryViewValue" prefWidth="326.0" text="%_STR_DETAIL_VIEW_VALUE_LABEL" />
                                 </columns>
                                  <columnResizePolicy>
                                     <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -347,9 +347,9 @@
                <children>
                   <TableView fx:id="ctlLogView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                        <TableColumn fx:id="ctlLogViewLevel" maxWidth="-1.0" minWidth="40.0" prefWidth="40.0" text="%tablecolumn.level" />
-                      <TableColumn fx:id="ctlLogViewTime" maxWidth="-1.0" minWidth="100.0" prefWidth="100.0" text="%tablecolumn.time" />
-                      <TableColumn fx:id="ctlLogViewMessage" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="%tablecolumn.message" />
+                        <TableColumn fx:id="ctlLogViewLevel" maxWidth="-1.0" minWidth="40.0" prefWidth="40.0" text="%_STR_LOG_VIEW_LEVEL_LABEL" />
+                      <TableColumn fx:id="ctlLogViewTime" maxWidth="-1.0" minWidth="100.0" prefWidth="100.0" text="%_STR_LOG_VIEW_TIME_LABEL" />
+                      <TableColumn fx:id="ctlLogViewMessage" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" text="%_STR_LOG_VIEW_MESSAGE_LABEL" />
                     </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.certmgr.jfx.passwordprompt;
 
@@ -24,22 +13,156 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String TEXT_PASSWORDTITLE = "passwordprompt.passwordtitle";
-	static final String TEXT_NEWPASSWORDTITLE = "passwordprompt.newpasswordtitle";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static final String MESSAGE_PASSWORDPROMPT = "passwordprompt.password";
-	static final String MESSAGE_NEWPASSWORDPROMPT = "passwordprompt.newpassword";
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
 
-	static final String MESSAGE_INVALIDPASSWORD = "passwordprompt.invalidpassword";
-	static final String MESSAGE_PASSWORDMISMATCH = "passwordprompt.passwordmismatch";
-	static final String MESSAGE_EMPTYORINCOMPATIBLEPASSWORD = "passwordprompt.emptyorincompatiblepassword";
-
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	/**
+	 * Resource key {@code STR_NO_PASSWORD_MESSAGE}
+	 * <p>
+	 * Please enter a password.
+	 * </p>
+	 */
+	static final String STR_NO_PASSWORD_MESSAGE = "STR_NO_PASSWORD_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_PASSWORD_MESSAGE}
+	 * <p>
+	 * Please enter a password.
+	 * </p>
+	 */
+	static String formatSTR_NO_PASSWORD_MESSAGE(Object... arguments) {
+		return format(STR_NO_PASSWORD_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NEW_PASSWORD_MESSAGE}
+	 * <p>
+	 * Please define the password for creating<br/>{0}.
+	 * </p>
+	 */
+	static final String STR_NEW_PASSWORD_MESSAGE = "STR_NEW_PASSWORD_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NEW_PASSWORD_MESSAGE}
+	 * <p>
+	 * Please define the password for creating<br/>{0}.
+	 * </p>
+	 */
+	static String formatSTR_NEW_PASSWORD_MESSAGE(Object... arguments) {
+		return format(STR_NEW_PASSWORD_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_PASSWORD_MISMATCH_MESSAGE}
+	 * <p>
+	 * Passwords do not match. Please try again.
+	 * </p>
+	 */
+	static final String STR_PASSWORD_MISMATCH_MESSAGE = "STR_PASSWORD_MISMATCH_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_PASSWORD_MISMATCH_MESSAGE}
+	 * <p>
+	 * Passwords do not match. Please try again.
+	 * </p>
+	 */
+	static String formatSTR_PASSWORD_MISMATCH_MESSAGE(Object... arguments) {
+		return format(STR_PASSWORD_MISMATCH_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NEW_PASSWORD_PROMPT_TITLE}
+	 * <p>
+	 * New password required
+	 * </p>
+	 */
+	static final String STR_NEW_PASSWORD_PROMPT_TITLE = "STR_NEW_PASSWORD_PROMPT_TITLE";
+
+	/**
+	 * Resource string {@code STR_NEW_PASSWORD_PROMPT_TITLE}
+	 * <p>
+	 * New password required
+	 * </p>
+	 */
+	static String formatSTR_NEW_PASSWORD_PROMPT_TITLE(Object... arguments) {
+		return format(STR_NEW_PASSWORD_PROMPT_TITLE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_PASSWORD_PROMPT_TITLE}
+	 * <p>
+	 * Password required
+	 * </p>
+	 */
+	static final String STR_PASSWORD_PROMPT_TITLE = "STR_PASSWORD_PROMPT_TITLE";
+
+	/**
+	 * Resource string {@code STR_PASSWORD_PROMPT_TITLE}
+	 * <p>
+	 * Password required
+	 * </p>
+	 */
+	static String formatSTR_PASSWORD_PROMPT_TITLE(Object... arguments) {
+		return format(STR_PASSWORD_PROMPT_TITLE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_WRONG_PASSWORD_MESSAGE}
+	 * <p>
+	 * Password incorrect. Please try again.
+	 * </p>
+	 */
+	static final String STR_WRONG_PASSWORD_MESSAGE = "STR_WRONG_PASSWORD_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_WRONG_PASSWORD_MESSAGE}
+	 * <p>
+	 * Password incorrect. Please try again.
+	 * </p>
+	 */
+	static String formatSTR_WRONG_PASSWORD_MESSAGE(Object... arguments) {
+		return format(STR_WRONG_PASSWORD_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_INVALID_PASSWORD_MESSAGE}
+	 * <p>
+	 * Password is empty or contains leading&frasl;trailing spaces.<br/>Please enter a different password.
+	 * </p>
+	 */
+	static final String STR_INVALID_PASSWORD_MESSAGE = "STR_INVALID_PASSWORD_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_INVALID_PASSWORD_MESSAGE}
+	 * <p>
+	 * Password is empty or contains leading&frasl;trailing spaces.<br/>Please enter a different password.
+	 * </p>
+	 */
+	static String formatSTR_INVALID_PASSWORD_MESSAGE(Object... arguments) {
+		return format(STR_INVALID_PASSWORD_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_PASSWORD_MESSAGE}
+	 * <p>
+	 * Please enter the password for accessing<br/>{0}.
+	 * </p>
+	 */
+	static final String STR_PASSWORD_MESSAGE = "STR_PASSWORD_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_PASSWORD_MESSAGE}
+	 * <p>
+	 * Please enter the password for accessing<br/>{0}.
+	 * </p>
+	 */
+	static String formatSTR_PASSWORD_MESSAGE(Object... arguments) {
+		return format(STR_PASSWORD_MESSAGE, arguments);
 	}
 
 }

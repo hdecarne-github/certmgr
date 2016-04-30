@@ -18,6 +18,14 @@ package de.carne.certmgr.jfx.dneditor;
 
 import java.io.IOException;
 
+import de.carne.certmgr.jfx.EditableComboBoxTableCell;
+import de.carne.certmgr.jfx.Images;
+import de.carne.certmgr.jfx.help.Help;
+import de.carne.certmgr.jfx.help.HelpController;
+import de.carne.certmgr.store.x500.RDN;
+import de.carne.certmgr.store.x500.X500Names;
+import de.carne.jfx.StageController;
+import de.carne.util.Strings;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,14 +35,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
-import de.carne.certmgr.jfx.EditableComboBoxTableCell;
-import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.help.Help;
-import de.carne.certmgr.jfx.help.HelpController;
-import de.carne.certmgr.store.x500.RDN;
-import de.carne.certmgr.store.x500.X500Names;
-import de.carne.jfx.StageController;
-import de.carne.util.Strings;
 
 /**
  * Dialog controller for DN editing.
@@ -90,7 +90,7 @@ public class DNEditorController extends StageController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_DNEDITOR);
+			HelpController.showHelp(this, Help.TOPIC_DN_EDITOR);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -129,7 +129,7 @@ public class DNEditorController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_TITLE));
+		controllerStage.setTitle(I18N.formatSTR_DN_EDITOR_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_DNEDIT16, Images.IMAGE_DNEDIT32);
 		this.ctlRDNEntriesType.setCellValueFactory(new PropertyValueFactory<>("type"));
 		this.ctlRDNEntriesType.setCellFactory(EditableComboBoxTableCell.forTableColumn(X500Names.getTypes()));

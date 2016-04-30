@@ -20,16 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.InputValidator;
 import de.carne.certmgr.jfx.InvalidInputException;
@@ -41,9 +31,20 @@ import de.carne.certmgr.store.CertStore;
 import de.carne.jfx.StageController;
 import de.carne.jfx.messagebox.MessageBoxStyle;
 import de.carne.util.Strings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 /**
- * Dialog controller for editing the store options of a new or an existing certificate store.
+ * Dialog controller for editing the store options of a new or an existing
+ * certificate store.
  */
 public class StoreOptionsController extends StageController {
 
@@ -125,7 +126,7 @@ public class StoreOptionsController extends StageController {
 				showMessageBox(e.getLocalizedMessage(), null, MessageBoxStyle.ICON_ERROR, MessageBoxStyle.BUTTON_OK);
 			} catch (IOException e) {
 				actionSucceeded = false;
-				showMessageBox(I18N.format(I18N.MESSAGE_CREATESTORE_ERROR, storeHome), e, MessageBoxStyle.ICON_ERROR,
+				showMessageBox(I18N.formatSTR_CREATE_STORE_ERROR_MESSAGE(storeHome), e, MessageBoxStyle.ICON_ERROR,
 						MessageBoxStyle.BUTTON_OK);
 			}
 		}
@@ -138,7 +139,7 @@ public class StoreOptionsController extends StageController {
 				showMessageBox(e.getLocalizedMessage(), null, MessageBoxStyle.ICON_ERROR, MessageBoxStyle.BUTTON_OK);
 			} catch (IOException e) {
 				actionSucceeded = false;
-				showMessageBox(I18N.format(I18N.MESSAGE_WRITESTOREOPTIONS_ERROR, storeParam), e,
+				showMessageBox(I18N.formatSTR_WRITE_STORE_OPTIONS_ERROR_MESSAGE(storeParam), e,
 						MessageBoxStyle.ICON_ERROR, MessageBoxStyle.BUTTON_OK);
 			}
 		}
@@ -156,7 +157,7 @@ public class StoreOptionsController extends StageController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_STOREOPTIONS);
+			HelpController.showHelp(this, Help.TOPIC_STORE_OPTIONS);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -191,7 +192,8 @@ public class StoreOptionsController extends StageController {
 	/**
 	 * Begin certificate store option editing.
 	 *
-	 * @param storeParam The certificate store whose options should be edited or null if a new store should be setup.
+	 * @param storeParam The certificate store whose options should be edited or
+	 *        null if a new store should be setup.
 	 * @param callback The callback to report the result of the user actions.
 	 */
 	public void beginStoreOptions(CertStore storeParam, Result callback) {
@@ -206,7 +208,7 @@ public class StoreOptionsController extends StageController {
 		StoreOptions storeOptions = new StoreOptions();
 
 		if (this.store != null) {
-			getStage().setTitle(getBundle().getString(I18N.TEXT_OPTIONSTITLE));
+			getStage().setTitle(I18N.formatSTR_EDIT_STORE_OPTIONS_TITLE());
 			getStage().getIcons().addAll(Images.IMAGE_STOREOPTIONS16, Images.IMAGE_STOREOPTIONS32);
 
 			Path storeHome = this.store.getHome();
@@ -216,10 +218,10 @@ public class StoreOptionsController extends StageController {
 			this.ctlFolderInput.setText(storeHome.getParent().toString());
 			this.ctlFolderInput.setDisable(true);
 			this.ctlChooseFolderButton.setDisable(true);
-			this.ctlCreateOrSaveButton.setText(getBundle().getString(I18N.TEXT_BUTTON_SAVE));
+			this.ctlCreateOrSaveButton.setText(I18N.formatSTR_SAVE_BUTTON());
 			storeOptions.load(this.store);
 		} else {
-			getStage().setTitle(getBundle().getString(I18N.TEXT_NEWTITLE));
+			getStage().setTitle(I18N.formatSTR_NEW_STORE_OPTIONS_TITLE());
 			getStage().getIcons().addAll(Images.IMAGE_NEWSTORE16, Images.IMAGE_NEWSTORE32);
 		}
 		this.ctlDefCRTValiditySelection.getSelectionModel().select(storeOptions.getDefCRTValidity());
@@ -231,26 +233,26 @@ public class StoreOptionsController extends StageController {
 	}
 
 	private Path validateAndGetStoreHome() throws InvalidInputException {
-		String storeFolderInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOSTOREFOLDER,
+		String storeFolderInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_STORE_FOLDER_MESSAGE,
 				Strings.safeTrim(this.ctlFolderInput.getText()));
-		Path storeFolderPath = InputValidator.isDirectory(I18N.bundle(), I18N.MESSAGE_INVALIDSTOREFOLDER,
+		Path storeFolderPath = InputValidator.isDirectory(I18N.BUNDLE, I18N.STR_INVALID_STORE_FOLDER_MESSAGE,
 				storeFolderInput);
-		String storeNameInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOSTORENAME,
+		String storeNameInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_STORE_NAME_MESSAGE,
 				Strings.safeTrim(this.ctlNameInput.getText()));
 
-		return InputValidator.isPath(I18N.bundle(), I18N.MESSAGE_INVALIDSTORENAME, storeFolderPath, storeNameInput);
+		return InputValidator.isPath(I18N.BUNDLE, I18N.STR_INVALID_STORE_NAME_MESSAGE, storeFolderPath, storeNameInput);
 	}
 
 	private StoreOptions validateAndGetStoreOptions() throws InvalidInputException {
-		TimePeriodOption defCRTValidityInput = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NODEFCRTVALIDTY,
+		TimePeriodOption defCRTValidityInput = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_DEF_CRT_VALIDITY_MESSAGE,
 				this.ctlDefCRTValiditySelection.getValue());
-		TimePeriodOption defCRLUpdateInput = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NODEFCRLUPDATE,
+		TimePeriodOption defCRLUpdateInput = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_DEF_CRL_UPDATE_MESSAGE,
 				this.ctlDefCRLUpdateSelection.getValue());
-		String defKeyAlg = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NODEFKEYALG,
+		String defKeyAlg = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_DEF_KEY_ALG_MESSAGE,
 				this.ctlDefKeyAlgSelection.getValue());
-		Integer defKeySize = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NODEFKEYSIZE,
+		Integer defKeySize = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_DEF_KEY_SIZE_MESSAGE,
 				this.ctlDefKeySizeSelection.getValue());
-		String defSigAlg = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NODEFSIGALG,
+		String defSigAlg = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_DEF_SIG_ALG_MESSAGE,
 				this.ctlDefSigAlgSelection.getValue());
 		StoreOptions storeOptions = new StoreOptions();
 

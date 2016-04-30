@@ -25,37 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-
 import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.jfx.CertStoreEntryOption;
@@ -93,6 +62,36 @@ import de.carne.jfx.StageController;
 import de.carne.jfx.messagebox.MessageBoxStyle;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * Dialog controller for CRT/CSR generation.
@@ -368,8 +367,8 @@ public class CRTOptionsController extends StageController {
 
 					@Override
 					protected CertStoreEntry call() throws Exception {
-						return this.store2
-								.generateAndSignCSR(this.storeEntry2, this.certificateParams2, this.password2);
+						return this.store2.generateAndSignCSR(this.storeEntry2, this.certificateParams2,
+								this.password2);
 					}
 
 				});
@@ -407,16 +406,16 @@ public class CRTOptionsController extends StageController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_CRTOPTIONS);
+			HelpController.showHelp(this, Help.TOPIC_CRT_OPTIONS);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
 	}
-	
+
 	CertStore getStore() {
 		return this.store;
 	}
-	
+
 	CertStoreEntry getStoreEntry() {
 		return this.storeEntry;
 	}
@@ -459,8 +458,8 @@ public class CRTOptionsController extends StageController {
 
 		});
 		this.ctlKeyUsageSelection.disableProperty().bind(this.ctlKeyUsageAnySelection.selectedProperty());
-		this.ctlExtendedKeyUsageSelection.disableProperty().bind(
-				this.ctlExtendedKeyUsageAnySelection.selectedProperty());
+		this.ctlExtendedKeyUsageSelection.disableProperty()
+				.bind(this.ctlExtendedKeyUsageAnySelection.selectedProperty());
 	}
 
 	void onGenerationScheduled() {
@@ -475,7 +474,7 @@ public class CRTOptionsController extends StageController {
 
 	void onGenerationFailed(Throwable cause) {
 		this.ctlProgressGroup.setVisible(false);
-		showMessageBox(I18N.format(I18N.MESSAGE_GENERATEERROR), cause, MessageBoxStyle.ICON_ERROR,
+		showMessageBox(I18N.formatSTR_GENERATE_ERROR_MESSAGE(), cause, MessageBoxStyle.ICON_ERROR,
 				MessageBoxStyle.BUTTON_OK);
 	}
 
@@ -505,7 +504,8 @@ public class CRTOptionsController extends StageController {
 
 	private void beginGeneralCRTOptions(CertStore storeParam, CertStoreEntry entryParam, Result callback)
 			throws IOException {
-		String title = I18N.format(entryParam != null ? I18N.TEXT_REGENERATECRTTITLE : I18N.TEXT_GENERATECRTTITLE);
+		String title = (entryParam != null ? I18N.formatSTR_CRT_OPTIONS_REGENERATE_CRT_TITLE()
+				: I18N.formatSTR_CRT_OPTIONS_GENERATE_CRT_TITLE());
 
 		getStage().setTitle(title);
 		beginGeneralOptions(storeParam, entryParam, callback);
@@ -515,8 +515,8 @@ public class CRTOptionsController extends StageController {
 
 		this.ctlValidFromInput.setValue(validFrom);
 		this.ctlValidToInput.setValue(validTo);
-		this.ctlIssuerSelection.getItems().addAll(
-				CertStoreEntryOption.fromStoreWithPredicate(this.store, e -> e.hasKey()));
+		this.ctlIssuerSelection.getItems()
+				.addAll(CertStoreEntryOption.fromStoreWithPredicate(this.store, e -> e.hasKey()));
 		if (this.storeEntry != null) {
 			X509Certificate crt = this.storeEntry.getCRT().getObject();
 
@@ -533,8 +533,8 @@ public class CRTOptionsController extends StageController {
 			this.ctlKeyAlgSelection.setDisable(true);
 			this.ctlKeySizeLabel.setDisable(true);
 			this.ctlKeySizeSelection.setDisable(true);
-			this.ctlIssuerSelection.getSelectionModel().select(
-					CertStoreEntryOption.fromStoreEntry(this.store.getEntry(this.storeEntry.getIssuer())));
+			this.ctlIssuerSelection.getSelectionModel()
+					.select(CertStoreEntryOption.fromStoreEntry(this.store.getEntry(this.storeEntry.getIssuer())));
 			this.ctlIssuerLabel.setDisable(true);
 			this.ctlIssuerSelection.setDisable(true);
 
@@ -593,7 +593,8 @@ public class CRTOptionsController extends StageController {
 
 	private void beginGeneralCSROptions(CertStore storeParam, CertStoreEntry entryParam, Result callback)
 			throws IOException {
-		String title = I18N.format(entryParam != null ? I18N.TEXT_REGENERATECSRTITLE : I18N.TEXT_GENERATECSRTITLE);
+		String title = (entryParam != null ? I18N.formatSTR_CRT_OPTIONS_REGENERATE_CSR_TITLE()
+				: I18N.formatSTR_CRT_OPTIONS_GENERATE_CSR_TITLE());
 
 		getStage().setTitle(title);
 		beginGeneralOptions(storeParam, entryParam, callback);
@@ -664,7 +665,7 @@ public class CRTOptionsController extends StageController {
 		this.ctlKeyAlgSelection.getItems().addAll(CertStore.getKeyAlgs());
 		this.ctlKeyAlgSelection.getSelectionModel().select(this.storeOptions.getDefKeyAlg());
 		// Issuer
-		this.ctlIssuerSelection.getItems().add(CertStoreEntryOption.defaultOption(I18N.format(I18N.TEXT_SELFSIGNED)));
+		this.ctlIssuerSelection.getItems().add(CertStoreEntryOption.defaultOption(I18N.formatSTR_SELF_SIGNED_LABEL()));
 		this.ctlIssuerSelection.getSelectionModel().select(0);
 		// BasicConstraint extension
 		this.ctlBasicConstraintsEnabled.getItems().addAll(ExtensionSelectionOption.VALUES);
@@ -687,8 +688,8 @@ public class CRTOptionsController extends StageController {
 		this.ctlSubjectAlternativeNameEnabled.getSelectionModel().select(0);
 		this.ctlSubjectAlternativeNameInputType.setCellValueFactory(new PropertyValueFactory<>("type"));
 		this.ctlSubjectAlternativeNameInputName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		this.ctlSubjectAlternativeNameInputType.setCellFactory(ChoiceBoxTableCell.forTableColumn(GeneralNameType
-				.sortedValues()));
+		this.ctlSubjectAlternativeNameInputType
+				.setCellFactory(ChoiceBoxTableCell.forTableColumn(GeneralNameType.sortedValues()));
 		this.ctlSubjectAlternativeNameInputName.setCellFactory(TextFieldTableCell.forTableColumn());
 		this.ctlSubjectAlternativeNameInput.setItems(FXCollections.observableArrayList(new GeneralNameModel()));
 		// CRL Distribution Points extension
@@ -696,8 +697,8 @@ public class CRTOptionsController extends StageController {
 		this.ctlCRLDistributionPointsEnabled.getSelectionModel().select(0);
 		this.ctlCRLDistributionPointsInputType.setCellValueFactory(new PropertyValueFactory<>("type"));
 		this.ctlCRLDistributionPointsInputName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		this.ctlCRLDistributionPointsInputType.setCellFactory(ChoiceBoxTableCell.forTableColumn(GeneralNameType
-				.sortedValues()));
+		this.ctlCRLDistributionPointsInputType
+				.setCellFactory(ChoiceBoxTableCell.forTableColumn(GeneralNameType.sortedValues()));
 		this.ctlCRLDistributionPointsInputName.setCellFactory(TextFieldTableCell.forTableColumn());
 		this.ctlCRLDistributionPointsInput.setItems(FXCollections.observableArrayList(new GeneralNameModel()));
 	}
@@ -724,8 +725,8 @@ public class CRTOptionsController extends StageController {
 	private Collection<StorePreset> getStorePresets() {
 		ArrayList<StorePreset> presets = new ArrayList<>();
 
-		for (CertStoreEntryOption entryOption : CertStoreEntryOption.fromStoreWithPredicate(this.store, e -> e.hasCRT()
-				|| e.hasCSR())) {
+		for (CertStoreEntryOption entryOption : CertStoreEntryOption.fromStoreWithPredicate(this.store,
+				e -> e.hasCRT() || e.hasCSR())) {
 			CertStoreEntry entry = entryOption.getEntry();
 			String subjectDN = entry.getName();
 			CertStoreEntry issuer = (entry.isRoot() ? null : this.store.getEntry(entry.getIssuer()));
@@ -739,7 +740,8 @@ public class CRTOptionsController extends StageController {
 					extensions = CertStore.decodeCSRExtensions(entry.getCSR().getObject());
 				}
 			} catch (IOException e) {
-				LOG.warning(e, I18N.bundle(), I18N.MESSAGE_CERTENTRYERROR, entry.getAlias(), e.getLocalizedMessage());
+				LOG.warning(e, I18N.BUNDLE, I18N.STR_CERT_ENTRY_ERROR_MESSAGE, entry.getAlias(),
+						e.getLocalizedMessage());
 			}
 			presets.add(new StorePreset(entryOption.toString(), subjectDN, issuer, extensions));
 		}
@@ -813,11 +815,11 @@ public class CRTOptionsController extends StageController {
 
 	private void applyBasicConstraints(X509BasicConstraintsExtension basicConstraints) {
 		if (basicConstraints != null) {
-			this.ctlBasicConstraintsEnabled.getSelectionModel().select(
-					ExtensionSelectionOption.fromCritical(basicConstraints.isCritical()));
+			this.ctlBasicConstraintsEnabled.getSelectionModel()
+					.select(ExtensionSelectionOption.fromCritical(basicConstraints.isCritical()));
 			this.ctlBasicConstraintsCAFlag.setSelected(basicConstraints.isCA());
-			this.ctlBasicConstraintsPathLenSelection.getSelectionModel().select(
-					new NamedOption<>(basicConstraints.getPathLenConstraint()));
+			this.ctlBasicConstraintsPathLenSelection.getSelectionModel()
+					.select(new NamedOption<>(basicConstraints.getPathLenConstraint()));
 		} else {
 			this.ctlBasicConstraintsEnabled.getSelectionModel().select(ExtensionSelectionOption.DISABLED);
 		}
@@ -825,8 +827,8 @@ public class CRTOptionsController extends StageController {
 
 	private void applyKeyUsage(X509KeyUsageExtension keyUsage) {
 		if (keyUsage != null) {
-			this.ctlKeyUsageEnabled.getSelectionModel().select(
-					ExtensionSelectionOption.fromCritical(keyUsage.isCritical()));
+			this.ctlKeyUsageEnabled.getSelectionModel()
+					.select(ExtensionSelectionOption.fromCritical(keyUsage.isCritical()));
 			this.ctlKeyUsageSelection.getSelectionModel().clearSelection();
 
 			boolean selectAny = false;
@@ -846,8 +848,8 @@ public class CRTOptionsController extends StageController {
 
 	private void applyExtendedKeyUsage(X509ExtendedKeyUsageExtension extendedKeyUsage) {
 		if (extendedKeyUsage != null) {
-			this.ctlExtendedKeyUsageEnabled.getSelectionModel().select(
-					ExtensionSelectionOption.fromCritical(extendedKeyUsage.isCritical()));
+			this.ctlExtendedKeyUsageEnabled.getSelectionModel()
+					.select(ExtensionSelectionOption.fromCritical(extendedKeyUsage.isCritical()));
 			this.ctlExtendedKeyUsageSelection.getSelectionModel().clearSelection();
 
 			boolean selectAny = false;
@@ -867,8 +869,8 @@ public class CRTOptionsController extends StageController {
 
 	private void applySubjectAlternativeName(X509SubjectAlternativeNameExtension subjectAlternativeName) {
 		if (subjectAlternativeName != null) {
-			this.ctlSubjectAlternativeNameEnabled.getSelectionModel().select(
-					ExtensionSelectionOption.fromCritical(subjectAlternativeName.isCritical()));
+			this.ctlSubjectAlternativeNameEnabled.getSelectionModel()
+					.select(ExtensionSelectionOption.fromCritical(subjectAlternativeName.isCritical()));
 
 			ObservableList<GeneralNameModel> items = this.ctlSubjectAlternativeNameInput.getItems();
 
@@ -883,8 +885,8 @@ public class CRTOptionsController extends StageController {
 
 	private void applyCRLDistributionPoints(X509CRLDistributionPointsExtension crlDistributionPoints) {
 		if (crlDistributionPoints != null) {
-			this.ctlCRLDistributionPointsEnabled.getSelectionModel().select(
-					ExtensionSelectionOption.fromCritical(crlDistributionPoints.isCritical()));
+			this.ctlCRLDistributionPointsEnabled.getSelectionModel()
+					.select(ExtensionSelectionOption.fromCritical(crlDistributionPoints.isCritical()));
 
 			ObservableList<GeneralNameModel> items = this.ctlCRLDistributionPointsInput.getItems();
 
@@ -926,7 +928,7 @@ public class CRTOptionsController extends StageController {
 	}
 
 	private String validateAndGetAlias() throws InvalidInputException {
-		String aliasInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOALIAS,
+		String aliasInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_ALIAS_MESSAGE,
 				Strings.safeTrim(this.ctlAliasInput.getText()));
 
 		Path storeHome = this.store.getHome();
@@ -935,30 +937,30 @@ public class CRTOptionsController extends StageController {
 		try {
 			checkPath = storeHome.resolve(aliasInput);
 		} catch (InvalidPathException e) {
-			throw new InvalidInputException(I18N.format(I18N.MESSAGE_INVALIDALIAS, aliasInput), e);
+			throw new InvalidInputException(I18N.formatSTR_INVALID_ALIAS_MESSAGE(aliasInput), e);
 		}
 		if (!storeHome.equals(checkPath.getParent())) {
-			throw new InvalidInputException(I18N.format(I18N.MESSAGE_INVALIDALIAS, aliasInput));
+			throw new InvalidInputException(I18N.formatSTR_INVALID_ALIAS_MESSAGE(aliasInput));
 		}
 		return aliasInput;
 	}
 
 	private KeyParams validateAndGetKeyParams() throws InvalidInputException {
-		String keyAlg = InputValidator
-				.notNull(I18N.bundle(), I18N.MESSAGE_NOKEYALG, this.ctlKeyAlgSelection.getValue());
+		String keyAlg = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_KEY_ALG_MESSAGE,
+				this.ctlKeyAlgSelection.getValue());
 		int keySize = InputValidator
-				.notNull(I18N.bundle(), I18N.MESSAGE_NOKEYSIZE, this.ctlKeySizeSelection.getValue()).intValue();
+				.notNull(I18N.BUNDLE, I18N.STR_NO_KEY_SIZE_MESSAGE, this.ctlKeySizeSelection.getValue()).intValue();
 
 		return new KeyParams(keyAlg, keySize);
 	}
 
 	private CertificateValidity validateAndGetValidity() throws InvalidInputException {
-		LocalDate validFrom = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NOVALIDFROM,
+		LocalDate validFrom = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_VALID_FROM_MESSAGE,
 				this.ctlValidFromInput.getValue());
-		LocalDate validTo = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NOVALIDTO,
+		LocalDate validTo = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_VALID_TO_MESSAGE,
 				this.ctlValidToInput.getValue());
 
-		InputValidator.isTrue(I18N.bundle(), I18N.MESSAGE_INVALIDVALIDITY, validFrom.isBefore(validTo));
+		InputValidator.isTrue(I18N.BUNDLE, I18N.STR_INVALID_VALIDITY_MESSAGE, validFrom.isBefore(validTo));
 		return new CertificateValidity(validFrom, validTo);
 	}
 
@@ -969,10 +971,10 @@ public class CRTOptionsController extends StageController {
 	}
 
 	private X509CertificateParams validateAndGetCertificateParams() throws InvalidInputException {
-		String subjectDNInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOSUBJECTDN,
+		String subjectDNInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_SUBJECT_DN_MESSAGE,
 				Strings.safeTrim(this.ctlSubjectDNInput.getText()));
-		X500Principal subjectDN = InputValidator.isDN(I18N.bundle(), I18N.MESSAGE_INVALIDSUBJECTDN, subjectDNInput);
-		String sigAlg = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOSUBJECTDN,
+		X500Principal subjectDN = InputValidator.isDN(I18N.BUNDLE, I18N.STR_INVALID_SUBJECT_DN_MESSAGE, subjectDNInput);
+		String sigAlg = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_SUBJECT_DN_MESSAGE,
 				this.ctlSigAlgSelection.getValue());
 
 		X509CertificateParams certificateParams = new X509CertificateParams(subjectDN, sigAlg);
@@ -998,9 +1000,8 @@ public class CRTOptionsController extends StageController {
 	private X509BasicConstraintsExtension validateAndGetBasicConstraintsExtension() throws InvalidInputException {
 		boolean critical = this.ctlBasicConstraintsEnabled.getSelectionModel().getSelectedItem().isCritical();
 		boolean isCA = this.ctlBasicConstraintsCAFlag.isSelected();
-		int pathLenConstraint = InputValidator
-				.notNull(I18N.bundle(), I18N.MESSAGE_NOPATHLENCONSTRAINT,
-						this.ctlBasicConstraintsPathLenSelection.getValue()).getValue().intValue();
+		int pathLenConstraint = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_PATHLEN_CONSTRAINT_MESSAGE,
+				this.ctlBasicConstraintsPathLenSelection.getValue()).getValue().intValue();
 
 		return new X509BasicConstraintsExtension(critical, isCA, pathLenConstraint);
 	}
@@ -1019,7 +1020,7 @@ public class CRTOptionsController extends StageController {
 				usageCount++;
 			}
 		}
-		InputValidator.isTrue(I18N.bundle(), I18N.MESSAGE_NOKEYUSAGE, usageCount > 0);
+		InputValidator.isTrue(I18N.BUNDLE, I18N.STR_NO_KEY_USAGE_MESSAGE, usageCount > 0);
 		return extension;
 	}
 
@@ -1037,7 +1038,7 @@ public class CRTOptionsController extends StageController {
 				usageCount++;
 			}
 		}
-		InputValidator.isTrue(I18N.bundle(), I18N.MESSAGE_NOEXTENDEDKEYUSAGE, usageCount > 0);
+		InputValidator.isTrue(I18N.BUNDLE, I18N.STR_NO_EXTENDED_KEY_USAGE_MESSAGE, usageCount > 0);
 		return extension;
 	}
 
@@ -1056,11 +1057,11 @@ public class CRTOptionsController extends StageController {
 					extension.addName(new GeneralName(nameType, name));
 					nameCount++;
 				} catch (IllegalArgumentException e) {
-					throw new InvalidInputException(I18N.format(I18N.MESSAGE_INVALIDSUBJECTALTERNATIVENAME, name), e);
+					throw new InvalidInputException(I18N.formatSTR_INVALID_SAN_MESSAGE(name), e);
 				}
 			}
 		}
-		InputValidator.isTrue(I18N.bundle(), I18N.MESSAGE_NOSUBJECTALTERNATIVENAME, nameCount > 0);
+		InputValidator.isTrue(I18N.BUNDLE, I18N.STR_NO_SAN_MESSAGE, nameCount > 0);
 		return extension;
 	}
 
@@ -1082,11 +1083,11 @@ public class CRTOptionsController extends StageController {
 					distributionPointName.addName(new GeneralName(nameType, name));
 					issuerCount++;
 				} catch (IllegalArgumentException e) {
-					throw new InvalidInputException(I18N.format(I18N.MESSAGE_INVALIDSUBJECTALTERNATIVENAME, name), e);
+					throw new InvalidInputException(I18N.formatSTR_INVALID_ISSUER_NAME_MESSAGE(name), e);
 				}
 			}
 		}
-		InputValidator.isTrue(I18N.bundle(), I18N.MESSAGE_NOISSUERNAME, issuerCount > 0);
+		InputValidator.isTrue(I18N.BUNDLE, I18N.STR_NO_ISSUER_NAME_MESSAGE, issuerCount > 0);
 		extension.addDistributionPoint(distributionPoint);
 		return extension;
 	}
@@ -1096,7 +1097,7 @@ public class CRTOptionsController extends StageController {
 		GenerateTask() {
 			// Nothing to do here
 		}
-		
+
 		/*
 		 * (non-Javadoc)
 		 * @see javafx.concurrent.Task#scheduled()

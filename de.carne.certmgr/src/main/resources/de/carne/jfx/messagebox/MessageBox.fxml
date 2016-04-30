@@ -18,11 +18,11 @@
       </image>
     </ImageView>
   <Label fx:id="ctlMessage" text="message" textAlignment="LEFT" wrapText="true" GridPane.columnIndex="1" />
-  <Label fx:id="ctlDetailsLabel" text="%label.details" textAlignment="LEFT" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+  <Label fx:id="ctlDetailsLabel" text="%_STR_DETAILS_LABEL" textAlignment="LEFT" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <TextArea fx:id="ctlDetails" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
     <HBox maxHeight="-Infinity" maxWidth="+Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="8.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
       <children>
-            <ToggleButton fx:id="ctlButtonDetails" mnemonicParsing="false" onAction="#onToggleDetails" text="%button.details" />
+            <ToggleButton fx:id="ctlButtonDetails" mnemonicParsing="false" onAction="#onToggleDetails" text="%_STR_DETAILS_BUTTON" />
         <Pane HBox.hgrow="ALWAYS" />
             <Button fx:id="ctlButtonCmd3" minWidth="80.0" mnemonicParsing="false" onAction="#onButton3" text="Button3" />
         <Button fx:id="ctlButtonCmd2" cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onButton2" text="Button2" HBox.hgrow="NEVER">

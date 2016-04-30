@@ -19,8 +19,8 @@ package de.carne.certmgr.jfx;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javafx.stage.FileChooser;
 import de.carne.certmgr.store.CertFileFormat;
+import javafx.stage.FileChooser;
 
 /**
  * Helper functions for handling the certificate file format enum.
@@ -30,9 +30,10 @@ public final class CertFileFormats {
 	/**
 	 * Setup a FileChooser filter for a single format.
 	 * <p>
-	 * The created filter list contains a filter for the submitted format as well as a filter for all files.
+	 * The created filter list contains a filter for the submitted format as
+	 * well as a filter for all files.
 	 * </p>
-	 * 
+	 *
 	 * @param format The format to create the filter for.
 	 * @return The created filter.
 	 */
@@ -40,7 +41,7 @@ public final class CertFileFormats {
 		assert format != null;
 
 		ArrayList<FileChooser.ExtensionFilter> filters = new ArrayList<>(2);
-		String description = I18N.format(I18N.TEXT_FILTERFORMAT, format.name());
+		String description = I18N.formatSTR_CERT_FILE_FILTER_FORMAT(format.name());
 		String[] rawExtensions = format.getExtensions();
 		ArrayList<String> filterExtensions = new ArrayList<>(rawExtensions.length);
 
@@ -48,25 +49,26 @@ public final class CertFileFormats {
 			filterExtensions.add("*" + rawExtension);
 		}
 		filters.add(new FileChooser.ExtensionFilter(description, filterExtensions));
-		filters.add(new FileChooser.ExtensionFilter(I18N.format(I18N.TEXT_FILTERALL), "*"));
+		filters.add(new FileChooser.ExtensionFilter(I18N.formatSTR_CERT_FILE_FILTER_ALL(), "*"));
 		return filters;
 	}
 
 	/**
 	 * Setup a FileChooser filter for all formats.
 	 * <p>
-	 * The created filter list contains filters for the all formats as well as a filter for all files.
+	 * The created filter list contains filters for the all formats as well as a
+	 * filter for all files.
 	 * </p>
-	 * 
+	 *
 	 * @return The created filter.
 	 */
 	public static Collection<FileChooser.ExtensionFilter> getFileChooserFilters() {
 		CertFileFormat[] formats = CertFileFormat.values();
 		ArrayList<FileChooser.ExtensionFilter> filters = new ArrayList<>(formats.length + 1);
 
-		filters.add(new FileChooser.ExtensionFilter(I18N.format(I18N.TEXT_FILTERALL), "*"));
+		filters.add(new FileChooser.ExtensionFilter(I18N.formatSTR_CERT_FILE_FILTER_ALL(), "*"));
 		for (CertFileFormat format : formats) {
-			String description = I18N.format(I18N.TEXT_FILTERFORMAT, format.name());
+			String description = I18N.formatSTR_CERT_FILE_FILTER_FORMAT(format.name());
 			String[] rawExtensions = format.getExtensions();
 			ArrayList<String> filterExtensions = new ArrayList<>(rawExtensions.length);
 

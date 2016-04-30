@@ -49,9 +49,9 @@ import de.carne.certmgr.store.x509.X509KeyUsageExtension;
 import de.carne.util.logging.LogConfig;
 
 /**
- * Base class providing functions common to all test.
+ * Base class providing functions common to all store test.
  */
-abstract class TestBase {
+abstract class StoreTestBase {
 
 	public static final PasswordCallback TEST_PASSWORD = new PasswordCallback() {
 
@@ -244,7 +244,7 @@ abstract class TestBase {
 	private static Properties getParams(String alias) throws IOException {
 		Properties params = new Properties();
 
-		try (InputStream paramsStream = TestBase.class.getResourceAsStream(alias + ".properties")) {
+		try (InputStream paramsStream = StoreTestBase.class.getResourceAsStream(alias + ".properties")) {
 			params.load(paramsStream);
 		}
 		return params;

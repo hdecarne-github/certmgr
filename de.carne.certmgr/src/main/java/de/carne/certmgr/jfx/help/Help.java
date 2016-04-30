@@ -19,56 +19,71 @@ package de.carne.certmgr.jfx.help;
 /**
  * Available help topics.
  */
-public final class Help {
+public enum Help {
 
 	/**
 	 * StoreManager Help.
 	 */
-	public static String TOPIC_STOREMANAGER = "topic.storemanager";
+	TOPIC_STORE_MANAGER(I18N.STR_TOPIC_STORE_MANAGER),
 
 	/**
 	 * CRTExport help.
 	 */
-	public static String TOPIC_CERTEXPORT = "topic.certexport";
+	TOPIC_CERT_EXPORT(I18N.STR_TOPIC_CERT_EXPORT),
 
 	/**
 	 * CRTImport help.
 	 */
-	public static String TOPIC_CERTIMPORT = "topic.certimport";
+	TOPIC_CERT_IMPORT(I18N.STR_TOPIC_CERT_IMPORT),
 
 	/**
 	 * CRLOptions help.
 	 */
-	public static String TOPIC_CRLOPTIONS = "topic.crloptions";
+	TOPIC_CRL_OPTIONS(I18N.STR_TOPIC_CRL_OPTIONS),
 
 	/**
 	 * CRTOptions help.
 	 */
-	public static String TOPIC_CRTOPTIONS = "topic.crtoptions";
+	TOPIC_CRT_OPTIONS(I18N.STR_TOPIC_CRT_OPTIONS),
 
 	/**
 	 * DNEditor help.
 	 */
-	public static String TOPIC_DNEDITOR = "topic.dneditor";
+	TOPIC_DN_EDITOR(I18N.STR_TOPIC_DN_EDITOR),
 
 	/**
 	 * EntryOptions help.
 	 */
-	public static String TOPIC_ENTRYOPTIONS = "topic.entryoptions";
+	TOPIC_ENTRY_OPTIONS(I18N.STR_TOPIC_ENTRY_OPTIONS),
 
 	/**
 	 * PasswordPrompt help.
 	 */
-	public static String TOPIC_PASSWORDPROMPT = "topic.passwordprompt";
+	TOPIC_PASSWORD_PROMPT(I18N.STR_TOPIC_PASSWORD_PROMPT),
 
 	/**
 	 * NewPasswordPromp help.
 	 */
-	public static String TOPIC_NEWPASSWORDPROMPT = "topic.newpasswordprompt";
+	TOPIC_NEW_PASSWORD_PROMPT(I18N.STR_TOPIC_NEW_PASSWORD_PROMPT),
 
 	/**
 	 * StoreOptions help.
 	 */
-	public static String TOPIC_STOREOPTIONS = "topic.storeoptions";
+	TOPIC_STORE_OPTIONS(I18N.STR_TOPIC_STORE_OPTIONS);
+
+	private String key;
+
+	Help(String key) {
+		this.key = key;
+	}
+
+	/**
+	 * Get the topic resource key.
+	 * 
+	 * @return The topic resource key.
+	 */
+	public String key() {
+		return this.key;
+	}
 
 }

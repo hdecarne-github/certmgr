@@ -52,14 +52,18 @@ public class CertStoreEntryExporter {
 	 * @param entry The store entry to create an exporter for.
 	 * @param includeKey Whether to include the key in the export or not.
 	 * @param includeCRT Whether to include the CRT in the export or not.
-	 * @param includeCRTChain Whether to include the certificate chain in the export or not.
-	 * @param includeCRTAnchor Whether to include the certificate anchor in the export or not.
+	 * @param includeCRTChain Whether to include the certificate chain in the
+	 *        export or not.
+	 * @param includeCRTAnchor Whether to include the certificate anchor in the
+	 *        export or not.
 	 * @param includeCSR Whether to include the CSR in the export or not.
 	 * @param includeCRL Whether to include the CRL in the export or not.
 	 * @param password The password callback to use for key access.
 	 * @return The created exporter.
-	 * @throws IOException if an I/O error occurs while accessing the store entry.
-	 * @throws PasswordRequiredException if a password is required but was not given.
+	 * @throws IOException if an I/O error occurs while accessing the store
+	 *         entry.
+	 * @throws PasswordRequiredException if a password is required but was not
+	 *         given.
 	 */
 	public static CertStoreEntryExporter forEntry(CertStoreEntry entry, boolean includeKey, boolean includeCRT,
 			boolean includeCRTChain, boolean includeCRTAnchor, boolean includeCSR, boolean includeCRL,
@@ -77,7 +81,7 @@ public class CertStoreEntryExporter {
 			if (entry.hasKey()) {
 				exportKey = entry.getKey(password).getObject();
 			} else {
-				LOG.warning(I18N.bundle(), I18N.MESSAGE_NOKEYTOEXPORT, entryAlias);
+				LOG.warning(I18N.BUNDLE, I18N.STR_SKIPPING_KEY_EXPORT, entryAlias);
 			}
 		}
 
@@ -104,7 +108,7 @@ public class CertStoreEntryExporter {
 				}
 				exportCRTs = exportCRTList.toArray(new X509Certificate[exportCRTList.size()]);
 			} else {
-				LOG.warning(I18N.bundle(), I18N.MESSAGE_NOCRTTOEXPORT, entryAlias);
+				LOG.warning(I18N.BUNDLE, I18N.STR_SKIPPING_CRT_EXPORT, entryAlias);
 			}
 		}
 
@@ -115,7 +119,7 @@ public class CertStoreEntryExporter {
 			if (entry.hasCSR()) {
 				exportCSR = entry.getCSR().getObject();
 			} else {
-				LOG.warning(I18N.bundle(), I18N.MESSAGE_NOCSRTOEXPORT, entryAlias);
+				LOG.warning(I18N.BUNDLE, I18N.STR_SKIPPING_CSR_EXPORT, entryAlias);
 			}
 		}
 
@@ -125,7 +129,7 @@ public class CertStoreEntryExporter {
 			if (entry.hasCRL()) {
 				exportCRL = entry.getCRL().getObject();
 			} else {
-				LOG.warning(I18N.bundle(), I18N.MESSAGE_NOCRLTOEXPORT, entryAlias);
+				LOG.warning(I18N.BUNDLE, I18N.STR_SKIPPING_CRL_EXPORT, entryAlias);
 			}
 		}
 		return new CertStoreEntryExporter(exportAliases, exportKey, exportCRTs, exportCSR, exportCRL);
@@ -145,13 +149,16 @@ public class CertStoreEntryExporter {
 	 *
 	 * @param format The format to use for the export.
 	 * @param target The export target to export to.
-	 * @param password The password callback to use for retrieving new passwords.
+	 * @param password The password callback to use for retrieving new
+	 *        passwords.
 	 * @throws IOException if an I/O error occurs during export.
-	 * @throws PasswordRequiredException if a password is required but was not given.
-	 * @throws UnsupportedExportTargetException if the export target is not supported by the choosen format.
+	 * @throws PasswordRequiredException if a password is required but was not
+	 *         given.
+	 * @throws UnsupportedExportTargetException if the export target is not
+	 *         supported by the choosen format.
 	 */
-	public void export(CertFileFormat format, ExportTarget target, PasswordCallback password) throws IOException,
-			PasswordRequiredException, UnsupportedExportTargetException {
+	public void export(CertFileFormat format, ExportTarget target, PasswordCallback password)
+			throws IOException, PasswordRequiredException, UnsupportedExportTargetException {
 		switch (format) {
 		case PEM:
 			exportPEM(target, password);
@@ -186,8 +193,8 @@ public class CertStoreEntryExporter {
 
 				for (X509Certificate exportCRT : this.exportCRTs) {
 					String crtFileName = this.exportAliases[exportAliasIndex] + EXT_CRT;
-					String crtData = PROVIDER.encodePEM(new X509Certificate[] { exportCRT }, null, null, null,
-							password, crtFileName);
+					String crtData = PROVIDER.encodePEM(new X509Certificate[] { exportCRT }, null, null, null, password,
+							crtFileName);
 
 					stringDataMap.put(crtFileName, crtData);
 					exportAliasIndex++;

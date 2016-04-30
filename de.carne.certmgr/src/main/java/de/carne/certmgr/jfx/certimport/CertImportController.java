@@ -26,6 +26,23 @@ import java.util.Collection;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
 
+import de.carne.certmgr.jfx.CertFileFormats;
+import de.carne.certmgr.jfx.Images;
+import de.carne.certmgr.jfx.InputValidator;
+import de.carne.certmgr.jfx.InvalidInputException;
+import de.carne.certmgr.jfx.help.Help;
+import de.carne.certmgr.jfx.help.HelpController;
+import de.carne.certmgr.jfx.passwordprompt.PasswordPromptCallback;
+import de.carne.certmgr.store.CertEntry;
+import de.carne.certmgr.store.CertStore;
+import de.carne.certmgr.store.CertStoreEntry;
+import de.carne.certmgr.store.ImportSource;
+import de.carne.certmgr.store.ImportStore;
+import de.carne.certmgr.store.PasswordCallback;
+import de.carne.jfx.StageController;
+import de.carne.jfx.messagebox.MessageBoxStyle;
+import de.carne.util.Strings;
+import de.carne.util.logging.Log;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -49,23 +66,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import de.carne.certmgr.jfx.CertFileFormats;
-import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.InputValidator;
-import de.carne.certmgr.jfx.InvalidInputException;
-import de.carne.certmgr.jfx.help.Help;
-import de.carne.certmgr.jfx.help.HelpController;
-import de.carne.certmgr.jfx.passwordprompt.PasswordPromptCallback;
-import de.carne.certmgr.store.CertEntry;
-import de.carne.certmgr.store.CertStore;
-import de.carne.certmgr.store.CertStoreEntry;
-import de.carne.certmgr.store.ImportSource;
-import de.carne.certmgr.store.ImportStore;
-import de.carne.certmgr.store.PasswordCallback;
-import de.carne.jfx.StageController;
-import de.carne.jfx.messagebox.MessageBoxStyle;
-import de.carne.util.Strings;
-import de.carne.util.logging.Log;
 
 /**
  * Dialog controller for importing certificate data.
@@ -240,7 +240,7 @@ public class CertImportController extends StageController {
 		} catch (InvalidInputException e) {
 			showMessageBox(e.getLocalizedMessage(), null, MessageBoxStyle.ICON_ERROR, MessageBoxStyle.BUTTON_OK);
 		} catch (IOException e) {
-			showMessageBox(I18N.format(I18N.MESSAGE_IMPORTFAILED, importEntryName), e, MessageBoxStyle.ICON_ERROR,
+			showMessageBox(I18N.formatSTR_IMPORT_FAILED_MESSAGE(importEntryName), e, MessageBoxStyle.ICON_ERROR,
 					MessageBoxStyle.BUTTON_OK);
 		}
 		this.result.onEntryImport(importedEntries);
@@ -255,7 +255,7 @@ public class CertImportController extends StageController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_CERTIMPORT);
+			HelpController.showHelp(this, Help.TOPIC_CERT_IMPORT);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -288,7 +288,7 @@ public class CertImportController extends StageController {
 		int entryCount = importStore.getEntryCount();
 
 		this.ctlImportStatusIcon.setImage(entryCount > 0 ? Images.IMAGE_INFO16 : Images.IMAGE_WARNING16);
-		this.ctlImportStatusMessage.setText(I18N.format(I18N.MESSAGE_LOADEDENTRYCOUNT, entryCount));
+		this.ctlImportStatusMessage.setText(I18N.formatSTR_ENTRIES_LOADED_MESSAGE(entryCount));
 		updateImportSelection(importStore);
 	}
 
@@ -296,7 +296,7 @@ public class CertImportController extends StageController {
 		this.ctlProgressGroup.setVisible(false);
 
 		this.ctlImportStatusIcon.setImage(Images.IMAGE_WARNING16);
-		this.ctlImportStatusMessage.setText(I18N.format(I18N.MESSAGE_LOADERROR, cause.getLocalizedMessage()));
+		this.ctlImportStatusMessage.setText(I18N.formatSTR_LOAD_ERROR_MESSAGE(cause.getLocalizedMessage()));
 		LOG.warning(cause, null, this.ctlImportStatusMessage.getText());
 	}
 
@@ -315,34 +315,34 @@ public class CertImportController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_TITLE));
+		controllerStage.setTitle(I18N.formatSTR_CERT_IMPORT_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_IMPORT16, Images.IMAGE_IMPORT32);
 		this.ctlFileSourceInput.disableProperty().bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
 		this.ctlChooseFileSourceButton.disableProperty()
 				.bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
 		this.ctlFolderSourceInput.disableProperty().bind(Bindings.not(this.ctlFolderSourceOption.selectedProperty()));
-		this.ctlChooseFolderSourceButton.disableProperty().bind(
-				Bindings.not(this.ctlFolderSourceOption.selectedProperty()));
+		this.ctlChooseFolderSourceButton.disableProperty()
+				.bind(Bindings.not(this.ctlFolderSourceOption.selectedProperty()));
 		this.ctlURLSourceInput.disableProperty().bind(Bindings.not(this.ctlURLSourceOption.selectedProperty()));
 		this.ctlFileSourceOption.setSelected(true);
 		this.ctlProgressGroup.setVisible(false);
 		this.ctlImportSelection.setPlaceholder(new ImageView(Images.IMAGE_UNKNOWN32));
 		this.ctlImportSelectionSelected.setCellValueFactory(new TreeItemPropertyValueFactory<>("selected"));
-		this.ctlImportSelectionSelected.setCellFactory(CheckBoxTreeTableCell
-				.forTreeTableColumn(this.ctlImportSelectionSelected));
+		this.ctlImportSelectionSelected
+				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportSelectionSelected));
 		this.ctlImportSelectionName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlImportSelectionHasKey.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasKey"));
-		this.ctlImportSelectionHasKey.setCellFactory(CheckBoxTreeTableCell
-				.forTreeTableColumn(this.ctlImportSelectionHasKey));
+		this.ctlImportSelectionHasKey
+				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportSelectionHasKey));
 		this.ctlImportSelectionHasCRT.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRT"));
-		this.ctlImportSelectionHasCRT.setCellFactory(CheckBoxTreeTableCell
-				.forTreeTableColumn(this.ctlImportSelectionHasCRT));
+		this.ctlImportSelectionHasCRT
+				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportSelectionHasCRT));
 		this.ctlImportSelectionHasCSR.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCSR"));
-		this.ctlImportSelectionHasCSR.setCellFactory(CheckBoxTreeTableCell
-				.forTreeTableColumn(this.ctlImportSelectionHasCSR));
+		this.ctlImportSelectionHasCSR
+				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportSelectionHasCSR));
 		this.ctlImportSelectionHasCRL.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRL"));
-		this.ctlImportSelectionHasCRL.setCellFactory(CheckBoxTreeTableCell
-				.forTreeTableColumn(this.ctlImportSelectionHasCRL));
+		this.ctlImportSelectionHasCRL
+				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportSelectionHasCRL));
 		this.ctlImportSelection.setTreeColumn(this.ctlImportSelectionName);
 		this.ctlFileSourceOption.getToggleGroup().selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 
@@ -410,7 +410,7 @@ public class CertImportController extends StageController {
 			@Override
 			protected ImportStore call() throws Exception {
 				ImportStore importStore;
-				
+
 				try (Stream<Path> files = Files.walk(this.taskFolderPath)) {
 					importStore = reloadSource(ImportSource.fromFiles(files));
 				}
@@ -440,13 +440,12 @@ public class CertImportController extends StageController {
 		ImportSource[] sources;
 
 		if (clipboard.hasString()) {
-			sources = new ImportSource[] { ImportSource.fromData(clipboard.getString(),
-					I18N.format(I18N.TEXT_CLIPBOARDRESOURCE0), null) };
+			sources = new ImportSource[] {
+					ImportSource.fromData(clipboard.getString(), I18N.formatSTR_CLIPBOARD_RESOURCE_DATA(), null) };
 		} else if (clipboard.hasFiles()) {
-			sources = ImportSource.fromFiles(clipboard.getFiles(), I18N.bundle()
-					.getString(I18N.TEXT_CLIPBOARDRESOURCE1));
+			sources = ImportSource.fromFiles(clipboard.getFiles(), I18N.formatSTR_CLIPBOARD_RESOURCE_FILE());
 		} else {
-			throw new InvalidInputException(I18N.format(I18N.MESSAGE_INVALIDCLIPBOARDSOURCE));
+			throw new InvalidInputException(I18N.formatSTR_INVALID_CLIPBOARD_SOURCE_MESSAGE());
 		}
 		runTask(new ReloadTask() {
 			private ImportSource[] taskSources = sources;
@@ -499,24 +498,24 @@ public class CertImportController extends StageController {
 	}
 
 	private Path validateAndGetFileSource() throws InvalidInputException {
-		String fileSourceInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOFILESOURCE,
+		String fileSourceInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_FILE_SOURCE_MESSAGE,
 				Strings.safeTrim(this.ctlFileSourceInput.getText()));
 
-		return InputValidator.isRegularFile(I18N.bundle(), I18N.MESSAGE_INVALIDFILESOURCE, fileSourceInput);
+		return InputValidator.isRegularFile(I18N.BUNDLE, I18N.STR_INVALID_FILE_SOURCE_MESSAGE, fileSourceInput);
 	}
 
 	private Path validateAndGetFolderSource() throws InvalidInputException {
-		String folderSourceInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOFOLDERSOURCE,
+		String folderSourceInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_FOLDER_SOURCE_MESSAGE,
 				Strings.safeTrim(this.ctlFolderSourceInput.getText()));
 
-		return InputValidator.isDirectory(I18N.bundle(), I18N.MESSAGE_INVALIDFOLDERSOURCE, folderSourceInput);
+		return InputValidator.isDirectory(I18N.BUNDLE, I18N.STR_INVALID_FOLDER_SOURCE, folderSourceInput);
 	}
 
 	private URL validateAndGetURLSource() throws InvalidInputException {
-		String urlSourceInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOURLSOURCE,
+		String urlSourceInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_URL_SOURCE_MESSAGE,
 				Strings.safeTrim(this.ctlURLSourceInput.getText()));
 
-		return InputValidator.isURL(I18N.bundle(), I18N.MESSAGE_INVALIDURLSOURCE, urlSourceInput);
+		return InputValidator.isURL(I18N.BUNDLE, I18N.STR_INVALID_URL_SOURCE_MESSAGE, urlSourceInput);
 	}
 
 	private boolean validateAndGetOverwriteOption() {
@@ -530,7 +529,7 @@ public class CertImportController extends StageController {
 		if (rootItem != null) {
 			collectImportSelectionHelper(selection, rootItem);
 		}
-		InputValidator.isTrue(I18N.bundle(), I18N.MESSAGE_NOIMPORTSELECTION, !selection.isEmpty());
+		InputValidator.isTrue(I18N.BUNDLE, I18N.STR_NO_IMPORT_SELECTION_MESSAGE, !selection.isEmpty());
 		return selection;
 	}
 
@@ -568,7 +567,7 @@ public class CertImportController extends StageController {
 		ReloadTask() {
 			// Nothing to do here
 		}
-		
+
 		/*
 		 * (non-Javadoc)
 		 * @see javafx.concurrent.Task#scheduled()

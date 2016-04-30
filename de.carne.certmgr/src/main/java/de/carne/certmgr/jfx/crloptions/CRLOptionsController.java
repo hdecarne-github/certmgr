@@ -25,19 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import de.carne.certmgr.jfx.CertStoreEntryOption;
 import de.carne.certmgr.jfx.Images;
 import de.carne.certmgr.jfx.InputValidator;
@@ -52,6 +39,19 @@ import de.carne.certmgr.store.x509.RevokeReason;
 import de.carne.certmgr.store.x509.X509CRLParams;
 import de.carne.jfx.StageController;
 import de.carne.jfx.messagebox.MessageBoxStyle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 /**
  * Dialog controller for CRL editing.
@@ -64,7 +64,8 @@ public class CRLOptionsController extends StageController {
 	public interface Result {
 
 		/**
-		 * Called when the user applies a CRL update and the selected certificate store entry was updated.
+		 * Called when the user applies a CRL update and the selected
+		 * certificate store entry was updated.
 		 *
 		 * @param entryParam The updated certificate store entry.
 		 */
@@ -114,7 +115,7 @@ public class CRLOptionsController extends StageController {
 		} catch (InvalidInputException e) {
 			showMessageBox(e.getLocalizedMessage(), null, MessageBoxStyle.ICON_ERROR, MessageBoxStyle.BUTTON_OK);
 		} catch (IOException | GeneralSecurityException e) {
-			showMessageBox(I18N.format(I18N.MESSAGE_GENERATEERROR), e, MessageBoxStyle.ICON_ERROR,
+			showMessageBox(I18N.formatSTR_GENERATE_ERROR_MESSAGE(), e, MessageBoxStyle.ICON_ERROR,
 					MessageBoxStyle.BUTTON_OK);
 		}
 	}
@@ -127,7 +128,7 @@ public class CRLOptionsController extends StageController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_CRLOPTIONS);
+			HelpController.showHelp(this, Help.TOPIC_CRL_OPTIONS);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -163,7 +164,7 @@ public class CRLOptionsController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_TITLE));
+		controllerStage.setTitle(I18N.formatSTR_CRL_OPTIONS_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_NEWCRL16, Images.IMAGE_NEWCRL32);
 		this.ctlCRLEntriesInputRevoked.setCellValueFactory(new PropertyValueFactory<>("revoked"));
 		this.ctlCRLEntriesInputRevoked.setCellFactory(CheckBoxTableCell.forTableColumn(this.ctlCRLEntriesInputRevoked));
@@ -175,7 +176,8 @@ public class CRLOptionsController extends StageController {
 	/**
 	 * Begin CRL option editing.
 	 *
-	 * @param entryParam The certificate store entry to edit the CRL options for.
+	 * @param entryParam The certificate store entry to edit the CRL options
+	 *        for.
 	 * @param callback The callback to report the result of the user actions.
 	 */
 	public void beginCRLOptions(CertStoreEntry entryParam, Result callback) {
@@ -186,22 +188,22 @@ public class CRLOptionsController extends StageController {
 		this.store = entryParam.getStore();
 		this.storeOptions.load(this.store);
 		this.ctlIssuerEntrySelection.getSelectionModel().selectedItemProperty()
-		.addListener(new ChangeListener<CertStoreEntryOption>() {
+				.addListener(new ChangeListener<CertStoreEntryOption>() {
 
-			@Override
-			public void changed(ObservableValue<? extends CertStoreEntryOption> property,
+					@Override
+					public void changed(ObservableValue<? extends CertStoreEntryOption> property,
 							CertStoreEntryOption oldValue, CertStoreEntryOption newValue) {
-				onIssuerEntryChanged(newValue);
-			}
+						onIssuerEntryChanged(newValue);
+					}
 
-		});
+				});
 
 		Collection<CertStoreEntryOption> issuerEntries = CertStoreEntryOption.fromStoreWithPredicate(this.store,
 				e -> e.hasKey());
 
 		this.ctlIssuerEntrySelection.getItems().addAll(issuerEntries);
-		this.ctlIssuerEntrySelection.getSelectionModel().select(
-				CertStoreEntryOption.findOption(issuerEntries, entryParam));
+		this.ctlIssuerEntrySelection.getSelectionModel()
+				.select(CertStoreEntryOption.findOption(issuerEntries, entryParam));
 
 		LocalDate lastUpdate = LocalDate.now();
 		LocalDate nextUpdate = this.storeOptions.getDefCRLUpdate().plusLocalData(lastUpdate);
@@ -267,21 +269,21 @@ public class CRLOptionsController extends StageController {
 	}
 
 	private CertStoreEntry validateAndGetIssuerEntry() throws InvalidInputException {
-		CertStoreEntryOption issuerEntryInput = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NOISSUERENTRY,
+		CertStoreEntryOption issuerEntryInput = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_ISSUER_ENTRY_MESSAGE,
 				this.ctlIssuerEntrySelection.getValue());
 
 		return issuerEntryInput.getEntry();
 	}
 
 	private X509CRLParams validateAndGetCRLParams() throws InvalidInputException {
-		String sigAlg = InputValidator
-				.notNull(I18N.bundle(), I18N.MESSAGE_NOSIGALG, this.ctlSigAlgSelection.getValue());
-		LocalDate lastUpdate = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NOLASTUPDATE,
+		String sigAlg = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_SIG_ALG_MESSAGE,
+				this.ctlSigAlgSelection.getValue());
+		LocalDate lastUpdate = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_LAST_UPDATE_MESSAGE,
 				this.ctlLastUpdateInput.getValue());
-		LocalDate nextUpdate = InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NONEXTUPDATE,
+		LocalDate nextUpdate = InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_NEXT_UPDATE_MESSAGE,
 				this.ctlNextUpdateInput.getValue());
 
-		InputValidator.isTrue(I18N.bundle(), I18N.MESSAGE_INVALIDNEXTUPDATE, nextUpdate.isAfter(lastUpdate),
+		InputValidator.isTrue(I18N.BUNDLE, I18N.STR_INVALID_NEXT_UPDATE_MESSAGE, nextUpdate.isAfter(lastUpdate),
 				lastUpdate, nextUpdate);
 
 		X509CRLParams crlParams = new X509CRLParams(sigAlg, lastUpdate, nextUpdate);

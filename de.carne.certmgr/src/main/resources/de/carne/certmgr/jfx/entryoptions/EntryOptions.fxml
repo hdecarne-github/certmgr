@@ -14,24 +14,24 @@
 
 <GridPane hgap="8.0" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.entryoptions.EntryOptionsController">
   <children>
-      <Label text="%label.subjectdn" textAlignment="LEFT" wrapText="true" />
+      <Label text="%_STR_SUBJECT_DN_LABEL" textAlignment="LEFT" wrapText="true" />
       <TextField fx:id="ctlSubjectDNInput" disable="true" editable="false" layoutX="108.0" layoutY="35.0" GridPane.columnIndex="1" />
       <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
-  <Label text="%label.alias" textAlignment="LEFT" wrapText="true" GridPane.rowIndex="2">
+  <Label text="%_STR_ALIAS_LABEL" textAlignment="LEFT" wrapText="true" GridPane.rowIndex="2">
     <font>
       <Font size="12.0" />
     </font>
   </Label>
-      <TextField fx:id="ctlAliasInput" promptText="%label.aliasprompt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <CheckBox fx:id="ctlChangePasswordOption" mnemonicParsing="false" text="%label.changepassword" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+      <TextField fx:id="ctlAliasInput" promptText="%_STR_ALIAS_PROMPT" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <CheckBox fx:id="ctlChangePasswordOption" mnemonicParsing="false" text="%_STR_CHANGE_PASSWORD_LABEL" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
     <HBox alignment="TOP_RIGHT" spacing="8.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
       <children>
-      <Button defaultButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onApply" text="%button.apply" HBox.hgrow="NEVER">
+      <Button defaultButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onApply" text="%_STR_APPLY_BUTTON" HBox.hgrow="NEVER">
         <HBox.margin>
           <Insets left="14.0" />
         </HBox.margin>
       </Button>
-        <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%button.cancel" HBox.hgrow="NEVER">
+        <Button cancelButton="true" minWidth="80.0" mnemonicParsing="false" onAction="#onCancel" text="%_STR_CANCEL_BUTTON" HBox.hgrow="NEVER">
           <HBox.margin>
             <Insets />
           </HBox.margin>

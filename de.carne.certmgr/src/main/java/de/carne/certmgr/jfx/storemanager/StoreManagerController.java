@@ -301,9 +301,8 @@ public class StoreManagerController extends StageController {
 
 		if (selectedItemEntry != null && selectedItemEntry.getEntry() != null) {
 			CertStoreEntry selectedEntry = selectedItemEntry.getEntry();
-			MessageBoxResult result = showMessageBox(
-					I18N.format(I18N.MESSAGE_CONFIRMDELETEENTRY, selectedEntry.getName()), null,
-					MessageBoxStyle.ICON_QUESTION, MessageBoxStyle.BUTTON_YES_NO);
+			MessageBoxResult result = showMessageBox(I18N.formatSTR_CONFIRM_DELETE_MESSAGE(selectedEntry.getName()),
+					null, MessageBoxStyle.ICON_QUESTION, MessageBoxStyle.BUTTON_YES_NO);
 
 			if (MessageBoxResult.YES.equals(result)) {
 				try {
@@ -510,7 +509,7 @@ public class StoreManagerController extends StageController {
 	@FXML
 	void onHelpAction(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_STOREMANAGER);
+			HelpController.showHelp(this, Help.TOPIC_STORE_MANAGER);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -522,9 +521,9 @@ public class StoreManagerController extends StageController {
 			AboutInfoController aboutInfoController = openStage(AboutInfoController.class);
 
 			aboutInfoController.setInfoIcon(Images.IMAGE_STORE32);
-			aboutInfoController.addInfo(I18N.format(I18N.TEXT_ABOUTTITLE1), I18N.format(I18N.TEXT_ABOUTINFO1));
-			aboutInfoController.addInfo(I18N.format(I18N.TEXT_ABOUTTITLE2), I18N.format(I18N.TEXT_ABOUTINFO2));
-			aboutInfoController.addInfo(I18N.format(I18N.TEXT_ABOUTTITLE3), I18N.format(I18N.TEXT_ABOUTINFO3));
+			aboutInfoController.addInfo(I18N.formatSTR_ABOUT_TITLE11(), I18N.formatSTR_ABOUT_INFO1());
+			aboutInfoController.addInfo(I18N.formatSTR_ABOUT_TITLE12(), I18N.formatSTR_ABOUT_INFO2());
+			aboutInfoController.addInfo(I18N.formatSTR_ABOUT_TITLE13(), I18N.formatSTR_ABOUT_INFO3());
 			aboutInfoController.getStage().showAndWait();
 		} catch (IOException e) {
 			reportUnexpectedException(e);
@@ -610,7 +609,7 @@ public class StoreManagerController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_TITLE));
+		controllerStage.setTitle(I18N.formatSTR_STORE_MANAGER_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_STORE16, Images.IMAGE_STORE32);
 		this.ctlLogViewLevel.setCellValueFactory(new PropertyValueFactory<>("level"));
 		this.ctlLogViewLevel.setCellFactory(ImageViewTableCell.forTableColumn());
@@ -821,14 +820,13 @@ public class StoreManagerController extends StageController {
 			CertStoreEntry selectedStoreEntry = selectedEntry.getEntry();
 
 			if (selectedStoreEntry != null) {
-				TreeItem<StoreEntryAttributesModel> entryItem = addEntryViewNode(rootItem,
-						I18N.format(I18N.TEXT_CERT_ENTRY));
+				TreeItem<StoreEntryAttributesModel> entryItem = addEntryViewNode(rootItem, I18N.formatSTR_CERT_ENTRY());
 
 				addEntrViewValues(entryItem, getEntryInfo(new ArrayList<>(), selectedStoreEntry));
 				try {
 					if (selectedStoreEntry.hasCRT()) {
 						TreeItem<StoreEntryAttributesModel> crtItem = addEntryViewNode(rootItem,
-								I18N.format(I18N.TEXT_CRT_OBJECT));
+								I18N.formatSTR_CRT_OBJECT());
 						X509Certificate crt = selectedStoreEntry.getCRT().getObject();
 
 						addEntrViewValues(crtItem, getCRTInfo(new ArrayList<>(), crt));
@@ -836,7 +834,7 @@ public class StoreManagerController extends StageController {
 					}
 					if (selectedStoreEntry.hasCSR()) {
 						TreeItem<StoreEntryAttributesModel> csrItem = addEntryViewNode(rootItem,
-								I18N.format(I18N.TEXT_CSR_OBJECT));
+								I18N.formatSTR_CSR_OBJECT());
 						PKCS10Object csr = selectedStoreEntry.getCSR().getObject();
 
 						addEntrViewValues(csrItem, getCSRInfo(new ArrayList<>(), csr));
@@ -844,19 +842,18 @@ public class StoreManagerController extends StageController {
 					}
 					if (selectedStoreEntry.hasCRL()) {
 						TreeItem<StoreEntryAttributesModel> crlItem = addEntryViewNode(rootItem,
-								I18N.format(I18N.TEXT_CRL_OBJECT));
+								I18N.formatSTR_CRL_OBJECT());
 						X509CRL crl = selectedStoreEntry.getCRL().getObject();
 
 						addEntrViewValues(crlItem, getCRLInfo(new ArrayList<>(), crl));
 						updateEntryViewExtensions(crlItem, CertStore.decodeCRLExtensions(crl));
 					}
 				} catch (IOException e) {
-					LOG.warning(e, I18N.bundle(), I18N.MESSAGE_CERTENTRYERROR, selectedStoreEntry.getAlias(),
+					LOG.warning(e, I18N.BUNDLE, I18N.STR_ENTRY_ERROR_MESSAGE, selectedStoreEntry.getAlias(),
 							e.getLocalizedMessage());
 				}
 			} else {
-				TreeItem<StoreEntryAttributesModel> storeItem = addEntryViewNode(rootItem,
-						I18N.format(I18N.TEXT_CERT_STORE));
+				TreeItem<StoreEntryAttributesModel> storeItem = addEntryViewNode(rootItem, I18N.formatSTR_CERT_STORE());
 
 				addEntrViewValues(storeItem, getStoreInfo(new ArrayList<>()));
 			}
@@ -866,7 +863,7 @@ public class StoreManagerController extends StageController {
 	private void updateEntryViewExtensions(TreeItem<StoreEntryAttributesModel> parentItem,
 			Collection<EncodedX509Extension> extensions) {
 		for (EncodedX509Extension extension : extensions) {
-			String nodeAttribute = I18N.format(I18N.TEXT_EXTENSION_OBJECT, OIDRegistry.get(extension.getOID()));
+			String nodeAttribute = I18N.formatSTR_EXT_OBJECT(OIDRegistry.get(extension.getOID()));
 			String nodeValue = (extension.isCritical() ? "critical" : "non-critical");
 			TreeItem<StoreEntryAttributesModel> extensionItem = addEntryViewNode(parentItem, nodeAttribute, nodeValue);
 			X509Extension decoded = extension.getDecoded();

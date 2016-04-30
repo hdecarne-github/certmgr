@@ -35,7 +35,7 @@ import de.carne.certmgr.store.x509.X509CertificateParams;
 /**
  * Test store operations.
  */
-public class StoreTest extends TestBase {
+public class StoreTest extends StoreTestBase {
 
 	private static final String STORE_BOUNCYCASTLE = "BouncyCastleStore";
 

@@ -31,19 +31,19 @@ class ExtensionSelectionOption extends NamedOption<Boolean> {
 	 * Extension is not used at all.
 	 */
 	public static final ExtensionSelectionOption DISABLED = new ExtensionSelectionOption(null,
-			I18N.format(I18N.TEXT_EXTENSION_UNUSED));
+			I18N.formatSTR_UNUSED_EXT_LABEL());
 
 	/**
 	 * Extension is critical.
 	 */
 	public static final ExtensionSelectionOption CRITICAL = new ExtensionSelectionOption(Boolean.TRUE,
-			I18N.format(I18N.TEXT_EXTENSION_CRITICAL));
+			I18N.formatSTR_CRITICAL_EXT_LABEL());
 
 	/**
 	 * Extension is non-critical.
 	 */
 	public static final ExtensionSelectionOption NONCRITICAL = new ExtensionSelectionOption(Boolean.FALSE,
-			I18N.format(I18N.TEXT_EXTENSION_NONCRITICAL));
+			I18N.formatSTR_NON_CRITICAL_EXT_LABEL());
 
 	public static final Collection<ExtensionSelectionOption> VALUES;
 
@@ -62,7 +62,7 @@ class ExtensionSelectionOption extends NamedOption<Boolean> {
 
 	/**
 	 * Check whether this option enables the extension.
-	 * 
+	 *
 	 * @return true, if this option enables the extension.
 	 */
 	public boolean isEnabled() {
@@ -71,7 +71,7 @@ class ExtensionSelectionOption extends NamedOption<Boolean> {
 
 	/**
 	 * Check whether this option makes the extension critical.
-	 * 
+	 *
 	 * @return true, if this option makes the extension critical.
 	 */
 	public boolean isCritical() {
@@ -82,7 +82,7 @@ class ExtensionSelectionOption extends NamedOption<Boolean> {
 
 	/**
 	 * Get the option represented by the submitted critical flag.
-	 * 
+	 *
 	 * @param critical The critical flag to get the option for.
 	 * @return The option representing the submitted critical flag.
 	 */

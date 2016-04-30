@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.certmgr.store.provider;
 
@@ -24,14 +13,30 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String MESSAGE_GENERATEKEY = "provider.generatekey";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
+
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	/**
+	 * Resource key {@code STR_GENERATE_KEY}
+	 * <p>
+	 * Generate {0}&frasl;{1} key...
+	 * </p>
+	 */
+	static final String STR_GENERATE_KEY = "STR_GENERATE_KEY";
+
+	/**
+	 * Resource string {@code STR_GENERATE_KEY}
+	 * <p>
+	 * Generate {0}&frasl;{1} key...
+	 * </p>
+	 */
+	static String formatSTR_GENERATE_KEY(Object... arguments) {
+		return format(STR_GENERATE_KEY, arguments);
 	}
 
 }

@@ -47,7 +47,8 @@ public final class TimePeriodOption implements Comparable<TimePeriodOption> {
 	}
 
 	/**
-	 * Add a local date value to the time period and determine the resulting local date.
+	 * Add a local date value to the time period and determine the resulting
+	 * local date.
 	 *
 	 * @param date The date to add.
 	 * @return The resulting date.
@@ -112,11 +113,11 @@ public final class TimePeriodOption implements Comparable<TimePeriodOption> {
 		String string;
 
 		if (this.days < DAYS_PER_MONTH) {
-			string = I18N.format(I18N.TEXT_TIMEPERIOD_DAYS, this.days);
+			string = I18N.formatSTR_TIMEPERIOD_DAYS(this.days);
 		} else if (this.days < DAYS_PER_YEAR) {
-			string = I18N.format(I18N.TEXT_TIMEPERIOD_MONTHS, this.days / DAYS_PER_MONTH);
+			string = I18N.formatSTR_TIMEPERIOD_MONTHS(this.days / DAYS_PER_MONTH);
 		} else {
-			string = I18N.format(I18N.TEXT_TIMEPERIOD_YEARS, this.days / DAYS_PER_YEAR);
+			string = I18N.formatSTR_TIMEPERIOD_YEARS(this.days / DAYS_PER_YEAR);
 		}
 		return string;
 	}

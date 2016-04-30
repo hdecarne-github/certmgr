@@ -269,7 +269,7 @@ public abstract class StoreProvider {
 
 		int keySize = keyParams.getKeySize();
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_GENERATEKEY, keyAlg, Integer.toString(keySize));
+		LOG.notice(I18N.BUNDLE, I18N.STR_GENERATE_KEY, keyAlg, Integer.toString(keySize));
 
 		keyGenerator.initialize(keySize, random);
 

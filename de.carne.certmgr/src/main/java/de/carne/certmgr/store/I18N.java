@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.certmgr.store;
 
@@ -24,26 +13,228 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String MESSAGE_CREATESTORE = "store.create";
-	static final String MESSAGE_OPENSTORE = "store.open";
-	static final String MESSAGE_INCOMPLETECERTENTRY = "store.incompletecertentry";
-	static final String MESSAGE_INVALIDCERTENTRY = "store.invalidcertentry";
-	static final String MESSAGE_CERTENTRYERROR = "store.certentryerror";
-	static final String MESSAGE_INVALIDPASSWORD = "store.invalidpassword";
-	static final String MESSAGE_PASSWORDREQUIRED = "store.passwordrequired";
-	static final String MESSAGE_NOTHINGTOIMPORT = "store.nothingtoimport";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static final String MESSAGE_NOKEYTOEXPORT = "exporter.nokeytoexport";
-	static final String MESSAGE_NOCRTTOEXPORT = "exporter.nocrttoexport";
-	static final String MESSAGE_NOCSRTOEXPORT = "exporter.nocsrtoexport";
-	static final String MESSAGE_NOCRLTOEXPORT = "exporter.nocrltoexport";
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
 
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	/**
+	 * Resource key {@code STR_SKIPPING_CRL_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a certificate revocation list to export.
+	 * </p>
+	 */
+	static final String STR_SKIPPING_CRL_EXPORT = "STR_SKIPPING_CRL_EXPORT";
+
+	/**
+	 * Resource string {@code STR_SKIPPING_CRL_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a certificate revocation list to export.
+	 * </p>
+	 */
+	static String formatSTR_SKIPPING_CRL_EXPORT(Object... arguments) {
+		return format(STR_SKIPPING_CRL_EXPORT, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_CREATE_STORE}
+	 * <p>
+	 * Creating store: ''{0}''
+	 * </p>
+	 */
+	static final String STR_CREATE_STORE = "STR_CREATE_STORE";
+
+	/**
+	 * Resource string {@code STR_CREATE_STORE}
+	 * <p>
+	 * Creating store: ''{0}''
+	 * </p>
+	 */
+	static String formatSTR_CREATE_STORE(Object... arguments) {
+		return format(STR_CREATE_STORE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_INCOMPLETE_CERT_ENTRY}
+	 * <p>
+	 * Ignoring incomplete certificate entry ''{0}'' (key:''{1}'' crt:''{2}'' csr:''{3}'' crl:''{4}'') 
+	 * </p>
+	 */
+	static final String STR_INCOMPLETE_CERT_ENTRY = "STR_INCOMPLETE_CERT_ENTRY";
+
+	/**
+	 * Resource string {@code STR_INCOMPLETE_CERT_ENTRY}
+	 * <p>
+	 * Ignoring incomplete certificate entry ''{0}'' (key:''{1}'' crt:''{2}'' csr:''{3}'' crl:''{4}'') 
+	 * </p>
+	 */
+	static String formatSTR_INCOMPLETE_CERT_ENTRY(Object... arguments) {
+		return format(STR_INCOMPLETE_CERT_ENTRY, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_INVALID_CERT_ENTRY}
+	 * <p>
+	 * Ignoring invalid certificate entry ''{0}'' (key:''{1}'' crt:''{2}'' csr:''{3}'' crl:''{4}'') 
+	 * </p>
+	 */
+	static final String STR_INVALID_CERT_ENTRY = "STR_INVALID_CERT_ENTRY";
+
+	/**
+	 * Resource string {@code STR_INVALID_CERT_ENTRY}
+	 * <p>
+	 * Ignoring invalid certificate entry ''{0}'' (key:''{1}'' crt:''{2}'' csr:''{3}'' crl:''{4}'') 
+	 * </p>
+	 */
+	static String formatSTR_INVALID_CERT_ENTRY(Object... arguments) {
+		return format(STR_INVALID_CERT_ENTRY, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_OPEN_STORE}
+	 * <p>
+	 * Opening store: ''{0}'' 
+	 * </p>
+	 */
+	static final String STR_OPEN_STORE = "STR_OPEN_STORE";
+
+	/**
+	 * Resource string {@code STR_OPEN_STORE}
+	 * <p>
+	 * Opening store: ''{0}'' 
+	 * </p>
+	 */
+	static String formatSTR_OPEN_STORE(Object... arguments) {
+		return format(STR_OPEN_STORE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_SKIPPING_CSR_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a certificate signing request to export.
+	 * </p>
+	 */
+	static final String STR_SKIPPING_CSR_EXPORT = "STR_SKIPPING_CSR_EXPORT";
+
+	/**
+	 * Resource string {@code STR_SKIPPING_CSR_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a certificate signing request to export.
+	 * </p>
+	 */
+	static String formatSTR_SKIPPING_CSR_EXPORT(Object... arguments) {
+		return format(STR_SKIPPING_CSR_EXPORT, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_SKIPPING_KEY_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a key to export.
+	 * </p>
+	 */
+	static final String STR_SKIPPING_KEY_EXPORT = "STR_SKIPPING_KEY_EXPORT";
+
+	/**
+	 * Resource string {@code STR_SKIPPING_KEY_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a key to export.
+	 * </p>
+	 */
+	static String formatSTR_SKIPPING_KEY_EXPORT(Object... arguments) {
+		return format(STR_SKIPPING_KEY_EXPORT, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_SKIPPING_CRT_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a certificate to export.
+	 * </p>
+	 */
+	static final String STR_SKIPPING_CRT_EXPORT = "STR_SKIPPING_CRT_EXPORT";
+
+	/**
+	 * Resource string {@code STR_SKIPPING_CRT_EXPORT}
+	 * <p>
+	 * Certificate entry<br/>''{0}''<br/>does not contain a certificate to export.
+	 * </p>
+	 */
+	static String formatSTR_SKIPPING_CRT_EXPORT(Object... arguments) {
+		return format(STR_SKIPPING_CRT_EXPORT, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_PASSWORD_REQUIRED}
+	 * <p>
+	 * A password is required to access ''{0}''.
+	 * </p>
+	 */
+	static final String STR_PASSWORD_REQUIRED = "STR_PASSWORD_REQUIRED";
+
+	/**
+	 * Resource string {@code STR_PASSWORD_REQUIRED}
+	 * <p>
+	 * A password is required to access ''{0}''.
+	 * </p>
+	 */
+	static String formatSTR_PASSWORD_REQUIRED(Object... arguments) {
+		return format(STR_PASSWORD_REQUIRED, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_INVALID_PASSWORD}
+	 * <p>
+	 * The password entered for ''{0}'' is invalid.
+	 * </p>
+	 */
+	static final String STR_INVALID_PASSWORD = "STR_INVALID_PASSWORD";
+
+	/**
+	 * Resource string {@code STR_INVALID_PASSWORD}
+	 * <p>
+	 * The password entered for ''{0}'' is invalid.
+	 * </p>
+	 */
+	static String formatSTR_INVALID_PASSWORD(Object... arguments) {
+		return format(STR_INVALID_PASSWORD, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_SKIPPING_CERT_IMPORT}
+	 * <p>
+	 * Certificate entry ''{0}'' is already in the store. Skipping import.
+	 * </p>
+	 */
+	static final String STR_SKIPPING_CERT_IMPORT = "STR_SKIPPING_CERT_IMPORT";
+
+	/**
+	 * Resource string {@code STR_SKIPPING_CERT_IMPORT}
+	 * <p>
+	 * Certificate entry ''{0}'' is already in the store. Skipping import.
+	 * </p>
+	 */
+	static String formatSTR_SKIPPING_CERT_IMPORT(Object... arguments) {
+		return format(STR_SKIPPING_CERT_IMPORT, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_CERT_ENTRY_ERROR}
+	 * <p>
+	 * An error occurred while processing certificate entry ''{0}'' (Cause: ''{1}'')
+	 * </p>
+	 */
+	static final String STR_CERT_ENTRY_ERROR = "STR_CERT_ENTRY_ERROR";
+
+	/**
+	 * Resource string {@code STR_CERT_ENTRY_ERROR}
+	 * <p>
+	 * An error occurred while processing certificate entry ''{0}'' (Cause: ''{1}'')
+	 * </p>
+	 */
+	static String formatSTR_CERT_ENTRY_ERROR(Object... arguments) {
+		return format(STR_CERT_ENTRY_ERROR, arguments);
 	}
 
 }

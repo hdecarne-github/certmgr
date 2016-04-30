@@ -18,6 +18,9 @@ package de.carne.certmgr.jfx.passwordprompt;
 
 import java.io.IOException;
 
+import de.carne.certmgr.jfx.Images;
+import de.carne.certmgr.jfx.help.Help;
+import de.carne.certmgr.jfx.help.HelpController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -25,12 +28,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.help.Help;
-import de.carne.certmgr.jfx.help.HelpController;
 
 /**
- * Dialog controller for password prompt display to ask for an existing password.
+ * Dialog controller for password prompt display to ask for an existing
+ * password.
  */
 public class PasswordPromptController extends AbstractPasswordPromptController {
 
@@ -68,7 +69,7 @@ public class PasswordPromptController extends AbstractPasswordPromptController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_PASSWORDPROMPT);
+			HelpController.showHelp(this, Help.TOPIC_PASSWORD_PROMPT);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -88,30 +89,33 @@ public class PasswordPromptController extends AbstractPasswordPromptController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_PASSWORDTITLE));
+		controllerStage.setTitle(I18N.formatSTR_PASSWORD_PROMPT_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_PRIVATECRT16, Images.IMAGE_PRIVATECRT32);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#beginPasswordPrompt(java.lang.String)
+	 * @see
+	 * de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#
+	 * beginPasswordPrompt(java.lang.String)
 	 */
 	@Override
 	public void beginPasswordPrompt(String resource) {
-		this.ctlPromptText.setText(I18N.format(I18N.MESSAGE_PASSWORDPROMPT, resource));
+		this.ctlPromptText.setText(I18N.formatSTR_PASSWORD_MESSAGE(resource));
 		getStage().sizeToScene();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#beginPasswordPrompt(java.lang.String,
-	 * java.lang.Exception)
+	 * @see
+	 * de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#
+	 * beginPasswordPrompt(java.lang.String, java.lang.Exception)
 	 */
 	@Override
 	public void beginPasswordPrompt(String resource, Exception details) {
-		this.ctlPromptText.setText(I18N.format(I18N.MESSAGE_PASSWORDPROMPT, resource));
+		this.ctlPromptText.setText(I18N.formatSTR_PASSWORD_MESSAGE(resource));
 		this.ctlMessageIcon.setImage(Images.IMAGE_WARNING16);
-		this.ctlMessageText.setText(I18N.format(I18N.MESSAGE_INVALIDPASSWORD));
+		this.ctlMessageText.setText(I18N.formatSTR_WRONG_PASSWORD_MESSAGE());
 		getStage().sizeToScene();
 	}
 

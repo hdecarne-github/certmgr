@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.certmgr.jfx.certexport;
 
@@ -24,24 +13,192 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String TEXT_TITLE = "certexport.title";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static final String MESSAGE_NOEXPORTCERT = "certerxport.noexportcert";
-	static final String MESSAGE_NOENCODING = "certerxport.noencoding";
-	static final String MESSAGE_NOEXPORTOBJECT = "certexport.noexportobject";
-	static final String MESSAGE_NOFILETARGET = "certexport.noexportfile";
-	static final String MESSAGE_INVALIDFILETARGET = "certexport.invalidexportfile";
-	static final String MESSAGE_NOFOLDERTARGET = "certexport.noexportfolder";
-	static final String MESSAGE_INVALIDFOLDERTARGET = "certexport.invalidexportfolder";
-	static final String MESSAGE_NOEXPORTTARGET = "certexport.noexporttarget";
-	static final String MESSAGE_EXPORTFAILED = "certexport.exportfailed";
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
 
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	/**
+	 * Resource key {@code STR_NO_EXPORT_FOLDER_MESSAGE}
+	 * <p>
+	 * Please enter an export folder.
+	 * </p>
+	 */
+	static final String STR_NO_EXPORT_FOLDER_MESSAGE = "STR_NO_EXPORT_FOLDER_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_EXPORT_FOLDER_MESSAGE}
+	 * <p>
+	 * Please enter an export folder.
+	 * </p>
+	 */
+	static String formatSTR_NO_EXPORT_FOLDER_MESSAGE(Object... arguments) {
+		return format(STR_NO_EXPORT_FOLDER_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_EXPORT_TARGET_MESSAGE}
+	 * <p>
+	 * Please select an export target.
+	 * </p>
+	 */
+	static final String STR_NO_EXPORT_TARGET_MESSAGE = "STR_NO_EXPORT_TARGET_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_EXPORT_TARGET_MESSAGE}
+	 * <p>
+	 * Please select an export target.
+	 * </p>
+	 */
+	static String formatSTR_NO_EXPORT_TARGET_MESSAGE(Object... arguments) {
+		return format(STR_NO_EXPORT_TARGET_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_EXPORT_CERT_MESSAGE}
+	 * <p>
+	 * Please selected a certificate entry to export.
+	 * </p>
+	 */
+	static final String STR_NO_EXPORT_CERT_MESSAGE = "STR_NO_EXPORT_CERT_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_EXPORT_CERT_MESSAGE}
+	 * <p>
+	 * Please selected a certificate entry to export.
+	 * </p>
+	 */
+	static String formatSTR_NO_EXPORT_CERT_MESSAGE(Object... arguments) {
+		return format(STR_NO_EXPORT_CERT_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_EXPORT_FILE_MESSAGE}
+	 * <p>
+	 * Please enter an export file.
+	 * </p>
+	 */
+	static final String STR_NO_EXPORT_FILE_MESSAGE = "STR_NO_EXPORT_FILE_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_EXPORT_FILE_MESSAGE}
+	 * <p>
+	 * Please enter an export file.
+	 * </p>
+	 */
+	static String formatSTR_NO_EXPORT_FILE_MESSAGE(Object... arguments) {
+		return format(STR_NO_EXPORT_FILE_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_INVALID_EXPORT_FILE_MESSAGE}
+	 * <p>
+	 * ''{0}'' is not a valid export file.
+	 * </p>
+	 */
+	static final String STR_INVALID_EXPORT_FILE_MESSAGE = "STR_INVALID_EXPORT_FILE_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_INVALID_EXPORT_FILE_MESSAGE}
+	 * <p>
+	 * ''{0}'' is not a valid export file.
+	 * </p>
+	 */
+	static String formatSTR_INVALID_EXPORT_FILE_MESSAGE(Object... arguments) {
+		return format(STR_INVALID_EXPORT_FILE_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_EXPORT_ELEMENT_MESSAGE}
+	 * <p>
+	 * Please select at least one data element to include into the export. 
+	 * </p>
+	 */
+	static final String STR_NO_EXPORT_ELEMENT_MESSAGE = "STR_NO_EXPORT_ELEMENT_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_EXPORT_ELEMENT_MESSAGE}
+	 * <p>
+	 * Please select at least one data element to include into the export. 
+	 * </p>
+	 */
+	static String formatSTR_NO_EXPORT_ELEMENT_MESSAGE(Object... arguments) {
+		return format(STR_NO_EXPORT_ELEMENT_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_CERT_EXPORT_TITLE}
+	 * <p>
+	 * Export certificate
+	 * </p>
+	 */
+	static final String STR_CERT_EXPORT_TITLE = "STR_CERT_EXPORT_TITLE";
+
+	/**
+	 * Resource string {@code STR_CERT_EXPORT_TITLE}
+	 * <p>
+	 * Export certificate
+	 * </p>
+	 */
+	static String formatSTR_CERT_EXPORT_TITLE(Object... arguments) {
+		return format(STR_CERT_EXPORT_TITLE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_EXPORT_ENCODING_MESSAGE}
+	 * <p>
+	 * Please select a file format.
+	 * </p>
+	 */
+	static final String STR_NO_EXPORT_ENCODING_MESSAGE = "STR_NO_EXPORT_ENCODING_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_EXPORT_ENCODING_MESSAGE}
+	 * <p>
+	 * Please select a file format.
+	 * </p>
+	 */
+	static String formatSTR_NO_EXPORT_ENCODING_MESSAGE(Object... arguments) {
+		return format(STR_NO_EXPORT_ENCODING_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_INVALID_EXPORT_FOLDER_MESSAGE}
+	 * <p>
+	 * ''{0}'' is not a valid export folder.
+	 * </p>
+	 */
+	static final String STR_INVALID_EXPORT_FOLDER_MESSAGE = "STR_INVALID_EXPORT_FOLDER_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_INVALID_EXPORT_FOLDER_MESSAGE}
+	 * <p>
+	 * ''{0}'' is not a valid export folder.
+	 * </p>
+	 */
+	static String formatSTR_INVALID_EXPORT_FOLDER_MESSAGE(Object... arguments) {
+		return format(STR_INVALID_EXPORT_FOLDER_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_EXPORT_FAILED_MESSAGE}
+	 * <p>
+	 * An error occurred while exporting certificate entry<br/>''{0}''.
+	 * </p>
+	 */
+	static final String STR_EXPORT_FAILED_MESSAGE = "STR_EXPORT_FAILED_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_EXPORT_FAILED_MESSAGE}
+	 * <p>
+	 * An error occurred while exporting certificate entry<br/>''{0}''.
+	 * </p>
+	 */
+	static String formatSTR_EXPORT_FAILED_MESSAGE(Object... arguments) {
+		return format(STR_EXPORT_FAILED_MESSAGE, arguments);
 	}
 
 }

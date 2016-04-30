@@ -18,17 +18,17 @@ package de.carne.certmgr.jfx.passwordprompt;
 
 import java.io.IOException;
 
+import de.carne.certmgr.jfx.Images;
+import de.carne.certmgr.jfx.InvalidInputException;
+import de.carne.certmgr.jfx.help.Help;
+import de.carne.certmgr.jfx.help.HelpController;
+import de.carne.util.Strings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
-import de.carne.certmgr.jfx.Images;
-import de.carne.certmgr.jfx.InvalidInputException;
-import de.carne.certmgr.jfx.help.Help;
-import de.carne.certmgr.jfx.help.HelpController;
-import de.carne.util.Strings;
 
 /**
  * Dialog controller for password prompt display to ask for a new password.
@@ -72,7 +72,7 @@ public class NewPasswordPromptController extends AbstractPasswordPromptControlle
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_NEWPASSWORDPROMPT);
+			HelpController.showHelp(this, Help.TOPIC_NEW_PASSWORD_PROMPT);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -85,30 +85,33 @@ public class NewPasswordPromptController extends AbstractPasswordPromptControlle
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_NEWPASSWORDTITLE));
+		controllerStage.setTitle(I18N.formatSTR_NEW_PASSWORD_PROMPT_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_PRIVATECRT16, Images.IMAGE_PRIVATECRT32);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#beginPasswordPrompt(java.lang.String)
+	 * @see
+	 * de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#
+	 * beginPasswordPrompt(java.lang.String)
 	 */
 	@Override
 	public void beginPasswordPrompt(String resource) {
-		this.ctlPromptText.setText(I18N.format(I18N.MESSAGE_NEWPASSWORDPROMPT, resource));
+		this.ctlPromptText.setText(I18N.formatSTR_NEW_PASSWORD_PROMPT_TITLE(resource));
 		getStage().sizeToScene();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#beginPasswordPrompt(java.lang.String,
-	 * java.lang.Exception)
+	 * @see
+	 * de.carne.certmgr.jfx.passwordprompt.AbstractPasswordPromptController#
+	 * beginPasswordPrompt(java.lang.String, java.lang.Exception)
 	 */
 	@Override
 	public void beginPasswordPrompt(String resource, Exception details) {
-		this.ctlPromptText.setText(I18N.format(I18N.MESSAGE_NEWPASSWORDPROMPT, resource));
+		this.ctlPromptText.setText(I18N.formatSTR_NEW_PASSWORD_PROMPT_TITLE(resource));
 		this.ctlMessageIcon.setImage(Images.IMAGE_WARNING16);
-		this.ctlMessageText.setText(I18N.format(I18N.MESSAGE_INVALIDPASSWORD));
+		this.ctlMessageText.setText(I18N.formatSTR_WRONG_PASSWORD_MESSAGE());
 		getStage().sizeToScene();
 	}
 
@@ -116,13 +119,13 @@ public class NewPasswordPromptController extends AbstractPasswordPromptControlle
 		String passwordInput1 = this.ctlPasswordInput1.getText();
 
 		if (Strings.isEmpty(passwordInput1) || !passwordInput1.equals(passwordInput1.trim())) {
-			throw new InvalidInputException(I18N.format(I18N.MESSAGE_EMPTYORINCOMPATIBLEPASSWORD));
+			throw new InvalidInputException(I18N.formatSTR_INVALID_PASSWORD_MESSAGE());
 		}
 
 		String passwordInput2 = this.ctlPasswordInput2.getText();
 
 		if (!passwordInput1.equals(passwordInput2)) {
-			throw new InvalidInputException(I18N.format(I18N.MESSAGE_PASSWORDMISMATCH));
+			throw new InvalidInputException(I18N.formatSTR_PASSWORD_MISMATCH_MESSAGE());
 		}
 		return passwordInput1;
 	}

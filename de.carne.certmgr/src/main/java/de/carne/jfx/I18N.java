@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.jfx;
 
@@ -32,16 +21,58 @@ final class I18N {
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String MESSAGE_UNEXPECTED_EXCEPTION(Object... arguments) {
-		return format("application.unexpectedexception", arguments);
+	/**
+	 * Resource key {@code STR_UNEXPECTED_EXCEPTION_MESSAGE}
+	 * <p>
+	 * An unexpected error has occurred: ''{0}'' 
+	 * </p>
+	 */
+	static final String STR_UNEXPECTED_EXCEPTION_MESSAGE = "STR_UNEXPECTED_EXCEPTION_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_UNEXPECTED_EXCEPTION_MESSAGE}
+	 * <p>
+	 * An unexpected error has occurred: ''{0}'' 
+	 * </p>
+	 */
+	static String formatSTR_UNEXPECTED_EXCEPTION_MESSAGE(Object... arguments) {
+		return format(STR_UNEXPECTED_EXCEPTION_MESSAGE, arguments);
 	}
 
-	static String MESSAGE_MESSAGEBOX_EXCEPTION(Object... arguments) {
-		return format("application.messageboxexception", arguments);
+	/**
+	 * Resource key {@code STR_PREF_SYNC_FAILED_MESSAGE}
+	 * <p>
+	 * Preference synchronization failed.
+	 * </p>
+	 */
+	static final String STR_PREF_SYNC_FAILED_MESSAGE = "STR_PREF_SYNC_FAILED_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_PREF_SYNC_FAILED_MESSAGE}
+	 * <p>
+	 * Preference synchronization failed.
+	 * </p>
+	 */
+	static String formatSTR_PREF_SYNC_FAILED_MESSAGE(Object... arguments) {
+		return format(STR_PREF_SYNC_FAILED_MESSAGE, arguments);
 	}
 
-	static String MESSAGE_PREFSYNCFAILED(Object... arguments) {
-		return format("stagecontroller.prefsyncfailed", arguments);
+	/**
+	 * Resource key {@code STR_MESSAGEBOX_EXCEPTION_MESSAGE}
+	 * <p>
+	 * Unable to display message ''{0}''.<br/>Cause: ''{1}'' 
+	 * </p>
+	 */
+	static final String STR_MESSAGEBOX_EXCEPTION_MESSAGE = "STR_MESSAGEBOX_EXCEPTION_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_MESSAGEBOX_EXCEPTION_MESSAGE}
+	 * <p>
+	 * Unable to display message ''{0}''.<br/>Cause: ''{1}'' 
+	 * </p>
+	 */
+	static String formatSTR_MESSAGEBOX_EXCEPTION_MESSAGE(Object... arguments) {
+		return format(STR_MESSAGEBOX_EXCEPTION_MESSAGE, arguments);
 	}
 
 }

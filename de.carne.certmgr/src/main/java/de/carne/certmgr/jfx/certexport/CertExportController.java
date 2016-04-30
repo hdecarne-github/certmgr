@@ -22,22 +22,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import de.carne.certmgr.jfx.CertFileFormats;
 import de.carne.certmgr.jfx.CertStoreEntryOption;
 import de.carne.certmgr.jfx.ClipboardExportTarget;
@@ -58,6 +42,22 @@ import de.carne.certmgr.store.PasswordCallback;
 import de.carne.jfx.StageController;
 import de.carne.jfx.messagebox.MessageBoxStyle;
 import de.carne.util.Strings;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  * Dialog controller for esporting certificate data.
@@ -125,8 +125,8 @@ public class CertExportController extends StageController {
 	void onChooseFileTarget(ActionEvent evt) {
 		FileChooser fileTargetChooser = new FileChooser();
 
-		fileTargetChooser.getExtensionFilters().addAll(
-				CertFileFormats.getFileChooserFilters(this.ctlEncodingSelection.getValue()));
+		fileTargetChooser.getExtensionFilters()
+				.addAll(CertFileFormats.getFileChooserFilters(this.ctlEncodingSelection.getValue()));
 
 		String fileTargetInput = Strings.safeTrim(this.ctlFileTargetInput.getText());
 		File fileTargetFile;
@@ -197,7 +197,7 @@ public class CertExportController extends StageController {
 			} else if (this.ctlClipboardTargetOption.isSelected()) {
 				exportTarget = new ClipboardExportTarget();
 			} else {
-				throw new InvalidInputException(I18N.format(I18N.MESSAGE_NOEXPORTTARGET));
+				throw new InvalidInputException(I18N.formatSTR_NO_EXPORT_TARGET_MESSAGE());
 			}
 
 			boolean includeKey = this.ctlIncludeKeyOption.isSelected();
@@ -208,14 +208,14 @@ public class CertExportController extends StageController {
 			boolean includeCRL = this.ctlIncludeCRLOption.isSelected();
 
 			if (!includeKey && !includeCRT && !includeCSR && !includeCRL) {
-				throw new InvalidInputException(I18N.format(I18N.MESSAGE_NOEXPORTOBJECT));
+				throw new InvalidInputException(I18N.formatSTR_NO_EXPORT_ELEMENT_MESSAGE());
 			}
 
 			PasswordCallback exportEntryPassword = PasswordPromptCallback.getPassword(this);
 			CertStoreEntryExporter exporter = CertStoreEntryExporter.forEntry(exportEntry, includeKey, includeCRT,
 					includeCRTChain, includeCRTAnchor, includeCSR, includeCRL, exportEntryPassword);
-			PasswordCallback exportPassword = (this.ctlEncryptExportOption.isSelected() ? PasswordPromptCallback
-					.getNewPassword(this) : null);
+			PasswordCallback exportPassword = (this.ctlEncryptExportOption.isSelected()
+					? PasswordPromptCallback.getNewPassword(this) : null);
 
 			runTask(new ExportTask() {
 				private CertStoreEntryExporter exporter2 = exporter;
@@ -233,7 +233,7 @@ public class CertExportController extends StageController {
 		} catch (InvalidInputException e) {
 			showMessageBox(e.getLocalizedMessage(), null, MessageBoxStyle.ICON_ERROR, MessageBoxStyle.BUTTON_OK);
 		} catch (IOException e) {
-			showMessageBox(I18N.format(I18N.MESSAGE_EXPORTFAILED, exportEntryName), e, MessageBoxStyle.ICON_ERROR,
+			showMessageBox(I18N.formatSTR_EXPORT_FAILED_MESSAGE(exportEntryName), e, MessageBoxStyle.ICON_ERROR,
 					MessageBoxStyle.BUTTON_OK);
 		}
 	}
@@ -246,7 +246,7 @@ public class CertExportController extends StageController {
 	@FXML
 	void onHelp(ActionEvent evt) {
 		try {
-			HelpController.showHelp(this, Help.TOPIC_CERTEXPORT);
+			HelpController.showHelp(this, Help.TOPIC_CERT_EXPORT);
 		} catch (IOException e) {
 			reportUnexpectedException(e);
 		}
@@ -280,7 +280,7 @@ public class CertExportController extends StageController {
 		String exportEntryName = (selectedExportCertOption != null ? selectedExportCertOption.getEntry().getName()
 				: null);
 
-		showMessageBox(I18N.format(I18N.MESSAGE_EXPORTFAILED, exportEntryName), cause, MessageBoxStyle.ICON_ERROR,
+		showMessageBox(I18N.formatSTR_EXPORT_FAILED_MESSAGE(exportEntryName), cause, MessageBoxStyle.ICON_ERROR,
 				MessageBoxStyle.BUTTON_OK);
 	}
 
@@ -291,21 +291,20 @@ public class CertExportController extends StageController {
 	@Override
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
-		controllerStage.setTitle(getBundle().getString(I18N.TEXT_TITLE));
+		controllerStage.setTitle(I18N.formatSTR_CERT_EXPORT_TITLE());
 		controllerStage.getIcons().addAll(Images.IMAGE_EXPORT16, Images.IMAGE_EXPORT32);
 
 		this.ctlFileTargetInput.disableProperty().bind(Bindings.not(this.ctlFileTargetOption.selectedProperty()));
 		this.ctlChooseFileTargetButton.disableProperty()
 				.bind(Bindings.not(this.ctlFileTargetOption.selectedProperty()));
 		this.ctlFolderTargetInput.disableProperty().bind(Bindings.not(this.ctlFolderTargetOption.selectedProperty()));
-		this.ctlChooseFolderTargetButton.disableProperty().bind(
-				Bindings.not(this.ctlFolderTargetOption.selectedProperty()));
+		this.ctlChooseFolderTargetButton.disableProperty()
+				.bind(Bindings.not(this.ctlFolderTargetOption.selectedProperty()));
 		this.ctlFileTargetOption.setSelected(true);
 		this.ctlEncryptExportOption.setSelected(true);
 		this.ctlIncludeCRTChainOption.disableProperty().bind(Bindings.not(this.ctlIncludeCRTOption.selectedProperty()));
-		this.ctlIncludeCRTAnchorOption.disableProperty().bind(
-				Bindings.not(Bindings.and(this.ctlIncludeCRTOption.selectedProperty(),
-						this.ctlIncludeCRTChainOption.selectedProperty())));
+		this.ctlIncludeCRTAnchorOption.disableProperty().bind(Bindings.not(Bindings
+				.and(this.ctlIncludeCRTOption.selectedProperty(), this.ctlIncludeCRTChainOption.selectedProperty())));
 		this.ctlProgressGroup.setVisible(false);
 		this.ctlEncodingSelection.getItems().addAll(CertFileFormat.values());
 		this.ctlEncodingSelection.valueProperty().addListener(new ChangeListener<CertFileFormat>() {
@@ -321,8 +320,8 @@ public class CertExportController extends StageController {
 		this.ctlExportCertSelection.valueProperty().addListener(new ChangeListener<CertStoreEntryOption>() {
 
 			@Override
-			public void changed(ObservableValue<? extends CertStoreEntryOption> property,
-					CertStoreEntryOption oldValue, CertStoreEntryOption newValue) {
+			public void changed(ObservableValue<? extends CertStoreEntryOption> property, CertStoreEntryOption oldValue,
+					CertStoreEntryOption newValue) {
 				onExportCertSelected(newValue);
 			}
 
@@ -414,28 +413,30 @@ public class CertExportController extends StageController {
 	}
 
 	private CertStoreEntry validateAndGetExportCertEntry() throws InvalidInputException {
-		CertStoreEntryOption selectedExportCertOption = InputValidator.notNull(I18N.bundle(),
-				I18N.MESSAGE_NOEXPORTCERT, this.ctlExportCertSelection.getValue());
+		CertStoreEntryOption selectedExportCertOption = InputValidator.notNull(I18N.BUNDLE,
+				I18N.STR_NO_EXPORT_CERT_MESSAGE, this.ctlExportCertSelection.getValue());
 
-		return InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NOEXPORTCERT, selectedExportCertOption.getEntry());
+		return InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_EXPORT_CERT_MESSAGE,
+				selectedExportCertOption.getEntry());
 	}
 
 	private CertFileFormat validateAndGetEncoding() throws InvalidInputException {
-		return InputValidator.notNull(I18N.bundle(), I18N.MESSAGE_NOENCODING, this.ctlEncodingSelection.getValue());
+		return InputValidator.notNull(I18N.BUNDLE, I18N.STR_NO_EXPORT_ENCODING_MESSAGE,
+				this.ctlEncodingSelection.getValue());
 	}
 
 	private ExportTarget validateAndGetFileTarget() throws InvalidInputException {
-		String fileTargetInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOFILETARGET,
+		String fileTargetInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_EXPORT_FILE_MESSAGE,
 				Strings.safeTrim(this.ctlFileTargetInput.getText()));
-		Path fileTargetPath = InputValidator.isPath(I18N.bundle(), I18N.MESSAGE_INVALIDFILETARGET, fileTargetInput);
+		Path fileTargetPath = InputValidator.isPath(I18N.BUNDLE, I18N.STR_INVALID_EXPORT_FILE_MESSAGE, fileTargetInput);
 
 		return new FileExportTarget(fileTargetPath);
 	}
 
 	private ExportTarget validateAndGetFolderTarget() throws InvalidInputException {
-		String folderTargetInput = InputValidator.notEmpty(I18N.bundle(), I18N.MESSAGE_NOFOLDERTARGET,
+		String folderTargetInput = InputValidator.notEmpty(I18N.BUNDLE, I18N.STR_NO_EXPORT_FOLDER_MESSAGE,
 				Strings.safeTrim(this.ctlFolderTargetInput.getText()));
-		Path folderTargetPath = InputValidator.isDirectory(I18N.bundle(), I18N.MESSAGE_INVALIDFOLDERTARGET,
+		Path folderTargetPath = InputValidator.isDirectory(I18N.BUNDLE, I18N.STR_INVALID_EXPORT_FOLDER_MESSAGE,
 				folderTargetInput);
 
 		return new FolderExportTarget(folderTargetPath);
@@ -460,7 +461,7 @@ public class CertExportController extends StageController {
 	}
 
 	private abstract class ExportTask extends Task<Void> {
-		
+
 		ExportTask() {
 			// Nothing to do here
 		}

@@ -1,18 +1,7 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * I18N resource strings
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Generated on 4/30/16 6:36 AM
  */
 package de.carne.certmgr.jfx.crloptions;
 
@@ -24,21 +13,138 @@ import java.util.ResourceBundle;
  */
 final class I18N {
 
-	static final String TEXT_TITLE = "crloptions.title";
+	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static final String MESSAGE_NOISSUERENTRY = "crloptions.noissuerentry";
-	static final String MESSAGE_NOSIGALG = "crloptions.nosigalg";
-	static final String MESSAGE_NOLASTUPDATE = "crloptions.nolastupdate";
-	static final String MESSAGE_NONEXTUPDATE = "crloptions.nonextupdate";
-	static final String MESSAGE_INVALIDNEXTUPDATE = "crloptions.invalidnextupdate";
-	static final String MESSAGE_GENERATEERROR = "crloptions.generateerror";
+	static String format(String key, Object... arguments) {
+		String pattern = BUNDLE.getString(key);
 
-	static ResourceBundle bundle() {
-		return ResourceBundle.getBundle(I18N.class.getName());
+		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
 	}
 
-	static String format(String pattern, Object... arguments) {
-		return MessageFormat.format(bundle().getString(pattern), arguments);
+	/**
+	 * Resource key {@code STR_NO_ISSUER_ENTRY_MESSAGE}
+	 * <p>
+	 * Please select a CRL issuer.
+	 * </p>
+	 */
+	static final String STR_NO_ISSUER_ENTRY_MESSAGE = "STR_NO_ISSUER_ENTRY_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_ISSUER_ENTRY_MESSAGE}
+	 * <p>
+	 * Please select a CRL issuer.
+	 * </p>
+	 */
+	static String formatSTR_NO_ISSUER_ENTRY_MESSAGE(Object... arguments) {
+		return format(STR_NO_ISSUER_ENTRY_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_LAST_UPDATE_MESSAGE}
+	 * <p>
+	 * Please select a last update date.
+	 * </p>
+	 */
+	static final String STR_NO_LAST_UPDATE_MESSAGE = "STR_NO_LAST_UPDATE_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_LAST_UPDATE_MESSAGE}
+	 * <p>
+	 * Please select a last update date.
+	 * </p>
+	 */
+	static String formatSTR_NO_LAST_UPDATE_MESSAGE(Object... arguments) {
+		return format(STR_NO_LAST_UPDATE_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_NEXT_UPDATE_MESSAGE}
+	 * <p>
+	 * Please select a next update date.
+	 * </p>
+	 */
+	static final String STR_NO_NEXT_UPDATE_MESSAGE = "STR_NO_NEXT_UPDATE_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_NEXT_UPDATE_MESSAGE}
+	 * <p>
+	 * Please select a next update date.
+	 * </p>
+	 */
+	static String formatSTR_NO_NEXT_UPDATE_MESSAGE(Object... arguments) {
+		return format(STR_NO_NEXT_UPDATE_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_NO_SIG_ALG_MESSAGE}
+	 * <p>
+	 * Please select a signature algorithm.
+	 * </p>
+	 */
+	static final String STR_NO_SIG_ALG_MESSAGE = "STR_NO_SIG_ALG_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_NO_SIG_ALG_MESSAGE}
+	 * <p>
+	 * Please select a signature algorithm.
+	 * </p>
+	 */
+	static String formatSTR_NO_SIG_ALG_MESSAGE(Object... arguments) {
+		return format(STR_NO_SIG_ALG_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_GENERATE_ERROR_MESSAGE}
+	 * <p>
+	 * Generation of Certificate Revocation List failed. See details for further information.
+	 * </p>
+	 */
+	static final String STR_GENERATE_ERROR_MESSAGE = "STR_GENERATE_ERROR_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_GENERATE_ERROR_MESSAGE}
+	 * <p>
+	 * Generation of Certificate Revocation List failed. See details for further information.
+	 * </p>
+	 */
+	static String formatSTR_GENERATE_ERROR_MESSAGE(Object... arguments) {
+		return format(STR_GENERATE_ERROR_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_CRL_OPTIONS_TITLE}
+	 * <p>
+	 * Create&frasl;Update Certificate Revocation List
+	 * </p>
+	 */
+	static final String STR_CRL_OPTIONS_TITLE = "STR_CRL_OPTIONS_TITLE";
+
+	/**
+	 * Resource string {@code STR_CRL_OPTIONS_TITLE}
+	 * <p>
+	 * Create&frasl;Update Certificate Revocation List
+	 * </p>
+	 */
+	static String formatSTR_CRL_OPTIONS_TITLE(Object... arguments) {
+		return format(STR_CRL_OPTIONS_TITLE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_INVALID_NEXT_UPDATE_MESSAGE}
+	 * <p>
+	 * Please select an update date after the last update date. 
+	 * </p>
+	 */
+	static final String STR_INVALID_NEXT_UPDATE_MESSAGE = "STR_INVALID_NEXT_UPDATE_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_INVALID_NEXT_UPDATE_MESSAGE}
+	 * <p>
+	 * Please select an update date after the last update date. 
+	 * </p>
+	 */
+	static String formatSTR_INVALID_NEXT_UPDATE_MESSAGE(Object... arguments) {
+		return format(STR_INVALID_NEXT_UPDATE_MESSAGE, arguments);
 	}
 
 }

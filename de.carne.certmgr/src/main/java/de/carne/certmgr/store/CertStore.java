@@ -270,7 +270,7 @@ public final class CertStore {
 	public static CertStore create(Path storeHomePath) throws IOException {
 		assert storeHomePath != null;
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_CREATESTORE, storeHomePath);
+		LOG.notice(I18N.BUNDLE, I18N.STR_CREATE_STORE, storeHomePath);
 		Files.createDirectory(storeHomePath);
 		return new CertStore(storeHomePath);
 	}
@@ -300,7 +300,7 @@ public final class CertStore {
 	public static CertStore open(Path storeHomePath) throws IOException {
 		assert storeHomePath != null;
 
-		LOG.notice(I18N.bundle(), I18N.MESSAGE_OPENSTORE, storeHomePath);
+		LOG.notice(I18N.BUNDLE, I18N.STR_OPEN_STORE, storeHomePath);
 		return new CertStore(storeHomePath);
 	}
 
@@ -337,12 +337,11 @@ public final class CertStore {
 					entry = new Entry(entryName, alias, keyFile, crtFile, csrFile, crlFile);
 					mergeEntry0(entry);
 				} catch (IOException e) {
-					LOG.warning(e, I18N.bundle(), I18N.MESSAGE_CERTENTRYERROR, alias, e.getLocalizedMessage());
-					LOG.warning(I18N.bundle(), I18N.MESSAGE_INVALIDCERTENTRY, alias, keyFile, crtFile, csrFile,
-							crlFile);
+					LOG.warning(e, I18N.BUNDLE, I18N.STR_CERT_ENTRY_ERROR, alias, e.getLocalizedMessage());
+					LOG.warning(I18N.BUNDLE, I18N.STR_INVALID_CERT_ENTRY, alias, keyFile, crtFile, csrFile, crlFile);
 				}
 			} else {
-				LOG.warning(I18N.bundle(), I18N.MESSAGE_INCOMPLETECERTENTRY, alias, keyFile, crtFile, csrFile, crlFile);
+				LOG.warning(I18N.BUNDLE, I18N.STR_INCOMPLETE_CERT_ENTRY, alias, keyFile, crtFile, csrFile, crlFile);
 			}
 		}
 	}
@@ -573,7 +572,7 @@ public final class CertStore {
 			if (keyFile != null || crtFile != null || csrFile != null || crlFile != null) {
 				importedEntry.merge(alias, keyFile, crtFile, csrFile, crlFile);
 			} else {
-				LOG.notice(I18N.bundle(), I18N.MESSAGE_NOTHINGTOIMPORT, name);
+				LOG.notice(I18N.BUNDLE, I18N.STR_SKIPPING_CERT_IMPORT, name);
 			}
 		} else if (entry.hasCRT() || entry.hasCSR()) {
 			String name = (entry.hasCRT() ? CertObject.getCRTName(entry.getCRT().getObject())
