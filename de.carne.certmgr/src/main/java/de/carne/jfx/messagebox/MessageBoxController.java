@@ -84,7 +84,7 @@ public class MessageBoxController extends StageController {
 
 		List<Image> styleImages = IMAGE_REGISTRY.get(style);
 
-		return (styleImages != null ? Collections.unmodifiableList(styleImages) : Collections.EMPTY_LIST);
+		return (styleImages != null ? Collections.unmodifiableList(styleImages) : Collections.emptyList());
 	}
 
 	/**
