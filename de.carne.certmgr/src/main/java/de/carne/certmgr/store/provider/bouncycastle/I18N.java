@@ -1,7 +1,7 @@
 /*
  * I18N resource strings
  *
- * Generated on 4/30/16 6:36 AM
+ * Generated on Apr 30, 2016 10:35:47 PM
  */
 package de.carne.certmgr.store.provider.bouncycastle;
 
@@ -11,11 +11,14 @@ import java.util.ResourceBundle;
 /**
  * Package localization resources.
  */
-final class I18N {
+public final class I18N {
 
-	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
+	/**
+	 * The BUNDLE represented by this class.
+	 */
+	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static String format(String key, Object... arguments) {
+	private static String format(String key, Object... arguments) {
 		String pattern = BUNDLE.getString(key);
 
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
@@ -27,15 +30,18 @@ final class I18N {
 	 * Generate and sign X.509 certificate signing request ''{0}''...
 	 * </p>
 	 */
-	static final String STR_GENERATE_CSR = "STR_GENERATE_CSR";
+	public static final String STR_GENERATE_CSR = "STR_GENERATE_CSR";
 
 	/**
 	 * Resource string {@code STR_GENERATE_CSR}
 	 * <p>
 	 * Generate and sign X.509 certificate signing request ''{0}''...
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_GENERATE_CSR(Object... arguments) {
+	public static String formatSTR_GENERATE_CSR(Object... arguments) {
 		return format(STR_GENERATE_CSR, arguments);
 	}
 
@@ -45,15 +51,18 @@ final class I18N {
 	 * Generate and sign X.509 certificate ''{0}''...
 	 * </p>
 	 */
-	static final String STR_GENERATE_CRT = "STR_GENERATE_CRT";
+	public static final String STR_GENERATE_CRT = "STR_GENERATE_CRT";
 
 	/**
 	 * Resource string {@code STR_GENERATE_CRT}
 	 * <p>
 	 * Generate and sign X.509 certificate ''{0}''...
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_GENERATE_CRT(Object... arguments) {
+	public static String formatSTR_GENERATE_CRT(Object... arguments) {
 		return format(STR_GENERATE_CRT, arguments);
 	}
 

@@ -1,7 +1,7 @@
 /*
  * I18N resource strings
  *
- * Generated on 4/30/16 6:36 AM
+ * Generated on Apr 30, 2016 10:35:47 PM
  */
 package de.carne.certmgr.jfx.dneditor;
 
@@ -11,11 +11,14 @@ import java.util.ResourceBundle;
 /**
  * Package localization resources.
  */
-final class I18N {
+public final class I18N {
 
-	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
+	/**
+	 * The BUNDLE represented by this class.
+	 */
+	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static String format(String key, Object... arguments) {
+	private static String format(String key, Object... arguments) {
 		String pattern = BUNDLE.getString(key);
 
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
@@ -27,15 +30,18 @@ final class I18N {
 	 * Edit DN
 	 * </p>
 	 */
-	static final String STR_DN_EDITOR_TITLE = "STR_DN_EDITOR_TITLE";
+	public static final String STR_DN_EDITOR_TITLE = "STR_DN_EDITOR_TITLE";
 
 	/**
 	 * Resource string {@code STR_DN_EDITOR_TITLE}
 	 * <p>
 	 * Edit DN
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_DN_EDITOR_TITLE(Object... arguments) {
+	public static String formatSTR_DN_EDITOR_TITLE(Object... arguments) {
 		return format(STR_DN_EDITOR_TITLE, arguments);
 	}
 

@@ -1,7 +1,7 @@
 /*
  * I18N resource strings
  *
- * Generated on 4/30/16 6:36 AM
+ * Generated on Apr 30, 2016 10:35:47 PM
  */
 package de.carne.jfx.messagebox;
 
@@ -11,11 +11,14 @@ import java.util.ResourceBundle;
 /**
  * Package localization resources.
  */
-final class I18N {
+public final class I18N {
 
-	static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
+	/**
+	 * The BUNDLE represented by this class.
+	 */
+	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	static String format(String key, Object... arguments) {
+	private static String format(String key, Object... arguments) {
 		String pattern = BUNDLE.getString(key);
 
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
@@ -27,15 +30,18 @@ final class I18N {
 	 * Ok
 	 * </p>
 	 */
-	static final String STR_OK_BUTTON = "STR_OK_BUTTON";
+	public static final String STR_OK_BUTTON = "STR_OK_BUTTON";
 
 	/**
 	 * Resource string {@code STR_OK_BUTTON}
 	 * <p>
 	 * Ok
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_OK_BUTTON(Object... arguments) {
+	public static String formatSTR_OK_BUTTON(Object... arguments) {
 		return format(STR_OK_BUTTON, arguments);
 	}
 
@@ -45,15 +51,18 @@ final class I18N {
 	 * No
 	 * </p>
 	 */
-	static final String STR_NO_BUTTON = "STR_NO_BUTTON";
+	public static final String STR_NO_BUTTON = "STR_NO_BUTTON";
 
 	/**
 	 * Resource string {@code STR_NO_BUTTON}
 	 * <p>
 	 * No
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_NO_BUTTON(Object... arguments) {
+	public static String formatSTR_NO_BUTTON(Object... arguments) {
 		return format(STR_NO_BUTTON, arguments);
 	}
 
@@ -63,15 +72,18 @@ final class I18N {
 	 * Yes
 	 * </p>
 	 */
-	static final String STR_YES_BUTTON = "STR_YES_BUTTON";
+	public static final String STR_YES_BUTTON = "STR_YES_BUTTON";
 
 	/**
 	 * Resource string {@code STR_YES_BUTTON}
 	 * <p>
 	 * Yes
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_YES_BUTTON(Object... arguments) {
+	public static String formatSTR_YES_BUTTON(Object... arguments) {
 		return format(STR_YES_BUTTON, arguments);
 	}
 
@@ -81,15 +93,18 @@ final class I18N {
 	 * Cancel
 	 * </p>
 	 */
-	static final String STR_CANCEL_BUTTON = "STR_CANCEL_BUTTON";
+	public static final String STR_CANCEL_BUTTON = "STR_CANCEL_BUTTON";
 
 	/**
 	 * Resource string {@code STR_CANCEL_BUTTON}
 	 * <p>
 	 * Cancel
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_CANCEL_BUTTON(Object... arguments) {
+	public static String formatSTR_CANCEL_BUTTON(Object... arguments) {
 		return format(STR_CANCEL_BUTTON, arguments);
 	}
 
@@ -99,15 +114,18 @@ final class I18N {
 	 * Message
 	 * </p>
 	 */
-	static final String STR_MESSAGEBOX_TITLE = "STR_MESSAGEBOX_TITLE";
+	public static final String STR_MESSAGEBOX_TITLE = "STR_MESSAGEBOX_TITLE";
 
 	/**
 	 * Resource string {@code STR_MESSAGEBOX_TITLE}
 	 * <p>
 	 * Message
 	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
 	 */
-	static String formatSTR_MESSAGEBOX_TITLE(Object... arguments) {
+	public static String formatSTR_MESSAGEBOX_TITLE(Object... arguments) {
 		return format(STR_MESSAGEBOX_TITLE, arguments);
 	}
 
