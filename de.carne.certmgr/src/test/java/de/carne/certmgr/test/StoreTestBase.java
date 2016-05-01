@@ -34,7 +34,7 @@ import java.util.StringTokenizer;
 
 import javax.security.auth.x500.X500Principal;
 
-import de.carne.certmgr.Main;
+import de.carne.MainLoader;
 import de.carne.certmgr.store.CertStore;
 import de.carne.certmgr.store.CertStoreEntry;
 import de.carne.certmgr.store.PasswordCallback;
@@ -71,7 +71,7 @@ abstract class StoreTestBase {
 	 * Perform per test initialization.
 	 */
 	static {
-		Main.init();
+		MainLoader.init();
 		LogConfig.applyConfig(LogConfig.CONFIG_DEBUG);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * Copyright (c) 2015-2016 Holger de Carne and contributors, All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,87 +14,93 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr;
+package de.carne;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
 /**
- * Program main class.
+ * Generic program main class.
  */
-public abstract class Main {
-
-	private final static String THIS_PACKAGE = Main.class.getPackage().getName();
-
-	private final static String[] INIT_SYSTEM_PROPERTIES = {
-
-			"java.util.logging.config.class", "de.carne.util.logging.LogConfig",
-
-			"java.util.prefs.PreferencesFactory", "de.carne.util.prefs.PropertiesPreferencesFactory"
-
-	};
-
-	private final static String JFX_MAIN_CLASS = THIS_PACKAGE + ".jfx.JFXMain";
+public abstract class MainLoader implements Main {
 
 	/**
-	 * Perform basic initialization and then invoke the actual main class.
+	 * Perform low level initialization and then forward control to the actual
+	 * application.
 	 *
-	 * @param args The program's command line.
+	 * @param args The application's command line.
 	 */
 	public static void main(String[] args) {
 		int status = -1;
 
 		try {
-			init();
-			status = Class.forName(JFX_MAIN_CLASS).asSubclass(Main.class).newInstance().run(args);
+			status = init().newInstance().run(args);
 		} catch (Throwable e) {
-			printUnhandledException(e);
+			printUncaughtException(e);
 		}
 		System.exit(status);
 	}
 
 	/**
-	 * Perform global initialization steps.
+	 * Perform global initialization steps and load the {@code Main} interface.
+	 *
+	 * @return The application's main class to create and invoke for execution.
 	 */
-	public static void init() {
-		for (int propertyIndex = 0; propertyIndex < INIT_SYSTEM_PROPERTIES.length; propertyIndex += 2) {
-			System.setProperty(INIT_SYSTEM_PROPERTIES[propertyIndex], INIT_SYSTEM_PROPERTIES[propertyIndex + 1]);
+	public static Class<? extends Main> init() {
+		Class<? extends Main> mainClass;
+
+		try (InputStream initStream = ApplicationLoader.class.getResourceAsStream("Main");
+				BufferedReader initReader = new BufferedReader(
+						new InputStreamReader(initStream, StandardCharsets.UTF_8))) {
+			mainClass = Class.forName(initReader.readLine()).asSubclass(Main.class);
+
+			String propertyLine;
+
+			while ((propertyLine = initReader.readLine()) != null) {
+				int splitIndex = propertyLine.indexOf('=');
+
+				assert splitIndex > 0;
+
+				String propertyKey = propertyLine.substring(0, splitIndex).trim();
+				String propertyValue = propertyLine.substring(splitIndex + 1).trim();
+
+				System.setProperty(propertyKey, propertyValue);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
+		return mainClass;
 	}
 
 	/**
-	 * Run main class.
+	 * Print an uncaught exception to {@code System.err}.
 	 *
-	 * @param args The program's command line.
-	 * @return The program's exit status.
+	 * @param cause The uncaught exception to print.
+	 * @see #printUncaughtException(PrintStream, Throwable)
 	 */
-	protected abstract int run(String[] args);
-
-	/**
-	 * Print an unhandled exception to <code>System.err</code>.
-	 *
-	 * @param cause The unhandled exception to print.
-	 * @see #printUnhandledException(PrintStream, Throwable)
-	 */
-	public static void printUnhandledException(Throwable cause) {
-		printUnhandledException(System.err, cause);
+	public static void printUncaughtException(Throwable cause) {
+		printUncaughtException(System.err, cause);
 	}
 
 	/**
-	 * Print unhandled exception to a specific <code>PrintStream</code>.
+	 * Print uncaught exception to a specific {@code PrintStream}.
 	 * <p>
 	 * This function prints the actual stack trace of the causing exception as
 	 * well as the current program state including running threads, runtime
 	 * information and system properties.
 	 * </p>
 	 *
-	 * @param ps The <code>PrintStream</code> to print to.
-	 * @param cause The unhandled exception to print.
+	 * @param ps The {@code PrintStream} to print to.
+	 * @param cause The uncaught exception to print.
 	 */
-	public static void printUnhandledException(PrintStream ps, Throwable cause) {
+	public static void printUncaughtException(PrintStream ps, Throwable cause) {
 		assert cause != null;
 
 		printCause(ps, cause);
@@ -115,7 +121,7 @@ public abstract class Main {
 		StackTraceElement catchedAt = null;
 
 		for (StackTraceElement caller : stackTrace) {
-			if (caller.getClass().equals(Main.class)) {
+			if (caller.getClass().equals(MainLoader.class)) {
 				break;
 			}
 			catchedAt = caller;
@@ -199,4 +205,5 @@ public abstract class Main {
 		}
 		return encoded.toString();
 	}
+
 }

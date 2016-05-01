@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * Copyright (c) 2015-2016 Holger de Carne and contributors, All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,9 @@
  */
 package de.carne;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,7 +27,6 @@ import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -135,25 +132,6 @@ public final class ApplicationLoader extends URLClassLoader {
 		RESOURCE_URLS = libURLs.toArray(new URL[libURLs.size()]);
 	}
 
-	private static final String MAIN_CLASS;
-
-	static {
-		String mainClass;
-
-		try (InputStream mainClassStream = ApplicationLoader.class.getResourceAsStream("Main-Class");
-				BufferedReader mainClassReader = new BufferedReader(
-						new InputStreamReader(mainClassStream, StandardCharsets.UTF_8))) {
-			mainClass = mainClassReader.readLine();
-
-			if (DEBUG) {
-				System.out.println("Loader: Using Main-Class: " + mainClass);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		MAIN_CLASS = mainClass;
-	}
-
 	private static final String THIS_CLASS = ApplicationLoader.class.getName();
 
 	// Prefix of class names that need to be loaded via system classloader (e.g.
@@ -165,6 +143,8 @@ public final class ApplicationLoader extends URLClassLoader {
 	private ApplicationLoader() {
 		super(RESOURCE_URLS, (RESOURCE_URLS.length > 1 ? null : getSystemClassLoader()));
 	}
+
+	private static final String MAIN_CLASS = ApplicationLoader.class.getPackage().getName() + ".MainLoader";
 
 	/**
 	 * Perform Classloader initialization and then invoke the actual main class.

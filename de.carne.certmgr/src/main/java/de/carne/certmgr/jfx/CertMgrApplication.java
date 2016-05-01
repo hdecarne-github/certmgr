@@ -23,9 +23,12 @@ import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Map;
 
+import de.carne.Main;
 import de.carne.certmgr.jfx.storemanager.StoreManagerController;
 import de.carne.certmgr.store.CertStore;
 import de.carne.jfx.StageController;
+import de.carne.jfx.messagebox.MessageBoxController;
+import de.carne.jfx.messagebox.MessageBoxStyle;
 import de.carne.util.logging.Log;
 import de.carne.util.logging.LogConfig;
 import javafx.application.Application;
@@ -34,12 +37,23 @@ import javafx.stage.Stage;
 /**
  * JavaFX application class responsible for starting up the GUI.
  */
-public class CertMgrApplication extends Application {
+public class CertMgrApplication extends Application implements Main {
 
 	private static final Log LOG = new Log(CertMgrApplication.class);
 
 	private static final String PARAMETER_VERBOSE = "--verbose";
 	private static final String PARAMETER_DEBUG = "--debug";
+
+	static {
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO32);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING32);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR32);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION16);
+		MessageBoxController.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION32);
+	}
 
 	private static CertMgrApplication applicationInstance = null;
 
@@ -48,6 +62,16 @@ public class CertMgrApplication extends Application {
 		if (next != null) {
 			next.uncaughtException(t, e);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.carne.Main#run(java.lang.String[])
+	 */
+	@Override
+	public int run(String[] args) {
+		Application.launch(getClass(), args);
+		return 0;
 	}
 
 	/*
