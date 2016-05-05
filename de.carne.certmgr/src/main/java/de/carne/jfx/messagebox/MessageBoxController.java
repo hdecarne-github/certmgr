@@ -100,9 +100,9 @@ public class MessageBoxController extends StageController {
 		return (styleImages != null ? styleImages.get(0) : null);
 	}
 
-	private MessageBoxResult resultButton1 = MessageBoxResult.NONE;
-	private MessageBoxResult resultButton2 = MessageBoxResult.NONE;
-	private MessageBoxResult resultButton3 = MessageBoxResult.NONE;
+	private MessageBoxResult resultCmd1 = MessageBoxResult.NONE;
+	private MessageBoxResult resultCmd2 = MessageBoxResult.NONE;
+	private MessageBoxResult resultCmd3 = MessageBoxResult.NONE;
 	private MessageBoxResult result = MessageBoxResult.NONE;
 
 	@FXML
@@ -112,47 +112,43 @@ public class MessageBoxController extends StageController {
 	Label ctlMessage;
 
 	@FXML
+	TextArea ctlDetailsText;
+
+	@FXML
+	ToggleButton ctlDetailsButton;
+
+	@FXML
 	Label ctlDetailsLabel;
 
 	@FXML
-	TextArea ctlDetails;
+	Button ctlCmd1Button;
 
 	@FXML
-	ToggleButton ctlButtonDetails;
+	Button ctlCmd2Button;
 
 	@FXML
-	Button ctlButtonCmd1;
-
-	@FXML
-	Button ctlButtonCmd2;
-
-	@FXML
-	Button ctlButtonCmd3;
+	Button ctlCmd3Button;
 
 	@FXML
 	void onToggleDetails(ActionEvent evt) {
-		boolean toggledVisibleState = !this.ctlDetails.isVisible();
-
-		this.ctlDetailsLabel.setVisible(toggledVisibleState);
-		this.ctlDetails.setVisible(toggledVisibleState);
-		getStage().sizeToScene();
+		setDetailsExpanded(this.ctlDetailsButton.isSelected());
 	}
 
 	@FXML
 	void onButton1(ActionEvent evt) {
-		this.result = this.resultButton1;
+		this.result = this.resultCmd1;
 		getStage().close();
 	}
 
 	@FXML
 	void onButton2(ActionEvent evt) {
-		this.result = this.resultButton2;
+		this.result = this.resultCmd2;
 		getStage().close();
 	}
 
 	@FXML
 	void onButton3(ActionEvent evt) {
-		this.result = this.resultButton3;
+		this.result = this.resultCmd3;
 		getStage().close();
 	}
 
@@ -164,8 +160,20 @@ public class MessageBoxController extends StageController {
 	protected void setupStage(Stage controllerStage) throws IOException {
 		super.setupStage(controllerStage);
 		controllerStage.setTitle(I18N.formatSTR_MESSAGEBOX_TITLE());
+		this.ctlDetailsButton.managedProperty().bind(this.ctlDetailsButton.visibleProperty());
 		this.ctlDetailsLabel.managedProperty().bind(this.ctlDetailsLabel.visibleProperty());
-		this.ctlDetails.managedProperty().bind(this.ctlDetails.visibleProperty());
+		this.ctlDetailsText.managedProperty().bind(this.ctlDetailsText.visibleProperty());
+		this.ctlCmd1Button.managedProperty().bind(this.ctlCmd1Button.visibleProperty());
+		this.ctlCmd2Button.managedProperty().bind(this.ctlCmd2Button.visibleProperty());
+		this.ctlCmd3Button.managedProperty().bind(this.ctlCmd3Button.visibleProperty());
+	}
+
+	private void setDetailsExpanded(boolean expanded) {
+		this.ctlDetailsButton.setSelected(expanded);
+		this.ctlDetailsButton.setText(
+				expanded ? I18N.formatSTR_DETAILS_EXPANDED_BUTTON() : I18N.formatSTR_DETAILS_COLLAPSED_BUTTON());
+		this.ctlDetailsText.setVisible(expanded);
+		getStage().sizeToScene();
 	}
 
 	/**
@@ -177,16 +185,16 @@ public class MessageBoxController extends StageController {
 	 */
 	public void beginMessageBox(String message, Throwable details, MessageBoxStyle... styles) {
 		this.ctlMessage.setText(message);
-		this.ctlDetailsLabel.setVisible(false);
-		this.ctlDetails.setVisible(false);
 
 		String detailsString = formatDetails(details);
 
 		if (detailsString != null) {
-			this.ctlDetails.setText(detailsString);
+			this.ctlDetailsText.setText(detailsString);
 		} else {
-			this.ctlButtonDetails.setVisible(false);
+			this.ctlDetailsButton.setVisible(false);
+			this.ctlDetailsLabel.setVisible(false);
 		}
+		setDetailsExpanded(false);
 		for (MessageBoxStyle style : styles) {
 			switch (style) {
 			case ICON_INFO:
@@ -206,38 +214,38 @@ public class MessageBoxController extends StageController {
 				this.ctlIcon.setImage(getImage(MessageBoxStyle.ICON_QUESTION));
 				break;
 			case BUTTON_OK:
-				this.ctlButtonCmd1.setText(I18N.formatSTR_OK_BUTTON());
-				this.ctlButtonCmd1.setDefaultButton(true);
-				this.resultButton1 = MessageBoxResult.OK;
-				this.ctlButtonCmd2.setVisible(false);
-				this.ctlButtonCmd3.setVisible(false);
+				this.ctlCmd1Button.setText(I18N.formatSTR_OK_BUTTON());
+				this.ctlCmd1Button.setDefaultButton(true);
+				this.resultCmd1 = MessageBoxResult.OK;
+				this.ctlCmd2Button.setVisible(false);
+				this.ctlCmd3Button.setVisible(false);
 				break;
 			case BUTTON_OK_CANCEL:
-				this.ctlButtonCmd1.setText(I18N.formatSTR_CANCEL_BUTTON());
-				this.ctlButtonCmd1.setCancelButton(true);
-				this.resultButton1 = MessageBoxResult.CANCEL;
-				this.ctlButtonCmd2.setText(I18N.formatSTR_OK_BUTTON());
-				this.ctlButtonCmd2.setDefaultButton(true);
-				this.resultButton2 = MessageBoxResult.OK;
-				this.ctlButtonCmd3.setVisible(false);
+				this.ctlCmd1Button.setText(I18N.formatSTR_CANCEL_BUTTON());
+				this.ctlCmd1Button.setCancelButton(true);
+				this.resultCmd1 = MessageBoxResult.CANCEL;
+				this.ctlCmd2Button.setText(I18N.formatSTR_OK_BUTTON());
+				this.ctlCmd2Button.setDefaultButton(true);
+				this.resultCmd2 = MessageBoxResult.OK;
+				this.ctlCmd3Button.setVisible(false);
 				break;
 			case BUTTON_YES_NO:
-				this.ctlButtonCmd1.setText(I18N.formatSTR_OK_BUTTON());
-				this.ctlButtonCmd1.setCancelButton(true);
-				this.resultButton1 = MessageBoxResult.NO;
-				this.ctlButtonCmd2.setText(I18N.formatSTR_YES_BUTTON());
-				this.ctlButtonCmd2.setDefaultButton(true);
-				this.resultButton2 = MessageBoxResult.YES;
-				this.ctlButtonCmd3.setVisible(false);
+				this.ctlCmd1Button.setText(I18N.formatSTR_NO_BUTTON());
+				this.ctlCmd1Button.setCancelButton(true);
+				this.resultCmd1 = MessageBoxResult.NO;
+				this.ctlCmd2Button.setText(I18N.formatSTR_YES_BUTTON());
+				this.ctlCmd2Button.setDefaultButton(true);
+				this.resultCmd2 = MessageBoxResult.YES;
+				this.ctlCmd3Button.setVisible(false);
 				break;
 			case BUTTON_YES_NO_CANCEL:
-				this.ctlButtonCmd1.setText(I18N.formatSTR_CANCEL_BUTTON());
-				this.ctlButtonCmd1.setCancelButton(true);
-				this.resultButton1 = MessageBoxResult.CANCEL;
-				this.ctlButtonCmd2.setText(I18N.formatSTR_NO_BUTTON());
-				this.resultButton2 = MessageBoxResult.NO;
-				this.ctlButtonCmd3.setText(I18N.formatSTR_YES_BUTTON());
-				this.resultButton3 = MessageBoxResult.YES;
+				this.ctlCmd1Button.setText(I18N.formatSTR_CANCEL_BUTTON());
+				this.ctlCmd1Button.setCancelButton(true);
+				this.resultCmd1 = MessageBoxResult.CANCEL;
+				this.ctlCmd2Button.setText(I18N.formatSTR_NO_BUTTON());
+				this.resultCmd2 = MessageBoxResult.NO;
+				this.ctlCmd3Button.setText(I18N.formatSTR_YES_BUTTON());
+				this.resultCmd3 = MessageBoxResult.YES;
 				break;
 			default:
 				throw new RuntimeException("Unexpected style: " + style);
