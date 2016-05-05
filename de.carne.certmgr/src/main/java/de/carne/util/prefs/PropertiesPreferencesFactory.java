@@ -33,7 +33,7 @@ public class PropertiesPreferencesFactory implements PreferencesFactory {
 	static {
 		String packageName = PropertiesPreferencesFactory.class.getPackage().getName();
 
-		PREFERENCES_DIR = packageName.substring(0, packageName.length() - ".util.prefs".length());
+		PREFERENCES_DIR = System.getProperty(packageName, "." + packageName);
 	}
 
 	/*
@@ -71,7 +71,8 @@ public class PropertiesPreferencesFactory implements PreferencesFactory {
 	/**
 	 * Create a Preferences object backed up by a given properties file.
 	 *
-	 * @param propertiesPath The properties file use for backing up the preferences.
+	 * @param propertiesPath The properties file use for backing up the
+	 *        preferences.
 	 * @return The created Preferences object.
 	 */
 	public static Preferences fromFile(Path propertiesPath) {
