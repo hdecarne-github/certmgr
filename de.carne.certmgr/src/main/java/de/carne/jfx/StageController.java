@@ -49,8 +49,6 @@ public abstract class StageController {
 
 	private static final Pattern CONTROLLER_PATTERN = Pattern.compile("^(.*)\\.(.+)Controller$");
 
-	private static Stage primaryStage = null;
-
 	private Stage stage = null;
 	private ResourceBundle bundle = null;
 
@@ -145,8 +143,8 @@ public abstract class StageController {
 
 	}
 
-	private static <T extends StageController> T setupStage(Stage controllerStage, Class<T> controllerClass)
-			throws IOException {
+	private static <T extends StageController> T setupStage(Stage ownerStage, Stage controllerStage,
+			Class<T> controllerClass) throws IOException {
 		assert controllerStage != null;
 		assert controllerClass != null;
 
@@ -177,7 +175,8 @@ public abstract class StageController {
 
 		T controller = loader.getController();
 
-		if (!controllerStage.equals(primaryStage)) {
+		if (ownerStage != null) {
+			controllerStage.initOwner(ownerStage);
 			controllerStage.initModality(controller.getModality());
 		}
 		controllerStage.setResizable(controller.getResizable());
@@ -200,22 +199,25 @@ public abstract class StageController {
 	 */
 	public static <T extends StageController> T setupPrimaryStage(Stage controllerStage, Class<T> controllerClass)
 			throws IOException {
-		assert primaryStage == null;
 		assert controllerStage != null;
 
-		primaryStage = controllerStage;
-		return setupStage(primaryStage, controllerClass);
+		return setupStage(null, controllerStage, controllerClass);
 	}
 
 	/**
-	 * Get the applications primary stage.
+	 * Create a new root stage and set it up with the JFX scene of the submitted
+	 * controller class.
 	 *
-	 * @return The primary stage.
+	 * @param controllerClass The controller class to derive the FXML resource
+	 *        from.
+	 * @return The loaded {@link Scene}'s controller instance.
+	 * @throws IOException if an I/O error occurs while loading the FXML
+	 *         resource.
 	 */
-	public static Stage getPrimaryStage() {
-		assert primaryStage != null;
+	public <T extends StageController> T openRootStage(Class<T> controllerClass) throws IOException {
+		Stage controllerStage = new Stage();
 
-		return primaryStage;
+		return setupStage(null, controllerStage, controllerClass);
 	}
 
 	/**
@@ -231,8 +233,7 @@ public abstract class StageController {
 	public <T extends StageController> T openStage(Class<T> controllerClass) throws IOException {
 		Stage controllerStage = new Stage();
 
-		controllerStage.initOwner(getStage());
-		return setupStage(controllerStage, controllerClass);
+		return setupStage(this.stage, controllerStage, controllerClass);
 	}
 
 	/**
