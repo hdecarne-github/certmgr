@@ -76,6 +76,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -128,6 +129,9 @@ public class StoreManagerController extends StageController {
 
 	private CertStore store = null;
 	private HashMap<CertStoreEntry, TreeItem<StoreViewEntry>> storeViewItemMap = new HashMap<>();
+
+	@FXML
+	MenuBar systemMenuBar;
 
 	@FXML
 	MenuItem ctlStoreOptionsMenuItem;
@@ -638,6 +642,15 @@ public class StoreManagerController extends StageController {
 		this.ctlEntryViewAttribute.setCellValueFactory(new TreeItemPropertyValueFactory<>("attribute"));
 		this.ctlEntryViewValue.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));
 		onStoreViewSelectionChanged(this.ctlStoreView.getSelectionModel().getSelectedItem());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.carne.jfx.StageController#getSystemMenuBar()
+	 */
+	@Override
+	protected MenuBar getSystemMenuBar() {
+		return this.systemMenuBar;
 	}
 
 	/*

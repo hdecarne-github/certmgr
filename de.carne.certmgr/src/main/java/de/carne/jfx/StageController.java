@@ -34,6 +34,7 @@ import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.MenuBar;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -68,10 +69,24 @@ public abstract class StageController {
 	}
 
 	/**
+	 * Get the controller's optional system menu bar.
+	 * <p>
+	 * Override this function to define the application's system menu bar
+	 * {@linkplain MenuBar#setUseSystemMenuBar(boolean)}).
+	 * </p>
+	 *
+	 * @return The controller's system menu bar or {@code null} if the
+	 *         controller doesn't have one.
+	 */
+	protected MenuBar getSystemMenuBar() {
+		return null;
+	}
+
+	/**
 	 * Get the controller's optional preferences object.
 	 *
-	 * @return The controller's preferences object or null if the controller
-	 *         doesn't have one.
+	 * @return The controller's preferences object or {@code null} if the
+	 *         controller doesn't have one.
 	 */
 	protected Preferences getPreferences() {
 		return null;
@@ -178,6 +193,12 @@ public abstract class StageController {
 		if (ownerStage != null) {
 			controllerStage.initOwner(ownerStage);
 			controllerStage.initModality(controller.getModality());
+		} else {
+			MenuBar systemMenuBar = controller.getSystemMenuBar();
+
+			if (systemMenuBar != null) {
+				systemMenuBar.setUseSystemMenuBar(true);
+			}
 		}
 		controllerStage.setResizable(controller.getResizable());
 		controller.setBundle(controllerBundle);
