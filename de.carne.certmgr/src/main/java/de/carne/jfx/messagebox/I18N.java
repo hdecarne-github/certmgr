@@ -1,7 +1,7 @@
 /*
  * I18N resource strings
  *
- * Generated on May 5, 2016 8:19:37 PM
+ * Generated on 07.05.2016 08:43:41
  */
 package de.carne.jfx.messagebox;
 
@@ -111,7 +111,7 @@ public final class I18N {
 	/**
 	 * Resource key {@code STR_DETAILS_COLLAPSED_BUTTON}
 	 * <p>
-	 * ?
+	 * ▶
 	 * </p>
 	 */
 	public static final String STR_DETAILS_COLLAPSED_BUTTON = "STR_DETAILS_COLLAPSED_BUTTON";
@@ -119,7 +119,7 @@ public final class I18N {
 	/**
 	 * Resource string {@code STR_DETAILS_COLLAPSED_BUTTON}
 	 * <p>
-	 * ?
+	 * ▶
 	 * </p>
 	 *
 	 * @param arguments Format arguments.
@@ -132,7 +132,7 @@ public final class I18N {
 	/**
 	 * Resource key {@code STR_DETAILS_EXPANDED_BUTTON}
 	 * <p>
-	 * ?
+	 * ▼
 	 * </p>
 	 */
 	public static final String STR_DETAILS_EXPANDED_BUTTON = "STR_DETAILS_EXPANDED_BUTTON";
@@ -140,7 +140,7 @@ public final class I18N {
 	/**
 	 * Resource string {@code STR_DETAILS_EXPANDED_BUTTON}
 	 * <p>
-	 * ?
+	 * ▼
 	 * </p>
 	 *
 	 * @param arguments Format arguments.
