@@ -10,4 +10,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="de.carne.ApplicationLoader"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="--debug"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="de.carne.certmgr"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
 </launchConfiguration>
