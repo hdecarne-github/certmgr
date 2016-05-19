@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.prefs.Preferences;
@@ -550,14 +551,26 @@ public class StoreManagerController extends StageController {
 				this.ctlLogView.scrollTo(selectionModel.getSelectedItem());
 			}
 		} else {
+			CountDownLatch latch = new CountDownLatch(1);
+
 			Platform.runLater(new Runnable() {
 				private LogRecord record2 = record;
 
 				@Override
 				public void run() {
-					onPublishLogRecord(this.record2);
+					try {
+						onPublishLogRecord(this.record2);
+					} finally {
+						latch.countDown();
+					}
+
 				}
 			});
+			try {
+				latch.wait();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 
