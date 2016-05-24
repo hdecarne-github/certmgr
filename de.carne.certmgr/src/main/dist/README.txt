@@ -3,8 +3,7 @@ Installation & usage:
 A Java SE 8 Runtime Environment (JRE) is required to run CertMgr.
 
 Simply extract the downloaded archive to a folder of your choice.
-The archive contains a single executable Jar as well as a folder with the licence information
-as well as this README.
+The archive contains a single executable Jar, a folder with the license information as well as this README.
 Invoke the application by typing java -jar <certmgr.jar> < command line> in a terminal or
 use the corresponding menu of your desktop environment.
 
