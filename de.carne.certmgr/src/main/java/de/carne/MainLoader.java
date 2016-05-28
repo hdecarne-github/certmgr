@@ -59,8 +59,7 @@ public abstract class MainLoader implements Main {
 		try (InputStream initStream = ApplicationLoader.class.getResourceAsStream("Main");
 				BufferedReader initReader = new BufferedReader(
 						new InputStreamReader(initStream, StandardCharsets.UTF_8))) {
-			mainClass = Class.forName(initReader.readLine()).asSubclass(Main.class);
-
+			String mainClassName = initReader.readLine();
 			String propertyLine;
 
 			while ((propertyLine = initReader.readLine()) != null) {
@@ -73,6 +72,7 @@ public abstract class MainLoader implements Main {
 
 				System.setProperty(propertyKey, propertyValue);
 			}
+			mainClass = Class.forName(mainClassName).asSubclass(Main.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
