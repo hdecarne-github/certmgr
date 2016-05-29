@@ -1,7 +1,7 @@
 /*
  * I18N resource strings
  *
- * Generated on 07.05.2016 08:43:41
+ * Generated on 29.05.2016 14:38:08
  */
 package de.carne.certmgr.jfx.crtoptions;
 
@@ -18,7 +18,13 @@ public final class I18N {
 	 */
 	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	private static String format(String key, Object... arguments) {
+	/**
+	 * Format a resource string.
+	 * @param key The resource key.
+	 * @param arguments Format arguments.
+	 * @return The formated string.
+	 */
+	public static String format(String key, Object... arguments) {
 		String pattern = BUNDLE.getString(key);
 
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
@@ -547,6 +553,27 @@ public final class I18N {
 	 */
 	public static String formatSTR_NO_KEY_USAGE_MESSAGE(Object... arguments) {
 		return format(STR_NO_KEY_USAGE_MESSAGE, arguments);
+	}
+
+	/**
+	 * Resource key {@code STR_EXISTING_ALIAS_MESSAGE}
+	 * <p>
+	 * Name ''{0}'' is already in use.
+	 * </p>
+	 */
+	public static final String STR_EXISTING_ALIAS_MESSAGE = "STR_EXISTING_ALIAS_MESSAGE";
+
+	/**
+	 * Resource string {@code STR_EXISTING_ALIAS_MESSAGE}
+	 * <p>
+	 * Name ''{0}'' is already in use.
+	 * </p>
+	 *
+	 * @param arguments Format arguments.
+	 * @return The formated string.
+	 */
+	public static String formatSTR_EXISTING_ALIAS_MESSAGE(Object... arguments) {
+		return format(STR_EXISTING_ALIAS_MESSAGE, arguments);
 	}
 
 	/**
