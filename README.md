@@ -41,6 +41,8 @@ store home
 ```
 
 ## Changelog:
+* 2016-05-29
+ * Various bug fixes and code cleanups.
 * 2016-04-02
  * Now hosted on GitHub
 * 2016-01-08
