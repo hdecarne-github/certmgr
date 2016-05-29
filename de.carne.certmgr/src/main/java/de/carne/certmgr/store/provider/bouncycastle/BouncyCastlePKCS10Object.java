@@ -184,7 +184,7 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 						ASN1Decoder[] entries = decoder.asn1DecodeSequence(-1, -1);
 
 						for (ASN1Decoder entry : entries) {
-							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(3, 3);
+							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(2, 3);
 							String extensionOID = extensionEntries[0].asn1DecodeOID();
 
 							oids.add(extensionOID);
@@ -224,11 +224,11 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 						ASN1Decoder[] entries = decoder.asn1DecodeSequence(-1, -1);
 
 						for (ASN1Decoder entry : entries) {
-							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(3, 3);
+							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(2, 3);
 							String extensionOID = extensionEntries[0].asn1DecodeOID();
 
 							if (oid.equals(extensionOID)) {
-								extensionValue = extensionEntries[2].getEncoded();
+								extensionValue = extensionEntries[extensionEntries.length - 1].getEncoded();
 								break;
 							}
 						}
