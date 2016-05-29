@@ -1,18 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.web.*?>
-<?import javafx.scene.*?>
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import java.util.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<GridPane hgap="8.0" vgap="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
+<GridPane hgap="8.0" vgap="8.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
   <children>
       <RadioButton fx:id="ctlFileSourceOption" mnemonicParsing="false" text="%_STR_IMPORT_FILE_LABEL">
          <toggleGroup>
@@ -50,7 +56,7 @@
       </HBox>
       <RadioButton fx:id="ctlURLSourceOption" layoutX="14.0" layoutY="47.0" mnemonicParsing="false" text="%_STR_IMPORT_URL_LABEL" toggleGroup="$source" GridPane.rowIndex="2" />
       <TextField fx:id="ctlURLSourceInput" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="14.0" layoutY="76.0" mnemonicParsing="false" text="%_STR_IMPORT_URL_LABEL" toggleGroup="$source" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="14.0" layoutY="76.0" mnemonicParsing="false" text="%_STR_IMPORT_CLIPBOARD_LABEL" toggleGroup="$source" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
       <HBox alignment="CENTER_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
          <children>
             <HBox fx:id="ctlProgressGroup" alignment="CENTER_LEFT" spacing="4.0" HBox.hgrow="ALWAYS">
