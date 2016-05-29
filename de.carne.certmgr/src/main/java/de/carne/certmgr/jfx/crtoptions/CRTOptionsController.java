@@ -942,6 +942,9 @@ public class CRTOptionsController extends StageController {
 		if (!storeHome.equals(checkPath.getParent())) {
 			throw new InvalidInputException(I18N.formatSTR_INVALID_ALIAS_MESSAGE(aliasInput));
 		}
+		if (!this.store.isNewAlias(aliasInput)) {
+			throw new InvalidInputException(I18N.formatSTR_EXISTING_ALIAS_MESSAGE(aliasInput));
+		}
 		return aliasInput;
 	}
 
