@@ -567,7 +567,7 @@ public class StoreManagerController extends StageController {
 				}
 			});
 			try {
-				latch.wait();
+				latch.await();
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
