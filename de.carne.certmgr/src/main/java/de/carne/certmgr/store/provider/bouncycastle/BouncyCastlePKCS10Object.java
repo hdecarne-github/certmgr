@@ -53,8 +53,8 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 	private final X500Principal pkcs10Subject;
 	private final PublicKey pkcs10PublicKey;
 
-	BouncyCastlePKCS10Object(PKCS10CertificationRequest pkcs10Object) throws IOException, NoSuchAlgorithmException,
-			InvalidKeyException {
+	BouncyCastlePKCS10Object(PKCS10CertificationRequest pkcs10Object)
+			throws IOException, NoSuchAlgorithmException, InvalidKeyException {
 		if (pkcs10Object instanceof JcaPKCS10CertificationRequest) {
 			this.pkcs10Object = (JcaPKCS10CertificationRequest) pkcs10Object;
 		} else {
@@ -115,8 +115,8 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 	 * @see de.carne.certmgr.store.PKCS10Object#verify(java.security.PublicKey)
 	 */
 	@Override
-	public void verify(PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchProviderException,
-			InvalidKeyException, SignatureException {
+	public void verify(PublicKey publicKey)
+			throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException, SignatureException {
 		JcaContentVerifierProviderBuilder verifierBuilder = new JcaContentVerifierProviderBuilder();
 		boolean isSignatureValid = false;
 
@@ -148,7 +148,8 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.PKCS10Object#getAttributeValues(java.lang.String)
+	 * @see
+	 * de.carne.certmgr.store.PKCS10Object#getAttributeValues(java.lang.String)
 	 */
 	@Override
 	public byte[][] getAttributeValues(String oid) throws IOException {
@@ -183,7 +184,7 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 						ASN1Decoder[] entries = decoder.asn1DecodeSequence(-1, -1);
 
 						for (ASN1Decoder entry : entries) {
-							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(2, 2);
+							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(3, 3);
 							String extensionOID = extensionEntries[0].asn1DecodeOID();
 
 							oids.add(extensionOID);
@@ -197,7 +198,8 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 
 	/*
 	 * (non-Javadoc)
-	 * @see de.carne.certmgr.store.PKCS10Object#getExtensionValue(java.lang.String)
+	 * @see
+	 * de.carne.certmgr.store.PKCS10Object#getExtensionValue(java.lang.String)
 	 */
 	@Override
 	public byte[] getExtensionValue(String oid) throws IOException {
@@ -222,11 +224,11 @@ class BouncyCastlePKCS10Object implements PKCS10Object {
 						ASN1Decoder[] entries = decoder.asn1DecodeSequence(-1, -1);
 
 						for (ASN1Decoder entry : entries) {
-							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(2, 2);
+							ASN1Decoder[] extensionEntries = entry.asn1DecodeSequence(3, 3);
 							String extensionOID = extensionEntries[0].asn1DecodeOID();
 
 							if (oid.equals(extensionOID)) {
-								extensionValue = extensionEntries[1].getEncoded();
+								extensionValue = extensionEntries[2].getEncoded();
 								break;
 							}
 						}
