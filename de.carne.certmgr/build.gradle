@@ -24,7 +24,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath 'de.carne:GradlePlugins:0.1.2'
+		classpath 'de.carne:gradleplugins:0.2.0'
 	}
 }
 
