@@ -1,7 +1,7 @@
 /*
  * I18N resource strings
  *
- * Generated on 07.05.2016 08:43:41
+ * Generated on 11.07.2016 11:39:09
  */
 package de.carne.jfx;
 
@@ -18,7 +18,13 @@ public final class I18N {
 	 */
 	public static final ResourceBundle BUNDLE = ResourceBundle.getBundle(I18N.class.getName());
 
-	private static String format(String key, Object... arguments) {
+	/**
+	 * Format a resource string.
+	 * @param key The resource key.
+	 * @param arguments Format arguments.
+	 * @return The formated string.
+	 */
+	public static String format(String key, Object... arguments) {
 		String pattern = BUNDLE.getString(key);
 
 		return (arguments.length > 0 ? MessageFormat.format(pattern, arguments) : pattern);
