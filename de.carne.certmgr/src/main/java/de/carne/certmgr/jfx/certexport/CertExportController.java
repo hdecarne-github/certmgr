@@ -217,7 +217,7 @@ public class CertExportController extends StageController {
 			PasswordCallback exportPassword = (this.ctlEncryptExportOption.isSelected()
 					? PasswordPromptCallback.getNewPassword(this) : null);
 
-			runTask(new ExportTask() {
+			getExecutorService().submit(new ExportTask() {
 				private CertStoreEntryExporter exporter2 = exporter;
 				private CertFileFormat encoding2 = encoding;
 				private ExportTarget exportTarget2 = exportTarget;

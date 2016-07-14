@@ -27,7 +27,8 @@ import de.carne.Main;
 import de.carne.certmgr.jfx.storemanager.StoreManagerController;
 import de.carne.certmgr.store.CertStore;
 import de.carne.jfx.StageController;
-import de.carne.jfx.messagebox.MessageBoxController;
+import de.carne.jfx.logview.LogImages;
+import de.carne.jfx.messagebox.MessageBoxImages;
 import de.carne.jfx.messagebox.MessageBoxStyle;
 import de.carne.util.logging.Log;
 import de.carne.util.logging.LogConfig;
@@ -45,14 +46,20 @@ public class CertMgrApplication extends Application implements Main {
 	private static final String PARAMETER_DEBUG = "--debug";
 
 	static {
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO16);
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO32);
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING16);
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING32);
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR16);
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR32);
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION16);
-		MessageBoxController.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION32);
+		LogImages.registerImage(Log.LEVEL_NOTICE, Images.IMAGE_NOTICE16);
+		LogImages.registerImage(Log.LEVEL_ERROR, Images.IMAGE_ERROR16);
+		LogImages.registerImage(Log.LEVEL_WARNING, Images.IMAGE_WARNING16);
+		LogImages.registerImage(Log.LEVEL_INFO, Images.IMAGE_INFO16);
+		LogImages.registerImage(Log.LEVEL_DEBUG, Images.IMAGE_INFO16);
+
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO16);
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO32);
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING16);
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING32);
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR16);
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR32);
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION16);
+		MessageBoxImages.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION32);
 	}
 
 	private static CertMgrApplication applicationInstance = null;

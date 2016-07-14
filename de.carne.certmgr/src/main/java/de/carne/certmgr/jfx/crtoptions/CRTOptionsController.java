@@ -306,7 +306,7 @@ public class CRTOptionsController extends StageController {
 				CertificateValidity certificateValidity = validateAndGetValidity();
 				PasswordPromptCallback issuerPassword = PasswordPromptCallback.getPassword(this);
 
-				runTask(new GenerateTask() {
+				getExecutorService().submit(new GenerateTask() {
 					private CertStore store2 = getStore();
 					private CertStoreEntry storeEntry2 = getStoreEntry();
 					private CertificateValidity certificateValidity2 = certificateValidity;
@@ -329,7 +329,7 @@ public class CRTOptionsController extends StageController {
 				CertStoreEntry issuerEntry = validateAndGetIssuer();
 				PasswordPromptCallback issuerPassword = PasswordPromptCallback.getPassword(this);
 
-				runTask(new GenerateTask() {
+				getExecutorService().submit(new GenerateTask() {
 					private CertStore store2 = getStore();
 					private String alias2 = alias;
 					private KeyParams keyParams2 = keyParams;
@@ -359,7 +359,7 @@ public class CRTOptionsController extends StageController {
 				X509CertificateParams certificateParams = validateAndGetCertificateParams();
 				PasswordPromptCallback password = PasswordPromptCallback.getNewPassword(this);
 
-				runTask(new GenerateTask() {
+				getExecutorService().submit(new GenerateTask() {
 					private CertStore store2 = getStore();
 					private CertStoreEntry storeEntry2 = getStoreEntry();
 					private X509CertificateParams certificateParams2 = certificateParams;
@@ -378,7 +378,7 @@ public class CRTOptionsController extends StageController {
 				X509CertificateParams certificateParams = validateAndGetCertificateParams();
 				PasswordPromptCallback password = PasswordPromptCallback.getNewPassword(this);
 
-				runTask(new GenerateTask() {
+				getExecutorService().submit(new GenerateTask() {
 					private CertStore store2 = getStore();
 					private String alias2 = alias;
 					private KeyParams keyParams2 = keyParams;

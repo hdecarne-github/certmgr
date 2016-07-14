@@ -390,7 +390,7 @@ public class CertImportController extends StageController {
 		Path fileSourcePath = validateAndGetFileSource();
 		ImportSource[] sources = new ImportSource[] { ImportSource.fromFile(fileSourcePath) };
 
-		runTask(new ReloadTask() {
+		getExecutorService().submit(new ReloadTask() {
 			private ImportSource[] taskSources = sources;
 
 			@Override
@@ -404,7 +404,7 @@ public class CertImportController extends StageController {
 	private void reloadFolderSource() throws InvalidInputException {
 		Path folderSourcePath = validateAndGetFolderSource();
 
-		runTask(new ReloadTask() {
+		getExecutorService().submit(new ReloadTask() {
 			private Path taskFolderPath = folderSourcePath;
 
 			@Override
@@ -424,7 +424,7 @@ public class CertImportController extends StageController {
 		URL urlSourceURL = validateAndGetURLSource();
 		ImportSource[] sources = new ImportSource[] { ImportSource.fromURL(urlSourceURL) };
 
-		runTask(new ReloadTask() {
+		getExecutorService().submit(new ReloadTask() {
 			private ImportSource[] taskSources = sources;
 
 			@Override
@@ -447,7 +447,7 @@ public class CertImportController extends StageController {
 		} else {
 			throw new InvalidInputException(I18N.formatSTR_INVALID_CLIPBOARD_SOURCE_MESSAGE());
 		}
-		runTask(new ReloadTask() {
+		getExecutorService().submit(new ReloadTask() {
 			private ImportSource[] taskSources = sources;
 
 			@Override
