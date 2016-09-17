@@ -16,9 +16,16 @@
  */
 package de.carne.certmgr.store;
 
+import java.util.List;
+
 /**
+ * This interface defines the functions to be provided by any kind of
+ * certificate source.
  *
+ * @param <T> The entry type of this certificate source.
  */
-public interface CertStoreEntry extends CertObject {
+public interface CertSource<T extends CertObject> {
+
+	List<T> getRootEntries();
 
 }

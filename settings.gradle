@@ -1,0 +1,4 @@
+rootProject.name = 'certmgr'
+include 'de.carne'
+include 'de.carne.jfx'
+include 'de.carne.certmgr'

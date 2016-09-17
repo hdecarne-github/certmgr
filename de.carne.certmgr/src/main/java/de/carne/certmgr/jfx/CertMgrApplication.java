@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * Copyright (c) 2015-2016 Holger de Carne and contributors, All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,182 +16,59 @@
  */
 package de.carne.certmgr.jfx;
 
-import java.io.File;
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Map;
-
-import de.carne.Main;
-import de.carne.certmgr.jfx.storemanager.StoreManagerController;
-import de.carne.certmgr.store.CertStore;
+import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.jfx.StageController;
-import de.carne.jfx.logview.LogImages;
-import de.carne.jfx.messagebox.MessageBoxImages;
-import de.carne.jfx.messagebox.MessageBoxStyle;
+import de.carne.util.cmdline.CmdLine;
+import de.carne.util.cmdline.CmdLineException;
 import de.carne.util.logging.Log;
 import de.carne.util.logging.LogConfig;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 /**
- * JavaFX application class responsible for starting up the GUI.
+ * JavaFX application class responsible for running the UI.
  */
-public class CertMgrApplication extends Application implements Main {
+public class CertMgrApplication extends Application {
 
-	private static final Log LOG = new Log(CertMgrApplication.class);
-
-	private static final String PARAMETER_VERBOSE = "--verbose";
-	private static final String PARAMETER_DEBUG = "--debug";
-
-	static {
-		LogImages.registerImage(Log.LEVEL_NOTICE, Images.IMAGE_NOTICE16);
-		LogImages.registerImage(Log.LEVEL_ERROR, Images.IMAGE_ERROR16);
-		LogImages.registerImage(Log.LEVEL_WARNING, Images.IMAGE_WARNING16);
-		LogImages.registerImage(Log.LEVEL_INFO, Images.IMAGE_INFO16);
-		LogImages.registerImage(Log.LEVEL_DEBUG, Images.IMAGE_INFO16);
-
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO16);
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_INFO, Images.IMAGE_INFO32);
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING16);
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_WARNING, Images.IMAGE_WARNING32);
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR16);
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_ERROR, Images.IMAGE_ERROR32);
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION16);
-		MessageBoxImages.registerImage(MessageBoxStyle.ICON_QUESTION, Images.IMAGE_QUESTION32);
-	}
-
-	private static CertMgrApplication applicationInstance = null;
-
-	void handleUncaughtException(Thread t, Throwable e, UncaughtExceptionHandler next) {
-		LOG.error(e, I18N.BUNDLE, I18N.STR_UNEXPECTED_EXCEPTION_MESSAGE, e.getLocalizedMessage());
-		if (next != null) {
-			next.uncaughtException(t, e);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see de.carne.Main#run(java.lang.String[])
-	 */
-	@Override
-	public int run(String[] args) {
-		Application.launch(getClass(), args);
-		return 0;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see javafx.application.Application#start(javafx.stage.Stage)
-	 */
-	@Override
-	public void start(Stage stage) throws Exception {
-		assert stage != null;
-
-		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-
-			private UncaughtExceptionHandler next = Thread.currentThread().getUncaughtExceptionHandler();
-
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				handleUncaughtException(t, e, this.next);
-			}
-
-		});
-
-		LOG.info(null, "Starting JavaFX GUI...");
-
-		applicationInstance = this;
-
-		String openStore = processParameters();
-
-		StoreManagerController storeManager = StageController.setupPrimaryStage(stage, StoreManagerController.class);
-
-		storeManager.getStage().show();
-		logVMInfo();
-		logLoaderInfo();
-		logProviderInfo();
-		if (openStore != null) {
-			storeManager.openStore(openStore);
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see javafx.application.Application#stop()
-	 */
-	@Override
-	public void stop() throws Exception {
-		applicationInstance = null;
-		LOG.info(null, "JavaFX GUI stopped");
-	}
+	private static final Log LOG = new Log();
 
 	/**
-	 * Get the currently running application instance.
+	 * Launch this JavaFX application.
 	 *
-	 * @return The currently running application or null, if no application
-	 *         running.
+	 * @param args The application's command line.
 	 */
-	public static CertMgrApplication getInstance() {
-		return applicationInstance;
+	public static void launch(String[] args) {
+		Application.launch(CertMgrApplication.class, args);
 	}
 
-	private String processParameters() {
-		Parameters parameters = getParameters();
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		// Evaluate command line as soon as possible to apply logging options as
+		// soon as possible
+		evalCmdLine();
 
-		for (Map.Entry<String, String> parameter : parameters.getNamed().entrySet()) {
-			LOG.warning(I18N.BUNDLE, I18N.STR_INVALID_PARAMETER_MESSAGE,
-					parameter.getKey() + "=" + parameter.getValue());
-		}
+		LOG.info("JavaFX GUI starting...");
 
-		String openStore = null;
+		StoreController store = StageController.setupPrimaryState(primaryStage, StoreController.class);
 
-		for (String parameter : parameters.getUnnamed()) {
-			if (PARAMETER_VERBOSE.equals(parameter)) {
-				LogConfig.applyConfig(LogConfig.CONFIG_VERBOSE);
-				LOG.notice(I18N.BUNDLE, I18N.STR_VERBOSE_ENABLED_MESSAGE);
-			} else if (PARAMETER_DEBUG.equals(parameter)) {
-				LogConfig.applyConfig(LogConfig.CONFIG_DEBUG);
-				LOG.notice(I18N.BUNDLE, I18N.STR_DEBUG_ENABLED_MESSAGE);
-			} else if (openStore == null && isValidStoreParameter(parameter)) {
-				openStore = parameter;
-			} else {
-				LOG.warning(I18N.BUNDLE, I18N.STR_INVALID_PARAMETER_MESSAGE, parameter);
-			}
-		}
-		return openStore;
+		store.show();
 	}
 
-	private boolean isValidStoreParameter(String parameter) {
-		File parameterFile = new File(parameter);
-
-		return parameterFile.isDirectory();
+	@Override
+	public void stop() throws Exception {
+		LOG.info("JavaFX GUI stopped");
 	}
 
-	private void logVMInfo() {
-		String vmVersion = System.getProperty("java.version");
-		String vmVendor = System.getProperty("java.vendor");
+	private void evalCmdLine() {
+		CmdLine cmdLine = new CmdLine(getParameters().getRaw());
 
-		LOG.notice(I18N.BUNDLE, I18N.STR_VM_INFO, vmVersion, vmVendor);
-	}
-
-	private void logLoaderInfo() {
-		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-
-		if (classloader instanceof URLClassLoader) {
-			URL[] urls = ((URLClassLoader) classloader).getURLs();
-
-			LOG.info(null, "Using ClassLoader {0} with URL path {1}", classloader.getClass().getName(),
-					Arrays.toString(urls));
-		}
-	}
-
-	private void logProviderInfo() {
+		cmdLine.switchAction((s) -> LogConfig.applyConfig(LogConfig.CONFIG_VERBOSE)).arg("--verbose");
+		cmdLine.switchAction((s) -> LogConfig.applyConfig(LogConfig.CONFIG_DEBUG)).arg("--debug");
 		try {
-			LOG.notice(I18N.BUNDLE, I18N.STR_PROVIDER_INFO, CertStore.getProviderInfo());
-		} catch (Exception e) {
-			LOG.error(e, I18N.BUNDLE, I18N.STR_PROVIDER_EXCEPTION_MESSAGE, e.getLocalizedMessage());
+			cmdLine.eval();
+			LOG.info("Running command line ''{0}''", cmdLine);
+		} catch (CmdLineException e) {
+			LOG.warning(e, "Invalid argument usage for ''{0}'' in command line ''{0}''; ", e.getArg(), cmdLine);
 		}
 	}
 

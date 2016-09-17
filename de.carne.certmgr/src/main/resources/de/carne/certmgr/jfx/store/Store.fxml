@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.store.StoreController">
+   <children>
+      <MenuBar VBox.vgrow="NEVER">
+        <menus>
+          <Menu mnemonicParsing="false" text="%_STR_MENU_FILE">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdNewStore" text="%_STR_MENU_NEW_STORE">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageNewStore16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdOpenStore" text="%_STR_MENU_OPEN_STORE">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageOpenStore16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+              <MenuItem mnemonicParsing="false" onAction="#onCmdClose" text="%_STR_MENU_CLOSE" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="%_STR_MENU_EDIT">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdCopyEntry" text="%_STR_MENU_COPY_ENTRY">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageCopyEntry16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdDeleteEntry" text="%_STR_MENU_DELETE_ENTRY">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageDeleteEntry16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="%_STR_MENU_CERTS">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdNewCert" text="%_STR_MENU_NEW_CERT">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageNewCert16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdRevokeCert" text="%_STR_MENU_REVOKE_CERT">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageRevokeCert16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdEditCRL" text="%_STR_MENU_EDIT_CRL">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageEditCRL16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdExportCerts" text="%_STR_MENU_EXPORT_CERTS">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageImportCerts16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdImportCerts" text="%_STR_MENU_IMPORT_CERTS">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageExportCerts16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuItem>
+               </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="%_STR_MENU_HELP">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#onCmdAbout" text="%_STR_MENU_ABOUT" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ToolBar VBox.vgrow="NEVER">
+        <items>
+          <Button mnemonicParsing="false" onAction="#onCmdNewStore">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageNewStore16.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdOpenStore">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageOpenStore16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Separator orientation="VERTICAL" />
+            <Button layoutX="48.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCopyEntry">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageCopyEntry16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutX="86.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdDeleteEntry">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageDeleteEntry16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Separator layoutX="248.0" layoutY="10.0" orientation="VERTICAL" />
+            <Button layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdNewCert">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageNewCert16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutX="162.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdRevokeCert">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageRevokeCert16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutX="200.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdEditCRL">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageEditCRL16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Separator layoutX="248.0" layoutY="10.0" orientation="VERTICAL" />
+            <Button layoutX="238.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdExportCerts">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageExportCerts16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button layoutX="276.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdImportCerts">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageImportCerts16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+        </items>
+      </ToolBar>
+      <SplitPane dividerPositions="0.6" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0">
+               <children>
+                  <TreeTableView layoutX="48.0" layoutY="24.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TreeTableColumn maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="%_STR_COL_NAME" />
+                      <TreeTableColumn prefWidth="75.0" text="%_STR_COL_CN" />
+                    </columns>
+                  </TreeTableView>
+               </children></AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0">
+               <children>
+                  <TreeTableView layoutX="27.0" layoutY="44.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TreeTableColumn prefWidth="75.0" text="%_STR_COL_ATTRIBUTE" />
+                      <TreeTableColumn prefWidth="75.0" text="%_STR_COL_VALUE" />
+                    </columns>
+                  </TreeTableView>
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
+      <HBox VBox.vgrow="NEVER">
+         <children>
+            <Label fx:id="ctlStoreStatusLabel" maxWidth="1.7976931348623157E308" text="%STR_STORE_STATUS_NONE" HBox.hgrow="ALWAYS" />
+            <Separator orientation="VERTICAL" HBox.hgrow="NEVER" />
+            <Label fx:id="ctlHeapStatusLabel" text="%STR_HEAP_STATUS" HBox.hgrow="NEVER" />
+         </children>
+         <padding>
+            <Insets left="2.0" right="2.0" />
+         </padding></HBox>
+   </children>
+</VBox>

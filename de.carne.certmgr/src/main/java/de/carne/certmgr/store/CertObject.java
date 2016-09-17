@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2016 Holger de Carne and contributors, All Rights Reserved.
+ * Copyright (c) 2015-2016 Holger de Carne and contributors, All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,120 +16,55 @@
  */
 package de.carne.certmgr.store;
 
-import java.io.IOException;
-import java.security.KeyPair;
-import java.security.cert.X509CRL;
-import java.security.cert.X509Certificate;
-
-import de.carne.certmgr.store.x500.X500Names;
-
 /**
- * Abstract base class for holding certificate objects.
- * <p>
- * This class is used to provide access to the different objects combined in a {@linkplain CertEntry} instance.
- * </p>
- *
- * @param <T> The object type to hold.
+ * Certificate object.
  */
-public abstract class CertObject<T> {
-
-	private String name;
+public interface CertObject {
 
 	/**
-	 * Construct CertObject.
+	 * Get the unique id of the certificate object.
 	 *
-	 * @param name The object's name.
+	 * @return The unique id of the certificate object.
 	 */
-	protected CertObject(String name) {
-		assert name != null;
-
-		this.name = name;
-	}
+	String id();
 
 	/**
-	 * Get the key object's name.
-	 *
-	 * @param keypair The key object to get the name for.
-	 * @return The key object's name.
+	 * Get the common name (CN) of the certificate object.
+	 * 
+	 * @return The common name (CN) of the certificate object.
 	 */
-	public static String getKeyName(KeyPair keypair) {
-		assert keypair != null;
-
-		return keypair.getPublic().getAlgorithm() + " key";
-	}
+	String cn();
 
 	/**
-	 * Get the CRT issuers object's name.
+	 * Check whether the certificate object has a Key.
 	 *
-	 * @param crt The CRT object to get the issuer's name for.
-	 * @return The CRT object issuer's name.
+	 * @return {@code true} if the certificate object has a Key.
 	 */
-	public static String getCRTIssuerName(X509Certificate crt) {
-		assert crt != null;
-
-		return X500Names.toString(crt.getIssuerX500Principal());
-	}
+	boolean hasKey();
 
 	/**
-	 * Get the CRT object's name.
+	 * Check whether the certificate object has a CRT (Certificate).
 	 *
-	 * @param crt The CRT object to get the name for.
-	 * @return The CRT object's name.
+	 * @return {@code true} if the certificate object has a CRT (Certificate).
 	 */
-	public static String getCRTName(X509Certificate crt) {
-		assert crt != null;
-
-		return X500Names.toString(crt.getSubjectX500Principal());
-	}
+	boolean hasCRT();
 
 	/**
-	 * Get the CSR object's name.
+	 * Check whether the certificate object has a CSR (Certificate Signing
+	 * Request).
 	 *
-	 * @param csr The CSR object to get the name for.
-	 * @return The CSR object's name.
+	 * @return {@code true} if the certificate object has a CSR (Certificate
+	 *         Signing Request).
 	 */
-	public static String getCSRName(PKCS10Object csr) {
-		assert csr != null;
-
-		return X500Names.toString(csr.getSubjectX500Principal());
-	}
+	boolean hasCSR();
 
 	/**
-	 * Get the CRL object's name.
+	 * Check whether the certificate object has a CRL (Certificate Revocation
+	 * List).
 	 *
-	 * @param crl The CRL object to get the name for.
-	 * @return The CRL object's name.
+	 * @return {@code true} if the certificate object has a CRL (Certificate
+	 *         Revocation List).
 	 */
-	public static String getCRLName(X509CRL crl) {
-		assert crl != null;
-
-		return X500Names.toString(crl.getIssuerX500Principal());
-	}
-
-	/**
-	 * Get the object's name.
-	 *
-	 * @return The object's name.
-	 */
-	public String getName() {
-		return this.name;
-	}
-
-	/**
-	 * Get the object.
-	 *
-	 * @return The object.
-	 * @throws IOException If an I/O error occurs while accessing the object's data.
-	 */
-	public abstract T getObject() throws IOException;
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return getName();
-	}
+	boolean hasCRL();
 
 }

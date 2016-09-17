@@ -1,0 +1,4 @@
+de.carne.certmgr.CertMgrMain
+java.util.logging.config.class = de.carne.util.logging.LogConfig
+java.util.prefs.PreferencesFactory = de.carne.util.prefs.PropertiesPreferencesFactory
+de.carne.util.prefs = .de.carne.certmgr

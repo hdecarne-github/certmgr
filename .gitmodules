@@ -1,0 +1,6 @@
+[submodule "de.carne"]
+	path = de.carne
+	url = https://github.com/hdecarne/de.carne.git
+[submodule "de.carne.jfx"]
+	path = de.carne.jfx
+	url = https://github.com/hdecarne/de.carne.jfx.git
