@@ -14,11 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.store;
+package de.carne.certmgr.jfx.password;
+
+import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.util.DialogHelper;
 
 /**
  *
  */
-public interface CertStoreEntry extends CertObject {
+abstract class PasswordController extends DialogController<String> {
+
+	public void setResource(String resource) {
+		getUI().setHeaderText(getHeaderText(resource));
+	}
+
+	public void setPasswordException(Throwable passwordException) {
+		DialogHelper.setExceptionContent(getUI(), passwordException);
+	}
+
+	protected abstract String getHeaderText(String resource);
+
+	protected abstract String getPasswordInput();
 
 }

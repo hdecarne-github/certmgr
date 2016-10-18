@@ -17,7 +17,7 @@
 package de.carne.certmgr.jfx;
 
 import de.carne.certmgr.jfx.store.StoreController;
-import de.carne.jfx.StageController;
+import de.carne.jfx.stage.StageController;
 import de.carne.util.cmdline.CmdLine;
 import de.carne.util.cmdline.CmdLineException;
 import de.carne.util.logging.Log;
@@ -49,7 +49,7 @@ public class CertMgrApplication extends Application {
 
 		LOG.info("JavaFX GUI starting...");
 
-		StoreController store = StageController.setupPrimaryState(primaryStage, StoreController.class);
+		StoreController store = StageController.loadPrimaryStage(primaryStage, StoreController.class);
 
 		store.show();
 	}

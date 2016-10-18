@@ -2,57 +2,116 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
 
-
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints vgrow="NEVER" />
+    <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="NEVER" />
+      <RowConstraints vgrow="ALWAYS" />
+      <RowConstraints vgrow="NEVER" />
+  </rowConstraints>
    <children>
-      <GridPane hgap="4.0" vgap="4.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints vgrow="NEVER" />
-          <RowConstraints vgrow="NEVER" />
-            <RowConstraints vgrow="NEVER" />
-          <RowConstraints valignment="TOP" vgrow="ALWAYS" />
-        </rowConstraints>
+      <Label text="%_STR_LABEL_SOURCES" GridPane.columnSpan="2147483647" />
+      <RadioButton fx:id="ctlFileSourceOption" mnemonicParsing="false" text="%_STR_OPTION_FILE" GridPane.rowIndex="1">
+         <toggleGroup>
+            <ToggleGroup fx:id="ImportSource" />
+         </toggleGroup>
+      </RadioButton>
+      <HBox GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
          <children>
-            <Label text="Label" />
-            <RadioButton mnemonicParsing="false" text="RadioButton" GridPane.rowIndex="1">
-               <toggleGroup>
-                  <ToggleGroup fx:id="ImportSource" />
-               </toggleGroup>
-            </RadioButton>
-            <RadioButton layoutX="12.0" layoutY="33.0" mnemonicParsing="false" text="RadioButton" toggleGroup="$ImportSource" GridPane.rowIndex="2" />
-            <HBox alignment="TOP_RIGHT" GridPane.rowIndex="3">
-               <children>
-                  <Button mnemonicParsing="false" text="Button" />
-                  <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Button" />
-               </children>
-            </HBox>
+            <TextField fx:id="ctlFileSourceInput" promptText="%_STR_PROMPT_FILE" HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlChooseFileSourceButton" mnemonicParsing="false" onAction="#onCmdChooseFileSource" HBox.hgrow="NEVER">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageChooseFile16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
          </children>
-         <padding>
-            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-         </padding>
-      </GridPane>
-      <GridPane>
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-      </GridPane>
+      </HBox>
+      <RadioButton fx:id="ctlFolderSourceOption" layoutX="12.0" layoutY="33.0" mnemonicParsing="false" text="%_STR_OPTION_FOLDER" toggleGroup="$ImportSource" GridPane.rowIndex="2" />
+      <HBox layoutX="168.0" layoutY="33.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+         <children>
+            <TextField fx:id="ctlFolderSourceInput" promptText="%_STR_PROMPT_FOLDER" HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlChooseFolderSourceButton" mnemonicParsing="false" onAction="#onCmdChooseFolderSource" HBox.hgrow="NEVER">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageChooseFile16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+         </children>
+      </HBox>
+      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="3" />
+      <RadioButton fx:id="ctlURLSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_URL" toggleGroup="$ImportSource" GridPane.rowIndex="4" />
+      <TextField fx:id="ctlURLSourceInput" promptText="%_STR_PROMPT_URL" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+      <RadioButton fx:id="ctlServerSourceOption" layoutX="12.0" layoutY="12.0" mnemonicParsing="false" text="%_STR_OPTION_SERVER" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
+      <TextField fx:id="ctlServerSourceInput" layoutX="188.0" layoutY="112.0" promptText="%_STR_PROMPT_SERVER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+      <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="204.0" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
+         <children>
+            <ImageView pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
+               <image>
+                  <Image url="@../resources/imageInfo16.png" />
+               </image>
+            </ImageView>
+            <Label maxWidth="1.7976931348623157E308" text="%STR_STATUS_SELECT_SOURCE" HBox.hgrow="ALWAYS" />
+            <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdReload" HBox.hgrow="NEVER">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageRefresh16.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+         </children>
+      </HBox>
+      <TreeTableView fx:id="ctlSourceEntryInput" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
+        <columns>
+          <TreeTableColumn fx:id="ctlSourceEntryInputSelected" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" sortable="false">
+               <graphic>
+                  <CheckBox mnemonicParsing="false" />
+               </graphic></TreeTableColumn>
+          <TreeTableColumn fx:id="ctlSourceEntryInputCN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_CN" />
+            <TreeTableColumn fx:id="ctlSourceEntryInputCRT" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRT" />
+            <TreeTableColumn fx:id="ctlSourceEntryInputKey" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_KEY" />
+            <TreeTableColumn fx:id="ctlSourceEntryInputCSR" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRL" />
+            <TreeTableColumn fx:id="ctlSourceEntryInputCRL" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CSR" />
+        </columns>
+      </TreeTableView>
+      <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
+         <children>
+            <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdImport" text="%_STR_BUTTON_IMPORT" />
+            <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />
+         </children>
+      </HBox>
    </children>
-</StackPane>
+   <padding>
+      <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+   </padding>
+</GridPane>

@@ -6,7 +6,7 @@ subprojects {
 			mavenCentral()
 		}
 		dependencies {
-			classpath 'de.carne:gradleplugins:0.3.0'
+			classpath 'de.carne:gradleplugins:0.3.1-SNAPSHOT'
 		}
 	}
 

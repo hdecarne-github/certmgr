@@ -14,18 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.store;
+package de.carne.certmgr.jfx.password;
 
-import java.util.List;
+import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.PasswordField;
 
 /**
- * This interface defines the functions to be provided by any kind of
- * certificate source.
  *
- * @param <T> The entry type of this certificate source.
  */
-public interface CertSource<T extends CertObject> {
+public class EnterPasswordController extends PasswordController {
 
-	List<T> getRootEntries();
+	@FXML
+	PasswordField ctlPasswordInput;
+
+	@FXML
+	CheckBox ctlRememberPassword;
+
+	@Override
+	protected String getHeaderText(String resource) {
+		return EnterPasswordI18N.formatSTR_LABEL_ENTER_PASSWORD_HEADER(resource);
+	}
+
+	@Override
+	protected String getPasswordInput() {
+		return this.ctlPasswordInput.getText();
+	}
 
 }

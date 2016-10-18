@@ -17,15 +17,18 @@
 package de.carne.certmgr.jfx.store;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
-import de.carne.certmgr.store.CertStore;
-import de.carne.jfx.StageController;
+import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.jfx.certimport.CertImportController;
+import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
+import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.prefs.DirectoryPreference;
@@ -62,7 +65,7 @@ public class StoreController extends StageController {
 
 		chooser.setInitialDirectory(this.preferenceInitalDirectory.getValueAsFile());
 
-		File storeDirectory = chooser.showDialog(getStage());
+		File storeDirectory = chooser.showDialog(getUI());
 
 		if (storeDirectory != null) {
 			openStore(storeDirectory);
@@ -108,7 +111,13 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdImportCerts(ActionEvent evt) {
+		try {
+			CertImportController importController = loadStage(CertImportController.class);
 
+			importController.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -130,9 +139,10 @@ public class StoreController extends StageController {
 
 	@Override
 	protected void setupStage(Stage stage) {
+		stage.getIcons().addAll(Images.STORE32, Images.STORE16);
 		stage.setTitle(StoreI18N.formatSTR_STAGE_TITLE());
-		Windows.onHiding(stage, (ScheduledFuture<?> f) -> f.cancel(true), getExecutorService()
-				.scheduleAtFixedRate(PlatformHelper.runLater(() -> updateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
+		Windows.onHiding(stage, (ScheduledFuture<?> f) -> f.cancel(true), getExecutorService().scheduleAtFixedRate(
+				PlatformHelper.runLaterRunnable(() -> updateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
 	}
 
 	@Override
@@ -143,9 +153,13 @@ public class StoreController extends StageController {
 	public void openStore(File storeHome) {
 		assert storeHome != null;
 
-		CertStore store = CertStore.open(storeHome.toPath());
+		try {
+			UserCertStore store = UserCertStore.openStore(storeHome.toPath());
 
-		this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(store.getStoreHome()));
+			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(store.storeHome()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
