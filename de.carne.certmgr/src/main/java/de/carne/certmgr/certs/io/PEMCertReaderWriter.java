@@ -18,21 +18,30 @@ package de.carne.certmgr.certs.io;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.cert.CertificateException;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.openssl.EncryptionException;
+import org.bouncycastle.openssl.PEMDecryptorProvider;
 import org.bouncycastle.openssl.PEMEncryptedKeyPair;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import de.carne.certmgr.certs.CertProviderException;
+import de.carne.certmgr.certs.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.PasswordCallback;
+import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -49,7 +58,13 @@ public class PEMCertReaderWriter implements CertReader {
 	 */
 	public static final String PROVIDER_NAME = "PEM";
 
-	private final JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
+	private final JcaX509CertificateConverter crtConverter = new JcaX509CertificateConverter();
+
+	private final JcaPEMKeyConverter keyConverter = new JcaPEMKeyConverter();
+
+	private final JcePEMDecryptorProviderBuilder pemCecryptorBuilder = new JcePEMDecryptorProviderBuilder();
+
+	private final JcaX509CRLConverter crlConverter = new JcaX509CRLConverter();
 
 	@Override
 	public String providerName() {
@@ -85,14 +100,16 @@ public class PEMCertReaderWriter implements CertReader {
 				assert pemObjects != null;
 
 				LOG.debug("Decoding PEM object of type {0}", pemObject.getClass().getName());
-				if (pemObject instanceof PEMKeyPair || pemObject instanceof PEMEncryptedKeyPair) {
-
-				} else if (pemObject instanceof X509CertificateHolder) {
+				if (pemObject instanceof X509CertificateHolder) {
 					pemObjects.add(getCRT((X509CertificateHolder) pemObject));
-				} else if (pemObject instanceof X509CRLHolder) {
-
+				} else if (pemObject instanceof PEMKeyPair) {
+					pemObjects.add(getKey((PEMKeyPair) pemObject));
+				} else if (pemObject instanceof PEMEncryptedKeyPair) {
+					pemObjects.add(getKey((PEMEncryptedKeyPair) pemObject, input.toString(), password));
 				} else if (pemObject instanceof PKCS10CertificationRequest) {
-
+					pemObjects.add(getCSR((PKCS10CertificationRequest) pemObject));
+				} else if (pemObject instanceof X509CRLHolder) {
+					pemObjects.add(getCRL((X509CRLHolder) pemObject));
 				} else {
 					LOG.warning("Ignoring unrecognized PEM object of type {0}", pemObject.getClass().getName());
 				}
@@ -106,11 +123,55 @@ public class PEMCertReaderWriter implements CertReader {
 		X509Certificate crt;
 
 		try {
-			crt = this.converter.getCertificate(pemObject);
-		} catch (CertificateException e) {
+			crt = this.crtConverter.getCertificate(pemObject);
+		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
 		return crt;
+	}
+
+	private KeyPair getKey(PEMKeyPair pemObject) throws IOException {
+		return this.keyConverter.getKeyPair(pemObject);
+	}
+
+	private KeyPair getKey(PEMEncryptedKeyPair pemObject, String resource, PasswordCallback password)
+			throws IOException {
+		PEMKeyPair pemKeyPair = null;
+		char[] passwordChars = password.queryPassword(resource);
+		Throwable passwordException = null;
+
+		while (pemKeyPair == null) {
+			if (passwordChars == null) {
+				throw new PasswordRequiredException(resource, passwordException);
+			}
+
+			PEMDecryptorProvider pemDecryptorProvider = this.pemCecryptorBuilder.build(passwordChars);
+
+			try {
+				pemKeyPair = pemObject.decryptKeyPair(pemDecryptorProvider);
+			} catch (EncryptionException e) {
+				passwordException = e;
+			}
+			if (pemKeyPair == null) {
+				passwordChars = password.requeryPassword(resource, passwordException);
+			}
+		}
+		return getKey(pemKeyPair);
+	}
+
+	private PKCS10CertificateRequest getCSR(PKCS10CertificationRequest pemObject) throws IOException {
+		return PKCS10CertificateRequest.fromPKCS10(pemObject);
+	}
+
+	private X509CRL getCRL(X509CRLHolder pemObject) throws IOException {
+		X509CRL crl;
+
+		try {
+			crl = this.crlConverter.getCRL(pemObject);
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
+		return crl;
 	}
 
 }
