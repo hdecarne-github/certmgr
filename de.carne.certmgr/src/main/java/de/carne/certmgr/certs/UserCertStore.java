@@ -17,12 +17,16 @@
 package de.carne.certmgr.certs;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.Provider;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.SignatureException;
+import java.security.cert.Certificate;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -36,8 +40,12 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.FileCertReaderInput;
+import de.carne.certmgr.certs.io.URLCertReaderInput;
+import de.carne.certmgr.certs.net.SSLPeer;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
@@ -52,13 +60,20 @@ import de.carne.util.logging.Log;
  * @see #createFromFile(Path, PasswordCallback)
  * @see #createFromFiles(Collection, PasswordCallback)
  * @see #createFromURL(URL, PasswordCallback)
- * @see #createFromServer(URL)
+ * @see #createFromServer(InetAddress, int)
  * @see #createFromData(String, String, PasswordCallback)
  * @see #createFromData(byte[], String, PasswordCallback)
  */
 public final class UserCertStore {
 
 	private static final Log LOG = new Log();
+
+	private static final Provider PROVIDER = new BouncyCastleProvider();
+
+	static {
+		LOG.info("Adding BouncyCastle security provider...");
+		Security.addProvider(PROVIDER);
+	}
 
 	private final UserCertStoreHandler storeHandler;
 
@@ -162,7 +177,15 @@ public final class UserCertStore {
 	 *         certificate data.
 	 */
 	public static UserCertStore createFromURL(URL url, PasswordCallback password) throws IOException {
-		return null;
+		assert url != null;
+		assert password != null;
+
+		List<Object> certObjects = new ArrayList<>();
+
+		try (URLCertReaderInput urlInput = new URLCertReaderInput(url)) {
+			certObjects = CertReaders.read(urlInput, password);
+		}
+		return createFromCertObjects(certObjects);
 	}
 
 	/**
@@ -170,13 +193,25 @@ public final class UserCertStore {
 	 * <p>
 	 * The created certificate store supports only read access.
 	 *
-	 * @param url The URL of the server to access.
+	 * @param host The host to retrieve the certificate data from.
+	 * @param port The port to retrieve the certificate data from.
 	 * @return The created certificate store.
 	 * @throws IOException if an I/O error occurs while reading/decoding
 	 *         certificate data.
 	 */
-	public static UserCertStore createFromServer(URL url) throws IOException {
-		return null;
+	public static UserCertStore createFromServer(String host, int port) throws IOException {
+		SSLPeer sslPeer = SSLPeer.getInstance(host, port);
+		Certificate[] certificates = sslPeer.readCertificates();
+		List<Object> certObjects = new ArrayList<>();
+
+		if (certificates != null) {
+			for (Certificate cert : certificates) {
+				if (cert instanceof X509Certificate) {
+					certObjects.add(cert);
+				}
+			}
+		}
+		return createFromCertObjects(certObjects);
 	}
 
 	/**

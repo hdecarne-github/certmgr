@@ -41,7 +41,7 @@
       </RadioButton>
       <HBox GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
          <children>
-            <TextField fx:id="ctlFileSourceInput" promptText="%_STR_PROMPT_FILE" HBox.hgrow="ALWAYS" />
+            <TextField fx:id="ctlFileSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_FILE" HBox.hgrow="ALWAYS" />
             <Button fx:id="ctlChooseFileSourceButton" mnemonicParsing="false" onAction="#onCmdChooseFileSource" HBox.hgrow="NEVER">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
@@ -53,11 +53,11 @@
             </Button>
          </children>
       </HBox>
-      <RadioButton fx:id="ctlFolderSourceOption" layoutX="12.0" layoutY="33.0" mnemonicParsing="false" text="%_STR_OPTION_FOLDER" toggleGroup="$ImportSource" GridPane.rowIndex="2" />
+      <RadioButton fx:id="ctlDirectorySourceOption" layoutX="12.0" layoutY="33.0" mnemonicParsing="false" text="%_STR_OPTION_DIRECTORY" toggleGroup="$ImportSource" GridPane.rowIndex="2" />
       <HBox layoutX="168.0" layoutY="33.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
          <children>
-            <TextField fx:id="ctlFolderSourceInput" promptText="%_STR_PROMPT_FOLDER" HBox.hgrow="ALWAYS" />
-            <Button fx:id="ctlChooseFolderSourceButton" mnemonicParsing="false" onAction="#onCmdChooseFolderSource" HBox.hgrow="NEVER">
+            <TextField fx:id="ctlDirectorySourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_DIRECTORY" HBox.hgrow="ALWAYS" />
+            <Button fx:id="ctlChooseDirectorySourceButton" mnemonicParsing="false" onAction="#onCmdChooseDirectorySource" HBox.hgrow="NEVER">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -68,11 +68,11 @@
             </Button>
          </children>
       </HBox>
-      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="3" />
-      <RadioButton fx:id="ctlURLSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_URL" toggleGroup="$ImportSource" GridPane.rowIndex="4" />
-      <TextField fx:id="ctlURLSourceInput" promptText="%_STR_PROMPT_URL" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
-      <RadioButton fx:id="ctlServerSourceOption" layoutX="12.0" layoutY="12.0" mnemonicParsing="false" text="%_STR_OPTION_SERVER" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
-      <TextField fx:id="ctlServerSourceInput" layoutX="188.0" layoutY="112.0" promptText="%_STR_PROMPT_SERVER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
+      <RadioButton fx:id="ctlURLSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_URL" toggleGroup="$ImportSource" GridPane.rowIndex="3" />
+      <TextField fx:id="ctlURLSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_URL" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+      <RadioButton fx:id="ctlServerSourceOption" layoutX="12.0" layoutY="12.0" mnemonicParsing="false" text="%_STR_OPTION_SERVER" toggleGroup="$ImportSource" GridPane.rowIndex="4" />
+      <TextField fx:id="ctlServerSourceInput" layoutX="188.0" layoutY="112.0" onAction="#onCmdReload" promptText="%_STR_PROMPT_SERVER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
       <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="204.0" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
          <children>
             <ImageView pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">

@@ -18,10 +18,15 @@ package de.carne.certmgr.jfx.certimport;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.io.CertReaders;
@@ -53,11 +58,14 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 /**
  * Certificate import dialog.
  */
 public class CertImportController extends StageController {
+
+	private static final Pattern SERVER_INPUT_PATTERN = Pattern.compile("(.+):(\\d+)");
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(StoreController.class);
 
@@ -72,34 +80,34 @@ public class CertImportController extends StageController {
 	RadioButton ctlFileSourceOption;
 
 	@FXML
-	RadioButton ctlFolderSourceOption;
-
-	@FXML
-	RadioButton ctlClipboardSourceOption;
-
-	@FXML
-	RadioButton ctlURLSourceOption;
-
-	@FXML
-	RadioButton ctlServerSourceOption;
-
-	@FXML
 	TextField ctlFileSourceInput;
 
 	@FXML
 	Button ctlChooseFileSourceButton;
 
 	@FXML
-	TextField ctlFolderSourceInput;
+	RadioButton ctlDirectorySourceOption;
 
 	@FXML
-	Button ctlChooseFolderSourceButton;
+	TextField ctlDirectorySourceInput;
+
+	@FXML
+	Button ctlChooseDirectorySourceButton;
+
+	@FXML
+	RadioButton ctlURLSourceOption;
 
 	@FXML
 	TextField ctlURLSourceInput;
 
 	@FXML
+	RadioButton ctlServerSourceOption;
+
+	@FXML
 	TextField ctlServerSourceInput;
+
+	@FXML
+	RadioButton ctlClipboardSourceOption;
 
 	@FXML
 	TreeTableView<ImportUserCertStoreEntryModel> ctlSourceEntryInput;
@@ -149,17 +157,18 @@ public class CertImportController extends StageController {
 	}
 
 	@FXML
-	void onCmdChooseFolderSource(ActionEvent evt) {
+	void onCmdChooseDirectorySource(ActionEvent evt) {
 		DirectoryChooser chooser = new DirectoryChooser();
 
 		chooser.setInitialDirectory(this.preferenceInitalDirectory.getValueAsFile());
 
-		File folderSource = chooser.showDialog(getUI());
+		File directorySource = chooser.showDialog(getUI());
 
-		if (folderSource != null) {
-			this.ctlFolderSourceInput.setText(folderSource.getAbsolutePath());
-			this.preferenceInitalDirectory.putValueFromFile(folderSource);
+		if (directorySource != null) {
+			this.ctlDirectorySourceInput.setText(directorySource.getAbsolutePath());
+			this.preferenceInitalDirectory.putValueFromFile(directorySource);
 			syncPreferences();
+			onCmdFileReload();
 		}
 	}
 
@@ -167,14 +176,14 @@ public class CertImportController extends StageController {
 	void onCmdReload(ActionEvent evt) {
 		if (this.ctlFileSourceOption.isSelected()) {
 			onCmdFileReload();
-		} else if (this.ctlFolderSourceOption.isSelected()) {
-
-		} else if (this.ctlClipboardSourceOption.isSelected()) {
-
+		} else if (this.ctlDirectorySourceOption.isSelected()) {
+			onCmdDirectoryReload();
 		} else if (this.ctlURLSourceOption.isSelected()) {
-
+			onCmdURLReload();
 		} else if (this.ctlServerSourceOption.isSelected()) {
-
+			onCmdServerReload();
+		} else if (this.ctlClipboardSourceOption.isSelected()) {
+			onCmdClipboardReload();
 		}
 	}
 
@@ -195,9 +204,10 @@ public class CertImportController extends StageController {
 		this.ctlFileSourceInput.disableProperty().bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
 		this.ctlChooseFileSourceButton.disableProperty()
 				.bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
-		this.ctlFolderSourceInput.disableProperty().bind(Bindings.not(this.ctlFolderSourceOption.selectedProperty()));
-		this.ctlChooseFolderSourceButton.disableProperty()
-				.bind(Bindings.not(this.ctlFolderSourceOption.selectedProperty()));
+		this.ctlDirectorySourceInput.disableProperty()
+				.bind(Bindings.not(this.ctlDirectorySourceOption.selectedProperty()));
+		this.ctlChooseDirectorySourceButton.disableProperty()
+				.bind(Bindings.not(this.ctlDirectorySourceOption.selectedProperty()));
 		this.ctlURLSourceInput.disableProperty().bind(Bindings.not(this.ctlURLSourceOption.selectedProperty()));
 		this.ctlServerSourceInput.disableProperty().bind(Bindings.not(this.ctlServerSourceOption.selectedProperty()));
 		this.ctlSourceEntryInputSelected
@@ -234,6 +244,69 @@ public class CertImportController extends StageController {
 		}
 	}
 
+	private void onCmdDirectoryReload() {
+		try {
+			Path directorySource = validateDirectorySourceInput();
+			List<Path> files = new ArrayList<>();
+
+			try (Stream<Path> filesStream = Files.walk(directorySource)) {
+				filesStream.filter((p) -> Files.isRegularFile(p)).forEach((p) -> files.add(p));
+			}
+
+			UserCertStore store = UserCertStore.createFromFiles(files, PasswordDialog.enterPassword(this));
+
+			this.sourceStore = store;
+			updateSourceEntryInput();
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void onCmdURLReload() {
+		try {
+			URL urlSource = validateURLSourceInput();
+
+			UserCertStore store = UserCertStore.createFromURL(urlSource, PasswordDialog.enterPassword(this));
+
+			this.sourceStore = store;
+			updateSourceEntryInput();
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void onCmdServerReload() {
+		try {
+			Pair<String, Integer> serverSource = validateServerSourceInput();
+			UserCertStore store = UserCertStore.createFromServer(serverSource.getKey(), serverSource.getValue());
+
+			this.sourceStore = store;
+			updateSourceEntryInput();
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void onCmdClipboardReload() {
+		try {
+			Path fileSource = validateFileSourceInput();
+			UserCertStore store = UserCertStore.createFromFile(fileSource, PasswordDialog.enterPassword(this));
+
+			this.sourceStore = store;
+			updateSourceEntryInput();
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void updateSourceEntryInput() {
 		if (this.sourceEntryInputHelper == null) {
 			this.sourceEntryInputHelper = new UserCertStoreTreeTableViewHelper<>(this.ctlSourceEntryInput,
@@ -247,6 +320,43 @@ public class CertImportController extends StageController {
 				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_FILE(a));
 
 		return PathValidator.isReadableFile(fileSourceInput, (a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
+	}
+
+	private Path validateDirectorySourceInput() throws ValidationException {
+		String directorySourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDirectorySourceInput.getText()),
+				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_DIRECTORY(a));
+
+		return PathValidator.isReadableDirectory(directorySourceInput,
+				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
+	}
+
+	private URL validateURLSourceInput() throws ValidationException {
+		String urlSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlURLSourceInput.getText()),
+				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_URL(a));
+		URL urlSource;
+
+		try {
+			urlSource = new URL(urlSourceInput);
+		} catch (MalformedURLException e) {
+			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(urlSourceInput), e);
+		}
+		return urlSource;
+	}
+
+	private Pair<String, Integer> validateServerSourceInput() throws ValidationException {
+		String serverSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlServerSourceInput.getText()),
+				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_FILE(a));
+		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
+				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(a));
+		String host = serverSourceGroups[0];
+		int port;
+
+		try {
+			port = Integer.valueOf(serverSourceGroups[1]);
+		} catch (NumberFormatException e) {
+			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
+		}
+		return new Pair<>(host, port);
 	}
 
 }

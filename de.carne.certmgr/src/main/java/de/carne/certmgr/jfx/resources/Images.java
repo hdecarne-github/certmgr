@@ -25,7 +25,7 @@ import javafx.scene.image.Image;
  * Image resource.
  */
 public final class Images {
-	
+
 	private Images() {
 		// Make sure this class is not instantiated from outside
 	}
@@ -49,6 +49,36 @@ public final class Images {
 	 * CertImport stage icon (32x32).
 	 */
 	public static final Image IMPORT32 = getImage("imageImport32.png");
+
+	/**
+	 * Public CRT object icon (16x16).
+	 */
+	public static final Image PUBLIC_CRT16 = getImage("imagePublicCRT16.png");
+
+	/**
+	 * Private CRT object icon (16x16).
+	 */
+	public static final Image PRIVATE_CRT16 = getImage("imagePrivateCRT16.png");
+
+	/**
+	 * External CRT object icon (16x16).
+	 */
+	public static final Image EXTERNAL_CRT16 = getImage("imageExternalCRT16.png");
+
+	/**
+	 * Key object icon (16x16).
+	 */
+	public static final Image KEY16 = getImage("imageKey16.png");
+
+	/**
+	 * CSR object icon (16x16).
+	 */
+	public static final Image CSR16 = getImage("imageCSR16.png");
+
+	/**
+	 * CRL object icon (16x16).
+	 */
+	public static final Image CRL16 = getImage("imageCRL16.png");
 
 	private static Image getImage(String resourceName) {
 		Image image;

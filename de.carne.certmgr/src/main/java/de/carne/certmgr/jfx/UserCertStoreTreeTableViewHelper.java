@@ -16,24 +16,49 @@
  */
 package de.carne.certmgr.jfx;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
 
 /**
+ * Helper class for building up and updating the {@link TreeTableView} model for
+ * a certificate store.
  *
+ * @param <T> The model type.
  */
 public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntryModel> {
 
+	private class TreeItemComparator implements Comparator<TreeItem<T>> {
+
+		TreeItemComparator() {
+			// Just to make the construct visible to outer class
+		}
+
+		@Override
+		public int compare(TreeItem<T> o1, TreeItem<T> o2) {
+			return o1.getValue().compareTo(o2.getValue());
+		}
+
+	}
+
+	private final TreeItemComparator comparator = new TreeItemComparator();
 	private final TreeTableView<T> treeTableView;
 	private final Function<UserCertStoreEntry, T> modelFactory;
 
 	/**
+	 * Construct {@code UserCertStoreTreeTableViewHelper}.
 	 *
+	 * @param treeTableView The {@link TreeTableView} to update the model for.
+	 * @param modelFactory The factory for model cration.
 	 */
 	public UserCertStoreTreeTableViewHelper(TreeTableView<T> treeTableView,
 			Function<UserCertStoreEntry, T> modelFactory) {
@@ -44,6 +69,11 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 		this.modelFactory = modelFactory;
 	}
 
+	/**
+	 * Update the {@link TreeTableView}'s model.
+	 *
+	 * @param store The certificate store providing the data to display.
+	 */
 	public void update(UserCertStore store) {
 		if (store != null) {
 			TreeItem<T> root = this.treeTableView.getRoot();
@@ -59,12 +89,31 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 	}
 
 	private void updateHelper(TreeItem<T> parent, List<UserCertStoreEntry> entries) {
-		for (UserCertStoreEntry entry : entries) {
-			TreeItem<T> entryItem = new TreeItem<>(this.modelFactory.apply(entry));
+		ObservableList<TreeItem<T>> items = parent.getChildren();
+		List<TreeItem<T>> itemsToRemove = new ArrayList<>(items.size());
+		Map<UserCertStoreEntry, TreeItem<T>> itemsToUpdate = new HashMap<>(items.size());
 
-			parent.getChildren().add(entryItem);
+		for (TreeItem<T> item : items) {
+			if (entries.contains(item.getValue())) {
+				// entry does still exist -> remember for update
+				itemsToUpdate.put(item.getValue().getEntry(), item);
+			} else {
+				// entry no longer in store -> remember for remove
+				itemsToRemove.add(item);
+			}
+		}
+		items.removeAll(itemsToRemove);
+		for (UserCertStoreEntry entry : entries) {
+			TreeItem<T> entryItem = itemsToUpdate.get(entry);
+
+			if (entryItem == null) {
+				entryItem = new TreeItem<>(this.modelFactory.apply(entry));
+				entryItem.graphicProperty().bind(entryItem.getValue().graphicProperty());
+				items.add(entryItem);
+			}
 			updateHelper(entryItem, entry.issuedEntries());
 		}
+		items.sort(this.comparator);
 	}
 
 }

@@ -1,0 +1,174 @@
+/*
+ * Copyright (c) 2015-2016 Holger de Carne and contributors, All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package de.carne.certmgr.certs.net;
+
+import java.io.BufferedInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
+import de.carne.util.logging.Log;
+
+abstract class StartTLSHelper implements AutoCloseable {
+
+	private static final Log LOG = new Log();
+
+	private static final int INPUT_BUFFER_SIZE = 8192;
+
+	private static final int INPUT_CHUNK_SIZE = INPUT_BUFFER_SIZE / 8;
+
+	private final Socket plainSocket;
+	private OutputStream outputStream = null;
+	private InputStream inputStream = null;
+
+	protected StartTLSHelper(Socket plainSocket) {
+		this.plainSocket = plainSocket;
+	}
+
+	static StartTLSHelper getInstance(InetAddress address, int port, SSLPeer.StartTLS protocol) throws IOException {
+		switch (protocol) {
+		case SMTP:
+			return new SMTPStartTLSHelper(new Socket(address, port));
+		default:
+			throw new IllegalArgumentException("Invalid StartTLS protocol: " + protocol);
+		}
+	}
+
+	public abstract void start() throws IOException;
+
+	public Socket plainSocket() {
+		return this.plainSocket;
+	}
+
+	@Override
+	public void close() {
+		try {
+			this.plainSocket.close();
+		} catch (IOException e) {
+			LOG.warning(e, "An error occuring while closing plain socket.");
+		}
+	}
+
+	private void initSocket() throws IOException {
+		if (this.outputStream == null && this.inputStream == null) {
+			this.plainSocket.setSoTimeout(SSLPeer.SOCKET_TIMEOUT);
+		}
+	}
+
+	private void initOutputStream() throws IOException {
+		if (this.outputStream == null) {
+			initSocket();
+			this.outputStream = this.plainSocket.getOutputStream();
+		}
+	}
+
+	private void initInputStream() throws IOException {
+		if (this.inputStream == null) {
+			initSocket();
+			this.inputStream = new BufferedInputStream(this.plainSocket.getInputStream(), INPUT_BUFFER_SIZE);
+		}
+	}
+
+	protected void send(byte[] data) throws IOException {
+		initOutputStream();
+		this.outputStream.write(data);
+	}
+
+	protected void send(byte[] data, int off, int len) throws IOException {
+		initOutputStream();
+		this.outputStream.write(data, off, len);
+	}
+
+	protected void send(String data, Charset charset) throws IOException {
+		send(data.getBytes(charset));
+	}
+
+	protected void send(String data) throws IOException {
+		send(data, StandardCharsets.US_ASCII);
+	}
+
+	protected int receive(byte[] buffer) throws IOException {
+		initInputStream();
+		return this.inputStream.read(buffer);
+	}
+
+	protected int receive(byte[] buffer, int off, int len) throws IOException {
+		initInputStream();
+		return this.inputStream.read(buffer, off, len);
+	}
+
+	protected ByteBuffer receiveAll(byte[]... stopMarkers) throws IOException {
+		initInputStream();
+
+		byte[] matchingStopMarker = null;
+		byte[] buffer = new byte[INPUT_CHUNK_SIZE];
+		int pos = 0;
+
+		while (matchingStopMarker == null) {
+			int received = this.inputStream.read();
+
+			if (received == -1) {
+				throw new EOFException();
+			}
+			if (pos == buffer.length) {
+				byte[] resizedBuffer = new byte[buffer.length + INPUT_CHUNK_SIZE];
+
+				System.arraycopy(buffer, 0, resizedBuffer, 0, pos);
+				buffer = resizedBuffer;
+			}
+			buffer[pos++] = (byte) received;
+			for (byte[] stopMarker : stopMarkers) {
+				if (bytesEqual(buffer, pos - stopMarker.length, stopMarker, 0, stopMarker.length)) {
+					matchingStopMarker = stopMarker;
+					break;
+				}
+			}
+		}
+		return ByteBuffer.wrap(buffer, 0, pos);
+	}
+
+	private static boolean bytesEqual(byte[] b1, int off1, byte[] b2, int off2, int len) {
+		boolean equal = false;
+
+		if (0 <= off1 && off1 + len <= b1.length && 0 <= off2 && off2 + len <= b2.length) {
+			int matchIndex = 0;
+
+			while (matchIndex < len && b1[off1 + matchIndex] == b2[off2 + matchIndex]) {
+				matchIndex++;
+			}
+			equal = matchIndex == len;
+		}
+		return equal;
+	}
+
+	protected String receiveAll(String stopMarker, Charset charset) throws IOException {
+		ByteBuffer buffer = receiveAll(stopMarker.getBytes(charset));
+
+		return charset.decode(buffer).toString();
+	}
+
+	protected String receiveAll(String stopMarker) throws IOException {
+		return receiveAll(stopMarker, StandardCharsets.US_ASCII);
+	}
+
+}

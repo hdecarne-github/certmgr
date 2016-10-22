@@ -48,6 +48,18 @@ public abstract class UserCertStoreEntry {
 	}
 
 	/**
+	 * Get this entry's display name.
+	 * <p>
+	 * The name is either the cn's name if available or the id's string
+	 * representation.
+	 *
+	 * @return This entry's display name.
+	 */
+	public final String getName() {
+		return (this.cn != null ? this.cn.getName() : this.id.toString());
+	}
+
+	/**
 	 * Get this entry's {@link UserCertStore}.
 	 *
 	 * @return This entry's {@link UserCertStore}.
@@ -218,8 +230,25 @@ public abstract class UserCertStoreEntry {
 	}
 
 	@Override
+	public int hashCode() {
+		return this.id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		boolean equal = false;
+
+		if (obj instanceof UserCertStoreEntry) {
+			UserCertStoreEntry other = (UserCertStoreEntry) obj;
+
+			equal = this.id.equals(other.id) && store().equals(other.store());
+		}
+		return equal;
+	}
+
+	@Override
 	public String toString() {
-		return this.cn.getName();
+		return getName();
 	}
 
 }
