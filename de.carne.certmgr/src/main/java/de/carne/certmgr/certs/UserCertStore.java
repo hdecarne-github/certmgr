@@ -17,7 +17,6 @@
 package de.carne.certmgr.certs;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.URL;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
@@ -44,6 +43,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.FileCertReaderInput;
+import de.carne.certmgr.certs.io.StringCertReaderInput;
 import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
 import de.carne.util.Exceptions;
@@ -60,9 +60,8 @@ import de.carne.util.logging.Log;
  * @see #createFromFile(Path, PasswordCallback)
  * @see #createFromFiles(Collection, PasswordCallback)
  * @see #createFromURL(URL, PasswordCallback)
- * @see #createFromServer(InetAddress, int)
+ * @see #createFromServer(String, int)
  * @see #createFromData(String, String, PasswordCallback)
- * @see #createFromData(byte[], String, PasswordCallback)
  */
 public final class UserCertStore {
 
@@ -229,25 +228,16 @@ public final class UserCertStore {
 	 *         certificate data.
 	 */
 	public static UserCertStore createFromData(String data, String name, PasswordCallback password) throws IOException {
-		return null;
-	}
+		assert data != null;
+		assert name != null;
+		assert password != null;
 
-	/**
-	 * Create a certificate store backed up by binary data.
-	 * <p>
-	 * The created certificate store supports only read access.
-	 *
-	 * @param data The bytes containing the certificate data.
-	 * @param name The name to use when referring to the text data (e.g. during
-	 *        password queries).
-	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The created certificate store.
-	 * @throws PasswordRequiredException if no valid password was given.
-	 * @throws IOException if an I/O error occurs while reading/decoding
-	 *         certificate data.
-	 */
-	public static UserCertStore createFromData(byte[] data, String name, PasswordCallback password) throws IOException {
-		return null;
+		List<Object> certObjects = new ArrayList<>();
+
+		try (StringCertReaderInput dataInput = new StringCertReaderInput(data, name)) {
+			certObjects = CertReaders.read(dataInput, password);
+		}
+		return createFromCertObjects(certObjects);
 	}
 
 	private static UserCertStore createFromCertObjects(List<Object> certObjects) throws IOException {
@@ -276,11 +266,20 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Get this store's entry count.
+	 * 
+	 * @return This store's entry count.
+	 */
+	public synchronized int size() {
+		return this.storeEntries.size();
+	}
+
+	/**
 	 * Get this store's root entries.
 	 *
 	 * @return This store's root entries.
 	 */
-	public List<UserCertStoreEntry> getRootEntries() {
+	public synchronized List<UserCertStoreEntry> getRootEntries() {
 		List<UserCertStoreEntry> rootEntries = new ArrayList<>();
 
 		for (Entry entry : this.storeEntries.values()) {
@@ -297,7 +296,7 @@ public final class UserCertStore {
 	 * @param entry The store entry to get the issued entries for.
 	 * @return The store entries which are issued by the submitted store entry.
 	 */
-	public List<UserCertStoreEntry> getIssuedEntries(UserCertStoreEntry entry) {
+	public synchronized List<UserCertStoreEntry> getIssuedEntries(UserCertStoreEntry entry) {
 		assert entry != null;
 
 		List<UserCertStoreEntry> issuedEntries = new ArrayList<>();
@@ -342,7 +341,7 @@ public final class UserCertStore {
 			if (issuer != null && !entry.isSelfSigned()) {
 				if (issuer.isExternal()) {
 					entry.setIssuer(null);
-					externalIssuers.put(issuer.cn(), this.storeEntries.get(issuer.id()));
+					externalIssuers.put(issuer.dn(), this.storeEntries.get(issuer.id()));
 				} else if (!this.storeEntries.containsKey(issuer.id())) {
 					entry.setIssuer(null);
 				}
@@ -371,13 +370,13 @@ public final class UserCertStore {
 					if (foundIssuerEntry != null) {
 						entry.setIssuer(foundIssuerEntry);
 					} else {
-						X500Principal issuerCN = entryCRT.getIssuerX500Principal();
-						Entry externalIssuer = externalIssuers.get(issuerCN);
+						X500Principal issuerDN = entryCRT.getIssuerX500Principal();
+						Entry externalIssuer = externalIssuers.get(issuerDN);
 
 						if (externalIssuer == null) {
-							externalIssuer = new Entry(this.storeHandler.nextEntryId(null), issuerCN);
+							externalIssuer = new Entry(this.storeHandler.nextEntryId(null), issuerDN);
 							externalIssuer.setIssuer(externalIssuer);
-							externalIssuers.put(issuerCN, externalIssuer);
+							externalIssuers.put(issuerDN, externalIssuer);
 						}
 						entry.setIssuer(externalIssuer);
 						usedExternalIssuerIds.add(externalIssuer.id());
@@ -418,12 +417,12 @@ public final class UserCertStore {
 	}
 
 	private Entry matchX509Certificate(X509Certificate crt) throws IOException {
-		String crtCN = crt.getSubjectX500Principal().getName();
+		X500Principal crtDN = crt.getSubjectX500Principal();
 		PublicKey crtPublicKey = crt.getPublicKey();
 		Entry matchingEntry = null;
 
 		for (Entry entry : this.storeEntries.values()) {
-			if (crtCN.equals(entry.cn()) && crtPublicKey.equals(entry.getPublicKey())) {
+			if (crtDN.equals(entry.dn()) && crtPublicKey.equals(entry.getPublicKey())) {
 				matchingEntry = entry;
 				break;
 			}
@@ -443,40 +442,40 @@ public final class UserCertStore {
 
 		private CRLEntry crlEntry;
 
-		Entry(UserCertStoreEntryId id, X500Principal cn) {
-			super(id, cn);
+		Entry(UserCertStoreEntryId id, X500Principal dn) {
+			super(id, dn);
 			this.crtEntry = null;
 			this.keyEntry = null;
 			this.csrEntry = null;
 			this.crlEntry = null;
 		}
 
-		Entry(UserCertStoreEntryId id, X500Principal cn, CRTEntry crtEntry) {
-			super(id, cn);
+		Entry(UserCertStoreEntryId id, X500Principal dn, CRTEntry crtEntry) {
+			super(id, dn);
 			this.crtEntry = crtEntry;
 			this.keyEntry = null;
 			this.csrEntry = null;
 			this.crlEntry = null;
 		}
 
-		Entry(UserCertStoreEntryId id, X500Principal cn, KeyEntry keyEntry) {
-			super(id, cn);
+		Entry(UserCertStoreEntryId id, X500Principal dn, KeyEntry keyEntry) {
+			super(id, dn);
 			this.crtEntry = null;
 			this.keyEntry = keyEntry;
 			this.csrEntry = null;
 			this.crlEntry = null;
 		}
 
-		Entry(UserCertStoreEntryId id, X500Principal cn, CSREntry csrEntry) {
-			super(id, cn);
+		Entry(UserCertStoreEntryId id, X500Principal dn, CSREntry csrEntry) {
+			super(id, dn);
 			this.crtEntry = null;
 			this.keyEntry = null;
 			this.csrEntry = csrEntry;
 			this.crlEntry = null;
 		}
 
-		Entry(UserCertStoreEntryId id, X500Principal cn, CRLEntry crlEntry) {
-			super(id, cn);
+		Entry(UserCertStoreEntryId id, X500Principal dn, CRLEntry crlEntry) {
+			super(id, dn);
 			this.crtEntry = null;
 			this.keyEntry = null;
 			this.csrEntry = null;

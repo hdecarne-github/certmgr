@@ -17,6 +17,7 @@
 package de.carne.certmgr.certs.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -82,7 +83,6 @@ public class JKSCertReaderWriter implements CertReader {
 		}
 		if (keyStore != null) {
 			try {
-
 				keyStoreObjects = new ArrayList<>();
 
 				Enumeration<String> aliases = keyStore.aliases();
@@ -123,13 +123,18 @@ public class JKSCertReaderWriter implements CertReader {
 
 	private KeyStore loadKeyStore(CertReaderInput input, PasswordCallback password)
 			throws GeneralSecurityException, IOException {
-		KeyStore keyStore = getKeyStoreInstance();
+		KeyStore keyStore = null;
 		char[] passwordChars = null;
 		Throwable passwordException = null;
 
 		do {
-			try {
-				keyStore.load(input.stream(), passwordChars);
+			try (InputStream keyStoreStream = input.stream()) {
+				if (keyStoreStream != null) {
+					if (keyStore == null) {
+						keyStore = getKeyStoreInstance();
+					}
+					keyStore.load(input.stream(), passwordChars);
+				}
 				passwordException = null;
 			} catch (IOException e) {
 				if (e.getCause() instanceof UnrecoverableKeyException) {

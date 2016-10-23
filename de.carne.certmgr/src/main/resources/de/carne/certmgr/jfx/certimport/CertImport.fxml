@@ -68,19 +68,19 @@
             </Button>
          </children>
       </HBox>
-      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
+      <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" onAction="#onCmdReload" text="%_STR_OPTION_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
       <RadioButton fx:id="ctlURLSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_URL" toggleGroup="$ImportSource" GridPane.rowIndex="3" />
       <TextField fx:id="ctlURLSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_URL" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
       <RadioButton fx:id="ctlServerSourceOption" layoutX="12.0" layoutY="12.0" mnemonicParsing="false" text="%_STR_OPTION_SERVER" toggleGroup="$ImportSource" GridPane.rowIndex="4" />
       <TextField fx:id="ctlServerSourceInput" layoutX="188.0" layoutY="112.0" onAction="#onCmdReload" promptText="%_STR_PROMPT_SERVER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
       <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="204.0" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
          <children>
-            <ImageView pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
+            <ImageView fx:id="ctlStatusImage" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
                <image>
                   <Image url="@../resources/imageInfo16.png" />
                </image>
             </ImageView>
-            <Label maxWidth="1.7976931348623157E308" text="%STR_STATUS_SELECT_SOURCE" HBox.hgrow="ALWAYS" />
+            <Label fx:id="ctlStatusMessage" maxWidth="1.7976931348623157E308" text="%STR_STATUS_SELECT_SOURCE" HBox.hgrow="ALWAYS" />
             <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdReload" HBox.hgrow="NEVER">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
@@ -97,7 +97,7 @@
                <graphic>
                   <CheckBox mnemonicParsing="false" />
                </graphic></TreeTableColumn>
-          <TreeTableColumn fx:id="ctlSourceEntryInputCN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_CN" />
+          <TreeTableColumn fx:id="ctlSourceEntryInputDN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_DN" />
             <TreeTableColumn fx:id="ctlSourceEntryInputCRT" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRT" />
             <TreeTableColumn fx:id="ctlSourceEntryInputKey" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_KEY" />
             <TreeTableColumn fx:id="ctlSourceEntryInputCSR" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRL" />

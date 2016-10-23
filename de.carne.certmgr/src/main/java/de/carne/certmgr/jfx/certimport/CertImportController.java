@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.io.CertReaders;
@@ -36,6 +36,7 @@ import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.jfx.application.PlatformHelper;
+import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
 import de.carne.jfx.util.validation.ValidationAlerts;
@@ -48,12 +49,15 @@ import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -110,13 +114,19 @@ public class CertImportController extends StageController {
 	RadioButton ctlClipboardSourceOption;
 
 	@FXML
+	ImageView ctlStatusImage;
+
+	@FXML
+	Label ctlStatusMessage;
+
+	@FXML
 	TreeTableView<ImportUserCertStoreEntryModel> ctlSourceEntryInput;
 
 	@FXML
 	TreeTableColumn<ImportUserCertStoreEntryModel, Boolean> ctlSourceEntryInputSelected;
 
 	@FXML
-	TreeTableColumn<ImportUserCertStoreEntryModel, String> ctlSourceEntryInputCN;
+	TreeTableColumn<ImportUserCertStoreEntryModel, String> ctlSourceEntryInputDN;
 
 	@FXML
 	TreeTableColumn<ImportUserCertStoreEntryModel, Boolean> ctlSourceEntryInputCRT;
@@ -133,9 +143,6 @@ public class CertImportController extends StageController {
 	@FXML
 	void onCmdChooseFileSource(ActionEvent evt) {
 		FileChooser chooser = new FileChooser();
-
-		chooser.setInitialDirectory(this.preferenceInitalDirectory.getValueAsFile());
-
 		List<ExtensionFilter> extensionFilters = new ArrayList<>();
 
 		extensionFilters.add(FileChooserHelper.filterFromString(CertImportI18N.formatSTR_FILTER_ALLFILES()));
@@ -145,6 +152,7 @@ public class CertImportController extends StageController {
 
 		chooser.getExtensionFilters().addAll(extensionFilters);
 		chooser.setSelectedExtensionFilter(extensionFilters.get(0));
+		chooser.setInitialDirectory(this.preferenceInitalDirectory.getValueAsFile());
 
 		File fileSource = chooser.showOpenDialog(getUI());
 
@@ -168,7 +176,7 @@ public class CertImportController extends StageController {
 			this.ctlDirectorySourceInput.setText(directorySource.getAbsolutePath());
 			this.preferenceInitalDirectory.putValueFromFile(directorySource);
 			syncPreferences();
-			onCmdFileReload();
+			onCmdDirectoryReload();
 		}
 	}
 
@@ -189,7 +197,7 @@ public class CertImportController extends StageController {
 
 	@FXML
 	void onCmdImport(ActionEvent evt) {
-
+		close(true);
 	}
 
 	@FXML
@@ -213,7 +221,7 @@ public class CertImportController extends StageController {
 		this.ctlSourceEntryInputSelected
 				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputSelected));
 		this.ctlSourceEntryInputSelected.setCellValueFactory(new TreeItemPropertyValueFactory<>("selected"));
-		this.ctlSourceEntryInputCN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+		this.ctlSourceEntryInputDN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlSourceEntryInputCRT
 				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputCRT));
 		this.ctlSourceEntryInputCRT.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRT"));
@@ -226,8 +234,13 @@ public class CertImportController extends StageController {
 		this.ctlSourceEntryInputCRL
 				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputCRL));
 		this.ctlSourceEntryInputCRL.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRL"));
-		this.ctlSourceEntryInput.setTreeColumn(this.ctlSourceEntryInputCN);
+		this.ctlSourceEntryInput.setTreeColumn(this.ctlSourceEntryInputDN);
 		this.ctlFileSourceOption.setSelected(true);
+	}
+
+	@Override
+	protected Preferences getPreferences() {
+		return this.preferences;
 	}
 
 	private void onCmdFileReload() {
@@ -240,19 +253,15 @@ public class CertImportController extends StageController {
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
 	private void onCmdDirectoryReload() {
 		try {
 			Path directorySource = validateDirectorySourceInput();
-			List<Path> files = new ArrayList<>();
-
-			try (Stream<Path> filesStream = Files.walk(directorySource)) {
-				filesStream.filter((p) -> Files.isRegularFile(p)).forEach((p) -> files.add(p));
-			}
-
+			List<Path> files = Files.walk(directorySource).filter((p) -> Files.isRegularFile(p))
+					.collect(Collectors.toList());
 			UserCertStore store = UserCertStore.createFromFiles(files, PasswordDialog.enterPassword(this));
 
 			this.sourceStore = store;
@@ -260,14 +269,13 @@ public class CertImportController extends StageController {
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
 	private void onCmdURLReload() {
 		try {
 			URL urlSource = validateURLSourceInput();
-
 			UserCertStore store = UserCertStore.createFromURL(urlSource, PasswordDialog.enterPassword(this));
 
 			this.sourceStore = store;
@@ -275,7 +283,7 @@ public class CertImportController extends StageController {
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
@@ -289,21 +297,37 @@ public class CertImportController extends StageController {
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
 	private void onCmdClipboardReload() {
 		try {
-			Path fileSource = validateFileSourceInput();
-			UserCertStore store = UserCertStore.createFromFile(fileSource, PasswordDialog.enterPassword(this));
+			Clipboard clipboard = Clipboard.getSystemClipboard();
 
-			this.sourceStore = store;
-			updateSourceEntryInput();
-		} catch (ValidationException e) {
-			ValidationAlerts.error(e).showAndWait();
+			if (clipboard.hasFiles()) {
+				List<Path> filesSource = clipboard.getFiles().stream().map((f) -> f.toPath())
+						.collect(Collectors.toList());
+				UserCertStore store = UserCertStore.createFromFiles(filesSource, PasswordDialog.enterPassword(this));
+
+				this.sourceStore = store;
+				updateSourceEntryInput();
+			} else if (clipboard.hasUrl()) {
+				URL urlSource = new URL(clipboard.getUrl());
+				UserCertStore store = UserCertStore.createFromURL(urlSource, PasswordDialog.enterPassword(this));
+
+				this.sourceStore = store;
+				updateSourceEntryInput();
+			} else if (clipboard.hasString()) {
+				String stringSource = clipboard.getString();
+				UserCertStore store = UserCertStore.createFromData(stringSource,
+						CertImportI18N.formatSTR_TEXT_CLIPBOARD(), PasswordDialog.enterPassword(this));
+
+				this.sourceStore = store;
+				updateSourceEntryInput();
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
@@ -313,6 +337,13 @@ public class CertImportController extends StageController {
 					(e) -> new ImportUserCertStoreEntryModel(e, false));
 		}
 		this.sourceEntryInputHelper.update(this.sourceStore);
+		if (this.sourceStore != null) {
+			this.ctlStatusImage.setImage(Images.OK16);
+			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NEW_STORE(this.sourceStore.size()));
+		} else {
+			this.ctlStatusImage.setImage(Images.WARNING16);
+			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NO_STORE());
+		}
 	}
 
 	private Path validateFileSourceInput() throws ValidationException {

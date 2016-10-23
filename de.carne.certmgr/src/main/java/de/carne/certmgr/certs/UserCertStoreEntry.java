@@ -24,6 +24,8 @@ import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
+import de.carne.certmgr.certs.x500.X500Names;
+
 /**
  * Certificate store entry.
  * <p>
@@ -40,23 +42,23 @@ public abstract class UserCertStoreEntry {
 
 	private final UserCertStoreEntryId id;
 
-	private final X500Principal cn;
+	private final X500Principal dn;
 
-	UserCertStoreEntry(UserCertStoreEntryId id, X500Principal cn) {
+	UserCertStoreEntry(UserCertStoreEntryId id, X500Principal dn) {
 		this.id = id;
-		this.cn = cn;
+		this.dn = dn;
 	}
 
 	/**
 	 * Get this entry's display name.
 	 * <p>
-	 * The name is either the cn's name if available or the id's string
-	 * representation.
+	 * The name is either the entry's distinguished name or if the latter is not
+	 * available, the id's string representation.
 	 *
 	 * @return This entry's display name.
 	 */
 	public final String getName() {
-		return (this.cn != null ? this.cn.getName() : this.id.toString());
+		return (this.dn != null ? X500Names.toString(this.dn) : this.id.toString());
 	}
 
 	/**
@@ -76,12 +78,12 @@ public abstract class UserCertStoreEntry {
 	}
 
 	/**
-	 * Get this entry's common name (CN).
+	 * Get this entry's distinguished name (DN).
 	 *
-	 * @return This entry's common name (CN).
+	 * @return This entry's distinguished name (DN).
 	 */
-	public final X500Principal cn() {
-		return this.cn;
+	public final X500Principal dn() {
+		return this.dn;
 	}
 
 	/**

@@ -80,6 +80,21 @@ public final class Images {
 	 */
 	public static final Image CRL16 = getImage("imageCRL16.png");
 
+	/**
+	 * Info icon (16x16).
+	 */
+	public static final Image INFO16 = getImage("imageInfo16.png");
+
+	/**
+	 * Warning icon (16x16).
+	 */
+	public static final Image WARNING16 = getImage("imageWarning16.png");
+
+	/**
+	 * OK icon (16x16).
+	 */
+	public static final Image OK16 = getImage("imageOK16.png");
+
 	private static Image getImage(String resourceName) {
 		Image image;
 
