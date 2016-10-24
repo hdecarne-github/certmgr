@@ -62,7 +62,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 /**
  * Certificate import dialog.
@@ -160,7 +159,7 @@ public class CertImportController extends StageController {
 			this.ctlFileSourceInput.setText(fileSource.getAbsolutePath());
 			this.preferenceInitalDirectory.putValueFromFile(fileSource.getParentFile());
 			syncPreferences();
-			onCmdFileReload();
+			validateAndReloadFileSource();
 		}
 	}
 
@@ -176,22 +175,22 @@ public class CertImportController extends StageController {
 			this.ctlDirectorySourceInput.setText(directorySource.getAbsolutePath());
 			this.preferenceInitalDirectory.putValueFromFile(directorySource);
 			syncPreferences();
-			onCmdDirectoryReload();
+			validateAndReloadDirectorySource();
 		}
 	}
 
 	@FXML
 	void onCmdReload(ActionEvent evt) {
 		if (this.ctlFileSourceOption.isSelected()) {
-			onCmdFileReload();
+			validateAndReloadFileSource();
 		} else if (this.ctlDirectorySourceOption.isSelected()) {
-			onCmdDirectoryReload();
+			validateAndReloadDirectorySource();
 		} else if (this.ctlURLSourceOption.isSelected()) {
-			onCmdURLReload();
+			validateAndReloadURLSource();
 		} else if (this.ctlServerSourceOption.isSelected()) {
-			onCmdServerReload();
+			validateAndReloadServerSource();
 		} else if (this.ctlClipboardSourceOption.isSelected()) {
-			onCmdClipboardReload();
+			validateAndReloadClipboardSource();
 		}
 	}
 
@@ -203,6 +202,15 @@ public class CertImportController extends StageController {
 	@FXML
 	void onCmdCancel(ActionEvent evt) {
 		close(false);
+	}
+
+	void onReloadTaskSucceeded(UserCertStore store) {
+		this.sourceStore = store;
+		updateSourceEntryInput();
+	}
+
+	void onReloadTaskFailed(Throwable e) {
+		Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 	}
 
 	@Override
@@ -243,88 +251,120 @@ public class CertImportController extends StageController {
 		return this.preferences;
 	}
 
-	private void onCmdFileReload() {
+	private void validateAndReloadFileSource() {
 		try {
 			Path fileSource = validateFileSourceInput();
-			UserCertStore store = UserCertStore.createFromFile(fileSource, PasswordDialog.enterPassword(this));
 
-			this.sourceStore = store;
-			updateSourceEntryInput();
+			getExecutorService().submit(new CreateStoreTask<Path>(fileSource) {
+
+				@Override
+				protected UserCertStore createStore(Path params) throws IOException {
+					return UserCertStore.createFromFile(params,
+							PasswordDialog.enterPassword(CertImportController.this));
+				}
+
+			});
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
-		} catch (IOException e) {
-			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
-	private void onCmdDirectoryReload() {
+	private void validateAndReloadDirectorySource() {
 		try {
 			Path directorySource = validateDirectorySourceInput();
-			List<Path> files = Files.walk(directorySource).filter((p) -> Files.isRegularFile(p))
-					.collect(Collectors.toList());
-			UserCertStore store = UserCertStore.createFromFiles(files, PasswordDialog.enterPassword(this));
 
-			this.sourceStore = store;
-			updateSourceEntryInput();
+			getExecutorService().submit(new CreateStoreTask<Path>(directorySource) {
+
+				@Override
+				protected UserCertStore createStore(Path params) throws IOException {
+					List<Path> files = Files.walk(params).filter((p) -> Files.isRegularFile(p))
+							.collect(Collectors.toList());
+
+					return UserCertStore.createFromFiles(files,
+							PasswordDialog.enterPassword(CertImportController.this));
+				}
+
+			});
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
-		} catch (IOException e) {
-			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
-	private void onCmdURLReload() {
+	private void validateAndReloadURLSource() {
 		try {
 			URL urlSource = validateURLSourceInput();
-			UserCertStore store = UserCertStore.createFromURL(urlSource, PasswordDialog.enterPassword(this));
 
-			this.sourceStore = store;
-			updateSourceEntryInput();
+			getExecutorService().submit(new CreateStoreTask<URL>(urlSource) {
+
+				@Override
+				protected UserCertStore createStore(URL params) throws IOException {
+					return UserCertStore.createFromURL(params, PasswordDialog.enterPassword(CertImportController.this));
+				}
+
+			});
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
-		} catch (IOException e) {
-			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
-	private void onCmdServerReload() {
+	private void validateAndReloadServerSource() {
 		try {
-			Pair<String, Integer> serverSource = validateServerSourceInput();
-			UserCertStore store = UserCertStore.createFromServer(serverSource.getKey(), serverSource.getValue());
+			ServerParams serverSource = validateServerSourceInput();
 
-			this.sourceStore = store;
-			updateSourceEntryInput();
+			getExecutorService().submit(new CreateStoreTask<ServerParams>(serverSource) {
+
+				@Override
+				protected UserCertStore createStore(ServerParams params) throws IOException {
+					return UserCertStore.createFromServer(params.host(), params.port());
+				}
+
+			});
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
-		} catch (IOException e) {
-			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 
-	private void onCmdClipboardReload() {
+	private void validateAndReloadClipboardSource() {
 		try {
 			Clipboard clipboard = Clipboard.getSystemClipboard();
 
 			if (clipboard.hasFiles()) {
 				List<Path> filesSource = clipboard.getFiles().stream().map((f) -> f.toPath())
 						.collect(Collectors.toList());
-				UserCertStore store = UserCertStore.createFromFiles(filesSource, PasswordDialog.enterPassword(this));
 
-				this.sourceStore = store;
-				updateSourceEntryInput();
+				getExecutorService().submit(new CreateStoreTask<List<Path>>(filesSource) {
+
+					@Override
+					protected UserCertStore createStore(List<Path> params) throws IOException {
+						return UserCertStore.createFromFiles(params,
+								PasswordDialog.enterPassword(CertImportController.this));
+					}
+
+				});
 			} else if (clipboard.hasUrl()) {
 				URL urlSource = new URL(clipboard.getUrl());
-				UserCertStore store = UserCertStore.createFromURL(urlSource, PasswordDialog.enterPassword(this));
 
-				this.sourceStore = store;
-				updateSourceEntryInput();
+				getExecutorService().submit(new CreateStoreTask<URL>(urlSource) {
+
+					@Override
+					protected UserCertStore createStore(URL params) throws IOException {
+						return UserCertStore.createFromURL(params,
+								PasswordDialog.enterPassword(CertImportController.this));
+					}
+
+				});
 			} else if (clipboard.hasString()) {
 				String stringSource = clipboard.getString();
-				UserCertStore store = UserCertStore.createFromData(stringSource,
-						CertImportI18N.formatSTR_TEXT_CLIPBOARD(), PasswordDialog.enterPassword(this));
 
-				this.sourceStore = store;
-				updateSourceEntryInput();
+				getExecutorService().submit(new CreateStoreTask<String>(stringSource) {
+
+					@Override
+					protected UserCertStore createStore(String params) throws IOException {
+						return UserCertStore.createFromData(params, CertImportI18N.formatSTR_TEXT_CLIPBOARD(),
+								PasswordDialog.enterPassword(CertImportController.this));
+					}
+
+				});
 			}
 		} catch (IOException e) {
 			Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
@@ -374,7 +414,7 @@ public class CertImportController extends StageController {
 		return urlSource;
 	}
 
-	private Pair<String, Integer> validateServerSourceInput() throws ValidationException {
+	private ServerParams validateServerSourceInput() throws ValidationException {
 		String serverSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlServerSourceInput.getText()),
 				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_FILE(a));
 		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
@@ -387,7 +427,36 @@ public class CertImportController extends StageController {
 		} catch (NumberFormatException e) {
 			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
 		}
-		return new Pair<>(host, port);
+		return new ServerParams(host, port);
+	}
+
+	private abstract class CreateStoreTask<P> extends BackgroundTask<UserCertStore> {
+
+		private final P createParams;
+
+		CreateStoreTask(P createParams) {
+			this.createParams = createParams;
+		}
+
+		@Override
+		protected UserCertStore call() throws Exception {
+			return createStore(this.createParams);
+		}
+
+		protected abstract UserCertStore createStore(P param) throws IOException;
+
+		@Override
+		protected void succeeded() {
+			onReloadTaskSucceeded(getValue());
+			super.succeeded();
+		}
+
+		@Override
+		protected void failed() {
+			onReloadTaskFailed(getException());
+			super.failed();
+		}
+
 	}
 
 }
