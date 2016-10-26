@@ -18,6 +18,8 @@ package de.carne.certmgr.certs;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -46,6 +48,7 @@ import de.carne.certmgr.certs.io.FileCertReaderInput;
 import de.carne.certmgr.certs.io.StringCertReaderInput;
 import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
+import de.carne.nio.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
@@ -89,13 +92,21 @@ public final class UserCertStore {
 	 *
 	 * @param storeHome The directory path to use for certificate storage.
 	 * @return The created certificate store.
+	 * @throws FileAlreadyExistsException if the directory path already exists.
 	 * @throws IOException if an I/O error occurs while creating the store.
 	 * @see PersistentUserCertStoreHandler
 	 */
 	public static UserCertStore createStore(Path storeHome) throws IOException {
 		assert storeHome != null;
 
-		return null;
+		if (Files.exists(storeHome)) {
+			throw new FileAlreadyExistsException("Store home path already exists: " + storeHome);
+		}
+
+		Path createdStoreHome = Files.createDirectories(storeHome,
+				FileAttributes.defaultUserDirectoryAttributes(storeHome));
+
+		return openStore(createdStoreHome);
 	}
 
 	/**
@@ -109,7 +120,13 @@ public final class UserCertStore {
 	public static UserCertStore openStore(Path storeHome) throws IOException {
 		assert storeHome != null;
 
-		return null;
+		PersistentUserCertStoreHandler persistentStoreHandler = new PersistentUserCertStoreHandler(storeHome);
+
+		Map<UserCertStoreEntryId, PersistentEntry> persistentEntries = persistentStoreHandler.scanStore();
+		UserCertStore store = new UserCertStore(persistentStoreHandler);
+
+		store.loadPersistentEntries(persistentEntries);
+		return store;
 	}
 
 	/**
@@ -240,16 +257,6 @@ public final class UserCertStore {
 		return createFromCertObjects(certObjects);
 	}
 
-	private static UserCertStore createFromCertObjects(List<Object> certObjects) throws IOException {
-		UserCertStore store = null;
-
-		if (!certObjects.isEmpty()) {
-			store = new UserCertStore(new TransientUserCertStoreHandler());
-			store.mergeCertObjects(certObjects, NoPassword.getInstance());
-		}
-		return store;
-	}
-
 	/**
 	 * Get this store's home path.
 	 * <p>
@@ -267,7 +274,7 @@ public final class UserCertStore {
 
 	/**
 	 * Get this store's entry count.
-	 * 
+	 *
 	 * @return This store's entry count.
 	 */
 	public synchronized int size() {
@@ -307,6 +314,43 @@ public final class UserCertStore {
 			}
 		}
 		return issuedEntries;
+	}
+
+	private synchronized void loadPersistentEntries(Map<UserCertStoreEntryId, PersistentEntry> entries)
+			throws IOException {
+		for (Map.Entry<UserCertStoreEntryId, PersistentEntry> persistentEntryPathsEntry : entries.entrySet()) {
+			UserCertStoreEntryId entryId = persistentEntryPathsEntry.getKey();
+			PersistentEntry entry = persistentEntryPathsEntry.getValue();
+			CRTEntry crtEntry = entry.crtEntry();
+			KeyEntry keyEntry = entry.keyEntry();
+			CSREntry csrEntry = entry.csrEntry();
+			CRLEntry crlEntry = entry.crlEntry();
+			X500Principal entryDN = null;
+
+			if (crtEntry != null) {
+				entryDN = crtEntry.getCRT().getSubjectX500Principal();
+			} else if (csrEntry != null) {
+				entryDN = csrEntry.getCSR().getSubjectX500Principal();
+			} else {
+				LOG.warning("Ignoring incompliete store entry ''{0}''", entryId);
+			}
+			if (entryDN != null) {
+				Entry storeEntry = new Entry(entryId, entryDN, crtEntry, keyEntry, csrEntry, crlEntry);
+
+				this.storeEntries.put(entryId, storeEntry);
+			}
+		}
+		resetIssuers();
+	}
+
+	private static UserCertStore createFromCertObjects(List<Object> certObjects) throws IOException {
+		UserCertStore store = null;
+
+		if (!certObjects.isEmpty()) {
+			store = new UserCertStore(new TransientUserCertStoreHandler());
+			store.mergeCertObjects(certObjects, NoPassword.getInstance());
+		}
+		return store;
 	}
 
 	private synchronized void mergeCertObjects(List<Object> certObjects, PasswordCallback password) throws IOException {
@@ -442,44 +486,33 @@ public final class UserCertStore {
 
 		private CRLEntry crlEntry;
 
-		Entry(UserCertStoreEntryId id, X500Principal dn) {
+		Entry(UserCertStoreEntryId id, X500Principal dn, CRTEntry crtEntry, KeyEntry keyEntry, CSREntry csrEntry,
+				CRLEntry crlEntry) {
 			super(id, dn);
-			this.crtEntry = null;
-			this.keyEntry = null;
-			this.csrEntry = null;
-			this.crlEntry = null;
+			this.crtEntry = crtEntry;
+			this.keyEntry = keyEntry;
+			this.csrEntry = csrEntry;
+			this.crlEntry = crlEntry;
+		}
+
+		Entry(UserCertStoreEntryId id, X500Principal dn) {
+			this(id, dn, null, null, null, null);
 		}
 
 		Entry(UserCertStoreEntryId id, X500Principal dn, CRTEntry crtEntry) {
-			super(id, dn);
-			this.crtEntry = crtEntry;
-			this.keyEntry = null;
-			this.csrEntry = null;
-			this.crlEntry = null;
+			this(id, dn, crtEntry, null, null, null);
 		}
 
 		Entry(UserCertStoreEntryId id, X500Principal dn, KeyEntry keyEntry) {
-			super(id, dn);
-			this.crtEntry = null;
-			this.keyEntry = keyEntry;
-			this.csrEntry = null;
-			this.crlEntry = null;
+			this(id, dn, null, keyEntry, null, null);
 		}
 
 		Entry(UserCertStoreEntryId id, X500Principal dn, CSREntry csrEntry) {
-			super(id, dn);
-			this.crtEntry = null;
-			this.keyEntry = null;
-			this.csrEntry = csrEntry;
-			this.crlEntry = null;
+			this(id, dn, null, null, csrEntry, null);
 		}
 
 		Entry(UserCertStoreEntryId id, X500Principal dn, CRLEntry crlEntry) {
-			super(id, dn);
-			this.crtEntry = null;
-			this.keyEntry = null;
-			this.csrEntry = null;
-			this.crlEntry = crlEntry;
+			this(id, dn, null, null, null, crlEntry);
 		}
 
 		@Override

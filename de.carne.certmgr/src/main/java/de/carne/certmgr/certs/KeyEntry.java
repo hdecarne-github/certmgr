@@ -20,16 +20,16 @@ import java.io.IOException;
 import java.security.KeyPair;
 
 /**
- * Helper class used to provide Key access in a general manner.
+ * Interface used to provide Key access in a general manner.
  */
-abstract class KeyEntry {
+interface KeyEntry {
 
 	/**
 	 * Check whether the Key object is decrypted.
 	 *
 	 * @return {@code true} if the Key object is decrypted.
 	 */
-	public abstract boolean isDecrypted();
+	boolean isDecrypted();
 
 	/**
 	 * Get the Key object.
@@ -39,6 +39,6 @@ abstract class KeyEntry {
 	 * @throws PasswordRequiredException if no valid password was given.
 	 * @throws IOException if an I/O error occurs.
 	 */
-	public abstract KeyPair getKey(PasswordCallback password) throws IOException;
+	KeyPair getKey(PasswordCallback password) throws IOException;
 
 }

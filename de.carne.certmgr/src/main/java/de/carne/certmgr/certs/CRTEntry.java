@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.security.cert.X509Certificate;
 
 /**
- * Helper class used to provide CRT access in a general manner.
+ * Interface used to provide CRT access in a general manner.
  */
-abstract class CRTEntry {
+interface CRTEntry {
 
 	/**
 	 * Get the CRT object.
@@ -30,6 +30,6 @@ abstract class CRTEntry {
 	 * @return The CRT object.
 	 * @throws IOException if an I/O error occurs.
 	 */
-	public abstract X509Certificate getCRT() throws IOException;
+	X509Certificate getCRT() throws IOException;
 
 }

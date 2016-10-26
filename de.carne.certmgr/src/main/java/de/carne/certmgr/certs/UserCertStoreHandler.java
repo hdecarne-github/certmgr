@@ -41,8 +41,6 @@ abstract class UserCertStoreHandler {
 		return this.storeHome;
 	}
 
-	public abstract UserCertStoreEntryId createEntryId(String alias);
-
 	public abstract UserCertStoreEntryId nextEntryId(String aliasHint);
 
 	public abstract CRTEntry createCRTEntry(UserCertStoreEntryId id, X509Certificate crt) throws IOException;

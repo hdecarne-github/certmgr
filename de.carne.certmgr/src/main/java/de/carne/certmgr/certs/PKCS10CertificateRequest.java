@@ -76,6 +76,16 @@ public class PKCS10CertificateRequest {
 	}
 
 	/**
+	 * Convert this {@code PKCS10CertificateRequest} to a PKCS#10 object.
+	 * 
+	 * @return The converted object.
+	 * @throws IOException if an I/O error occurs during conversion.
+	 */
+	public PKCS10CertificationRequest toPKCS10() throws IOException {
+		return this.csr;
+	}
+
+	/**
 	 * Get this CSR's subject.
 	 *
 	 * @return This CSR's subject.

@@ -35,14 +35,15 @@ import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
+import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
 /**
- * Java KeyStore support.
+ * Java KeyStore I/O support.
  */
-public class JKSCertReaderWriter implements CertReader {
+public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	private static final Log LOG = new Log();
 

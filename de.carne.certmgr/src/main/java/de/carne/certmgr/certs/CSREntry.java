@@ -19,9 +19,9 @@ package de.carne.certmgr.certs;
 import java.io.IOException;
 
 /**
- * Helper class used to provide CSR access in a general manner.
+ * Interface used to provide CSR access in a general manner.
  */
-abstract class CSREntry {
+interface CSREntry {
 
 	/**
 	 * Get the CSR object.
@@ -29,6 +29,6 @@ abstract class CSREntry {
 	 * @return The CSR object.
 	 * @throws IOException if an I/O error occurs.
 	 */
-	public abstract PKCS10CertificateRequest getCSR() throws IOException;
+	PKCS10CertificateRequest getCSR() throws IOException;
 
 }

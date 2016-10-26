@@ -14,22 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs;
-
-import java.io.IOException;
-import java.security.cert.X509CRL;
+package de.carne.certmgr.certs.spi;
 
 /**
- * Interface used to provide CRL access in a general manner.
+ * Interface for writing certificate objects to output channels.
  */
-interface CRLEntry {
-
-	/**
-	 * Get the CRL object.
-	 *
-	 * @return The CRL object.
-	 * @throws IOException if an I/O error occurs.
-	 */
-	X509CRL getCRL() throws IOException;
+public interface CertWriter extends NamedProvider, FileAccessProvider {
 
 }

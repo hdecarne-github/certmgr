@@ -29,7 +29,7 @@ import de.carne.certmgr.certs.spi.CertReader;
 public final class CertReaders {
 
 	private CertReaders() {
-		// TODO Auto-generated constructor stub
+		// Make sure this class is not instantiated from outside
 	}
 
 	/**

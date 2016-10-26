@@ -36,11 +36,6 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 	}
 
 	@Override
-	public UserCertStoreEntryId createEntryId(String alias) {
-		return nextEntryId(alias);
-	}
-
-	@Override
 	public UserCertStoreEntryId nextEntryId(String aliasHint) {
 		return new UserCertStoreEntryId(this.nextId++, Strings.safe(aliasHint));
 	}
@@ -50,7 +45,7 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 		return new TransientCRTEntry(crt);
 	}
 
-	private static class TransientCRTEntry extends CRTEntry {
+	private static class TransientCRTEntry implements CRTEntry {
 
 		private final X509Certificate crt;
 
@@ -70,7 +65,7 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 		return new TransientKeyEntry(key);
 	}
 
-	private static class TransientKeyEntry extends KeyEntry {
+	private static class TransientKeyEntry implements KeyEntry {
 
 		private final KeyPair key;
 
@@ -95,7 +90,7 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 		return new TransientCSREntry(csr);
 	}
 
-	private static class TransientCSREntry extends CSREntry {
+	private static class TransientCSREntry implements CSREntry {
 
 		private final PKCS10CertificateRequest csr;
 
@@ -115,7 +110,7 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 		return new TransientCRLEntry(crl);
 	}
 
-	private static class TransientCRLEntry extends CRLEntry {
+	private static class TransientCRLEntry implements CRLEntry {
 
 		private final X509CRL crl;
 
