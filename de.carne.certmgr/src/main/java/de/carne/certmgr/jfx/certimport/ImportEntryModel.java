@@ -22,9 +22,9 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 /**
- * Model class used for selecting {@link UserCertStoreEntry} to import.
+ * Model class used for importing {@link UserCertStoreEntry}.
  */
-public class ImportUserCertStoreEntryModel extends UserCertStoreEntryModel {
+public class ImportEntryModel extends UserCertStoreEntryModel {
 
 	private final BooleanProperty selectedProperty;
 
@@ -34,14 +34,14 @@ public class ImportUserCertStoreEntryModel extends UserCertStoreEntryModel {
 	 * @param entry The represented certificate store entry.
 	 * @param selected Whether the entry is initially selected or not.
 	 */
-	public ImportUserCertStoreEntryModel(UserCertStoreEntry entry, boolean selected) {
+	public ImportEntryModel(UserCertStoreEntry entry, boolean selected) {
 		super(entry);
 		this.selectedProperty = new SimpleBooleanProperty(selected);
 	}
 
 	/**
 	 * Get the Selected property value.
-	 * 
+	 *
 	 * @return The Selected property value.
 	 */
 	public final Boolean getSelected() {
@@ -50,7 +50,7 @@ public class ImportUserCertStoreEntryModel extends UserCertStoreEntryModel {
 
 	/**
 	 * Set the Selected property value.
-	 * 
+	 *
 	 * @param selected the value to set.
 	 */
 	public final void setSelected(Boolean selected) {
@@ -59,7 +59,7 @@ public class ImportUserCertStoreEntryModel extends UserCertStoreEntryModel {
 
 	/**
 	 * Get the Selected property.
-	 * 
+	 *
 	 * @return The Selected property.
 	 */
 	public final BooleanProperty selectedProperty() {

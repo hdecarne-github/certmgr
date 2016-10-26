@@ -34,6 +34,7 @@ import javafx.scene.image.ImageView;
 public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryModel> {
 
 	private final UserCertStoreEntry entry;
+	private final StringProperty idProperty;
 	private final StringProperty nameProperty;
 	private final ObjectProperty<Node> graphicProperty;
 	private final BooleanProperty hasCRTProperty;
@@ -50,6 +51,7 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 		assert entry != null;
 
 		this.entry = entry;
+		this.idProperty = new SimpleStringProperty(this.entry.id().toString());
 		this.nameProperty = new SimpleStringProperty(this.entry.getName());
 		this.graphicProperty = new SimpleObjectProperty<>(getEntryGraphic(this.entry));
 		this.hasCRTProperty = new SimpleBooleanProperty(this.entry.hasCRT());
@@ -65,6 +67,33 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 	 */
 	public final UserCertStoreEntry getEntry() {
 		return this.entry;
+	}
+
+	/**
+	 * Get the Id property value.
+	 *
+	 * @return The Id property value.
+	 */
+	public final String getId() {
+		return this.idProperty.getValue();
+	}
+
+	/**
+	 * Set the Id property value.
+	 *
+	 * @param id The value to set.
+	 */
+	public final void setId(String id) {
+		this.idProperty.setValue(id);
+	}
+
+	/**
+	 * Get the Id property.
+	 *
+	 * @return The Id property.
+	 */
+	public final StringProperty idProperty() {
+		return this.idProperty;
 	}
 
 	/**

@@ -91,17 +91,17 @@
                </graphic></Button>
          </children>
       </HBox>
-      <TreeTableView fx:id="ctlSourceEntryInput" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
+      <TreeTableView fx:id="ctlImportEntryView" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
         <columns>
-          <TreeTableColumn fx:id="ctlSourceEntryInputSelected" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" sortable="false">
+          <TreeTableColumn fx:id="ctlImportEntryViewSelected" maxWidth="30.0" minWidth="30.0" prefWidth="30.0" resizable="false" sortable="false">
                <graphic>
                   <CheckBox mnemonicParsing="false" />
                </graphic></TreeTableColumn>
-          <TreeTableColumn fx:id="ctlSourceEntryInputDN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_DN" />
-            <TreeTableColumn fx:id="ctlSourceEntryInputCRT" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRT" />
-            <TreeTableColumn fx:id="ctlSourceEntryInputKey" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_KEY" />
-            <TreeTableColumn fx:id="ctlSourceEntryInputCSR" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRL" />
-            <TreeTableColumn fx:id="ctlSourceEntryInputCRL" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CSR" />
+          <TreeTableColumn fx:id="ctlImportEntryViewDN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_DN" />
+            <TreeTableColumn fx:id="ctlImportEntryViewCRT" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRT" />
+            <TreeTableColumn fx:id="ctlImportEntryViewKey" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_KEY" />
+            <TreeTableColumn fx:id="ctlImportEntryViewCSR" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CRL" />
+            <TreeTableColumn fx:id="ctlImportEntryViewCRL" editable="false" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" resizable="false" sortable="false" text="%_STR_COL_CSR" />
         </columns>
       </TreeTableView>
       <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="8">

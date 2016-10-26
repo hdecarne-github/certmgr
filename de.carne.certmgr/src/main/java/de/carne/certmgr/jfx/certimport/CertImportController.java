@@ -75,7 +75,7 @@ public class CertImportController extends StageController {
 	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
 			"initialDirectory", true);
 
-	private UserCertStoreTreeTableViewHelper<ImportUserCertStoreEntryModel> sourceEntryInputHelper = null;
+	private UserCertStoreTreeTableViewHelper<ImportEntryModel> importEntryViewHelper = null;
 
 	private UserCertStore sourceStore = null;
 
@@ -119,25 +119,25 @@ public class CertImportController extends StageController {
 	Label ctlStatusMessage;
 
 	@FXML
-	TreeTableView<ImportUserCertStoreEntryModel> ctlSourceEntryInput;
+	TreeTableView<ImportEntryModel> ctlImportEntryView;
 
 	@FXML
-	TreeTableColumn<ImportUserCertStoreEntryModel, Boolean> ctlSourceEntryInputSelected;
+	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewSelected;
 
 	@FXML
-	TreeTableColumn<ImportUserCertStoreEntryModel, String> ctlSourceEntryInputDN;
+	TreeTableColumn<ImportEntryModel, String> ctlImportEntryViewDN;
 
 	@FXML
-	TreeTableColumn<ImportUserCertStoreEntryModel, Boolean> ctlSourceEntryInputCRT;
+	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCRT;
 
 	@FXML
-	TreeTableColumn<ImportUserCertStoreEntryModel, Boolean> ctlSourceEntryInputKey;
+	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewKey;
 
 	@FXML
-	TreeTableColumn<ImportUserCertStoreEntryModel, Boolean> ctlSourceEntryInputCSR;
+	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCSR;
 
 	@FXML
-	TreeTableColumn<ImportUserCertStoreEntryModel, Boolean> ctlSourceEntryInputCRL;
+	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCRL;
 
 	@FXML
 	void onCmdChooseFileSource(ActionEvent evt) {
@@ -206,7 +206,7 @@ public class CertImportController extends StageController {
 
 	void onReloadTaskSucceeded(UserCertStore store) {
 		this.sourceStore = store;
-		updateSourceEntryInput();
+		updateImportEntryView();
 	}
 
 	void onReloadTaskFailed(Throwable e) {
@@ -226,23 +226,19 @@ public class CertImportController extends StageController {
 				.bind(Bindings.not(this.ctlDirectorySourceOption.selectedProperty()));
 		this.ctlURLSourceInput.disableProperty().bind(Bindings.not(this.ctlURLSourceOption.selectedProperty()));
 		this.ctlServerSourceInput.disableProperty().bind(Bindings.not(this.ctlServerSourceOption.selectedProperty()));
-		this.ctlSourceEntryInputSelected
-				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputSelected));
-		this.ctlSourceEntryInputSelected.setCellValueFactory(new TreeItemPropertyValueFactory<>("selected"));
-		this.ctlSourceEntryInputDN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
-		this.ctlSourceEntryInputCRT
-				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputCRT));
-		this.ctlSourceEntryInputCRT.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRT"));
-		this.ctlSourceEntryInputKey
-				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputKey));
-		this.ctlSourceEntryInputKey.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasKey"));
-		this.ctlSourceEntryInputCSR
-				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputCSR));
-		this.ctlSourceEntryInputCSR.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCSR"));
-		this.ctlSourceEntryInputCRL
-				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlSourceEntryInputCRL));
-		this.ctlSourceEntryInputCRL.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRL"));
-		this.ctlSourceEntryInput.setTreeColumn(this.ctlSourceEntryInputDN);
+		this.ctlImportEntryViewSelected
+				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportEntryViewSelected));
+		this.ctlImportEntryViewSelected.setCellValueFactory(new TreeItemPropertyValueFactory<>("selected"));
+		this.ctlImportEntryViewDN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+		this.ctlImportEntryViewCRT.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportEntryViewCRT));
+		this.ctlImportEntryViewCRT.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRT"));
+		this.ctlImportEntryViewKey.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportEntryViewKey));
+		this.ctlImportEntryViewKey.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasKey"));
+		this.ctlImportEntryViewCSR.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportEntryViewCSR));
+		this.ctlImportEntryViewCSR.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCSR"));
+		this.ctlImportEntryViewCRL.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportEntryViewCRL));
+		this.ctlImportEntryViewCRL.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRL"));
+		this.ctlImportEntryView.setTreeColumn(this.ctlImportEntryViewDN);
 		this.ctlFileSourceOption.setSelected(true);
 	}
 
@@ -371,12 +367,12 @@ public class CertImportController extends StageController {
 		}
 	}
 
-	private void updateSourceEntryInput() {
-		if (this.sourceEntryInputHelper == null) {
-			this.sourceEntryInputHelper = new UserCertStoreTreeTableViewHelper<>(this.ctlSourceEntryInput,
-					(e) -> new ImportUserCertStoreEntryModel(e, false));
+	private void updateImportEntryView() {
+		if (this.importEntryViewHelper == null) {
+			this.importEntryViewHelper = new UserCertStoreTreeTableViewHelper<>(this.ctlImportEntryView,
+					(e) -> new ImportEntryModel(e, false));
 		}
-		this.sourceEntryInputHelper.update(this.sourceStore);
+		this.importEntryViewHelper.update(this.sourceStore);
 		if (this.sourceStore != null) {
 			this.ctlStatusImage.setImage(Images.OK16);
 			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NEW_STORE(this.sourceStore.size()));

@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.store.StoreController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.store.StoreController">
    <children>
       <MenuBar VBox.vgrow="NEVER">
         <menus>
@@ -212,14 +212,15 @@
             </Button>
         </items>
       </ToolBar>
-      <SplitPane dividerPositions="0.6" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+      <SplitPane dividerPositions="0.7" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>
-                  <TreeTableView layoutX="48.0" layoutY="24.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TreeTableView fx:id="ctlStoreEntryView" layoutX="48.0" layoutY="24.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                      <TreeTableColumn maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="%_STR_COL_NAME" />
-                      <TreeTableColumn prefWidth="75.0" text="%_STR_COL_CN" />
+                      <TreeTableColumn fx:id="ctlStoreEntryViewId" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_NAME" />
+                      <TreeTableColumn fx:id="ctlStoreEntryViewDN" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_DN" />
+                        <TreeTableColumn fx:id="ctlStoreEntryViewExpires" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_EXPIRES" />
                     </columns>
                   </TreeTableView>
                </children></AnchorPane>

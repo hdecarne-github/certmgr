@@ -20,11 +20,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
@@ -35,6 +37,9 @@ import de.carne.util.prefs.DirectoryPreference;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -47,6 +52,22 @@ public class StoreController extends StageController {
 
 	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
 			"initialDirectory", true);
+
+	private UserCertStoreTreeTableViewHelper<StoreEntryModel> storeEntryViewHelper = null;
+
+	private UserCertStore store = null;
+
+	@FXML
+	TreeTableView<StoreEntryModel> ctlStoreEntryView;
+
+	@FXML
+	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewId;
+
+	@FXML
+	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewDN;
+
+	@FXML
+	TreeTableColumn<StoreEntryModel, Date> ctlStoreEntryViewExpires;
 
 	@FXML
 	Label ctlStoreStatusLabel;
@@ -141,6 +162,9 @@ public class StoreController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(Images.STORE32, Images.STORE16);
 		stage.setTitle(StoreI18N.formatSTR_STAGE_TITLE());
+		this.ctlStoreEntryViewId.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
+		this.ctlStoreEntryViewDN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+		this.ctlStoreEntryViewExpires.setCellValueFactory(new TreeItemPropertyValueFactory<>("expires"));
 		Windows.onHiding(stage, (ScheduledFuture<?> f) -> f.cancel(true), getExecutorService().scheduleAtFixedRate(
 				PlatformHelper.runLaterRunnable(() -> updateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
 	}
@@ -150,16 +174,29 @@ public class StoreController extends StageController {
 		return this.preferences;
 	}
 
+	/**
+	 * Open a certificate store.
+	 *
+	 * @param storeHome The home path of the store to open.
+	 */
 	public void openStore(File storeHome) {
 		assert storeHome != null;
 
 		try {
-			UserCertStore store = UserCertStore.openStore(storeHome.toPath());
-
-			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(store.storeHome()));
+			this.store = UserCertStore.openStore(storeHome.toPath());
+			updateStoreEntryView();
+			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(this.store.storeHome()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void updateStoreEntryView() {
+		if (this.storeEntryViewHelper == null) {
+			this.storeEntryViewHelper = new UserCertStoreTreeTableViewHelper<>(this.ctlStoreEntryView,
+					(e) -> new StoreEntryModel(e));
+		}
+		this.storeEntryViewHelper.update(this.store);
 	}
 
 }
