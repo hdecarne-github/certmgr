@@ -16,6 +16,10 @@
  */
 package de.carne.certmgr.jfx;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.jfx.stage.StageController;
 import de.carne.util.cmdline.CmdLine;
@@ -45,13 +49,16 @@ public class CertMgrApplication extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		// Evaluate command line as soon as possible to apply logging options as
 		// soon as possible
-		evalCmdLine();
+		File defaultStoreHome = evalCmdLine();
 
 		LOG.info("JavaFX GUI starting...");
 
 		StoreController store = StageController.loadPrimaryStage(primaryStage, StoreController.class);
 
 		store.show();
+		if (defaultStoreHome != null) {
+			store.openStore(defaultStoreHome);
+		}
 	}
 
 	@Override
@@ -59,17 +66,30 @@ public class CertMgrApplication extends Application {
 		LOG.info("JavaFX GUI stopped");
 	}
 
-	private void evalCmdLine() {
+	private File evalCmdLine() {
 		CmdLine cmdLine = new CmdLine(getParameters().getRaw());
+		List<String> defaultArgs = new ArrayList<>();
 
 		cmdLine.switchAction((s) -> LogConfig.applyConfig(LogConfig.CONFIG_VERBOSE)).arg("--verbose");
 		cmdLine.switchAction((s) -> LogConfig.applyConfig(LogConfig.CONFIG_DEBUG)).arg("--debug");
+		cmdLine.unnamedOptionAction((s) -> defaultArgs.add(s));
 		try {
 			cmdLine.eval();
 			LOG.info("Running command line ''{0}''", cmdLine);
 		} catch (CmdLineException e) {
 			LOG.warning(e, "Invalid argument usage for ''{0}'' in command line ''{0}''; ", e.getArg(), cmdLine);
 		}
+
+		File defaultStoreHome = null;
+
+		for (String defaultArg : defaultArgs) {
+			if (defaultStoreHome == null) {
+				defaultStoreHome = new File(defaultArg);
+			} else {
+				LOG.warning("Ignoring extra store home argument ''{0}''", defaultStoreHome);
+			}
+		}
+		return defaultStoreHome;
 	}
 
 }
