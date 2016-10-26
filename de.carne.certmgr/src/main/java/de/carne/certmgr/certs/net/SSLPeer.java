@@ -17,7 +17,9 @@
 package de.carne.certmgr.certs.net;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.security.cert.Certificate;
@@ -114,13 +116,15 @@ public final class SSLPeer {
 	 */
 	public Certificate[] readCertificates() {
 		Certificate[] certificates = null;
+		boolean generalSocketError = false;
 
 		try {
 			certificates = readCertificatesSSL();
 		} catch (IOException e) {
 			LOG.info(e, "SSL connection to {0} (port: {1}) failed", this.address, this.port);
+			generalSocketError = e instanceof ConnectException || e instanceof SocketTimeoutException;
 		}
-		if (certificates == null) {
+		if (certificates == null && !generalSocketError) {
 			for (StartTLS protocol : StartTLS.values()) {
 				try {
 					certificates = readCertificatesStartTLS(protocol);
