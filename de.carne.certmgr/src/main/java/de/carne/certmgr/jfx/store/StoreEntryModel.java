@@ -54,7 +54,7 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	/**
 	 * Set the Expires property value.
 	 *
-	 * @param expires the value to set.
+	 * @param expires The value to set.
 	 */
 	public final void setExpired(Date expires) {
 		this.expiresProperty.setValue(expires);

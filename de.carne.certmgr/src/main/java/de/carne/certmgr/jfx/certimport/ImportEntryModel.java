@@ -51,7 +51,7 @@ public class ImportEntryModel extends UserCertStoreEntryModel {
 	/**
 	 * Set the Selected property value.
 	 *
-	 * @param selected the value to set.
+	 * @param selected The value to set.
 	 */
 	public final void setSelected(Boolean selected) {
 		this.selectedProperty.setValue(selected);

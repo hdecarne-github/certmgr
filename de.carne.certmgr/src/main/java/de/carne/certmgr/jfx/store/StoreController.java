@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
 import de.carne.certmgr.jfx.resources.Images;
@@ -34,9 +35,12 @@ import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.prefs.DirectoryPreference;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
@@ -68,6 +72,15 @@ public class StoreController extends StageController {
 
 	@FXML
 	TreeTableColumn<StoreEntryModel, Date> ctlStoreEntryViewExpires;
+
+	@FXML
+	TreeTableView<AttributeModel> ctlDetailsView;
+
+	@FXML
+	TreeTableColumn<AttributeModel, String> ctlDetailsViewName;
+
+	@FXML
+	TreeTableColumn<AttributeModel, String> ctlDetailsViewValue;
 
 	@FXML
 	Label ctlStoreStatusLabel;
@@ -146,6 +159,10 @@ public class StoreController extends StageController {
 
 	}
 
+	void onStoreViewSelectionChange(TreeItem<StoreEntryModel> selection) {
+		updateDetailsView(selection);
+	}
+
 	void updateHeapStatus() {
 		Runtime rt = Runtime.getRuntime();
 		long usedMemory = rt.totalMemory() - rt.freeMemory();
@@ -165,6 +182,18 @@ public class StoreController extends StageController {
 		this.ctlStoreEntryViewId.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
 		this.ctlStoreEntryViewDN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlStoreEntryViewExpires.setCellValueFactory(new TreeItemPropertyValueFactory<>("expires"));
+		this.ctlDetailsViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+		this.ctlDetailsViewValue.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));
+		this.ctlStoreEntryView.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener<TreeItem<StoreEntryModel>>() {
+
+					@Override
+					public void changed(ObservableValue<? extends TreeItem<StoreEntryModel>> observable,
+							TreeItem<StoreEntryModel> oldValue, TreeItem<StoreEntryModel> newValue) {
+						onStoreViewSelectionChange(newValue);
+					}
+
+				});
 		Windows.onHiding(stage, (ScheduledFuture<?> f) -> f.cancel(true), getExecutorService().scheduleAtFixedRate(
 				PlatformHelper.runLaterRunnable(() -> updateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
 	}
@@ -197,6 +226,45 @@ public class StoreController extends StageController {
 					(e) -> new StoreEntryModel(e));
 		}
 		this.storeEntryViewHelper.update(this.store);
+	}
+
+	private void updateDetailsView(TreeItem<StoreEntryModel> selection) {
+		TreeItem<AttributeModel> rootItem = null;
+
+		if (selection != null) {
+			rootItem = new TreeItem<>();
+			rootItem.setExpanded(true);
+
+			UserCertStoreEntry entry = selection.getValue().getEntry();
+
+			TreeItem<AttributeModel> entryItem = new TreeItem<>(
+					new AttributeModel(StoreI18N.formatSTR_DETAILS_ENTRY()));
+
+			rootItem.getChildren().add(entryItem);
+			entryItem.setExpanded(true);
+			if (entry.hasCRT()) {
+				TreeItem<AttributeModel> crtItem = new TreeItem<>(
+						new AttributeModel(StoreI18N.formatSTR_DETAILS_CRT()));
+
+				rootItem.getChildren().add(crtItem);
+				crtItem.setExpanded(true);
+			}
+			if (entry.hasCSR()) {
+				TreeItem<AttributeModel> csrItem = new TreeItem<>(
+						new AttributeModel(StoreI18N.formatSTR_DETAILS_CSR()));
+
+				rootItem.getChildren().add(csrItem);
+				csrItem.setExpanded(true);
+			}
+			if (entry.hasCRL()) {
+				TreeItem<AttributeModel> crlItem = new TreeItem<>(
+						new AttributeModel(StoreI18N.formatSTR_DETAILS_CRL()));
+
+				rootItem.getChildren().add(crlItem);
+				crlItem.setExpanded(true);
+			}
+		}
+		this.ctlDetailsView.setRoot(rootItem);
 	}
 
 }

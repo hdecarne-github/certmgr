@@ -212,7 +212,7 @@
             </Button>
         </items>
       </ToolBar>
-      <SplitPane dividerPositions="0.7" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
+      <SplitPane dividerPositions="0.6" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>
@@ -226,10 +226,10 @@
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>
-                  <TreeTableView layoutX="27.0" layoutY="44.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TreeTableView fx:id="ctlDetailsView" layoutX="27.0" layoutY="44.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                      <TreeTableColumn prefWidth="75.0" text="%_STR_COL_ATTRIBUTE" />
-                      <TreeTableColumn prefWidth="75.0" text="%_STR_COL_VALUE" />
+                      <TreeTableColumn fx:id="ctlDetailsViewName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="160.0" text="%_STR_COL_ATTRIBUTE" />
+                      <TreeTableColumn fx:id="ctlDetailsViewValue" editable="false" maxWidth="1.7976931348623157E308" prefWidth="160.0" text="%_STR_COL_VALUE" />
                     </columns>
                   </TreeTableView>
                </children></AnchorPane>
