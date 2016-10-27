@@ -19,14 +19,13 @@ package de.carne.certmgr.certs;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.jfx.util.ShortDate;
 
 /**
  * This class provides a generic way to inspected and display the
@@ -117,10 +116,8 @@ public class AttributesInspector {
 		return childAttribute;
 	}
 
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
-
 	private static String formatDate(Date date) {
-		return DATE_FORMAT.format(date);
+		return ShortDate.FORMAT.format(date);
 	}
 
 	private static String formatPublicKey(PublicKey publicKey) {

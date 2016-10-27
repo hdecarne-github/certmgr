@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.jfx.UserCertStoreEntryModel;
+import de.carne.jfx.util.ShortDate;
 import de.carne.util.Exceptions;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -30,7 +31,7 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public class StoreEntryModel extends UserCertStoreEntryModel {
 
-	private final ObjectProperty<Date> expiresProperty;
+	private final ObjectProperty<ShortDate> expiresProperty;
 
 	/**
 	 * Construct {@code ManagedEntryModel}.
@@ -47,7 +48,7 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 *
 	 * @return The Expires property value.
 	 */
-	public final Date getExpires() {
+	public final ShortDate getExpires() {
 		return this.expiresProperty.getValue();
 	}
 
@@ -56,7 +57,7 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 *
 	 * @param expires The value to set.
 	 */
-	public final void setExpired(Date expires) {
+	public final void setExpired(ShortDate expires) {
 		this.expiresProperty.setValue(expires);
 	}
 
@@ -65,11 +66,11 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 *
 	 * @return The Expires property.
 	 */
-	public final ObjectProperty<Date> expiresProperty() {
+	public final ObjectProperty<ShortDate> expiresProperty() {
 		return this.expiresProperty;
 	}
 
-	private static Date getExpires(UserCertStoreEntry entry) {
+	private static ShortDate getExpires(UserCertStoreEntry entry) {
 		Date expires = null;
 
 		try {
@@ -79,7 +80,7 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 		} catch (IOException e) {
 			Exceptions.ignore(e);
 		}
-		return expires;
+		return (expires != null ? new ShortDate(expires.getTime()) : null);
 	}
 
 }

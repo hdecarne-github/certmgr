@@ -220,7 +220,7 @@
                     <columns>
                       <TreeTableColumn fx:id="ctlStoreEntryViewId" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_NAME" />
                       <TreeTableColumn fx:id="ctlStoreEntryViewDN" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_DN" />
-                        <TreeTableColumn fx:id="ctlStoreEntryViewExpires" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_EXPIRES" />
+                        <TreeTableColumn fx:id="ctlStoreEntryViewExpires" editable="false" maxWidth="1.7976931348623157E308" prefWidth="120.0" text="%_STR_COL_EXPIRES" />
                     </columns>
                   </TreeTableView>
                </children></AnchorPane>
@@ -228,8 +228,8 @@
                <children>
                   <TreeTableView fx:id="ctlDetailsView" layoutX="27.0" layoutY="44.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                      <TreeTableColumn fx:id="ctlDetailsViewName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="160.0" text="%_STR_COL_ATTRIBUTE" />
-                      <TreeTableColumn fx:id="ctlDetailsViewValue" editable="false" maxWidth="1.7976931348623157E308" prefWidth="160.0" text="%_STR_COL_VALUE" />
+                      <TreeTableColumn fx:id="ctlDetailsViewName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="180.0" text="%_STR_COL_ATTRIBUTE" />
+                      <TreeTableColumn fx:id="ctlDetailsViewValue" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_VALUE" />
                     </columns>
                   </TreeTableView>
                </children></AnchorPane>

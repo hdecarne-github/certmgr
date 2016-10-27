@@ -51,6 +51,16 @@ public final class Images {
 	public static final Image IMPORT32 = getImage("imageImport32.png");
 
 	/**
+	 * CertOptions stage icon (16x16).
+	 */
+	public static final Image NEWCERT16 = getImage("imageNewCert16.png");
+
+	/**
+	 * CertOptions stage icon (32x32).
+	 */
+	public static final Image NEWCERT32 = getImage("imageNewCert32.png");
+
+	/**
 	 * Public CRT object icon (16x16).
 	 */
 	public static final Image PUBLIC_CRT16 = getImage("imagePublicCRT16.png");

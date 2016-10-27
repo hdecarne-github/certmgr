@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
@@ -31,10 +30,12 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
+import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
+import de.carne.jfx.util.ShortDate;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.Exceptions;
 import de.carne.util.prefs.DirectoryPreference;
@@ -74,7 +75,7 @@ public class StoreController extends StageController {
 	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewDN;
 
 	@FXML
-	TreeTableColumn<StoreEntryModel, Date> ctlStoreEntryViewExpires;
+	TreeTableColumn<StoreEntryModel, ShortDate> ctlStoreEntryViewExpires;
 
 	@FXML
 	TreeTableView<AttributeModel> ctlDetailsView;
@@ -128,7 +129,13 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdNewCert(ActionEvent evt) {
+		try {
+			CertOptionsController certOptions = loadStage(CertOptionsController.class);
 
+			certOptions.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
