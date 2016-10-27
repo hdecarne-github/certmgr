@@ -16,8 +16,6 @@
  */
 package de.carne.certmgr.jfx.store;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -27,7 +25,7 @@ import javafx.beans.property.StringProperty;
 public class AttributeModel {
 
 	private final StringProperty nameProperty;
-	private final ObjectProperty<Object> valueProperty;
+	private final StringProperty valueProperty;
 
 	/**
 	 * Construct {@code AttributeValue}.
@@ -44,9 +42,9 @@ public class AttributeModel {
 	 * @param name The attribute name.
 	 * @param value The attribute value.
 	 */
-	public AttributeModel(String name, Object value) {
+	public AttributeModel(String name, String value) {
 		this.nameProperty = new SimpleStringProperty(name);
-		this.valueProperty = new SimpleObjectProperty<>(value);
+		this.valueProperty = new SimpleStringProperty(value);
 	}
 
 	/**
@@ -81,7 +79,7 @@ public class AttributeModel {
 	 *
 	 * @return The Value property value.
 	 */
-	public final Object getValue() {
+	public final String getValue() {
 		return this.valueProperty.getValue();
 	}
 
@@ -90,7 +88,7 @@ public class AttributeModel {
 	 *
 	 * @param value The value to set.
 	 */
-	public final void setValue(Object value) {
+	public final void setValue(String value) {
 		this.valueProperty.setValue(value);
 	}
 
@@ -99,7 +97,7 @@ public class AttributeModel {
 	 *
 	 * @return The Value property.
 	 */
-	public final ObjectProperty<Object> valueProperty() {
+	public final StringProperty valueProperty() {
 		return this.valueProperty;
 	}
 

@@ -18,6 +18,7 @@ package de.carne.certmgr.jfx.store;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
@@ -25,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
+import de.carne.certmgr.certs.AttributesInspector;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
@@ -34,6 +36,7 @@ import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.text.MemUnitFormat;
+import de.carne.util.Exceptions;
 import de.carne.util.prefs.DirectoryPreference;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -237,34 +240,30 @@ public class StoreController extends StageController {
 
 			UserCertStoreEntry entry = selection.getValue().getEntry();
 
-			TreeItem<AttributeModel> entryItem = new TreeItem<>(
-					new AttributeModel(StoreI18N.formatSTR_DETAILS_ENTRY()));
-
-			rootItem.getChildren().add(entryItem);
-			entryItem.setExpanded(true);
+			updateDetailsViewHelper(rootItem, AttributesInspector.fromUserCertStoreEntry(entry), true);
 			if (entry.hasCRT()) {
-				TreeItem<AttributeModel> crtItem = new TreeItem<>(
-						new AttributeModel(StoreI18N.formatSTR_DETAILS_CRT()));
+				try {
+					X509Certificate crt = entry.getCRT();
 
-				rootItem.getChildren().add(crtItem);
-				crtItem.setExpanded(true);
-			}
-			if (entry.hasCSR()) {
-				TreeItem<AttributeModel> csrItem = new TreeItem<>(
-						new AttributeModel(StoreI18N.formatSTR_DETAILS_CSR()));
-
-				rootItem.getChildren().add(csrItem);
-				csrItem.setExpanded(true);
-			}
-			if (entry.hasCRL()) {
-				TreeItem<AttributeModel> crlItem = new TreeItem<>(
-						new AttributeModel(StoreI18N.formatSTR_DETAILS_CRL()));
-
-				rootItem.getChildren().add(crlItem);
-				crlItem.setExpanded(true);
+					updateDetailsViewHelper(rootItem, AttributesInspector.fromCRT(crt), true);
+				} catch (IOException e) {
+					Exceptions.ignore(e);
+				}
 			}
 		}
 		this.ctlDetailsView.setRoot(rootItem);
+	}
+
+	private void updateDetailsViewHelper(TreeItem<AttributeModel> parentItem, AttributesInspector attribute,
+			boolean expand) {
+		TreeItem<AttributeModel> attributeItem = new TreeItem<>(
+				new AttributeModel(attribute.name(), attribute.value()));
+
+		for (AttributesInspector child : attribute.children()) {
+			updateDetailsViewHelper(attributeItem, child, false);
+		}
+		parentItem.getChildren().add(attributeItem);
+		attributeItem.setExpanded(expand);
 	}
 
 }
