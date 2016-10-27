@@ -34,7 +34,6 @@ import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
@@ -70,7 +69,7 @@ public class CertImportController extends StageController {
 
 	private static final Pattern SERVER_INPUT_PATTERN = Pattern.compile("(.+):(\\d+)");
 
-	private final Preferences preferences = Preferences.systemNodeForPackage(StoreController.class);
+	private final Preferences preferences = Preferences.systemNodeForPackage(CertImportController.class);
 
 	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
 			"initialDirectory", true);
