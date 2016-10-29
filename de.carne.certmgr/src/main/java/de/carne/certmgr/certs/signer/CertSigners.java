@@ -14,11 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.spi;
+package de.carne.certmgr.certs.signer;
+
+import de.carne.certmgr.certs.ProviderMap;
+import de.carne.certmgr.certs.spi.CertSigner;
 
 /**
- * Service provider nterface for writing certificate objects to output channels.
+ * Utility class providing {@link CertSigner} related functions.
  */
-public interface CertWriter extends NamedProvider, FileAccessProvider {
+public final class CertSigners {
+
+	/**
+	 * The registered {@link CertSigner}s.
+	 */
+	public static final ProviderMap<CertSigner> REGISTERED = new ProviderMap<>(CertSigner.class);
 
 }

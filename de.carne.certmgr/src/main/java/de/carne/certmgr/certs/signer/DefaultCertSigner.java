@@ -14,11 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.spi;
+package de.carne.certmgr.certs.signer;
+
+import de.carne.certmgr.certs.spi.CertSigner;
 
 /**
- * Service provider nterface for writing certificate objects to output channels.
+ * Default (BouncyCastle based) service provider for certificate signing.
  */
-public interface CertWriter extends NamedProvider, FileAccessProvider {
+public class DefaultCertSigner implements CertSigner {
+
+	/**
+	 * Provider name.
+	 */
+	public static final String PROVIDER_NAME = "BouncyCastle";
+
+	@Override
+	public String providerName() {
+		return PROVIDER_NAME;
+	}
+
+	@Override
+	public String getDescription() {
+		return CertSignerI18N.formatSTR_DEFAULT_DESCRIPTION();
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
+	}
 
 }

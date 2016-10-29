@@ -23,7 +23,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaderInput;
 
 /**
- * Interface for reading certificate objects from input data.
+ * Service provider interface for reading certificate objects from input data.
  */
 public interface CertReader extends NamedProvider, FileAccessProvider {
 

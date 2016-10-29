@@ -273,6 +273,21 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Get this store's name.
+	 * <p>
+	 * A store's name is derived from it's home path.
+	 *
+	 * @return This store's name or {@code null} if this store only supports
+	 *         read access.
+	 * @see #storeHome()
+	 */
+	public String storeName() {
+		Path storeHome = this.storeHandler.storeHome();
+
+		return (storeHome != null ? storeHome.getFileName().toString() : null);
+	}
+
+	/**
 	 * Get this store's entry count.
 	 *
 	 * @return This store's entry count.

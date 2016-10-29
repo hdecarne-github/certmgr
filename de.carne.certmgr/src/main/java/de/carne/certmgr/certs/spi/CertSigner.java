@@ -17,8 +17,15 @@
 package de.carne.certmgr.certs.spi;
 
 /**
- * Service provider nterface for writing certificate objects to output channels.
+ * Service provider interface for certificate signing.
  */
-public interface CertWriter extends NamedProvider, FileAccessProvider {
+public interface CertSigner extends NamedProvider {
+
+	/**
+	 * Get this provider's description.
+	 *
+	 * @return This provider's description.
+	 */
+	String getDescription();
 
 }

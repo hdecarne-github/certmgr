@@ -16,14 +16,24 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.util.Comparator;
 import java.util.prefs.Preferences;
 
+import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.signer.CertSigners;
+import de.carne.certmgr.certs.spi.CertSigner;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
@@ -34,7 +44,61 @@ public class CertOptionsController extends StageController {
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertOptionsController.class);
 
 	@FXML
-	Label ctlStatusMessage;
+	Menu ctlStorePresetsMenu;
+
+	@FXML
+	Menu ctlTemplatePresetsMenu;
+
+	@FXML
+	TextField ctlAliasInput;
+
+	@FXML
+	TextField ctlDNInput;
+
+	@FXML
+	ComboBox<String> ctlKeyAlgOption;
+
+	@FXML
+	ComboBox<Integer> ctlKeySizeOption;
+
+	@FXML
+	ChoiceBox<CertSigner> ctlSignerOption;
+
+	@FXML
+	ComboBox<String> ctlSigAlgOption;
+
+	@FXML
+	DatePicker ctlNotBeforeInput;
+
+	@FXML
+	DatePicker ctlNotAfterInput;
+
+	@FXML
+	ComboBox<UserCertStoreEntry> ctlIssuerInput;
+
+	@FXML
+	MenuItem cmdAddBasicConstraints;
+
+	@FXML
+	MenuItem cmdAddKeyUsage;
+
+	@FXML
+	MenuItem cmdAddExtendedKeyUsage;
+
+	@FXML
+	MenuItem cmdAddSubjectAlternativeName;
+
+	@FXML
+	MenuItem cmdAddCRLDistributionPoints;
+
+	@FXML
+	MenuItem cmdAddCustomExtension;
+
+	@FXML
+	Button cmdEditExtension;
+
+	@FXML
+	Button cmdDeleteExtension;
 
 	@FXML
 	void onCmdSubmit(ActionEvent evt) {
@@ -50,6 +114,19 @@ public class CertOptionsController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
+		setupSignerOptions();
+	}
+
+	private void setupSignerOptions() {
+		this.ctlSignerOption.getItems().addAll(CertSigners.REGISTERED.providers());
+		this.ctlSignerOption.getItems().sort(new Comparator<CertSigner>() {
+
+			@Override
+			public int compare(CertSigner o1, CertSigner o2) {
+				return o1.providerName().compareTo(o2.providerName());
+			}
+
+		});
 	}
 
 	@Override
