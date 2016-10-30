@@ -48,6 +48,7 @@ import de.carne.certmgr.certs.io.FileCertReaderInput;
 import de.carne.certmgr.certs.io.StringCertReaderInput;
 import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.nio.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;

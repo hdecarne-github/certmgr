@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs;
+package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -24,6 +24,8 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
+
+import de.carne.certmgr.certs.CertProviderException;
 
 /**
  * This class represents a PKCS#10 Certificate Signing Request (CSR) object.
@@ -77,7 +79,7 @@ public class PKCS10CertificateRequest {
 
 	/**
 	 * Convert this {@code PKCS10CertificateRequest} to a PKCS#10 object.
-	 * 
+	 *
 	 * @return The converted object.
 	 * @throws IOException if an I/O error occurs during conversion.
 	 */
@@ -101,6 +103,17 @@ public class PKCS10CertificateRequest {
 	 */
 	public PublicKey getPublicKey() {
 		return this.publicKey;
+	}
+
+	/**
+	 * Get this CSR object's {@code Attributes}.
+	 *
+	 * @return This CSR object's attributes.
+	 */
+	public Attributes toAttributes() {
+		Attributes csrAttributes = new Attributes(AttributesI18N.formatSTR_CSR(), null);
+
+		return csrAttributes;
 	}
 
 	@Override

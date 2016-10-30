@@ -47,11 +47,11 @@ import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
 import de.carne.certmgr.certs.CertProviderException;
-import de.carne.certmgr.certs.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;

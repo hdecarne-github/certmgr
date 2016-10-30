@@ -14,23 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs;
+package de.carne.certmgr.certs.x509;
 
-import java.io.IOException;
-
-import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import java.security.cert.X509CRL;
 
 /**
- * Interface used to provide CSR access in a general manner.
+ * Utility class providing {@link X509CRL} related functions.
  */
-interface CSREntry {
+public final class X509CRLHelper {
 
 	/**
-	 * Get the CSR object.
+	 * Get a CRL object's {@code Attributes}.
 	 *
-	 * @return The CSR object.
-	 * @throws IOException if an I/O error occurs.
+	 * @param crl The CRL object to get the attributes for.
+	 * @return The CRL object's attributes.
 	 */
-	PKCS10CertificateRequest getCSR() throws IOException;
+	public static Attributes toAttributes(X509CRL crl) {
+		Attributes crlAttributes = new Attributes(AttributesI18N.formatSTR_CRL(), null);
+
+		crlAttributes.addExtension(crl);
+		return crlAttributes;
+	}
 
 }

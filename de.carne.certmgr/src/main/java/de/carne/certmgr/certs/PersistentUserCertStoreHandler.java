@@ -34,6 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.carne.certmgr.certs.io.PEMCertReaderWriter;
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.util.logging.Log;
 
 /**

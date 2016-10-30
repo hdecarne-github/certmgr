@@ -25,6 +25,7 @@ import java.util.List;
 import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 
 /**
  * Certificate store entry.

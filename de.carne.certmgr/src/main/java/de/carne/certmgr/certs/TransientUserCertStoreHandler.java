@@ -21,6 +21,7 @@ import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.util.Strings;
 
 /**

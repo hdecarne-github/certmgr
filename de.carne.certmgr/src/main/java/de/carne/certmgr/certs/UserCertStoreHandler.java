@@ -22,6 +22,8 @@ import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+
 /**
  * {@code UserCertStoreHandler} derived classes provide the actual certificate
  * storage functions used by a certificate store.

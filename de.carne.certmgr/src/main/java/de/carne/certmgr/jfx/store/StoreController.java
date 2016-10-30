@@ -18,6 +18,7 @@ package de.carne.certmgr.jfx.store;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -25,9 +26,12 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
-import de.carne.certmgr.certs.AttributesInspector;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.x509.Attributes;
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.certmgr.certs.x509.X509CRLHelper;
+import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
 import de.carne.certmgr.jfx.certoptions.CertOptionsController;
@@ -247,12 +251,30 @@ public class StoreController extends StageController {
 
 			UserCertStoreEntry entry = selection.getValue().getEntry();
 
-			updateDetailsViewHelper(rootItem, AttributesInspector.fromUserCertStoreEntry(entry), true);
+			updateDetailsViewHelper(rootItem, Attributes.toAttributes(entry), true);
 			if (entry.hasCRT()) {
 				try {
 					X509Certificate crt = entry.getCRT();
 
-					updateDetailsViewHelper(rootItem, AttributesInspector.fromCRT(crt), true);
+					updateDetailsViewHelper(rootItem, X509CertificateHelper.toAttributes(crt), true);
+				} catch (IOException e) {
+					Exceptions.ignore(e);
+				}
+			}
+			if (entry.hasCSR()) {
+				try {
+					PKCS10CertificateRequest csr = entry.getCSR();
+
+					updateDetailsViewHelper(rootItem, csr.toAttributes(), true);
+				} catch (IOException e) {
+					Exceptions.ignore(e);
+				}
+			}
+			if (entry.hasCRL()) {
+				try {
+					X509CRL crl = entry.getCRL();
+
+					updateDetailsViewHelper(rootItem, X509CRLHelper.toAttributes(crl), true);
 				} catch (IOException e) {
 					Exceptions.ignore(e);
 				}
@@ -261,12 +283,11 @@ public class StoreController extends StageController {
 		this.ctlDetailsView.setRoot(rootItem);
 	}
 
-	private void updateDetailsViewHelper(TreeItem<AttributeModel> parentItem, AttributesInspector attribute,
-			boolean expand) {
+	private void updateDetailsViewHelper(TreeItem<AttributeModel> parentItem, Attributes attribute, boolean expand) {
 		TreeItem<AttributeModel> attributeItem = new TreeItem<>(
 				new AttributeModel(attribute.name(), attribute.value()));
 
-		for (AttributesInspector child : attribute.children()) {
+		for (Attributes child : attribute.children()) {
 			updateDetailsViewHelper(attributeItem, child, false);
 		}
 		parentItem.getChildren().add(attributeItem);
