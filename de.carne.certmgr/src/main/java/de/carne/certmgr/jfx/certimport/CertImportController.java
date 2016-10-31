@@ -319,7 +319,7 @@ public class CertImportController extends StageController {
 
 				@Override
 				protected UserCertStore createStore(ServerParams params) throws IOException {
-					return UserCertStore.createFromServer(params.host(), params.port(), params.protocol());
+					return UserCertStore.createFromServer(params.protocol(), params.host(), params.port());
 				}
 
 			});

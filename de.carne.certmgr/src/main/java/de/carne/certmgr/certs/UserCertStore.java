@@ -210,14 +210,14 @@ public final class UserCertStore {
 	 * <p>
 	 * The created certificate store supports only read access.
 	 *
+	 * @param protocol The protocol to use for accessing the server.
 	 * @param host The host to retrieve the certificate data from.
 	 * @param port The port to retrieve the certificate data from.
-	 * @param protocol The protocol to use for accessing the server.
 	 * @return The created certificate store.
 	 * @throws IOException if an I/O error occurs while reading/decoding
 	 *         certificate data.
 	 */
-	public static UserCertStore createFromServer(String host, int port, SSLPeer.Protocol protocol) throws IOException {
+	public static UserCertStore createFromServer(SSLPeer.Protocol protocol, String host, int port) throws IOException {
 		SSLPeer sslPeer = SSLPeer.getInstance(host, port);
 		Certificate[] certificates = sslPeer.readCertificates(protocol);
 		List<Object> certObjects = new ArrayList<>();
