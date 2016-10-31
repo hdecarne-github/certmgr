@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.io.CertReaders;
+import de.carne.certmgr.certs.net.SSLPeer;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.jfx.password.PasswordDialog;
@@ -48,6 +49,7 @@ import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -107,6 +109,9 @@ public class CertImportController extends StageController {
 
 	@FXML
 	TextField ctlServerSourceInput;
+
+	@FXML
+	ChoiceBox<SSLPeer.Protocol> ctlServerSourceProtocolInput;
 
 	@FXML
 	RadioButton ctlClipboardSourceOption;
@@ -225,6 +230,9 @@ public class CertImportController extends StageController {
 				.bind(Bindings.not(this.ctlDirectorySourceOption.selectedProperty()));
 		this.ctlURLSourceInput.disableProperty().bind(Bindings.not(this.ctlURLSourceOption.selectedProperty()));
 		this.ctlServerSourceInput.disableProperty().bind(Bindings.not(this.ctlServerSourceOption.selectedProperty()));
+		this.ctlServerSourceProtocolInput.disableProperty()
+				.bind(Bindings.not(this.ctlServerSourceOption.selectedProperty()));
+		this.ctlServerSourceProtocolInput.getItems().addAll(SSLPeer.Protocol.values());
 		this.ctlImportEntryViewSelected
 				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportEntryViewSelected));
 		this.ctlImportEntryViewSelected.setCellValueFactory(new TreeItemPropertyValueFactory<>("selected"));
@@ -239,6 +247,7 @@ public class CertImportController extends StageController {
 		this.ctlImportEntryViewCRL.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRL"));
 		this.ctlImportEntryView.setTreeColumn(this.ctlImportEntryViewDN);
 		this.ctlFileSourceOption.setSelected(true);
+		this.ctlServerSourceProtocolInput.getSelectionModel().select(SSLPeer.Protocol.SSL);
 	}
 
 	@Override
@@ -310,7 +319,7 @@ public class CertImportController extends StageController {
 
 				@Override
 				protected UserCertStore createStore(ServerParams params) throws IOException {
-					return UserCertStore.createFromServer(params.host(), params.port());
+					return UserCertStore.createFromServer(params.host(), params.port(), params.protocol());
 				}
 
 			});
@@ -411,7 +420,7 @@ public class CertImportController extends StageController {
 
 	private ServerParams validateServerSourceInput() throws ValidationException {
 		String serverSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlServerSourceInput.getText()),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_FILE(a));
+				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_SERVER(a));
 		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
 				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(a));
 		String host = serverSourceGroups[0];
@@ -422,7 +431,11 @@ public class CertImportController extends StageController {
 		} catch (NumberFormatException e) {
 			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
 		}
-		return new ServerParams(host, port);
+
+		SSLPeer.Protocol protocol = InputValidator.notNull(this.ctlServerSourceProtocolInput.getValue(),
+				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_SERVERPROTOCOL());
+
+		return new ServerParams(host, port, protocol);
 	}
 
 	private abstract class CreateStoreTask<P> extends BackgroundTask<UserCertStore> {

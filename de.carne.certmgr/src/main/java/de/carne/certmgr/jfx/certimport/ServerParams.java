@@ -16,15 +16,20 @@
  */
 package de.carne.certmgr.jfx.certimport;
 
+import de.carne.certmgr.certs.net.SSLPeer;
+
 final class ServerParams {
 
 	private final String host;
 
 	private final int port;
 
-	ServerParams(String host, int port) {
+	private final SSLPeer.Protocol protocol;
+
+	ServerParams(String host, int port, SSLPeer.Protocol protocol) {
 		this.host = host;
 		this.port = port;
+		this.protocol = protocol;
 	}
 
 	public String host() {
@@ -33,6 +38,10 @@ final class ServerParams {
 
 	public int port() {
 		return this.port;
-
 	}
+
+	public SSLPeer.Protocol protocol() {
+		return this.protocol;
+	}
+
 }

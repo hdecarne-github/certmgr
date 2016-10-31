@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
@@ -16,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
+<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -72,7 +73,12 @@
       <RadioButton fx:id="ctlURLSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_OPTION_URL" toggleGroup="$ImportSource" GridPane.rowIndex="3" />
       <TextField fx:id="ctlURLSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_URL" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
       <RadioButton fx:id="ctlServerSourceOption" layoutX="12.0" layoutY="12.0" mnemonicParsing="false" text="%_STR_OPTION_SERVER" toggleGroup="$ImportSource" GridPane.rowIndex="4" />
-      <TextField fx:id="ctlServerSourceInput" layoutX="188.0" layoutY="112.0" onAction="#onCmdReload" promptText="%_STR_PROMPT_SERVER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+      <HBox GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4">
+         <children>
+            <TextField fx:id="ctlServerSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_SERVER" HBox.hgrow="ALWAYS" />
+            <ChoiceBox fx:id="ctlServerSourceProtocolInput" />
+         </children>
+      </HBox>
       <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="204.0" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
          <children>
             <ImageView fx:id="ctlStatusImage" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">

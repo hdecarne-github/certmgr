@@ -17,9 +17,7 @@
 package de.carne.certmgr.certs.net;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetAddress;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
 import java.security.cert.Certificate;
@@ -33,7 +31,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import de.carne.certmgr.certs.CertProviderException;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.logging.Log;
 
@@ -44,14 +41,24 @@ import de.carne.util.logging.Log;
 public final class SSLPeer {
 
 	/**
-	 * Supported StartTLS protocols.
+	 * Supported protocols.
 	 */
-	public enum StartTLS {
+	public enum Protocol {
 
 		/**
-		 * SMTP
+		 * Plain SSL
 		 */
-		SMTP
+		SSL,
+
+		/**
+		 * StartTLS SMTP
+		 */
+		STARTTLS_SMTP,
+
+		/**
+		 * StartTLS IMAP
+		 */
+		STARTTLS_IMAP
 
 	}
 
@@ -60,7 +67,7 @@ public final class SSLPeer {
 	/**
 	 * The socket timeout to use in milliseconds.
 	 */
-	public static final int SOCKET_TIMEOUT = PropertiesHelper.getInt(SSLPeer.class, ".socket-timeout", 1000);
+	public static final int SOCKET_TIMEOUT = PropertiesHelper.getInt(SSLPeer.class, ".socket-timeout", 250);
 
 	private static final TrustManager INSECURE_TRUST_MANAGER = new X509TrustManager() {
 
@@ -108,81 +115,28 @@ public final class SSLPeer {
 	}
 
 	/**
-	 * Trying to retrieve peer certificates via all kind of supported connection
-	 * types.
+	 * Read peer certificates.
 	 *
+	 * @param protocol The protocol to use for peer access.
 	 * @return The retrieved certificates or {@code null} if none could be
 	 *         retrieved.
 	 */
-	public Certificate[] readCertificates() {
+	public Certificate[] readCertificates(Protocol protocol) {
+		assert protocol != null;
+
 		Certificate[] certificates = null;
-		boolean generalSocketError = false;
 
-		try {
-			certificates = readCertificatesSSL();
-		} catch (IOException e) {
-			LOG.info(e, "SSL connection to {0} (port: {1}) failed", this.address, this.port);
-			generalSocketError = e instanceof ConnectException || e instanceof SocketTimeoutException;
-		}
-		if (certificates == null && !generalSocketError) {
-			for (StartTLS protocol : StartTLS.values()) {
-				try {
-					certificates = readCertificatesStartTLS(protocol);
-					break;
-				} catch (IOException e) {
-					LOG.info(e, "({0}) StartTLS connection to {1} (port: {2}) failed", protocol, this.address,
-							this.port);
-				}
-			}
+		try (SSLProtocalHelper protocolHelper = SSLProtocalHelper.getInstance(this.address, this.port, protocol)) {
+			protocolHelper.start();
+			certificates = readCertificatesHelper(protocolHelper);
+		} catch (IOException | GeneralSecurityException e) {
+			LOG.info(e, "({0}) connection to {1} (port: {2}) failed", protocol, this.address, this.port);
 		}
 		return certificates;
 	}
 
-	/**
-	 * Establish a SSL encrypted connection and retrieve the peer's
-	 * certificates.
-	 *
-	 * @return The retrieved certificates.
-	 * @throws IOException if an I/O error occurs while accessing the peer.
-	 */
-	public Certificate[] readCertificatesSSL() throws IOException {
-		LOG.info("Establishing SSL connection to {0} (port: {1})...", this.address, this.port);
-
-		Certificate[] certificates;
-
-		try {
-			certificates = readCertificatesHelper(null);
-		} catch (GeneralSecurityException e) {
-			throw new CertProviderException(e);
-		}
-		return certificates;
-	}
-
-	/**
-	 * Establish a StartTLS encrypted connection and retrieve the peer's
-	 * certificates.
-	 *
-	 * @param protocol The {@link StartTLS} protocol to use.
-	 * @return The retrieved certificates.
-	 * @throws IOException if an I/O error occurs while accessing the peer.
-	 */
-	public Certificate[] readCertificatesStartTLS(StartTLS protocol) throws IOException {
-		LOG.info("Establishing {0} StartTLS connection to {1} (port: {2})...", protocol, this.address, this.port);
-
-		Certificate[] certificates;
-
-		try (StartTLSHelper startTLS = StartTLSHelper.getInstance(this.address, this.port, protocol)) {
-			startTLS.start();
-			try {
-				certificates = readCertificatesHelper(startTLS);
-			} catch (GeneralSecurityException e) {
-				throw new CertProviderException(e);
-			}
-		}
-		return certificates;
-	}
-
-	private Certificate[] readCertificatesHelper(StartTLSHelper startTLS) throws GeneralSecurityException, IOException {
+	private Certificate[] readCertificatesHelper(SSLProtocalHelper protocolHelper)
+			throws GeneralSecurityException, IOException {
 		SSLContext sslContext = SSLContext.getInstance("TLS");
 
 		// Accept as much certificates as possible
@@ -192,7 +146,7 @@ public final class SSLPeer {
 
 		Certificate[] certificates = null;
 
-		try (SSLSocket sslSocket = createSSLSocket(sslSocketFactory, startTLS)) {
+		try (SSLSocket sslSocket = protocolHelper.createSSLSocket(sslSocketFactory, this.address, this.port)) {
 			String[] supportedProtocols = sslSocket.getSupportedProtocols();
 
 			LOG.debug("Enabling all supported protocols: {0}", Arrays.toString(supportedProtocols));
@@ -203,12 +157,6 @@ public final class SSLPeer {
 			certificates = sslSocket.getSession().getPeerCertificates();
 		}
 		return certificates;
-	}
-
-	private SSLSocket createSSLSocket(SSLSocketFactory sslSocketFactory, StartTLSHelper startTLS) throws IOException {
-		return (SSLSocket) (startTLS != null
-				? sslSocketFactory.createSocket(startTLS.plainSocket(), this.address.getHostName(), this.port, false)
-				: sslSocketFactory.createSocket(this.address, this.port));
 	}
 
 }

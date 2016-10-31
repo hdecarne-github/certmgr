@@ -17,33 +17,16 @@
 package de.carne.certmgr.certs.net;
 
 import java.io.IOException;
-import java.net.Socket;
 
-class SMTPStartTLSHelper extends StartTLSHelper {
+class PlainSSLHelper extends SSLProtocalHelper {
 
-	public SMTPStartTLSHelper(Socket plainSocket) {
-		super(plainSocket);
+	protected PlainSSLHelper() {
+		super(null);
 	}
 
 	@Override
 	public void start() throws IOException {
-		while (true) {
-			String reply = receiveAll("\r\n");
-
-			if (reply.startsWith("220 ")) {
-				break;
-			}
-		}
-		send("STARTTLS\r\n");
-		while (true) {
-			String reply = receiveAll("\r\n");
-
-			if (reply.startsWith("220 ")) {
-				break;
-			} else if (reply.startsWith("501 ") || reply.startsWith("454 ")) {
-				throw new IOException("StartTLS not supported by peer");
-			}
-		}
+		// Nothing to do here
 	}
 
 }

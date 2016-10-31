@@ -23,13 +23,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import de.carne.util.logging.Log;
 
-abstract class StartTLSHelper implements AutoCloseable {
+abstract class SSLProtocalHelper implements AutoCloseable {
 
 	private static final Log LOG = new Log();
 
@@ -41,14 +45,18 @@ abstract class StartTLSHelper implements AutoCloseable {
 	private OutputStream outputStream = null;
 	private InputStream inputStream = null;
 
-	protected StartTLSHelper(Socket plainSocket) {
+	protected SSLProtocalHelper(Socket plainSocket) {
 		this.plainSocket = plainSocket;
 	}
 
-	static StartTLSHelper getInstance(InetAddress address, int port, SSLPeer.StartTLS protocol) throws IOException {
+	static SSLProtocalHelper getInstance(InetAddress address, int port, SSLPeer.Protocol protocol) throws IOException {
 		switch (protocol) {
-		case SMTP:
-			return new SMTPStartTLSHelper(new Socket(address, port));
+		case SSL:
+			return new PlainSSLHelper();
+		case STARTTLS_SMTP:
+			return new StartTLSSMTPHelper(new Socket(address, port));
+		case STARTTLS_IMAP:
+			return new StartTLSIMAPHelper(new Socket(address, port));
 		default:
 			throw new IllegalArgumentException("Invalid StartTLS protocol: " + protocol);
 		}
@@ -56,16 +64,21 @@ abstract class StartTLSHelper implements AutoCloseable {
 
 	public abstract void start() throws IOException;
 
-	public Socket plainSocket() {
-		return this.plainSocket;
+	public SSLSocket createSSLSocket(SSLSocketFactory sslSocketFactory, InetAddress address, int port)
+			throws IOException {
+		return (SSLSocket) (this.plainSocket != null
+				? sslSocketFactory.createSocket(this.plainSocket, address.getHostName(), port, false)
+				: sslSocketFactory.createSocket(address, port));
 	}
 
 	@Override
 	public void close() {
-		try {
-			this.plainSocket.close();
-		} catch (IOException e) {
-			LOG.warning(e, "An error occuring while closing plain socket.");
+		if (this.plainSocket != null) {
+			try {
+				this.plainSocket.close();
+			} catch (IOException e) {
+				LOG.warning(e, "An error occuring while closing plain socket.");
+			}
 		}
 	}
 
@@ -87,6 +100,17 @@ abstract class StartTLSHelper implements AutoCloseable {
 			initSocket();
 			this.inputStream = new BufferedInputStream(this.plainSocket.getInputStream(), INPUT_BUFFER_SIZE);
 		}
+	}
+
+	protected String getHostname() {
+		String hostname;
+
+		try {
+			hostname = InetAddress.getLocalHost().getCanonicalHostName();
+		} catch (UnknownHostException e) {
+			hostname = "localhost";
+		}
+		return hostname;
 	}
 
 	protected void send(byte[] data) throws IOException {
