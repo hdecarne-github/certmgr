@@ -20,16 +20,20 @@ import de.carne.certmgr.certs.net.SSLPeer;
 
 final class ServerParams {
 
+	private final SSLPeer.Protocol protocol;
+
 	private final String host;
 
 	private final int port;
 
-	private final SSLPeer.Protocol protocol;
-
-	ServerParams(String host, int port, SSLPeer.Protocol protocol) {
+	ServerParams(SSLPeer.Protocol protocol, String host, int port) {
+		this.protocol = protocol;
 		this.host = host;
 		this.port = port;
-		this.protocol = protocol;
+	}
+
+	public SSLPeer.Protocol protocol() {
+		return this.protocol;
 	}
 
 	public String host() {
@@ -38,10 +42,6 @@ final class ServerParams {
 
 	public int port() {
 		return this.port;
-	}
-
-	public SSLPeer.Protocol protocol() {
-		return this.protocol;
 	}
 
 }

@@ -49,7 +49,7 @@ abstract class SSLProtocalHelper implements AutoCloseable {
 		this.plainSocket = plainSocket;
 	}
 
-	static SSLProtocalHelper getInstance(InetAddress address, int port, SSLPeer.Protocol protocol) throws IOException {
+	static SSLProtocalHelper getInstance(SSLPeer.Protocol protocol, InetAddress address, int port) throws IOException {
 		switch (protocol) {
 		case SSL:
 			return new PlainSSLHelper();

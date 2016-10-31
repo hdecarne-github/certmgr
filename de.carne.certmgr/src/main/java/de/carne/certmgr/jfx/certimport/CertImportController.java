@@ -214,7 +214,7 @@ public class CertImportController extends StageController {
 	}
 
 	void onReloadTaskFailed(Throwable e) {
-		Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
+		Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e).showAndWait();
 	}
 
 	@Override
@@ -419,6 +419,8 @@ public class CertImportController extends StageController {
 	}
 
 	private ServerParams validateServerSourceInput() throws ValidationException {
+		SSLPeer.Protocol protocol = InputValidator.notNull(this.ctlServerSourceProtocolInput.getValue(),
+				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_SERVERPROTOCOL());
 		String serverSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlServerSourceInput.getText()),
 				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_SERVER(a));
 		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
@@ -431,11 +433,7 @@ public class CertImportController extends StageController {
 		} catch (NumberFormatException e) {
 			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
 		}
-
-		SSLPeer.Protocol protocol = InputValidator.notNull(this.ctlServerSourceProtocolInput.getValue(),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_SERVERPROTOCOL());
-
-		return new ServerParams(host, port, protocol);
+		return new ServerParams(protocol, host, port);
 	}
 
 	private abstract class CreateStoreTask<P> extends BackgroundTask<UserCertStore> {

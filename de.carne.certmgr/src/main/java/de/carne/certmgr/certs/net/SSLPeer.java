@@ -126,7 +126,7 @@ public final class SSLPeer {
 
 		Certificate[] certificates = null;
 
-		try (SSLProtocalHelper protocolHelper = SSLProtocalHelper.getInstance(this.address, this.port, protocol)) {
+		try (SSLProtocalHelper protocolHelper = SSLProtocalHelper.getInstance(protocol, this.address, this.port)) {
 			protocolHelper.start();
 			certificates = readCertificatesHelper(protocolHelper);
 		} catch (IOException | GeneralSecurityException e) {
