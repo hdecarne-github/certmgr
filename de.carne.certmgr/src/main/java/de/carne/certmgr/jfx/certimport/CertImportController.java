@@ -41,6 +41,8 @@ import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.Strings;
+import de.carne.util.logging.LogBuffer;
+import de.carne.util.logging.LogLevel;
 import de.carne.util.prefs.DirectoryPreference;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.PathValidator;
@@ -208,12 +210,12 @@ public class CertImportController extends StageController {
 		close(false);
 	}
 
-	void onReloadTaskSucceeded(UserCertStore store) {
+	void onReloadTaskSucceeded(CreateStoreTask task, UserCertStore store) {
 		this.sourceStore = store;
 		updateImportEntryView();
 	}
 
-	void onReloadTaskFailed(Throwable e) {
+	void onReloadTaskFailed(CreateStoreTask task, Throwable e) {
 		Alerts.error(CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e).showAndWait();
 	}
 
@@ -438,14 +440,21 @@ public class CertImportController extends StageController {
 
 	private abstract class CreateStoreTask<P> extends BackgroundTask<UserCertStore> {
 
+		private final LogBuffer logBuffer = new LogBuffer(LogLevel.LEVEL_WARNING);
+
 		private final P createParams;
 
 		CreateStoreTask(P createParams) {
 			this.createParams = createParams;
 		}
 
+		public LogBuffer logBuffer() {
+			return this.logBuffer;
+		}
+
 		@Override
 		protected UserCertStore call() throws Exception {
+			this.logBuffer.includePackage(UserCertStore.class.getPackage());
 			return createStore(this.createParams);
 		}
 
@@ -453,13 +462,15 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected void succeeded() {
-			onReloadTaskSucceeded(getValue());
+			onReloadTaskSucceeded(this, getValue());
+			this.logBuffer.close();
 			super.succeeded();
 		}
 
 		@Override
 		protected void failed() {
-			onReloadTaskFailed(getException());
+			onReloadTaskFailed(this, getException());
+			this.logBuffer.close();
 			super.failed();
 		}
 

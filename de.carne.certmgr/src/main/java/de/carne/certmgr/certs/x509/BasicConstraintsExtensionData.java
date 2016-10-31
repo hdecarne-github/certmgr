@@ -26,7 +26,7 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 
 /**
- * <a href="https://tools.ietf.org/html/rfc5280#page-39">Basic Constraints
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-39">Basic Constraints
  * Extension</a> data.
  */
 public class BasicConstraintsExtensionData extends X509ExtensionData {
@@ -38,7 +38,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 
 	private boolean ca = false;
 
-	private int pathLenConstraint = -1;
+	private Integer pathLenConstraint = null;
 
 	/**
 	 * Construct {@code BasicConstraintsExtensionData}.
@@ -54,9 +54,10 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 *
 	 * @param critical The extension's critical flag.
 	 * @param ca The extension's CA flag.
-	 * @param pathLenConstraint The extension's path length constraint value.
+	 * @param pathLenConstraint The extension's path length constraint value or
+	 *        {@code null} if there is none.
 	 */
-	public BasicConstraintsExtensionData(boolean critical, boolean ca, int pathLenConstraint) {
+	public BasicConstraintsExtensionData(boolean critical, boolean ca, Integer pathLenConstraint) {
 		super(OID, critical);
 		this.ca = ca;
 		this.pathLenConstraint = pathLenConstraint;
@@ -74,7 +75,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 		ASN1Sequence sequence = decodeSequence(primitive, 0, 2);
 		Iterator<ASN1Encodable> sequencePrimitives = sequence.iterator();
 		boolean decodedCA = false;
-		int decodedPathLenConstraint = -1;
+		Integer decodedPathLenConstraint = null;
 
 		if (sequencePrimitives.hasNext()) {
 			ASN1Encodable caPrimitive = sequencePrimitives.next();
@@ -111,9 +112,10 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	/**
 	 * Get this extension's path length constraint.
 	 *
-	 * @return This extension's path length constraint.
+	 * @return This extension's path length constraint or {@code null} if none
+	 *         has been defined.
 	 */
-	public int getPathLenConstraint() {
+	public Integer getPathLenConstraint() {
 		return this.pathLenConstraint;
 	}
 
@@ -122,7 +124,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 *
 	 * @param pathLenConstraint The value to set.
 	 */
-	public void setPathLenConstraint(int pathLenConstraint) {
+	public void setPathLenConstraint(Integer pathLenConstraint) {
 		this.pathLenConstraint = pathLenConstraint;
 	}
 
@@ -131,8 +133,13 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 		Attributes extensionAttributes = super.toAttributes();
 
 		extensionAttributes.addChild(AttributesI18N.formatSTR_BASICCONSTRAINTS_CA(), Boolean.toString(this.ca));
-		extensionAttributes.addChild(AttributesI18N.formatSTR_BASICCONSTRAINTS_PATHLENCONSTRAINT(),
-				(this.pathLenConstraint >= 0 ? Integer.toString(this.pathLenConstraint) : "\u221E"));
+
+		if (this.pathLenConstraint != null) {
+			int pathLenConstraintValue = this.pathLenConstraint.intValue();
+
+			extensionAttributes.addChild(AttributesI18N.formatSTR_BASICCONSTRAINTS_PATHLENCONSTRAINT(),
+					(pathLenConstraintValue >= 0 ? Integer.toString(this.pathLenConstraint.intValue()) : "\u221E"));
+		}
 		return extensionAttributes;
 	}
 
