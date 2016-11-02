@@ -20,12 +20,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.jfx.stage.StageController;
+import de.carne.jfx.stage.logview.LogViewImages;
 import de.carne.util.cmdline.CmdLine;
 import de.carne.util.cmdline.CmdLineException;
 import de.carne.util.logging.Log;
 import de.carne.util.logging.LogConfig;
+import de.carne.util.logging.LogLevel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -52,6 +55,13 @@ public class CertMgrApplication extends Application {
 		File defaultStoreHome = evalCmdLine();
 
 		LOG.info("JavaFX GUI starting...");
+
+		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_TRACE, Images.TRACE16);
+		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_DEBUG, Images.DEBUG16);
+		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_INFO, Images.INFO16);
+		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_WARNING, Images.WARNING16);
+		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_ERROR, Images.ERROR16);
+		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_NOTICE, Images.NOTICE16);
 
 		StoreController store = StageController.loadPrimaryStage(primaryStage, StoreController.class);
 

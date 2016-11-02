@@ -267,7 +267,7 @@ public final class UserCertStore {
 	 * Otherwise this path is {@code null} indicating that the store only
 	 * support read access.
 	 *
-	 * @return This store's home path or {@code null} if this store only
+	 * @return This store's home path, or {@code null} if this store only
 	 *         supports read access.
 	 */
 	public Path storeHome() {
@@ -279,7 +279,7 @@ public final class UserCertStore {
 	 * <p>
 	 * A store's name is derived from it's home path.
 	 *
-	 * @return This store's name or {@code null} if this store only supports
+	 * @return This store's name, or {@code null} if this store only supports
 	 *         read access.
 	 * @see #storeHome()
 	 */

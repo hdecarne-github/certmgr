@@ -85,7 +85,7 @@ public class ProviderMap<P extends NamedProvider> {
 	 * Look up the service provider for a specific name.
 	 * 
 	 * @param name The name to look up the service provider for.
-	 * @return The found service provider or {@code null} if no service provider
+	 * @return The found service provider, or {@code null} if no service provider
 	 *         is known for the given name.
 	 */
 	public P get(String name) {

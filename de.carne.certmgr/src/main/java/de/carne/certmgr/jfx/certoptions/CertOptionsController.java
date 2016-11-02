@@ -16,7 +16,6 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import java.util.Comparator;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -119,14 +118,7 @@ public class CertOptionsController extends StageController {
 
 	private void setupSignerOptions() {
 		this.ctlSignerOption.getItems().addAll(CertSigners.REGISTERED.providers());
-		this.ctlSignerOption.getItems().sort(new Comparator<CertSigner>() {
-
-			@Override
-			public int compare(CertSigner o1, CertSigner o2) {
-				return o1.providerName().compareTo(o2.providerName());
-			}
-
-		});
+		this.ctlSignerOption.getItems().sort((o1, o2) -> o1.providerName().compareTo(o2.providerName()));
 	}
 
 	@Override

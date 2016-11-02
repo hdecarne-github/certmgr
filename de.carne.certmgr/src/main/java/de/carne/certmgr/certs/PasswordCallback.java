@@ -26,7 +26,7 @@ public interface PasswordCallback {
 	 * time.
 	 *
 	 * @param resource The resource requiring the password.
-	 * @return The provided password or {@code null} if the password query was
+	 * @return The provided password, or {@code null} if the password query was
 	 *         cancelled.
 	 */
 	char[] queryPassword(String resource);

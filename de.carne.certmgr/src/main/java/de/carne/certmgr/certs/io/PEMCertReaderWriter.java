@@ -110,8 +110,8 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	 * @param resource The resource name to use for querying passwords (if
 	 *        needed).
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects or {@code null} if the input
-	 *         is not recognized.
+	 * @return The list of read certificate objects, or {@code null} if the
+	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	public List<Object> read(InputStream input, String resource, PasswordCallback password) throws IOException {
@@ -127,8 +127,8 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	 * @param resource The resource name to use for querying passwords (if
 	 *        needed).
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects or {@code null} if the input
-	 *         is not recognized.
+	 * @return The list of read certificate objects, or {@code null} if the
+	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	public List<Object> read(Reader reader, String resource, PasswordCallback password) throws IOException {

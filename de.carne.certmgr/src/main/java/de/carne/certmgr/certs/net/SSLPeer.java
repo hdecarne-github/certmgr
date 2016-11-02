@@ -118,7 +118,7 @@ public final class SSLPeer {
 	 * Read peer certificates.
 	 *
 	 * @param protocol The protocol to use for peer access.
-	 * @return The retrieved certificates or {@code null} if none could be
+	 * @return The retrieved certificates, or {@code null} if none could be
 	 *         retrieved.
 	 */
 	public Certificate[] readCertificates(Protocol protocol) {

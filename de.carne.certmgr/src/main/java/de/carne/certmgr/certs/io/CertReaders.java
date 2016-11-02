@@ -45,8 +45,8 @@ public final class CertReaders {
 	 *
 	 * @param input The input to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects or {@code null} if the input
-	 *         is not recognized.
+	 * @return The list of read certificate objects, or {@code null} if the
+	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	public static List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {

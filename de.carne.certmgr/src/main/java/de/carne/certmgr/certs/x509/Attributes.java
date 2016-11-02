@@ -100,7 +100,7 @@ public class Attributes {
 	/**
 	 * Get this attribute's value.
 	 *
-	 * @return This attribute's value or {@code null} if there is no value.
+	 * @return This attribute's value, or {@code null} if there is no value.
 	 */
 	public String value() {
 		return this.value;
@@ -109,7 +109,7 @@ public class Attributes {
 	/**
 	 * Get this attribute's children.
 	 *
-	 * @return This attribute's children or {@code null} if there are no
+	 * @return This attribute's children, or {@code null} if there are no
 	 *         children.
 	 */
 	public List<Attributes> children() {

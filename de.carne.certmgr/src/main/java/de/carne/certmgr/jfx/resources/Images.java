@@ -31,77 +31,97 @@ public final class Images {
 	}
 
 	/**
-	 * Store stage icon (16x16).
+	 * Store stage image (16x16).
 	 */
 	public static final Image STORE16 = getImage("imageStore16.png");
 
 	/**
-	 * Store stage icon (32x32).
+	 * Store stage image (32x32).
 	 */
 	public static final Image STORE32 = getImage("imageStore32.png");
 
 	/**
-	 * CertImport stage icon (16x16).
+	 * CertImport stage image (16x16).
 	 */
 	public static final Image IMPORT16 = getImage("imageImport16.png");
 
 	/**
-	 * CertImport stage icon (32x32).
+	 * CertImport stage image (32x32).
 	 */
 	public static final Image IMPORT32 = getImage("imageImport32.png");
 
 	/**
-	 * CertOptions stage icon (16x16).
+	 * CertOptions stage image (16x16).
 	 */
 	public static final Image NEWCERT16 = getImage("imageNewCert16.png");
 
 	/**
-	 * CertOptions stage icon (32x32).
+	 * CertOptions stage image (32x32).
 	 */
 	public static final Image NEWCERT32 = getImage("imageNewCert32.png");
 
 	/**
-	 * Public CRT object icon (16x16).
+	 * Public CRT object image (16x16).
 	 */
 	public static final Image PUBLIC_CRT16 = getImage("imagePublicCRT16.png");
 
 	/**
-	 * Private CRT object icon (16x16).
+	 * Private CRT object image (16x16).
 	 */
 	public static final Image PRIVATE_CRT16 = getImage("imagePrivateCRT16.png");
 
 	/**
-	 * External CRT object icon (16x16).
+	 * External CRT object image (16x16).
 	 */
 	public static final Image EXTERNAL_CRT16 = getImage("imageExternalCRT16.png");
 
 	/**
-	 * Key object icon (16x16).
+	 * Key object image (16x16).
 	 */
 	public static final Image KEY16 = getImage("imageKey16.png");
 
 	/**
-	 * CSR object icon (16x16).
+	 * CSR object image (16x16).
 	 */
 	public static final Image CSR16 = getImage("imageCSR16.png");
 
 	/**
-	 * CRL object icon (16x16).
+	 * CRL object image (16x16).
 	 */
 	public static final Image CRL16 = getImage("imageCRL16.png");
 
 	/**
-	 * Info icon (16x16).
+	 * Trace image (16x16).
+	 */
+	public static final Image TRACE16 = getImage("imageTrace16.png");
+
+	/**
+	 * Debug image (16x16).
+	 */
+	public static final Image DEBUG16 = getImage("imageDebug16.png");
+
+	/**
+	 * Info image (16x16).
 	 */
 	public static final Image INFO16 = getImage("imageInfo16.png");
 
 	/**
-	 * Warning icon (16x16).
+	 * Warning image (16x16).
 	 */
 	public static final Image WARNING16 = getImage("imageWarning16.png");
 
 	/**
-	 * OK icon (16x16).
+	 * Error image (16x16).
+	 */
+	public static final Image ERROR16 = getImage("imageError16.png");
+
+	/**
+	 * Notice image (16x16).
+	 */
+	public static final Image NOTICE16 = getImage("imageNotice16.png");
+
+	/**
+	 * OK image (16x16).
 	 */
 	public static final Image OK16 = getImage("imageOK16.png");
 

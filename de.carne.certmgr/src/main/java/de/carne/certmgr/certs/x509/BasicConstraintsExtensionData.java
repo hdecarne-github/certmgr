@@ -112,7 +112,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	/**
 	 * Get this extension's path length constraint.
 	 *
-	 * @return This extension's path length constraint or {@code null} if none
+	 * @return This extension's path length constraint, or {@code null} if none
 	 *         has been defined.
 	 */
 	public Integer getPathLenConstraint() {
