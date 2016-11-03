@@ -21,6 +21,8 @@ import java.util.List;
 
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaderInput;
+import de.carne.certmgr.certs.io.CertReaders;
+import de.carne.util.PropertiesHelper;
 
 /**
  * Service provider interface for reading certificate objects from input data.
@@ -28,12 +30,20 @@ import de.carne.certmgr.certs.io.CertReaderInput;
 public interface CertReader extends NamedProvider, FileAccessProvider {
 
 	/**
+	 * The maximum number of bytes to read into memory during read operations.
+	 * <p>
+	 * This property is used to avoid out of memory conditions when we try to
+	 * read huge files with readers that require all data to be read in advance.
+	 */
+	static final int READ_LIMIT = PropertiesHelper.getInt(CertReaders.class, ".readLimit", 1 << 11);
+
+	/**
 	 * Read all available certificate objects.
 	 *
 	 * @param input The input to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if the input
-	 *         is not recognized.
+	 * @return The list of read certificate objects, or {@code null} if the
+	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException;

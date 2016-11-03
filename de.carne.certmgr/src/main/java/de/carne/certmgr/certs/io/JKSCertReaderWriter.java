@@ -206,7 +206,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	private static KeyStore getKeyStoreInstance() throws KeyStoreException {
-		return KeyStore.getInstance("jks");
+		return KeyStore.getInstance("CaseExactJKS");
 	}
 
 }

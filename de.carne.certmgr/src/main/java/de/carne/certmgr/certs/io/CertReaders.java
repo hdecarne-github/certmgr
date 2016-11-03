@@ -28,14 +28,14 @@ import de.carne.certmgr.certs.spi.CertReader;
  */
 public final class CertReaders {
 
-	private CertReaders() {
-		// Make sure this class is not instantiated from outside
-	}
-
 	/**
 	 * The registered {@link CertReader}s.
 	 */
-	public static final ProviderMap<CertReader> REGISTERED = new ProviderMap<>(CertReader.class);
+	public static final ProviderMap<CertReader> PROVIDERS = new ProviderMap<>(CertReader.class);
+
+	private CertReaders() {
+		// Make sure this class is not instantiated from outside
+	}
 
 	/**
 	 * Read all available certificate objects.
@@ -52,7 +52,7 @@ public final class CertReaders {
 	public static List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
 		List<Object> certObjects = null;
 
-		for (CertReader reader : REGISTERED.providers()) {
+		for (CertReader reader : PROVIDERS.providers()) {
 			certObjects = reader.read(input, password);
 			if (certObjects != null) {
 				break;

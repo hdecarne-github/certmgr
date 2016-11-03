@@ -68,15 +68,16 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	 */
 	public static final String PROVIDER_NAME = "PEM";
 
+	private static final String PEM_ENCRYPTION = PropertiesHelper.get(PEMCertReaderWriter.class, "encryption",
+			"AES-128-CBC");
+
 	private final JcaX509CertificateConverter crtConverter = new JcaX509CertificateConverter();
 
 	private final JcaPEMKeyConverter keyConverter = new JcaPEMKeyConverter();
 
 	private final JcePEMDecryptorProviderBuilder pemDecryptorBuilder = new JcePEMDecryptorProviderBuilder();
 
-	private final String PEM_ENCRYPTION = PropertiesHelper.get(PEMCertReaderWriter.class, "encryption", "AES-128-CBC");
-
-	private final JcePEMEncryptorBuilder pemEncryptorBuilder = new JcePEMEncryptorBuilder(this.PEM_ENCRYPTION);
+	private final JcePEMEncryptorBuilder pemEncryptorBuilder = new JcePEMEncryptorBuilder(PEM_ENCRYPTION);
 
 	private final JcaX509CRLConverter crlConverter = new JcaX509CRLConverter();
 
