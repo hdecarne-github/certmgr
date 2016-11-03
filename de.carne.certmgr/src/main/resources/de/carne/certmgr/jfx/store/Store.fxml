@@ -120,6 +120,8 @@
             </Menu>
           <Menu mnemonicParsing="false" text="%_STR_MENU_HELP">
             <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onCmdShowLog" text="%_STR_MENU_SHOW_LOG" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#onCmdAbout" text="%_STR_MENU_ABOUT" />
             </items>
           </Menu>

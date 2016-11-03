@@ -37,8 +37,10 @@ import de.carne.certmgr.jfx.certimport.CertImportController;
 import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
+import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
+import de.carne.jfx.stage.logview.LogViewController;
 import de.carne.jfx.util.ShortDate;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.Exceptions;
@@ -165,6 +167,15 @@ public class StoreController extends StageController {
 			importController.show();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	void onCmdShowLog(ActionEvent evt) {
+		try {
+			loadStage(LogViewController.class).showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e);
 		}
 	}
 
