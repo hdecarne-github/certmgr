@@ -18,21 +18,27 @@ package de.carne.certmgr.certs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InterruptedIOException;
 import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
-import java.text.NumberFormat;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
-import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.InputDecryptorProvider;
 import org.bouncycastle.pkcs.PKCS12PfxPdu;
 import org.bouncycastle.pkcs.PKCS12SafeBag;
@@ -61,10 +67,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	private final JcaX509CertificateConverter crtConverter = new JcaX509CertificateConverter();
 
-	private final JcaPEMKeyConverter keyConverter = new JcaPEMKeyConverter();
-
-	private final JcaX509CRLConverter crlConverter = new JcaX509CRLConverter();
-
 	/**
 	 * Provider name.
 	 */
@@ -87,11 +89,19 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
+		assert input != null;
+		assert password != null;
+
+		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", input);
+
 		List<Object> pkcs12Objects = null;
 		PKCS12PfxPdu pkcs12 = readPKCS12(input);
 
 		if (pkcs12 != null) {
 			pkcs12Objects = new ArrayList<>();
+
+			KeyPairResolver<ASN1Encodable> keyPairs = new KeyPairResolver<>();
+
 			for (ContentInfo contentInfo : pkcs12.getContentInfos()) {
 				ASN1ObjectIdentifier contentType = contentInfo.getContentType();
 				PKCS12SafeBagFactory safeBagFactory;
@@ -105,31 +115,50 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 					Object safeBagValue = safeBag.getBagValue();
 
 					if (safeBagValue instanceof X509CertificateHolder) {
-						pkcs12Objects.add(getCRT((X509CertificateHolder) safeBagValue));
+						X509Certificate crt = getCRT((X509CertificateHolder) safeBagValue);
+
+						resolveKey(keyPairs, safeBag.getAttributes(), crt.getPublicKey(), null);
+						pkcs12Objects.add(crt);
 					} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
+						PrivateKey privateKey = getPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
+								input.toString(), password);
 
+						resolveKey(keyPairs, safeBag.getAttributes(), null, privateKey);
 					} else if (safeBagValue instanceof PrivateKeyInfo) {
+						PrivateKey privateKey = getPrivateKey((PrivateKeyInfo) safeBagValue);
 
+						resolveKey(keyPairs, safeBag.getAttributes(), null, privateKey);
 					} else {
 						LOG.warning("Ignoring unrecognized PKCS#12 object of type {0}",
 								safeBagValue.getClass().getName());
 					}
 				}
 			}
+			keyPairs.resolve(pkcs12Objects);
 		}
 		return pkcs12Objects;
 	}
 
-	private PKCS12PfxPdu readPKCS12(CertReaderInput input) throws IOException {
+	private PKCS12PfxPdu readPKCS12(CertReaderInput input) {
 		PKCS12PfxPdu pkcs12 = null;
 
 		try (InputStream stream = input.stream()) {
 			pkcs12 = new PKCS12PfxPdu(IOHelper.readBytes(stream, CertReader.READ_LIMIT));
-		} catch (InterruptedIOException e) {
-			LOG.notice(CertIOI18N.formatSTR_MESSAGE_READ_LIMIT_REACHED(PROVIDER_NAME, input,
-					NumberFormat.getInstance().format(CertReader.READ_LIMIT)));
+		} catch (IOException e) {
+			LOG.info(e, "No PKCS#12 objects recognized in: ''{0}''", input);
 		}
 		return pkcs12;
+	}
+
+	private InputDecryptorProvider buildInputDecryptorProvider(String resource, PasswordCallback password,
+			PKCSException decryptException) throws IOException {
+		char[] passwordChars = (decryptException != null ? password.queryPassword(resource)
+				: password.requeryPassword(resource, decryptException));
+
+		if (passwordChars == null) {
+			throw new PasswordRequiredException(resource, decryptException);
+		}
+		return this.pkcsPBInputDecrypterProviderBuilder.build(passwordChars);
 	}
 
 	private PKCS12SafeBagFactory getSafeBagFactory(ContentInfo contentInfo, String resource, PasswordCallback password)
@@ -138,18 +167,9 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		PKCSException decryptException = null;
 
 		while (safeBagFactory == null) {
-			char[] passwordChars = (decryptException != null ? password.queryPassword(resource)
-					: password.requeryPassword(resource, decryptException));
-
-			if (passwordChars == null) {
-				throw new PasswordRequiredException(resource, decryptException);
-			}
-
-			InputDecryptorProvider inputDecryptorProvider = this.pkcsPBInputDecrypterProviderBuilder
-					.build(passwordChars);
-
 			try {
-				safeBagFactory = new PKCS12SafeBagFactory(contentInfo, inputDecryptorProvider);
+				safeBagFactory = new PKCS12SafeBagFactory(contentInfo,
+						buildInputDecryptorProvider(resource, password, decryptException));
 			} catch (PKCSException e) {
 				decryptException = e;
 			}
@@ -161,15 +181,61 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		return new PKCS12SafeBagFactory(contentInfo);
 	}
 
-	private X509Certificate getCRT(X509CertificateHolder pemObject) throws IOException {
+	private X509Certificate getCRT(X509CertificateHolder safeBagValue) throws IOException {
 		X509Certificate crt;
 
 		try {
-			crt = this.crtConverter.getCertificate(pemObject);
+			crt = this.crtConverter.getCertificate(safeBagValue);
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
 		return crt;
+	}
+
+	private PrivateKey getPrivateKey(PKCS8EncryptedPrivateKeyInfo safeBagValue, String resource,
+			PasswordCallback password) throws IOException {
+		PrivateKeyInfo decryptedSafeBagValue = null;
+		PKCSException decryptException = null;
+
+		while (decryptedSafeBagValue == null) {
+			try {
+				decryptedSafeBagValue = safeBagValue
+						.decryptPrivateKeyInfo(buildInputDecryptorProvider(resource, password, decryptException));
+			} catch (PKCSException e) {
+				decryptException = e;
+			}
+		}
+		return getPrivateKey(decryptedSafeBagValue);
+	}
+
+	private PrivateKey getPrivateKey(PrivateKeyInfo safeBagValue) throws IOException {
+		PrivateKey privateKey;
+
+		try {
+			KeyFactory keyFactory = KeyFactory.getInstance(safeBagValue.getPrivateKeyAlgorithm().getAlgorithm().getId(),
+					BouncyCastleProvider.PROVIDER_NAME);
+
+			privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(safeBagValue.getEncoded()));
+		} catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeySpecException e) {
+			throw new CertProviderException(e);
+		}
+		return privateKey;
+	}
+
+	private void resolveKey(KeyPairResolver<ASN1Encodable> keyPairs, Attribute[] safeBagAttributes, PublicKey publicKey,
+			PrivateKey privateKey) {
+		for (Attribute safeBagAttribute : safeBagAttributes) {
+			if (safeBagAttribute.getAttrType().equals(PKCS12SafeBag.localKeyIdAttribute)) {
+				ASN1Encodable keyId = safeBagAttribute.getAttributeValues()[0];
+
+				if (publicKey != null) {
+					keyPairs.addPublicKey(keyId, publicKey);
+				}
+				if (privateKey != null) {
+					keyPairs.addPrivateKey(keyId, privateKey);
+				}
+			}
+		}
 	}
 
 }
