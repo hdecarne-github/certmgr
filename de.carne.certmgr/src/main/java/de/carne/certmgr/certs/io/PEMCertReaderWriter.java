@@ -146,15 +146,17 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 
 			try {
 				pemObject = parser.readObject();
-				pemObjects = new ArrayList<>();
 			} catch (IOException e) {
 				LOG.info(e, "No PEM objects recognized in: ''{0}''", resource);
 				pemObject = null;
 			}
 			while (pemObject != null) {
-				assert pemObjects != null;
+				if (pemObjects == null) {
+					pemObjects = new ArrayList<>();
+				}
 
 				LOG.info("Decoding PEM object of type {0}", pemObject.getClass().getName());
+
 				if (pemObject instanceof X509CertificateHolder) {
 					pemObjects.add(getCRT((X509CertificateHolder) pemObject));
 				} else if (pemObject instanceof PEMKeyPair) {
