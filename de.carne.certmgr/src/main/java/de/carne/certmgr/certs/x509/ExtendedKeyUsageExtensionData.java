@@ -18,41 +18,44 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
-import org.bouncycastle.asn1.ASN1BitString;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-29">Key Usage
- * Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-44">Extended Key
+ * Usage Extension</a> data.
  */
-public class KeyUsageExtensionData extends X509ExtensionData {
+public class ExtendedKeyUsageExtensionData extends X509ExtensionData {
 
 	/**
 	 * Extension OID.
 	 */
-	public static final String OID = "2.5.29.15";
+	public static final String OID = "2.5.29.37";
 
-	private final Set<KeyUsage> usages;
+	private final Set<ExtendedKeyUsage> usages;
 
 	/**
-	 * Construct {@code KeyUsageExtensionData}.
+	 * Construct {@code ExtendedKeyUsageExtensionData}.
 	 *
 	 * @param critical The extension's critical flag.
 	 */
-	public KeyUsageExtensionData(boolean critical) {
+	public ExtendedKeyUsageExtensionData(boolean critical) {
 		super(OID, critical);
 		this.usages = new HashSet<>();
 	}
 
 	/**
-	 * Construct {@code KeyUsageExtensionData}.
+	 * Construct {@code ExtendedKeyUsageExtensionData}.
 	 *
 	 * @param critical The extension's critical flag.
 	 * @param usages The extension's usages.
 	 */
-	public KeyUsageExtensionData(boolean critical, Set<KeyUsage> usages) {
+	public ExtendedKeyUsageExtensionData(boolean critical, Set<ExtendedKeyUsage> usages) {
 		super(OID, critical);
 
 		assert usages != null;
@@ -61,40 +64,25 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	}
 
 	/**
-	 * Decode {@code KeyUsageExtensionData} from an ASN.1 data object.
+	 * Decode {@code ExtendedKeyUsageExtensionData} from an ASN.1 data object.
 	 *
 	 * @param primitive The ASN.1 data object to decode.
 	 * @param critical The extension's critical flag.
 	 * @return The decoded extension data.
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
-	public static KeyUsageExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
-		Set<KeyUsage> usages = new HashSet<>();
-		byte[] bitBytes = decodePrimitive(primitive, ASN1BitString.class).getBytes();
+	public static ExtendedKeyUsageExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
+		ASN1Sequence sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
+		Iterator<ASN1Encodable> sequencePrimitives = sequence.iterator();
+		Set<ExtendedKeyUsage> usages = new HashSet<>();
 
-		if (bitBytes.length != 0) {
-			boolean anyUsage = true;
+		while (sequencePrimitives.hasNext()) {
+			ASN1Primitive sequencePrimitive = sequencePrimitives.next().toASN1Primitive();
 
-			for (byte bitByte : bitBytes) {
-				anyUsage = anyUsage && bitByte == -1;
-			}
-			if (anyUsage) {
-				usages.add(KeyUsage.ANY);
-			} else {
-				int usageValue = 1;
-
-				for (byte bitByte : bitBytes) {
-					anyUsage = anyUsage && bitByte == -1;
-					for (int bit = 1; bit < 256; bit <<= 1) {
-						if ((bitByte & bit) == bit) {
-							usages.add(KeyUsage.fromValue(usageValue));
-						}
-						usageValue <<= 1;
-					}
-				}
-			}
+			usages.add(
+					ExtendedKeyUsage.fromValue(decodePrimitive(sequencePrimitive, ASN1ObjectIdentifier.class).getId()));
 		}
-		return new KeyUsageExtensionData(critical, usages);
+		return new ExtendedKeyUsageExtensionData(critical, usages);
 	}
 
 	/**
@@ -102,7 +90,7 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	 *
 	 * @param usage The usage flag to add.
 	 */
-	public void addUsage(KeyUsage usage) {
+	public void addUsage(ExtendedKeyUsage usage) {
 		this.usages.add(usage);
 	}
 
@@ -112,7 +100,7 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	 * @param usage The usage flag to check.
 	 * @return {@code true} if the usage is set.
 	 */
-	public boolean hasUsage(KeyUsage usage) {
+	public boolean hasUsage(ExtendedKeyUsage usage) {
 		return this.usages.contains(usage);
 	}
 
@@ -120,7 +108,7 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		for (KeyUsage usage : this.usages) {
+		for (ExtendedKeyUsage usage : this.usages) {
 			extensionAttributes.addChild(usage.name(), null);
 		}
 		return extensionAttributes;

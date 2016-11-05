@@ -83,10 +83,10 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 			decodedCA = decodePrimitive(caPrimitive.toASN1Primitive(), ASN1Boolean.class).isTrue();
 		}
 		if (sequencePrimitives.hasNext()) {
-			ASN1Encodable pathLenConstraintPrimitive = sequencePrimitives.next();
+			ASN1Primitive pathLenConstraintPrimitive = sequencePrimitives.next().toASN1Primitive();
 
-			decodedPathLenConstraint = decodePrimitive(pathLenConstraintPrimitive.toASN1Primitive(), ASN1Integer.class)
-					.getValue().intValue();
+			decodedPathLenConstraint = decodePrimitive(pathLenConstraintPrimitive, ASN1Integer.class).getValue()
+					.intValue();
 		}
 		return new BasicConstraintsExtensionData(critical, decodedCA, decodedPathLenConstraint);
 	}

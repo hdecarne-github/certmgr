@@ -16,92 +16,102 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * X.509 Key Usage flags.
  */
-public enum KeyUsage {
+public class KeyUsage extends Enumeration<Integer> {
+
+	private static final Map<Integer, KeyUsage> instanceMap = new HashMap<>();
 
 	/**
 	 * ENCIPHER_ONLY
 	 */
-	ENCIPHER_ONLY(1 << 0),
+	public static final KeyUsage ENCIPHER_ONLY = new KeyUsage("ENCIPHER_ONLY", 1 << 0);
 
 	/**
 	 * CRL_SIGN
 	 */
-	CRL_SIGN(1 << 1),
+	public static final KeyUsage CRL_SIGN = new KeyUsage("CRL_SIGN", 1 << 1);
 
 	/**
 	 * KEY_CERT_SIGN
 	 */
-	KEY_CERT_SIGN(1 << 2),
+	public static final KeyUsage KEY_CERT_SIGN = new KeyUsage("KEY_CERT_SIGN", 1 << 2);
 
 	/**
 	 * KEY_AGREEMENT
 	 */
-	KEY_AGREEMENT(1 << 3),
+	public static final KeyUsage KEY_AGREEMENT = new KeyUsage("KeyUsage", 1 << 3);
 
 	/**
 	 * DATA_ENCIPHERMENT
 	 */
-	DATA_ENCIPHERMENT(1 << 4),
+	public static final KeyUsage DATA_ENCIPHERMENT = new KeyUsage("DATA_ENCIPHERMENT", 1 << 4);
 
 	/**
 	 * KEY_ENCIPHERMENT
 	 */
-	KEY_ENCIPHERMENT(1 << 5),
+	public static final KeyUsage KEY_ENCIPHERMENT = new KeyUsage("KEY_ENCIPHERMENT", 1 << 5);
 
 	/**
 	 * NON_REPUDIATION
 	 */
-	NON_REPUDIATION(1 << 6),
+	public static final KeyUsage NON_REPUDIATION = new KeyUsage("NON_REPUDIATION", 1 << 6);
 
 	/**
 	 * DIGITAL_SIGNATURE
 	 */
-	DIGITAL_SIGNATURE(1 << 7),
+	public static final KeyUsage DIGITAL_SIGNATURE = new KeyUsage("DIGITAL_SIGNATURE", 1 << 7);
 
 	/**
 	 * DECIPHER_ONLY
 	 */
-	DECIPHER_ONLY(1 << 15),
+	public static final KeyUsage DECIPHER_ONLY = new KeyUsage("DECIPHER_ONLY", 1 << 15);
 
 	/**
 	 * ANY
 	 */
-	ANY(-1 >>> 16);
+	public static final KeyUsage ANY = new KeyUsage("ANY", -1 >>> 16);
 
-	private final int value;
+	private KeyUsage(String name, Integer value) {
+		super(name, value);
+		registerInstance(this);
+	}
 
-	private KeyUsage(int value) {
-		this.value = value;
+	private static synchronized void registerInstance(KeyUsage usage) {
+		instanceMap.put(usage.value(), usage);
 	}
 
 	/**
-	 * Match a flag value to it's corresponding key usage.
-	 * 
-	 * @param value The value to match.
-	 * @return The matching key usage, or {@code null} if there is no matching
-	 *         key usage.
-	 */
-	public static KeyUsage matchValue(int value) {
-		KeyUsage matchingUsage = null;
-
-		for (KeyUsage usage : KeyUsage.values()) {
-			if (usage.value == value) {
-				matchingUsage = usage;
-			}
-		}
-		return matchingUsage;
-	}
-
-	/**
-	 * Get the Key Usage flag value for encoding.
+	 * Get the known key usage instances.
+	 * <p>
+	 * This includes the statically defined ones in this class as well as any
+	 * new ones encountered in a call to {@linkplain #fromValue(int)}.
 	 *
-	 * @return The Key Usage flag value for encoding.
+	 * @return The known key usage instances.
 	 */
-	public final int toValue() {
-		return this.value;
+	public static synchronized Set<KeyUsage> instances() {
+		return new HashSet<>(instanceMap.values());
+	}
+
+	/**
+	 * Get the key usage instance for a specific value.
+	 *
+	 * @param value The value to get the instance for.
+	 * @return The key usage instance corresponding to the submitted value.
+	 */
+	public static synchronized KeyUsage fromValue(int value) {
+		KeyUsage usage = instanceMap.get(value);
+
+		if (usage == null) {
+			usage = new KeyUsage(String.format("0x%08x", value), value);
+		}
+		return usage;
 	}
 
 }
