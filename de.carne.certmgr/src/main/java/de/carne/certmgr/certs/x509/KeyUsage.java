@@ -46,7 +46,7 @@ public class KeyUsage extends Enumeration<Integer> {
 	/**
 	 * KEY_AGREEMENT
 	 */
-	public static final KeyUsage KEY_AGREEMENT = new KeyUsage("KeyUsage", 1 << 3);
+	public static final KeyUsage KEY_AGREEMENT = new KeyUsage("KEY_AGREEMENT", 1 << 3);
 
 	/**
 	 * DATA_ENCIPHERMENT
