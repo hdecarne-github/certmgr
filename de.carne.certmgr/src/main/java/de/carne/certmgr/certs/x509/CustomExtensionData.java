@@ -63,19 +63,9 @@ public class CustomExtensionData extends X509ExtensionData {
 	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
-		StringBuilder value = new StringBuilder();
 
-		for (int encodedIndex = 0; encodedIndex < this.encoded.length; encodedIndex++) {
-			if (encodedIndex >= 8) {
-				value.append('\u2026');
-				break;
-			}
-
-			byte encodedByte = this.encoded[encodedIndex];
-
-			value.append(String.format("0x%02x ", encodedByte & 0xff));
-		}
-		extensionAttributes.addChild(AttributesI18N.formatSTR_CUSTOM_DATA(this.encoded.length), value.toString());
+		extensionAttributes.addChild(AttributesI18N.formatSTR_EXTENSION_DATA(this.encoded.length),
+				Attributes.printBytes(this.encoded, 8));
 		return extensionAttributes;
 	}
 

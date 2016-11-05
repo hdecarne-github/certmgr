@@ -24,7 +24,7 @@ import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-29">Key Usage
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.3">Key Usage
  * Extension</a> data.
  */
 public class KeyUsageExtensionData extends X509ExtensionData {

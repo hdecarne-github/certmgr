@@ -74,6 +74,15 @@ public abstract class X509ExtensionData extends ASN1Data {
 		case SubjectAlternativeNameExtensionData.OID:
 			decoded = SubjectAlternativeNameExtensionData.decode(primitive, critical);
 			break;
+		case SubjectKeyIdentifierExtensionData.OID:
+			decoded = SubjectKeyIdentifierExtensionData.decode(primitive, critical);
+			break;
+		case AuthorityKeyIdentifierExtensionData.OID:
+			decoded = AuthorityKeyIdentifierExtensionData.decode(primitive, critical);
+			break;
+		case CRLNumberExtensionData.OID:
+			decoded = CRLNumberExtensionData.decode(primitive, critical);
+			break;
 		default:
 			decoded = new CustomExtensionData(oid, critical, data);
 		}

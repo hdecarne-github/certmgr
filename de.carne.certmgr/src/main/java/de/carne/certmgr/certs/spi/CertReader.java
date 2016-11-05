@@ -35,7 +35,7 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 * This property is used to avoid out of memory conditions when we try to
 	 * read huge files with readers that require all data to be read in advance.
 	 */
-	static final int READ_LIMIT = PropertiesHelper.getInt(CertReaders.class, ".readLimit", 1 << 11);
+	static final int READ_LIMIT = PropertiesHelper.getInt(CertReaders.class, ".readLimit", 1 << 20);
 
 	/**
 	 * Read all available certificate objects.

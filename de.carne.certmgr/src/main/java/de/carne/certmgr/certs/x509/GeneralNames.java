@@ -44,11 +44,11 @@ public class GeneralNames extends ASN1Data {
 	 */
 	public static GeneralNames decode(ASN1Primitive primitive) throws IOException {
 		ASN1Sequence sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
-		Iterator<ASN1Encodable> sequenceEntries = sequence.iterator();
+		Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
 		GeneralNames generalNames = new GeneralNames();
 
-		while (sequenceEntries.hasNext()) {
-			generalNames.addName(GeneralName.decode(sequenceEntries.next().toASN1Primitive()));
+		while (sequenceIterator.hasNext()) {
+			generalNames.addName(GeneralName.decode(sequenceIterator.next().toASN1Primitive()));
 		}
 		return generalNames;
 	}

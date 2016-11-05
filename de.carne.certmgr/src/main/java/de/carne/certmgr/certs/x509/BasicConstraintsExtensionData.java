@@ -26,8 +26,8 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-39">Basic Constraints
- * Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.9">Basic
+ * Constraints Extension</a> data.
  */
 public class BasicConstraintsExtensionData extends X509ExtensionData {
 
@@ -73,17 +73,17 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 */
 	public static BasicConstraintsExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
 		ASN1Sequence sequence = decodeSequence(primitive, 0, 2);
-		Iterator<ASN1Encodable> sequencePrimitives = sequence.iterator();
+		Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
 		boolean decodedCA = false;
 		Integer decodedPathLenConstraint = null;
 
-		if (sequencePrimitives.hasNext()) {
-			ASN1Primitive caPrimitive = sequencePrimitives.next().toASN1Primitive();
+		if (sequenceIterator.hasNext()) {
+			ASN1Primitive caPrimitive = sequenceIterator.next().toASN1Primitive();
 
 			decodedCA = decodePrimitive(caPrimitive, ASN1Boolean.class).isTrue();
 		}
-		if (sequencePrimitives.hasNext()) {
-			ASN1Primitive pathLenConstraintPrimitive = sequencePrimitives.next().toASN1Primitive();
+		if (sequenceIterator.hasNext()) {
+			ASN1Primitive pathLenConstraintPrimitive = sequenceIterator.next().toASN1Primitive();
 
 			decodedPathLenConstraint = decodePrimitive(pathLenConstraintPrimitive, ASN1Integer.class).getValue()
 					.intValue();

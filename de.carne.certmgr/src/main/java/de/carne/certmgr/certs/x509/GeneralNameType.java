@@ -36,7 +36,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * OTHER_NAME
 	 */
-	public static final GeneralNameType OTHER_NAME = new GeneralNameType("otherName", OTHER_NAME_TAG);
+	public static final GeneralNameType OTHER_NAME = new GeneralNameType("OTHER_NAME", OTHER_NAME_TAG);
 
 	/**
 	 * RFC822_NAME
@@ -46,7 +46,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * RFC822_NAME
 	 */
-	public static final GeneralNameType RFC822_NAME = new GeneralNameType("rfc822Name", RFC822_NAME_TAG);
+	public static final GeneralNameType RFC822_NAME = new GeneralNameType("RFC822_NAME", RFC822_NAME_TAG);
 
 	/**
 	 * DNS_NAME
@@ -56,7 +56,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * DNS_NAME
 	 */
-	public static final GeneralNameType DNS_NAME = new GeneralNameType("dNSName", DNS_NAME_TAG);
+	public static final GeneralNameType DNS_NAME = new GeneralNameType("DNS_NAME", DNS_NAME_TAG);
 
 	/**
 	 * X400_ADDRESS
@@ -66,7 +66,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * X400_ADDRESS
 	 */
-	public static final GeneralNameType X400_ADDRESS = new GeneralNameType("x400Address", X400_ADDRESS_TAG);
+	public static final GeneralNameType X400_ADDRESS = new GeneralNameType("X400_ADDRESS", X400_ADDRESS_TAG);
 
 	/**
 	 * DIRECTORY_NAME
@@ -76,7 +76,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * DIRECTORY_NAME
 	 */
-	public static final GeneralNameType DIRECTORY_NAME = new GeneralNameType("directoryName", DIRECTORY_NAME_TAG);
+	public static final GeneralNameType DIRECTORY_NAME = new GeneralNameType("DIRECTORY_NAME", DIRECTORY_NAME_TAG);
 
 	/**
 	 * EDI_PARTY_NAME
@@ -86,7 +86,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * EDI_PARTY_NAME
 	 */
-	public static final GeneralNameType EDI_PARTY_NAME = new GeneralNameType("ediPartyName", EDI_PARTY_NAME_TAG);
+	public static final GeneralNameType EDI_PARTY_NAME = new GeneralNameType("EDI_PARTY_NAME", EDI_PARTY_NAME_TAG);
 
 	/**
 	 * UNIFORM_RESOURCE_IDENTIFIER
@@ -96,7 +96,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * UNIFORM_RESOURCE_IDENTIFIER
 	 */
-	public static final GeneralNameType UNIFORM_RESOURCE_IDENTIFIER = new GeneralNameType("uniformResourceIdentifier",
+	public static final GeneralNameType UNIFORM_RESOURCE_IDENTIFIER = new GeneralNameType("UNIFORM_RESOURCE_IDENTIFIER",
 			UNIFORM_RESOURCE_IDENTIFIER_TAG);
 
 	/**
@@ -107,7 +107,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * IP_ADDRESS
 	 */
-	public static final GeneralNameType IP_ADDRESS = new GeneralNameType("iPAddress", IP_ADDRESS_TAG);
+	public static final GeneralNameType IP_ADDRESS = new GeneralNameType("IP_ADDRESS", IP_ADDRESS_TAG);
 
 	/**
 	 * REGISTERED_ID
@@ -117,7 +117,7 @@ public class GeneralNameType extends Enumeration<Integer> {
 	/**
 	 * REGISTERED_ID
 	 */
-	public static final GeneralNameType REGISTERED_ID = new GeneralNameType("registeredID", REGISTERED_ID_TAG);
+	public static final GeneralNameType REGISTERED_ID = new GeneralNameType("REGISTERED_ID", REGISTERED_ID_TAG);
 
 	private GeneralNameType(String name, Integer value) {
 		super(name, value);

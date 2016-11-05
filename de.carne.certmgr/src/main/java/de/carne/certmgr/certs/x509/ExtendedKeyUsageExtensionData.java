@@ -27,8 +27,8 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-44">Extended Key
- * Usage Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.12">Extended
+ * Key Usage Extension</a> data.
  */
 public class ExtendedKeyUsageExtensionData extends X509ExtensionData {
 
@@ -73,11 +73,11 @@ public class ExtendedKeyUsageExtensionData extends X509ExtensionData {
 	 */
 	public static ExtendedKeyUsageExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
 		ASN1Sequence sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
-		Iterator<ASN1Encodable> sequencePrimitives = sequence.iterator();
+		Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
 		Set<ExtendedKeyUsage> usages = new HashSet<>();
 
-		while (sequencePrimitives.hasNext()) {
-			ASN1Primitive sequencePrimitive = sequencePrimitives.next().toASN1Primitive();
+		while (sequenceIterator.hasNext()) {
+			ASN1Primitive sequencePrimitive = sequenceIterator.next().toASN1Primitive();
 
 			usages.add(
 					ExtendedKeyUsage.fromValue(decodePrimitive(sequencePrimitive, ASN1ObjectIdentifier.class).getId()));

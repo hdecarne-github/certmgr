@@ -22,7 +22,7 @@ import java.util.List;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-35">Subject
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.6">Subject
  * Alternative Name Extension</a> data.
  */
 public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
@@ -84,7 +84,7 @@ public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
 		int nameIndex = 0;
 
 		for (GeneralName name : this.generalNames.getNames()) {
-			extensionAttributes.addChild("[" + nameIndex + "]", name.toString());
+			extensionAttributes.addChild(AttributesI18N.formatSTR_GENERALNAME(nameIndex), name.toString());
 			nameIndex++;
 		}
 		return extensionAttributes;

@@ -16,35 +16,30 @@
  */
 package de.carne.certmgr.certs.x509;
 
-import java.io.IOException;
-
-import org.bouncycastle.asn1.ASN1OctetString;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.util.Strings;
-
 /**
- * General name object of type DNS_NAME.
+ * Base class for {@link String} based general name objects.
  */
-public class DNSName extends StringName {
+public abstract class StringName extends GeneralName {
+
+	private final String name;
 
 	/**
-	 * Construct {@code DNSName}.
-	 *
-	 * @param name The DNS name.
+	 * Construct {@code StringName}.
+	 * 
+	 * @param type The name type.
+	 * @param name The name.
 	 */
-	public DNSName(String name) {
-		super(GeneralNameType.DNS_NAME, name);
+	public StringName(GeneralNameType type, String name) {
+		super(type);
+
+		assert name != null;
+
+		this.name = name;
 	}
 
-	/**
-	 * Decode {@code DNSName} from an ASN.1 data object.
-	 *
-	 * @param primitive The ASN.1 data object to decode.
-	 * @return The decoded name object.
-	 * @throws IOException if an I/O error occurs during decoding.
-	 */
-	public static DNSName decode(ASN1Primitive primitive) throws IOException {
-		return new DNSName(Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
+	@Override
+	public String toString() {
+		return getType().name() + ":" + this.name;
 	}
 
 }

@@ -23,11 +23,9 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.util.Strings;
 
 /**
- * RFC822_NAME type general name.
+ * General name object of type RFC822_NAME.
  */
-public class RFC822Name extends GeneralName {
-
-	private final String name;
+public class RFC822Name extends StringName {
 
 	/**
 	 * Construct {@code RFC822Name}.
@@ -35,11 +33,7 @@ public class RFC822Name extends GeneralName {
 	 * @param name The rfc822 name.
 	 */
 	public RFC822Name(String name) {
-		super(GeneralNameType.RFC822_NAME);
-
-		assert name != null;
-
-		this.name = name;
+		super(GeneralNameType.RFC822_NAME, name);
 	}
 
 	/**
@@ -51,11 +45,6 @@ public class RFC822Name extends GeneralName {
 	 */
 	public static RFC822Name decode(ASN1Primitive primitive) throws IOException {
 		return new RFC822Name(Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
-	}
-
-	@Override
-	public String toString() {
-		return this.name;
 	}
 
 }
