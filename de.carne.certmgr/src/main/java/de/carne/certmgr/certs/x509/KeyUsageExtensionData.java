@@ -20,7 +20,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1Primitive;
+
+import de.carne.util.logging.Log;
 
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#page-29">Key Usage
@@ -28,12 +31,14 @@ import org.bouncycastle.asn1.ASN1Primitive;
  */
 public class KeyUsageExtensionData extends X509ExtensionData {
 
+	private static final Log LOG = new Log();
+
 	/**
 	 * Extension OID.
 	 */
 	public static final String OID = "2.5.29.15";
 
-	private final Set<KeyUsage> usages = new HashSet<>();
+	private final Set<KeyUsage> usages;
 
 	/**
 	 * Construct {@code KeyUsageExtensionData}.
@@ -42,10 +47,89 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	 */
 	public KeyUsageExtensionData(boolean critical) {
 		super(OID, critical);
+		this.usages = new HashSet<>();
 	}
 
+	/**
+	 * Construct {@code KeyUsageExtensionData}.
+	 *
+	 * @param critical The extension's critical flag.
+	 * @param usages The extension's usages.
+	 */
+	public KeyUsageExtensionData(boolean critical, Set<KeyUsage> usages) {
+		super(OID, critical);
+
+		assert usages != null;
+
+		this.usages = new HashSet<>(usages);
+	}
+
+	/**
+	 * Decode {@code KeyUsageExtensionData} from an ASN.1 data object.
+	 *
+	 * @param primitive The ASN.1 data object to decode.
+	 * @param critical The extension's critical flag.
+	 * @return The decoded extension data.
+	 * @throws IOException if an I/O error occurs during decoding.
+	 */
 	public static KeyUsageExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
-		return new KeyUsageExtensionData(critical);
+		Set<KeyUsage> usages = new HashSet<>();
+		byte[] bitBytes = decodePrimitive(primitive, ASN1BitString.class).getBytes();
+
+		if (bitBytes.length != 0) {
+			boolean anyUsage = true;
+			int usageValue = 1;
+
+			for (byte bitByte : bitBytes) {
+				anyUsage = anyUsage && bitByte == -1;
+				for (int bit = 1; bit < 256; bit <<= 1) {
+					if ((bitByte & bit) == bit) {
+						KeyUsage usage = KeyUsage.matchValue(usageValue);
+
+						if (usage != null) {
+							usages.add(usage);
+						} else {
+							LOG.warning("Ignoring unrecognized key usage value: {0}", usageValue);
+						}
+					}
+					usageValue <<= 1;
+				}
+			}
+			if (anyUsage) {
+				usages.clear();
+				usages.add(KeyUsage.ANY);
+			}
+		}
+		return new KeyUsageExtensionData(critical, usages);
+	}
+
+	/**
+	 * Add a usage flag to this extension.
+	 * 
+	 * @param usage The usage flag to add.
+	 */
+	public void addUsage(KeyUsage usage) {
+		this.usages.add(usage);
+	}
+
+	/**
+	 * Check whether a given usage flag is set for this extension.
+	 * 
+	 * @param usage The usage flag to check.
+	 * @return {@code true} if the usage is set.
+	 */
+	public boolean hasUsage(KeyUsage usage) {
+		return this.usages.contains(usage);
+	}
+
+	@Override
+	public Attributes toAttributes() {
+		Attributes extensionAttributes = super.toAttributes();
+
+		for (KeyUsage usage : this.usages) {
+			extensionAttributes.addChild(usage.name(), null);
+		}
+		return extensionAttributes;
 	}
 
 }

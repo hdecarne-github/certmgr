@@ -77,7 +77,30 @@ public enum KeyUsage {
 		this.value = value;
 	}
 
-	public final int value() {
+	/**
+	 * Match a flag value to it's corresponding key usage.
+	 * 
+	 * @param value The value to match.
+	 * @return The matching key usage, or {@code null} if there is no matching
+	 *         key usage.
+	 */
+	public static KeyUsage matchValue(int value) {
+		KeyUsage matchingUsage = null;
+
+		for (KeyUsage usage : KeyUsage.values()) {
+			if (usage.value == value) {
+				matchingUsage = usage;
+			}
+		}
+		return matchingUsage;
+	}
+
+	/**
+	 * Get the Key Usage flag value for encoding.
+	 *
+	 * @return The Key Usage flag value for encoding.
+	 */
+	public final int toValue() {
 		return this.value;
 	}
 
