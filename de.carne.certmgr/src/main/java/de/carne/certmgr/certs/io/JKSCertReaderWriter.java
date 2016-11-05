@@ -36,7 +36,6 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
-import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
@@ -69,8 +68,13 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
+		assert input != null;
+		assert password != null;
+
+		LOG.debug("Trying to read KeyStore objects from: ''{0}''...", input);
+
 		List<Object> keyStoreObjects = null;
-		KeyStore keyStore;
+		KeyStore keyStore = null;
 
 		try {
 			keyStore = loadKeyStore(input, password);
@@ -79,8 +83,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		} catch (PasswordRequiredException e) {
 			throw e;
 		} catch (IOException e) {
-			Exceptions.ignore(e);
-			keyStore = null;
+			LOG.info(e, "No KeyStore objects recognized in: ''{0}''", input);
 		}
 		if (keyStore != null) {
 			try {
