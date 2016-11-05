@@ -49,6 +49,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -70,6 +71,9 @@ public class StoreController extends StageController {
 	private UserCertStoreTreeTableViewHelper<StoreEntryModel> storeEntryViewHelper = null;
 
 	private UserCertStore store = null;
+
+	@FXML
+	CheckMenuItem cmdToggleLogView;
 
 	@FXML
 	TreeTableView<StoreEntryModel> ctlStoreEntryView;
@@ -171,11 +175,13 @@ public class StoreController extends StageController {
 	}
 
 	@FXML
-	void onCmdShowLog(ActionEvent evt) {
-		try {
-			loadStage(LogViewController.class).showAndWait();
-		} catch (IOException e) {
-			Alerts.unexpected(e);
+	void onCmdToggleLogView(ActionEvent evt) {
+		if (this.cmdToggleLogView.isSelected()) {
+			try {
+				loadStage(LogViewController.class).setToggle(this.cmdToggleLogView.selectedProperty()).show();
+			} catch (IOException e) {
+				Alerts.unexpected(e);
+			}
 		}
 	}
 

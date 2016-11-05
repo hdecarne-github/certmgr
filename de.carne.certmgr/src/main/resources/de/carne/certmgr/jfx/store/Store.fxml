@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -120,7 +121,7 @@
             </Menu>
           <Menu mnemonicParsing="false" text="%_STR_MENU_HELP">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdShowLog" text="%_STR_MENU_SHOW_LOG" />
+                  <CheckMenuItem fx:id="cmdToggleLogView" mnemonicParsing="false" onAction="#onCmdToggleLogView" text="%_STR_MENU_SHOW_LOG" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem mnemonicParsing="false" onAction="#onCmdAbout" text="%_STR_MENU_ABOUT" />
             </items>
