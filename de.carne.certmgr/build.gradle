@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat
 
+// For Manifest generation
 def formatBuildDate() {
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
@@ -16,20 +17,29 @@ dependencies {
 }
 
 sourceSets {
+	// Add source directory for generated sources
 	generated {
 		java {
 			srcDir "${buildDir}/generated/main/java/"
 		}
 	}
+
+	// Make generated classes/resources available to the main source set
 	main {
 		compileClasspath += sourceSets.generated.runtimeClasspath
 	}
 }
 
 jar {
+	// Include generated classes/resources in jar 
 	from sourceSets.generated.runtimeClasspath
+
+	//Include all jars this project depends on in the jar (ApplicationLoader will make them available at runtime)
 	from configurations.runtime.collect {
-		it.name.matches( 'de.carne.*' ) ? zipTree(it).matching { exclude 'META-INF/MANIFEST.MF' } : it
+		//Internal projects with same license (de.carne/de.carne.jfx) are inlined on the one hand to
+		//make ApplicationLoader available as a Main class to the system classloader and on the other
+		//hand to also avoid the unneeded jar indirection for them.
+		it.name.matches( ~/de\.carne(\.jfx)?\.jar/ ) ? zipTree(it).matching { exclude 'META-INF/MANIFEST.MF' } : it
 	}
 	manifest {
 		attributes(
@@ -40,4 +50,18 @@ jar {
 			'X-Version-BuildDate' : formatBuildDate()
 		)
 	}
+}
+
+distributions {
+	main {
+		contents {
+			from jar
+		}
+	}
+}
+
+// Use GZIP compression for tar archives
+tasks.withType(Tar){
+	compression = Compression.GZIP
+	extension = 'tar.gz'
 }
