@@ -1,16 +1,43 @@
+import java.text.SimpleDateFormat
+
+def formatBuildDate() {
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+
+	return dateFormat.format(new Date());
+}
+
 apply plugin: 'de.carne.gradleplugins.java'
+apply plugin: 'distribution'
+ 
+dependencies {
+	compile project(':de.carne')
+	compile project(':de.carne.jfx')
+	compile('org.bouncycastle:bcpkix-jdk15on:1.55')
+}
 
 sourceSets {
 	generated {
-		java.srcDir "${buildDir}/generated/main/java/"
+		java {
+			srcDir "${buildDir}/generated/main/java/"
+		}
 	}
 	main {
 		compileClasspath += sourceSets.generated.runtimeClasspath
 	}
 }
 
-dependencies {
-    compile project(':de.carne')
-    compile project(':de.carne.jfx')
-    compile('org.bouncycastle:bcpkix-jdk15on:1.55')
+jar {
+	from sourceSets.generated.runtimeClasspath
+	from configurations.runtime.collect {
+		it.name.matches( 'de.carne.*' ) ? zipTree(it).matching { exclude 'META-INF/MANIFEST.MF' } : it
+	}
+	manifest {
+		attributes(
+			'Main-Class': 'de.carne.ApplicationLoader',
+			'X-Version-ProjectId': projectId,
+			'X-Version-ProjectName' : rootProject.name,
+			'X-Version-ProjectVersion': version,
+			'X-Version-BuildDate' : formatBuildDate()
+		)
+	}
 }
