@@ -32,6 +32,10 @@ import de.carne.util.logging.Log;
  */
 public final class OIDs {
 
+	private OIDs() {
+		// Make sure this class is not instantiated from outside
+	}
+
 	private static final Log LOG = new Log();
 
 	private static final String OIDS_RESOURCE = OIDs.class.getSimpleName() + ".properties";
@@ -66,10 +70,6 @@ public final class OIDs {
 
 			OIDS.put(oidID, oidName);
 		}
-	}
-
-	private OIDs() {
-		// Make sure this class is not instantiated from outside
 	}
 
 	/**

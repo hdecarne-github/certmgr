@@ -21,11 +21,11 @@ package de.carne.certmgr.certs;
  */
 public class NoPassword implements PasswordCallback {
 
-	private static final NoPassword INSTANCE = new NoPassword();
-
 	private NoPassword() {
 		// Make sure this class is not instantiated from outside
 	}
+
+	private static final NoPassword INSTANCE = new NoPassword();
 
 	/**
 	 * Get {@code NoPassword} instance.

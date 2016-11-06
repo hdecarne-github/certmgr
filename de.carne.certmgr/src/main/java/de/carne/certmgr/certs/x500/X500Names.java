@@ -36,6 +36,10 @@ import de.carne.util.logging.Log;
  */
 public final class X500Names {
 
+	private X500Names() {
+		// Make sure this class is not instantiated from outside
+	}
+
 	private static final Log LOG = new Log();
 
 	private static final String OIDS_RESOURCE = X500Names.class.getSimpleName() + ".properties";
@@ -74,10 +78,6 @@ public final class X500Names {
 				NAMES.put(oidName.trim(), oidID);
 			}
 		}
-	}
-
-	private X500Names() {
-		// Make sure this class is not instantiated from outside
 	}
 
 	/**

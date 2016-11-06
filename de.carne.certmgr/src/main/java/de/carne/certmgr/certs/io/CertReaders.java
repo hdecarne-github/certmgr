@@ -28,14 +28,14 @@ import de.carne.certmgr.certs.spi.CertReader;
  */
 public final class CertReaders {
 
+	private CertReaders() {
+		// Make sure this class is not instantiated from outside
+	}
+
 	/**
 	 * The registered {@link CertReader}s.
 	 */
 	public static final ProviderMap<CertReader> PROVIDERS = new ProviderMap<>(CertReader.class);
-
-	private CertReaders() {
-		// Make sure this class is not instantiated from outside
-	}
 
 	/**
 	 * Read all available certificate objects.
