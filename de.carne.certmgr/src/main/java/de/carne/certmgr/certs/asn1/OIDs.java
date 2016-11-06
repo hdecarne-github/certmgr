@@ -48,7 +48,7 @@ public final class OIDs {
 		try (InputStream oidsStream = OIDs.class.getResourceAsStream(OIDS_RESOURCE)) {
 			readOIDs(oidsStream);
 		} catch (IOException e) {
-			Exceptions.toRuntime(e);
+			throw Exceptions.toRuntime(e);
 		}
 		if (OIDS_USER_FILE != null) {
 			try (FileInputStream oidsStream = new FileInputStream(OIDS_USER_FILE)) {

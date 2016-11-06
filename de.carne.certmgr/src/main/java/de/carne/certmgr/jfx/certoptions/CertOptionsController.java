@@ -19,11 +19,13 @@ package de.carne.certmgr.jfx.certoptions;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.signer.CertSigners;
 import de.carne.certmgr.certs.spi.CertSigner;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -55,7 +57,7 @@ public class CertOptionsController extends StageController {
 	TextField ctlDNInput;
 
 	@FXML
-	ComboBox<String> ctlKeyAlgOption;
+	ComboBox<KeyPairAlgorithm> ctlKeyAlgOption;
 
 	@FXML
 	ComboBox<Integer> ctlKeySizeOption;
@@ -113,12 +115,28 @@ public class CertOptionsController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
+		setupKeyAlgOptions();
 		setupSignerOptions();
 	}
 
+	private void setupKeyAlgOptions() {
+		ObservableList<KeyPairAlgorithm> keyAlgOptions = this.ctlKeyAlgOption.getItems();
+
+		keyAlgOptions.clear();
+		keyAlgOptions.addAll(KeyPairAlgorithm.getAll(true));
+		keyAlgOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+	}
+
+	private void setupKeySizeOptions() {
+
+	}
+
 	private void setupSignerOptions() {
-		this.ctlSignerOption.getItems().addAll(CertSigners.REGISTERED.providers());
-		this.ctlSignerOption.getItems().sort((o1, o2) -> o1.providerName().compareTo(o2.providerName()));
+		ObservableList<CertSigner> signerOptions = this.ctlSignerOption.getItems();
+
+		signerOptions.clear();
+		signerOptions.addAll(CertSigners.REGISTERED.providers());
+		signerOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public final class X500Names {
 		try (InputStream oidsStream = X500Names.class.getResourceAsStream(OIDS_RESOURCE)) {
 			readOIDs(oidsStream);
 		} catch (IOException e) {
-			Exceptions.toRuntime(e);
+			throw Exceptions.toRuntime(e);
 		}
 		if (OIDS_USER_FILE != null) {
 			try (FileInputStream oidsStream = new FileInputStream(OIDS_USER_FILE)) {
