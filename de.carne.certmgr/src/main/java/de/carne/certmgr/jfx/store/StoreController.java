@@ -38,6 +38,8 @@ import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
+import de.carne.jfx.scene.control.aboutinfo.AboutInfoController;
+import de.carne.jfx.scene.control.aboutinfo.AboutInfoDialog;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
@@ -187,7 +189,16 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdAbout(ActionEvent evt) {
+		try {
+			AboutInfoController aboutInfo = AboutInfoDialog.load(this).setLogo(Images.STORE32);
 
+			aboutInfo.addInfo(getClass().getResource("AboutInfo1.txt"));
+			aboutInfo.addInfo(getClass().getResource("AboutInfo2.txt"));
+			aboutInfo.addInfo(getClass().getResource("AboutInfo3.txt"));
+			aboutInfo.showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e);
+		}
 	}
 
 	void onStoreViewSelectionChange(TreeItem<StoreEntryModel> selection) {

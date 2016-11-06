@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat
 
 // For Manifest generation
-def formatBuildDate() {
+def formatBuild() {
 	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
 	return dateFormat.format(new Date());
@@ -45,9 +45,9 @@ jar {
 		attributes(
 			'Main-Class': 'de.carne.ApplicationLoader',
 			'X-Version-ProjectId': projectId,
-			'X-Version-ProjectName' : rootProject.name,
+			'X-Version-ProjectName' : projectName,
 			'X-Version-ProjectVersion': version,
-			'X-Version-BuildDate' : formatBuildDate()
+			'X-Version-ProjectBuild' : formatBuild()
 		)
 	}
 }
