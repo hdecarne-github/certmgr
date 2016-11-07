@@ -24,6 +24,8 @@ import java.security.Security;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.carne.util.Exceptions;
+
 /**
  * Key pair algorithm class.
  */
@@ -40,8 +42,9 @@ public abstract class KeyPairAlgorithm {
 	/**
 	 * Get the available key pair algorithms.
 	 *
-	 * @param expertMode Whether to return all algorithms known by the current
-	 *        runtime ({@code true}) or only the standard ones ({@code false}).
+	 * @param expertMode Whether only standard algorithms are considered
+	 *        ({@code false}) or all algorithms available on the current
+	 *        platform ({@code true}).
 	 * @return The available key pair algorithms
 	 */
 	public static Set<KeyPairAlgorithm> getAll(boolean expertMode) {
@@ -64,6 +67,27 @@ public abstract class KeyPairAlgorithm {
 			}
 		}
 		return keyPairAlgorithms;
+	}
+
+	/**
+	 * Get the default key pair algorithm.
+	 *
+	 * @param expertMode Whether only standard algorithms are considered
+	 *        ({@code false}) or all algorithms available on the current
+	 *        platform ({@code true}).
+	 * @return The default key pair algorithm.
+	 */
+	public static KeyPairAlgorithm getDefault(boolean expertMode) {
+		String defaultName = SecurityDefaults.getDefaultKeyAlgorithmName();
+		Service service;
+
+		try {
+			service = KeyPairGenerator.getInstance(defaultName).getProvider()
+					.getService(SERVICE_TYPE_KEY_PAIR_GENERATOR, defaultName);
+		} catch (GeneralSecurityException e) {
+			throw Exceptions.toRuntime(e);
+		}
+		return (expertMode ? new ExpertKeyPairAlgorithm(service) : new StandardKeyPairAlgorithm(service));
 	}
 
 	/**
@@ -101,6 +125,15 @@ public abstract class KeyPairAlgorithm {
 	 */
 	public Set<Integer> getStandardKeySizes() {
 		return SecurityDefaults.getKeySizes(algorithm());
+	}
+
+	/**
+	 * Get this algorithm's default key size.
+	 *
+	 * @return This algorithm's default key size.
+	 */
+	public Integer getDefaultKeySize() {
+		return SecurityDefaults.getDefaultKeySize(algorithm());
 	}
 
 	private static class StandardKeyPairAlgorithm extends KeyPairAlgorithm {

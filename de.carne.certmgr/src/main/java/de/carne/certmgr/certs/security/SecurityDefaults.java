@@ -51,6 +51,12 @@ class SecurityDefaults {
 		return sizes;
 	}
 
+	public static Integer getDefaultKeySize(String algorithm) {
+		String sizeString = getDefaultName(algorithm + KEY_KEY_SIZE);
+
+		return Integer.valueOf(sizeString);
+	}
+
 	private static String getDefaultName(String key) {
 		String defaultName = DEFAULTS.getProperty(key);
 

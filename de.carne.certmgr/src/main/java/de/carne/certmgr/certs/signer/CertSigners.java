@@ -29,4 +29,9 @@ public final class CertSigners {
 	 */
 	public static final ProviderMap<CertSigner> REGISTERED = new ProviderMap<>(CertSigner.class);
 
+	/**
+	 * The default {@link CertSigner}.
+	 */
+	public static final CertSigner DEFAULT = REGISTERED.get(DefaultCertSigner.PROVIDER_NAME);
+
 }

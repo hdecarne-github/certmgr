@@ -74,18 +74,18 @@
       <Label layoutX="14.0" layoutY="303.0" text="%_STR_LABEL_KEYALG" GridPane.rowIndex="4" />
       <ComboBox fx:id="ctlKeyAlgOption" layoutX="161.0" layoutY="202.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="4" />
       <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_KEYSIZE" GridPane.rowIndex="5" />
-      <ComboBox fx:id="ctlKeySizeOption" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <ComboBox fx:id="ctlKeySizeOption" editable="true" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="6" />
       <Label text="%_STR_LABEL_SIGNER" GridPane.rowIndex="7" />
       <ChoiceBox fx:id="ctlSignerOption" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-      <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="6" />
-      <Label layoutX="14.0" layoutY="105.0" text="%_STR_LABEL_SIGALG" GridPane.rowIndex="8" />
-      <ComboBox fx:id="ctlSigAlgOption" layoutX="161.0" layoutY="289.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-      <Label layoutX="14.0" layoutY="76.0" text="%_STR_LABEL_NOTBEFORE" GridPane.rowIndex="9" />
-      <DatePicker fx:id="ctlNotBeforeInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-      <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_NOTAFTER" GridPane.rowIndex="10" />
-      <DatePicker fx:id="ctlNotAfterInput" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-      <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_ISSUER" GridPane.rowIndex="11" />
-      <ComboBox fx:id="ctlIssuerInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+      <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_ISSUER" GridPane.rowIndex="8" />
+      <ComboBox fx:id="ctlIssuerInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+      <Label layoutX="14.0" layoutY="105.0" text="%_STR_LABEL_SIGALG" GridPane.rowIndex="9" />
+      <ComboBox fx:id="ctlSigAlgOption" layoutX="161.0" layoutY="289.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+      <Label layoutX="14.0" layoutY="76.0" text="%_STR_LABEL_NOTBEFORE" GridPane.rowIndex="10" />
+      <DatePicker fx:id="ctlNotBeforeInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+      <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_NOTAFTER" GridPane.rowIndex="11" />
+      <DatePicker fx:id="ctlNotAfterInput" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="11" />
       <Separator layoutX="14.0" layoutY="130.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="12" />
       <ToolBar GridPane.columnSpan="2147483647" GridPane.rowIndex="13">
         <items>

@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -118,8 +119,13 @@ public class CertOptionsController extends StageController {
 
 		keySizeOptions.clear();
 		if (keyAlg != null) {
-			keySizeOptions.addAll(keyAlg.getStandardKeySizes());
-			keySizeOptions.sort((o1, o2) -> o1.compareTo(o2));
+			Set<Integer> keySizes = keyAlg.getStandardKeySizes();
+
+			if (keySizes.size() > 0) {
+				keySizeOptions.addAll(keySizes);
+				keySizeOptions.sort((o1, o2) -> o1.compareTo(o2));
+				this.ctlKeySizeOption.getSelectionModel().select(keyAlg.getDefaultKeySize());
+			}
 		}
 	}
 
@@ -147,6 +153,7 @@ public class CertOptionsController extends StageController {
 		keyAlgOptions.clear();
 		keyAlgOptions.addAll(KeyPairAlgorithm.getAll(true));
 		keyAlgOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		this.ctlKeyAlgOption.getSelectionModel().select(KeyPairAlgorithm.getDefault(true));
 	}
 
 	private void setupSignerOptions() {
@@ -155,6 +162,7 @@ public class CertOptionsController extends StageController {
 		signerOptions.clear();
 		signerOptions.addAll(CertSigners.REGISTERED.providers());
 		signerOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		this.ctlSignerOption.getSelectionModel().select(CertSigners.DEFAULT);
 	}
 
 	@Override

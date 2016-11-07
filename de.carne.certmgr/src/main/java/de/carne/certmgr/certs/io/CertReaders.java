@@ -35,7 +35,7 @@ public final class CertReaders {
 	/**
 	 * The registered {@link CertReader}s.
 	 */
-	public static final ProviderMap<CertReader> PROVIDERS = new ProviderMap<>(CertReader.class);
+	public static final ProviderMap<CertReader> REGISTERED = new ProviderMap<>(CertReader.class);
 
 	/**
 	 * Read all available certificate objects.
@@ -52,7 +52,7 @@ public final class CertReaders {
 	public static List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
 		List<Object> certObjects = null;
 
-		for (CertReader reader : PROVIDERS.providers()) {
+		for (CertReader reader : REGISTERED.providers()) {
 			certObjects = reader.read(input, password);
 			if (certObjects != null) {
 				break;
