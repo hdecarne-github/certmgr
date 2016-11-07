@@ -23,9 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.Provider;
 import java.security.PublicKey;
-import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.X509CRL;
@@ -40,8 +38,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
-
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.FileCertReaderInput;
@@ -64,19 +60,12 @@ import de.carne.util.logging.Log;
  * @see #createFromFile(Path, PasswordCallback)
  * @see #createFromFiles(Collection, PasswordCallback)
  * @see #createFromURL(URL, PasswordCallback)
- * @see #createFromServer(String, int)
+ * @see #createFromServer(SSLPeer.Protocol, String, int)
  * @see #createFromData(String, String, PasswordCallback)
  */
 public final class UserCertStore {
 
 	private static final Log LOG = new Log();
-
-	private static final Provider PROVIDER = new BouncyCastleProvider();
-
-	static {
-		LOG.info("Adding BouncyCastle security provider...");
-		Security.addProvider(PROVIDER);
-	}
 
 	private final UserCertStoreHandler storeHandler;
 

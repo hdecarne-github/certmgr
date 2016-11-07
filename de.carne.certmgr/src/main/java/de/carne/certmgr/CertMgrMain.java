@@ -16,13 +16,25 @@
  */
 package de.carne.certmgr;
 
+import java.security.Security;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import de.carne.Main;
 import de.carne.certmgr.jfx.CertMgrApplication;
+import de.carne.util.logging.Log;
 
 /**
  * Application {@link Main} class.
  */
 public class CertMgrMain implements Main {
+
+	private static final Log LOG = new Log();
+
+	static {
+		LOG.info("Adding BouncyCastle security provider...");
+		Security.addProvider(new BouncyCastleProvider());
+	}
 
 	@Override
 	public int run(String[] args) {
