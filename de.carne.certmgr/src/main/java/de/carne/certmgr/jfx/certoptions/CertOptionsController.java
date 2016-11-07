@@ -25,6 +25,8 @@ import de.carne.certmgr.certs.spi.CertSigner;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -111,10 +113,30 @@ public class CertOptionsController extends StageController {
 		close(false);
 	}
 
+	void onKeyAlgChanged(KeyPairAlgorithm keyAlg) {
+		ObservableList<Integer> keySizeOptions = this.ctlKeySizeOption.getItems();
+
+		keySizeOptions.clear();
+		if (keyAlg != null) {
+			keySizeOptions.addAll(keyAlg.getStandardKeySizes());
+			keySizeOptions.sort((o1, o2) -> o1.compareTo(o2));
+		}
+	}
+
 	@Override
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
+		this.ctlKeyAlgOption.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener<KeyPairAlgorithm>() {
+
+					@Override
+					public void changed(ObservableValue<? extends KeyPairAlgorithm> observable,
+							KeyPairAlgorithm oldValue, KeyPairAlgorithm newValue) {
+						onKeyAlgChanged(newValue);
+					}
+
+				});
 		setupKeyAlgOptions();
 		setupSignerOptions();
 	}
@@ -125,10 +147,6 @@ public class CertOptionsController extends StageController {
 		keyAlgOptions.clear();
 		keyAlgOptions.addAll(KeyPairAlgorithm.getAll(true));
 		keyAlgOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-	}
-
-	private void setupKeySizeOptions() {
-
 	}
 
 	private void setupSignerOptions() {

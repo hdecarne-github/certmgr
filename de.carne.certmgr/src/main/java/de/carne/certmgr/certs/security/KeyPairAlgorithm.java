@@ -94,6 +94,15 @@ public abstract class KeyPairAlgorithm {
 		return KeyPairGenerator.getInstance(this.service.getAlgorithm(), this.service.getProvider());
 	}
 
+	/**
+	 * Get this algorithm's standard key sizes.
+	 *
+	 * @return This algorithm's standard key sizes.
+	 */
+	public Set<Integer> getStandardKeySizes() {
+		return SecurityDefaults.getKeySizes(algorithm());
+	}
+
 	private static class StandardKeyPairAlgorithm extends KeyPairAlgorithm {
 
 		public StandardKeyPairAlgorithm(Service service) {

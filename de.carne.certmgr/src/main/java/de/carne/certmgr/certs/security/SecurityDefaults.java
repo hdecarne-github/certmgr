@@ -31,6 +31,7 @@ class SecurityDefaults {
 	private static final Properties DEFAULTS = PropertiesHelper.init(SecurityDefaults.class);
 
 	private static final String KEY_KEY_ALGORITHM = "keyAlgorithm";
+	private static final String KEY_KEY_SIZE = ".keySize";
 
 	public static String getDefaultKeyAlgorithmName() {
 		return getDefaultName(KEY_KEY_ALGORITHM);
@@ -38,6 +39,16 @@ class SecurityDefaults {
 
 	public static Set<String> getKeyAlgorithmNames() {
 		return getNames(KEY_KEY_ALGORITHM);
+	}
+
+	public static Set<Integer> getKeySizes(String algorithm) {
+		Set<String> sizeStrings = getNames(algorithm + KEY_KEY_SIZE);
+		Set<Integer> sizes = new HashSet<>(sizeStrings.size());
+
+		for (String sizeString : sizeStrings) {
+			sizes.add(Integer.valueOf(sizeString));
+		}
+		return sizes;
 	}
 
 	private static String getDefaultName(String key) {
