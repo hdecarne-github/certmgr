@@ -16,78 +16,58 @@
  */
 package de.carne.certmgr.certs.security;
 
-import java.security.GeneralSecurityException;
-import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.carne.util.Exceptions;
-
 /**
- * Key pair algorithm provisioning.
+ * Signature algorithm provisioning.
  */
-public abstract class KeyPairAlgorithm {
+public abstract class SignatureAlgorithm {
 
-	private static final String SERVICE_TYPE_KEY_PAIR_GENERATOR = "KeyPairGenerator";
+	private static final String SERVICE_TYPE_SIGNATURE = "Signature";
 
 	private final Service service;
 
-	KeyPairAlgorithm(Service service) {
+	SignatureAlgorithm(Service service) {
 		this.service = service;
 	}
 
 	/**
-	 * Get the available key pair algorithms.
-	 *
+	 * Get the available signature algorithms.
+	 * 
+	 * @param keyPairAlgorithm The key pair algorithm to get the signature
+	 *        algorithms for.
 	 * @param expertMode Whether only standard algorithms are considered
 	 *        ({@code false}) or all algorithms available on the current
 	 *        platform ({@code true}).
-	 * @return The available key pair algorithms
+	 * @return The available signature algorithms
 	 */
-	public static Set<KeyPairAlgorithm> getAll(boolean expertMode) {
-		Set<KeyPairAlgorithm> keyPairAlgorithms = new HashSet<>();
-		Set<String> standardAlgorithms = SecurityDefaults.getKeyAlgorithmNames();
+	public static Set<SignatureAlgorithm> getAll(String keyPairAlgorithm, boolean expertMode) {
+		Set<SignatureAlgorithm> signatureAlgorithms = new HashSet<>();
+		Set<String> standardAlgorithms = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
-				if (!SERVICE_TYPE_KEY_PAIR_GENERATOR.equals(service.getType())) {
+				if (!SERVICE_TYPE_SIGNATURE.equals(service.getType())) {
 					continue;
 				}
-				if (!expertMode && !standardAlgorithms.contains(service.getAlgorithm())) {
+
+				String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
+
+				if (!expertMode && !standardAlgorithms.contains(upperCaseAlgorithm)) {
 					continue;
 				}
 				if (expertMode) {
-					keyPairAlgorithms.add(new ExpertKeyPairAlgorithm(service));
+					signatureAlgorithms.add(new ExpertKeyPairAlgorithm(service));
 				} else {
-					keyPairAlgorithms.add(new StandardKeyPairAlgorithm(service));
+					signatureAlgorithms.add(new StandardKeyPairAlgorithm(service));
 				}
 			}
 		}
-		return keyPairAlgorithms;
-	}
-
-	/**
-	 * Get the default key pair algorithm.
-	 *
-	 * @param expertMode Whether only standard algorithms are considered
-	 *        ({@code false}) or all algorithms available on the current
-	 *        platform ({@code true}).
-	 * @return The default key pair algorithm.
-	 */
-	public static KeyPairAlgorithm getDefault(boolean expertMode) {
-		String defaultName = SecurityDefaults.getDefaultKeyAlgorithmName();
-		Service service;
-
-		try {
-			service = KeyPairGenerator.getInstance(defaultName).getProvider()
-					.getService(SERVICE_TYPE_KEY_PAIR_GENERATOR, defaultName);
-		} catch (GeneralSecurityException e) {
-			throw Exceptions.toRuntime(e);
-		}
-		return (expertMode ? new ExpertKeyPairAlgorithm(service) : new StandardKeyPairAlgorithm(service));
+		return signatureAlgorithms;
 	}
 
 	/**
@@ -108,35 +88,7 @@ public abstract class KeyPairAlgorithm {
 		return this.service.getAlgorithm();
 	}
 
-	/**
-	 * Get a {@link KeyPairGenerator} instance for this algorithm.
-	 *
-	 * @return A {@link KeyPairGenerator} instance for this algorithm.
-	 * @throws GeneralSecurityException if no instance is available.
-	 */
-	public KeyPairGenerator getInstance() throws GeneralSecurityException {
-		return KeyPairGenerator.getInstance(this.service.getAlgorithm(), this.service.getProvider());
-	}
-
-	/**
-	 * Get this algorithm's standard key sizes.
-	 *
-	 * @return This algorithm's standard key sizes.
-	 */
-	public Set<Integer> getStandardKeySizes() {
-		return SecurityDefaults.getKeySizes(algorithm());
-	}
-
-	/**
-	 * Get this algorithm's default key size.
-	 *
-	 * @return This algorithm's default key size.
-	 */
-	public Integer getDefaultKeySize() {
-		return SecurityDefaults.getDefaultKeySize(algorithm());
-	}
-
-	private static class StandardKeyPairAlgorithm extends KeyPairAlgorithm {
+	private static class StandardKeyPairAlgorithm extends SignatureAlgorithm {
 
 		public StandardKeyPairAlgorithm(Service service) {
 			super(service);
@@ -160,7 +112,7 @@ public abstract class KeyPairAlgorithm {
 
 	}
 
-	private static class ExpertKeyPairAlgorithm extends KeyPairAlgorithm {
+	private static class ExpertKeyPairAlgorithm extends SignatureAlgorithm {
 
 		public ExpertKeyPairAlgorithm(Service service) {
 			super(service);

@@ -32,6 +32,7 @@ class SecurityDefaults {
 
 	private static final String KEY_KEY_ALGORITHM = "keyAlgorithm";
 	private static final String KEY_KEY_SIZE = ".keySize";
+	private static final String KEY_SIGNATURE_ALGORITHM = ".signatureAlgorithm";
 
 	public static String getDefaultKeyAlgorithmName() {
 		return getDefaultName(KEY_KEY_ALGORITHM);
@@ -55,6 +56,14 @@ class SecurityDefaults {
 		String sizeString = getDefaultName(algorithm + KEY_KEY_SIZE);
 
 		return Integer.valueOf(sizeString);
+	}
+
+	public static Set<String> getSignatureAlgorithmNames(String keyPairAlgorithm) {
+		return getNames(keyPairAlgorithm + KEY_SIGNATURE_ALGORITHM);
+	}
+
+	public static String getDefaultSignatureAlgorithm(String keyPairAlgorithm) {
+		return getDefaultName(keyPairAlgorithm + KEY_SIGNATURE_ALGORITHM);
 	}
 
 	private static String getDefaultName(String key) {
