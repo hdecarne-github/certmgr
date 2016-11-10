@@ -16,31 +16,53 @@
  */
 package de.carne.certmgr.jfx.preferences;
 
-import java.util.prefs.Preferences;
-
+import de.carne.certmgr.jfx.store.UserPreferences;
 import de.carne.jfx.scene.control.DialogController;
+import javafx.fxml.FXML;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
+import javafx.util.Callback;
 
 /**
  * Preferences dialog.
  */
-public class PreferencesController extends DialogController<Object> {
+public class PreferencesController extends DialogController<UserPreferences>
+		implements Callback<ButtonType, UserPreferences> {
+
+	private UserPreferences preferences = null;
+
+	@FXML
+	CheckBox ctlExpertModeOption;
 
 	@Override
-	protected void setupDialog(Dialog<Object> dialog) {
+	protected void setupDialog(Dialog<UserPreferences> dialog) {
 		dialog.setTitle(PreferencesI18N.formatSTR_STAGE_TITLE());
 	}
 
 	/**
 	 * Initialize the preferences edited by the dialog.
 	 *
-	 * @param preferences The initial preferences.
+	 * @param preferencesParam The initial preferences.
 	 * @return This controller.
 	 */
-	public PreferencesController init(Preferences preferences) {
-		assert preferences != null;
+	public PreferencesController init(UserPreferences preferencesParam) {
+		assert preferencesParam != null;
 
+		this.preferences = preferencesParam;
+		this.ctlExpertModeOption.setSelected(this.preferences.expertMode.getBoolean(false));
 		return this;
+	}
+
+	@Override
+	public UserPreferences call(ButtonType param) {
+		UserPreferences preferencesResult = null;
+
+		if (param == ButtonType.APPLY) {
+			this.preferences.expertMode.put(this.ctlExpertModeOption.isSelected());
+			preferencesResult = this.preferences;
+		}
+		return preferencesResult;
 	}
 
 }

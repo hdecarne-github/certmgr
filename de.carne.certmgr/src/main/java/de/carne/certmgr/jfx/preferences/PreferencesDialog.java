@@ -18,16 +18,17 @@ package de.carne.certmgr.jfx.preferences;
 
 import java.io.IOException;
 
+import de.carne.certmgr.jfx.store.UserPreferences;
 import de.carne.jfx.stage.StageController;
 import javafx.scene.control.Dialog;
 
 /**
  * Preferences dialog.
  */
-public class PreferencesDialog extends Dialog<Object> {
+public class PreferencesDialog extends Dialog<UserPreferences> {
 
 	private PreferencesDialog(PreferencesController controller) {
-		// Make sure this class is not instantiated from outside
+		setResultConverter(controller);
 	}
 
 	/**

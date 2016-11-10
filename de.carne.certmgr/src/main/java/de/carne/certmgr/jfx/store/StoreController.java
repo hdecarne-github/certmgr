@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStore;
@@ -71,6 +72,8 @@ public class StoreController extends StageController {
 
 	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
 			"initialDirectory", true);
+
+	private final UserPreferences userPreferences = new UserPreferences();
 
 	private UserCertStoreTreeTableViewHelper<StoreEntryModel> storeEntryViewHelper = null;
 
@@ -145,7 +148,7 @@ public class StoreController extends StageController {
 	void onCmdNewCert(ActionEvent evt) {
 		try {
 			CertOptionsController certOptions = loadStage(CertOptionsController.class).init(this.store,
-					getSelectedStoreEntry(), false);
+					getSelectedStoreEntry(), this.userPreferences.expertMode.getBoolean(false));
 
 			certOptions.show();
 		} catch (IOException e) {
@@ -193,10 +196,12 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdPreferences(ActionEvent evt) {
 		try {
-			PreferencesController editPreferences = PreferencesDialog.load(this);
+			PreferencesController editPreferences = PreferencesDialog.load(this).init(this.userPreferences);
 
-			editPreferences.showAndWait();
-		} catch (IOException e) {
+			if (editPreferences.showAndWait().isPresent()) {
+				this.userPreferences.sync();
+			}
+		} catch (IOException | BackingStoreException e) {
 			Alerts.unexpected(e);
 		}
 	}
