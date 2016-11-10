@@ -49,7 +49,7 @@
           </Menu>
             <Menu mnemonicParsing="false" text="%_STR_MENU_EDIT">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdCopyEntry" text="%_STR_MENU_COPY_ENTRY">
+                  <MenuItem fx:id="cmdCopyEntry" mnemonicParsing="false" onAction="#onCmdCopyEntry" text="%_STR_MENU_COPY_ENTRY">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -58,7 +58,7 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdDeleteEntry" text="%_STR_MENU_DELETE_ENTRY">
+                  <MenuItem fx:id="cmdDeleteEntry" mnemonicParsing="false" onAction="#onCmdDeleteEntry" text="%_STR_MENU_DELETE_ENTRY">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -71,7 +71,7 @@
             </Menu>
             <Menu mnemonicParsing="false" text="%_STR_MENU_CERTS">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdNewCert" text="%_STR_MENU_NEW_CERT">
+                  <MenuItem fx:id="cmdNewCert" mnemonicParsing="false" onAction="#onCmdNewCert" text="%_STR_MENU_NEW_CERT">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -80,7 +80,7 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdRevokeCert" text="%_STR_MENU_REVOKE_CERT">
+                  <MenuItem fx:id="cmdRevokeCert" mnemonicParsing="false" onAction="#onCmdRevokeCert" text="%_STR_MENU_REVOKE_CERT">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -89,7 +89,7 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdEditCRL" text="%_STR_MENU_EDIT_CRL">
+                  <MenuItem fx:id="cmdEditCRL" mnemonicParsing="false" onAction="#onCmdEditCRL" text="%_STR_MENU_EDIT_CRL">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -99,7 +99,7 @@
                      </graphic>
                   </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdExportCerts" text="%_STR_MENU_EXPORT_CERTS">
+                  <MenuItem fx:id="cmdExportCert" mnemonicParsing="false" onAction="#onCmdExportCert" text="%_STR_MENU_EXPORT_CERT">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -108,7 +108,7 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#onCmdImportCerts" text="%_STR_MENU_IMPORT_CERTS">
+                  <MenuItem fx:id="cmdImportCerts" mnemonicParsing="false" onAction="#onCmdImportCerts" text="%_STR_MENU_IMPORT_CERTS">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -150,7 +150,7 @@
                </graphic>
             </Button>
             <Separator orientation="VERTICAL" />
-            <Button layoutX="48.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCopyEntry">
+            <Button fx:id="cmdCopyEntryButton" layoutX="48.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCopyEntry">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -159,7 +159,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button layoutX="86.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdDeleteEntry">
+            <Button fx:id="cmdDeleteEntryButton" layoutX="86.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdDeleteEntry">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -169,7 +169,7 @@
                </graphic>
             </Button>
             <Separator layoutX="248.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdNewCert">
+            <Button fx:id="cmdNewCertButton" layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdNewCert">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -178,7 +178,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button layoutX="162.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdRevokeCert">
+            <Button fx:id="cmdRevokeCertButton" layoutX="162.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdRevokeCert">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -187,7 +187,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button layoutX="200.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdEditCRL">
+            <Button fx:id="cmdEditCRLButton" layoutX="200.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdEditCRL">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -197,7 +197,7 @@
                </graphic>
             </Button>
             <Separator layoutX="248.0" layoutY="10.0" orientation="VERTICAL" />
-            <Button layoutX="238.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdExportCerts">
+            <Button fx:id="cmdExportCertButton" layoutX="238.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdExportCert">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -206,7 +206,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button layoutX="276.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdImportCerts">
+            <Button fx:id="cmdImportCertsButton" layoutX="276.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdImportCerts">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>

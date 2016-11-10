@@ -50,12 +50,16 @@ import de.carne.jfx.util.ShortDate;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.Exceptions;
 import de.carne.util.prefs.DirectoryPreference;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
@@ -77,10 +81,52 @@ public class StoreController extends StageController {
 
 	private UserCertStoreTreeTableViewHelper<StoreEntryModel> storeEntryViewHelper = null;
 
-	private UserCertStore store = null;
+	private ObjectProperty<UserCertStore> storeProperty = new SimpleObjectProperty<>(null);
+
+	@FXML
+	MenuItem cmdCopyEntry;
+
+	@FXML
+	MenuItem cmdDeleteEntry;
+
+	@FXML
+	MenuItem cmdNewCert;
+
+	@FXML
+	MenuItem cmdRevokeCert;
+
+	@FXML
+	MenuItem cmdEditCRL;
+
+	@FXML
+	MenuItem cmdExportCert;
+
+	@FXML
+	MenuItem cmdImportCerts;
 
 	@FXML
 	CheckMenuItem cmdToggleLogView;
+
+	@FXML
+	Button cmdCopyEntryButton;
+
+	@FXML
+	Button cmdDeleteEntryButton;
+
+	@FXML
+	Button cmdNewCertButton;
+
+	@FXML
+	Button cmdRevokeCertButton;
+
+	@FXML
+	Button cmdEditCRLButton;
+
+	@FXML
+	Button cmdExportCertButton;
+
+	@FXML
+	Button cmdImportCertsButton;
 
 	@FXML
 	TreeTableView<StoreEntryModel> ctlStoreEntryView;
@@ -147,7 +193,7 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdNewCert(ActionEvent evt) {
 		try {
-			CertOptionsController certOptions = loadStage(CertOptionsController.class).init(this.store,
+			CertOptionsController certOptions = loadStage(CertOptionsController.class).init(this.storeProperty.get(),
 					getSelectedStoreEntry(), this.userPreferences.expertMode.getBoolean(false));
 
 			certOptions.show();
@@ -167,7 +213,7 @@ public class StoreController extends StageController {
 	}
 
 	@FXML
-	void onCmdExportCerts(ActionEvent evt) {
+	void onCmdExportCert(ActionEvent evt) {
 
 	}
 
@@ -240,6 +286,25 @@ public class StoreController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(Images.STORE32, Images.STORE16);
 		stage.setTitle(StoreI18N.formatSTR_STAGE_TITLE());
+		this.cmdCopyEntry.disableProperty()
+				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
+		this.cmdDeleteEntry.disableProperty()
+				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
+		this.cmdNewCert.disableProperty().bind(this.storeProperty.isNull());
+		this.cmdRevokeCert.disableProperty()
+				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
+		this.cmdEditCRL.disableProperty()
+				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
+		this.cmdExportCert.disableProperty()
+				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
+		this.cmdImportCerts.disableProperty().bind(this.storeProperty.isNull());
+		this.cmdCopyEntryButton.disableProperty().bind(this.cmdCopyEntry.disableProperty());
+		this.cmdDeleteEntryButton.disableProperty().bind(this.cmdDeleteEntry.disableProperty());
+		this.cmdNewCertButton.disableProperty().bind(this.cmdNewCert.disableProperty());
+		this.cmdRevokeCertButton.disableProperty().bind(this.cmdRevokeCert.disableProperty());
+		this.cmdEditCRLButton.disableProperty().bind(this.cmdEditCRL.disableProperty());
+		this.cmdExportCertButton.disableProperty().bind(this.cmdExportCert.disableProperty());
+		this.cmdImportCertsButton.disableProperty().bind(this.cmdImportCerts.disableProperty());
 		this.ctlStoreEntryViewId.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
 		this.ctlStoreEntryViewDN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlStoreEntryViewExpires.setCellValueFactory(new TreeItemPropertyValueFactory<>("expires"));
@@ -273,9 +338,9 @@ public class StoreController extends StageController {
 		assert storeHome != null;
 
 		try {
-			this.store = UserCertStore.openStore(storeHome.toPath());
+			this.storeProperty.set(UserCertStore.openStore(storeHome.toPath()));
 			updateStoreEntryView();
-			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(this.store.storeHome()));
+			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(storeHome));
 		} catch (IOException e) {
 			Alerts.unexpected(e);
 		}
@@ -292,7 +357,7 @@ public class StoreController extends StageController {
 			this.storeEntryViewHelper = new UserCertStoreTreeTableViewHelper<>(this.ctlStoreEntryView,
 					(e) -> new StoreEntryModel(e));
 		}
-		this.storeEntryViewHelper.update(this.store);
+		this.storeEntryViewHelper.update(this.storeProperty.get());
 	}
 
 	private void updateDetailsView(TreeItem<StoreEntryModel> selection) {
