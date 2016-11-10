@@ -16,12 +16,16 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import java.util.Set;
+import java.util.Comparator;
 import java.util.prefs.Preferences;
 
+import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.security.DefaultSet;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.signer.CertSigners;
+import de.carne.certmgr.certs.signer.Issuer;
 import de.carne.certmgr.certs.spi.CertSigner;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
@@ -47,6 +51,12 @@ public class CertOptionsController extends StageController {
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertOptionsController.class);
 
+	private UserCertStore store = null;
+
+	private UserCertStoreEntry storeEntry = null;
+
+	private boolean expertMode = false;
+
 	@FXML
 	Menu ctlStorePresetsMenu;
 
@@ -69,7 +79,7 @@ public class CertOptionsController extends StageController {
 	ChoiceBox<CertSigner> ctlSignerOption;
 
 	@FXML
-	ComboBox<String> ctlSigAlgOption;
+	ComboBox<SignatureAlgorithm> ctlSigAlgOption;
 
 	@FXML
 	DatePicker ctlNotBeforeInput;
@@ -78,7 +88,7 @@ public class CertOptionsController extends StageController {
 	DatePicker ctlNotAfterInput;
 
 	@FXML
-	ComboBox<UserCertStoreEntry> ctlIssuerInput;
+	ComboBox<Issuer> ctlIssuerInput;
 
 	@FXML
 	MenuItem cmdAddBasicConstraints;
@@ -115,18 +125,21 @@ public class CertOptionsController extends StageController {
 	}
 
 	void onKeyAlgChanged(KeyPairAlgorithm keyAlg) {
-		ObservableList<Integer> keySizeOptions = this.ctlKeySizeOption.getItems();
+		DefaultSet<Integer> keySizes = (keyAlg != null ? keyAlg.getStandardKeySizes() : null);
 
-		keySizeOptions.clear();
-		if (keyAlg != null) {
-			Set<Integer> keySizes = keyAlg.getStandardKeySizes();
+		resetComboBoxOptions(this.ctlKeySizeOption, keySizes, (o1, o2) -> o1.compareTo(o2));
+		resetSigAlgOptions(keyAlg);
+	}
 
-			if (keySizes.size() > 0) {
-				keySizeOptions.addAll(keySizes);
-				keySizeOptions.sort((o1, o2) -> o1.compareTo(o2));
-				this.ctlKeySizeOption.getSelectionModel().select(keyAlg.getDefaultKeySize());
-			}
-		}
+	void onSignerChanged(CertSigner newSigner) {
+		DefaultSet<Issuer> issuers = (newSigner != null ? newSigner.getIssuers(this.store) : null);
+
+		resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
+		resetSigAlgOptions(newSigner);
+	}
+
+	void onIssuerChanged(Issuer newIssuer) {
+		resetSigAlgOptions(newIssuer);
 	}
 
 	@Override
@@ -143,20 +156,41 @@ public class CertOptionsController extends StageController {
 					}
 
 				});
-		setupKeyAlgOptions();
-		setupSignerOptions();
+		this.ctlSignerOption.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CertSigner>() {
+
+			@Override
+			public void changed(ObservableValue<? extends CertSigner> observable, CertSigner oldValue,
+					CertSigner newValue) {
+				onSignerChanged(newValue);
+			}
+
+		});
+		this.ctlIssuerInput.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Issuer>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Issuer> observable, Issuer oldValue, Issuer newValue) {
+				onIssuerChanged(newValue);
+			}
+
+		});
 	}
 
-	private void setupKeyAlgOptions() {
-		ObservableList<KeyPairAlgorithm> keyAlgOptions = this.ctlKeyAlgOption.getItems();
-
-		keyAlgOptions.clear();
-		keyAlgOptions.addAll(KeyPairAlgorithm.getAll(true));
-		keyAlgOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		this.ctlKeyAlgOption.getSelectionModel().select(KeyPairAlgorithm.getDefault(true));
+	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry storeEntryParam,
+			boolean expertModeParam) {
+		this.store = storeParam;
+		this.storeEntry = storeEntryParam;
+		this.expertMode = expertModeParam;
+		initKeyAlgOptions();
+		initSignerOptions();
+		return this;
 	}
 
-	private void setupSignerOptions() {
+	private void initKeyAlgOptions() {
+		resetComboBoxOptions(this.ctlKeyAlgOption, KeyPairAlgorithm.getAll(this.expertMode),
+				(o1, o2) -> o1.toString().compareTo(o2.toString()));
+	}
+
+	private void initSignerOptions() {
 		ObservableList<CertSigner> signerOptions = this.ctlSignerOption.getItems();
 
 		signerOptions.clear();
@@ -165,9 +199,54 @@ public class CertOptionsController extends StageController {
 		this.ctlSignerOption.getSelectionModel().select(CertSigners.DEFAULT);
 	}
 
+	private void resetSigAlgOptions(CertSigner signer) {
+		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getSelectionModel().getSelectedItem();
+		Issuer issuer = this.ctlIssuerInput.getSelectionModel().getSelectedItem();
+
+		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
+	}
+
+	private void resetSigAlgOptions(KeyPairAlgorithm keyPairAlgorithm) {
+		CertSigner signer = this.ctlSignerOption.getSelectionModel().getSelectedItem();
+		Issuer issuer = this.ctlIssuerInput.getSelectionModel().getSelectedItem();
+
+		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
+	}
+
+	private void resetSigAlgOptions(Issuer issuer) {
+		CertSigner signer = this.ctlSignerOption.getSelectionModel().getSelectedItem();
+		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getSelectionModel().getSelectedItem();
+
+		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
+	}
+
+	private void resetSigAlgOptions(CertSigner signer, KeyPairAlgorithm keyPairAlgorithm, Issuer issuer) {
+		DefaultSet<SignatureAlgorithm> sigAlgs = null;
+
+		if (signer != null) {
+			sigAlgs = signer.getSignatureAlgorithms(keyPairAlgorithm, issuer, this.expertMode);
+		}
+		resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs, (o1, o2) -> o1.toString().compareTo(o2.toString()));
+	}
+
 	@Override
 	protected Preferences getPreferences() {
 		return this.preferences;
+	}
+
+	private static <T> void resetComboBoxOptions(ComboBox<T> control, DefaultSet<T> defaultSet,
+			Comparator<T> comparator) {
+		ObservableList<T> options = control.getItems();
+
+		options.clear();
+		if (defaultSet != null && !defaultSet.isEmpty()) {
+			options.addAll(defaultSet);
+			options.sort(comparator);
+			control.getSelectionModel().select(defaultSet.getDefault());
+			control.setDisable(false);
+		} else {
+			control.setDisable(!control.isEditable());
+		}
 	}
 
 }

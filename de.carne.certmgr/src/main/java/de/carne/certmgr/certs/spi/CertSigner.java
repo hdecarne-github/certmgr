@@ -16,6 +16,12 @@
  */
 package de.carne.certmgr.certs.spi;
 
+import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.security.DefaultSet;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
+import de.carne.certmgr.certs.signer.Issuer;
+
 /**
  * Service provider interface for certificate signing.
  */
@@ -27,5 +33,16 @@ public interface CertSigner extends NamedProvider {
 	 * @return This provider's description.
 	 */
 	String getDescription();
+
+	/**
+	 * Get the available issuers.
+	 *
+	 * @param store The store to use for issuer provisioning.
+	 * @return The available issuers (may be an empty set).
+	 */
+	DefaultSet<Issuer> getIssuers(UserCertStore store);
+
+	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(KeyPairAlgorithm keyPairAlgorithm, Issuer issuer,
+			boolean expertMode);
 
 }

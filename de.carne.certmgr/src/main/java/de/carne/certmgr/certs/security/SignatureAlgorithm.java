@@ -19,8 +19,6 @@ package de.carne.certmgr.certs.security;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Signature algorithm provisioning.
@@ -37,7 +35,7 @@ public abstract class SignatureAlgorithm {
 
 	/**
 	 * Get the available signature algorithms.
-	 * 
+	 *
 	 * @param keyPairAlgorithm The key pair algorithm to get the signature
 	 *        algorithms for.
 	 * @param expertMode Whether only standard algorithms are considered
@@ -45,9 +43,10 @@ public abstract class SignatureAlgorithm {
 	 *        platform ({@code true}).
 	 * @return The available signature algorithms
 	 */
-	public static Set<SignatureAlgorithm> getAll(String keyPairAlgorithm, boolean expertMode) {
-		Set<SignatureAlgorithm> signatureAlgorithms = new HashSet<>();
-		Set<String> standardAlgorithms = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
+	public static DefaultSet<SignatureAlgorithm> getAll(String keyPairAlgorithm, boolean expertMode) {
+		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
+		DefaultSet<String> defaultNameSet = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
+		String defaultName = defaultNameSet.getDefault();
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
@@ -57,13 +56,17 @@ public abstract class SignatureAlgorithm {
 
 				String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
 
-				if (!expertMode && !standardAlgorithms.contains(upperCaseAlgorithm)) {
+				if (!expertMode && !defaultNameSet.contains(upperCaseAlgorithm)) {
 					continue;
 				}
-				if (expertMode) {
-					signatureAlgorithms.add(new ExpertKeyPairAlgorithm(service));
+
+				SignatureAlgorithm signatureAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
+						: new StandardKeyPairAlgorithm(service));
+
+				if (signatureAlgorithm.algorithm().equals(defaultName)) {
+					signatureAlgorithms.addDefault(signatureAlgorithm);
 				} else {
-					signatureAlgorithms.add(new StandardKeyPairAlgorithm(service));
+					signatureAlgorithms.add(signatureAlgorithm);
 				}
 			}
 		}

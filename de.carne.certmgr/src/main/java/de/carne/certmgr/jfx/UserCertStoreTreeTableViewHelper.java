@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import de.carne.certmgr.certs.UserCertStore;
@@ -88,7 +89,7 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 		}
 	}
 
-	private void updateHelper(TreeItem<T> parent, List<UserCertStoreEntry> entries) {
+	private void updateHelper(TreeItem<T> parent, Set<UserCertStoreEntry> entries) {
 		ObservableList<TreeItem<T>> items = parent.getChildren();
 		List<TreeItem<T>> itemsToRemove = new ArrayList<>(items.size());
 		Map<UserCertStoreEntry, TreeItem<T>> itemsToUpdate = new HashMap<>(items.size());

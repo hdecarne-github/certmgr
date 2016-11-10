@@ -20,12 +20,13 @@ import java.io.IOException;
 import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
-import java.util.List;
+import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.util.Exceptions;
 
 /**
  * Certificate store entry.
@@ -106,7 +107,7 @@ public abstract class UserCertStoreEntry {
 	 *
 	 * @return The user certificate store entries issued by this entry.
 	 */
-	public List<UserCertStoreEntry> issuedEntries() {
+	public Set<UserCertStoreEntry> issuedEntries() {
 		return store().getIssuedEntries(this);
 	}
 
@@ -230,6 +231,45 @@ public abstract class UserCertStoreEntry {
 	 */
 	public final boolean isExternal() {
 		return !hasCRT() && !hasKey() && !hasCSR() && !hasCRL();
+	}
+
+	/**
+	 * Check whether this entry is able to issue other certificates (means has a
+	 * key and hat it's Basic Constraints CA flag set to true).
+	 *
+	 * @return {@code true} if this entry can be used for issuing new
+	 *         certificates.
+	 */
+	public final boolean canIssue() {
+		boolean canIssue = false;
+
+		if (hasKey() && hasCRT()) {
+			try {
+				canIssue = getCRT().getBasicConstraints() >= 0;
+			} catch (IOException e) {
+				Exceptions.warn(e);
+			}
+		}
+		return canIssue;
+	}
+
+	/**
+	 * Get this entry's key algorithm.
+	 * 
+	 * @return This entry's key algorithm or {@code null} if the key algorithm
+	 *         could not be determined.
+	 */
+	public final String getKeyAlgorithm() {
+		String keyAlgorithm = null;
+
+		if (hasKey() && hasCRT()) {
+			try {
+				keyAlgorithm = getCRT().getPublicKey().getAlgorithm();
+			} catch (IOException e) {
+				Exceptions.warn(e);
+			}
+		}
+		return keyAlgorithm;
 	}
 
 	@Override

@@ -78,7 +78,7 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 				expires = entry.getCRT().getNotAfter();
 			}
 		} catch (IOException e) {
-			Exceptions.ignore(e);
+			Exceptions.warn(e);
 		}
 		return (expires != null ? new ShortDate(expires.getTime()) : null);
 	}

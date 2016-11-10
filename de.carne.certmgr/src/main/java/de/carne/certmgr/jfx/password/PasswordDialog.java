@@ -22,6 +22,7 @@ import java.util.Optional;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
+import de.carne.util.Exceptions;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.util.Callback;
@@ -42,7 +43,7 @@ public final class PasswordDialog implements PasswordCallback {
 
 	/**
 	 * Create a {@link PasswordCallback} for enter an existing password.
-	 * 
+	 *
 	 * @param owner The owner to use for dialog display.
 	 * @return The created {@link PasswordCallback}.
 	 */
@@ -52,7 +53,7 @@ public final class PasswordDialog implements PasswordCallback {
 
 	/**
 	 * Create a {@link PasswordCallback} for enter a new password.
-	 * 
+	 *
 	 * @param owner The owner to use for dialog display.
 	 * @return The created {@link PasswordCallback}.
 	 */
@@ -85,7 +86,7 @@ public final class PasswordDialog implements PasswordCallback {
 				password = dialogResult.get().toCharArray();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Exceptions.warn(e);
 		}
 		return password;
 	}
@@ -106,7 +107,7 @@ public final class PasswordDialog implements PasswordCallback {
 				password = dialogResult.get().toCharArray();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Exceptions.warn(e);
 		}
 		return password;
 	}

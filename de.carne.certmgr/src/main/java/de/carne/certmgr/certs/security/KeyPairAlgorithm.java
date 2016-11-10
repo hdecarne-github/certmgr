@@ -21,10 +21,6 @@ import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
-import java.util.HashSet;
-import java.util.Set;
-
-import de.carne.util.Exceptions;
 
 /**
  * Key pair algorithm provisioning.
@@ -47,47 +43,31 @@ public abstract class KeyPairAlgorithm {
 	 *        platform ({@code true}).
 	 * @return The available key pair algorithms
 	 */
-	public static Set<KeyPairAlgorithm> getAll(boolean expertMode) {
-		Set<KeyPairAlgorithm> keyPairAlgorithms = new HashSet<>();
-		Set<String> standardAlgorithms = SecurityDefaults.getKeyAlgorithmNames();
+	public static DefaultSet<KeyPairAlgorithm> getAll(boolean expertMode) {
+		DefaultSet<KeyPairAlgorithm> keyPairAlgorithms = new DefaultSet<>();
+		DefaultSet<String> defaultNameSet = SecurityDefaults.getKeyAlgorithmNames();
+		String defaultName = defaultNameSet.getDefault();
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
 				if (!SERVICE_TYPE_KEY_PAIR_GENERATOR.equals(service.getType())) {
 					continue;
 				}
-				if (!expertMode && !standardAlgorithms.contains(service.getAlgorithm())) {
+				if (!expertMode && !defaultNameSet.contains(service.getAlgorithm())) {
 					continue;
 				}
-				if (expertMode) {
-					keyPairAlgorithms.add(new ExpertKeyPairAlgorithm(service));
+
+				KeyPairAlgorithm keyPairAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
+						: new StandardKeyPairAlgorithm(service));
+
+				if (keyPairAlgorithm.algorithm().equals(defaultName)) {
+					keyPairAlgorithms.addDefault(keyPairAlgorithm);
 				} else {
-					keyPairAlgorithms.add(new StandardKeyPairAlgorithm(service));
+					keyPairAlgorithms.add(keyPairAlgorithm);
 				}
 			}
 		}
 		return keyPairAlgorithms;
-	}
-
-	/**
-	 * Get the default key pair algorithm.
-	 *
-	 * @param expertMode Whether only standard algorithms are considered
-	 *        ({@code false}) or all algorithms available on the current
-	 *        platform ({@code true}).
-	 * @return The default key pair algorithm.
-	 */
-	public static KeyPairAlgorithm getDefault(boolean expertMode) {
-		String defaultName = SecurityDefaults.getDefaultKeyAlgorithmName();
-		Service service;
-
-		try {
-			service = KeyPairGenerator.getInstance(defaultName).getProvider()
-					.getService(SERVICE_TYPE_KEY_PAIR_GENERATOR, defaultName);
-		} catch (GeneralSecurityException e) {
-			throw Exceptions.toRuntime(e);
-		}
-		return (expertMode ? new ExpertKeyPairAlgorithm(service) : new StandardKeyPairAlgorithm(service));
 	}
 
 	/**
@@ -123,17 +103,8 @@ public abstract class KeyPairAlgorithm {
 	 *
 	 * @return This algorithm's standard key sizes.
 	 */
-	public Set<Integer> getStandardKeySizes() {
+	public DefaultSet<Integer> getStandardKeySizes() {
 		return SecurityDefaults.getKeySizes(algorithm());
-	}
-
-	/**
-	 * Get this algorithm's default key size.
-	 *
-	 * @return This algorithm's default key size.
-	 */
-	public Integer getDefaultKeySize() {
-		return SecurityDefaults.getDefaultKeySize(algorithm());
 	}
 
 	private static class StandardKeyPairAlgorithm extends KeyPairAlgorithm {

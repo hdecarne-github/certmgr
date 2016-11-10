@@ -35,6 +35,8 @@ import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.jfx.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
 import de.carne.certmgr.jfx.certoptions.CertOptionsController;
+import de.carne.certmgr.jfx.preferences.PreferencesController;
+import de.carne.certmgr.jfx.preferences.PreferencesDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
@@ -142,11 +144,12 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdNewCert(ActionEvent evt) {
 		try {
-			CertOptionsController certOptions = loadStage(CertOptionsController.class);
+			CertOptionsController certOptions = loadStage(CertOptionsController.class).init(this.store,
+					getSelectedStoreEntry(), false);
 
 			certOptions.show();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.unexpected(e);
 		}
 	}
 
@@ -172,7 +175,7 @@ public class StoreController extends StageController {
 
 			importController.show();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.unexpected(e);
 		}
 	}
 
@@ -184,6 +187,17 @@ public class StoreController extends StageController {
 			} catch (IOException e) {
 				Alerts.unexpected(e);
 			}
+		}
+	}
+
+	@FXML
+	void onCmdPreferences(ActionEvent evt) {
+		try {
+			PreferencesController editPreferences = PreferencesDialog.load(this);
+
+			editPreferences.showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e);
 		}
 	}
 
@@ -258,8 +272,14 @@ public class StoreController extends StageController {
 			updateStoreEntryView();
 			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(this.store.storeHome()));
 		} catch (IOException e) {
-			e.printStackTrace();
+			Alerts.unexpected(e);
 		}
+	}
+
+	private UserCertStoreEntry getSelectedStoreEntry() {
+		TreeItem<StoreEntryModel> selectedItem = this.ctlStoreEntryView.getSelectionModel().getSelectedItem();
+
+		return (selectedItem != null ? selectedItem.getValue().getEntry() : null);
 	}
 
 	private void updateStoreEntryView() {
@@ -286,7 +306,7 @@ public class StoreController extends StageController {
 
 					updateDetailsViewHelper(rootItem, X509CertificateHelper.toAttributes(crt), true);
 				} catch (IOException e) {
-					Exceptions.ignore(e);
+					Exceptions.warn(e);
 				}
 			}
 			if (entry.hasCSR()) {

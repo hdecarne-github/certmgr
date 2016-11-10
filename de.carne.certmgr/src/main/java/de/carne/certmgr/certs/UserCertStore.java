@@ -288,12 +288,21 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Get this store's entries.
+	 * 
+	 * @return This store's entries.
+	 */
+	public synchronized Set<UserCertStoreEntry> getEntries() {
+		return new HashSet<>(this.storeEntries.values());
+	}
+
+	/**
 	 * Get this store's root entries.
 	 *
 	 * @return This store's root entries.
 	 */
-	public synchronized List<UserCertStoreEntry> getRootEntries() {
-		List<UserCertStoreEntry> rootEntries = new ArrayList<>();
+	public synchronized Set<UserCertStoreEntry> getRootEntries() {
+		Set<UserCertStoreEntry> rootEntries = new HashSet<>();
 
 		for (Entry entry : this.storeEntries.values()) {
 			if (entry.isSelfSigned()) {
@@ -309,10 +318,10 @@ public final class UserCertStore {
 	 * @param entry The store entry to get the issued entries for.
 	 * @return The store entries which are issued by the submitted store entry.
 	 */
-	public synchronized List<UserCertStoreEntry> getIssuedEntries(UserCertStoreEntry entry) {
+	public synchronized Set<UserCertStoreEntry> getIssuedEntries(UserCertStoreEntry entry) {
 		assert entry != null;
 
-		List<UserCertStoreEntry> issuedEntries = new ArrayList<>();
+		Set<UserCertStoreEntry> issuedEntries = new HashSet<>();
 
 		for (Entry issuedEntry : this.storeEntries.values()) {
 			if (!entry.equals(issuedEntry) && issuedEntry.issuer().equals(entry)) {

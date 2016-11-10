@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.carne.certmgr.certs.security.DefaultSet;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 
 /**
@@ -61,7 +62,7 @@ public class KeyPairAlgorithmTest {
 			System.out.println(expertAlgorithm);
 		}
 		// The standard ones should always be available
-		Assert.assertTrue(standardAlgorithms.size() == 4);
+		Assert.assertTrue(standardAlgorithms.size() == 3);
 		// The exact number of expert ones will vary, but should always be more
 		Assert.assertTrue(expertAlgorithms.size() > standardAlgorithms.size());
 	}
@@ -71,18 +72,17 @@ public class KeyPairAlgorithmTest {
 	 */
 	@Test
 	public void testKeySizes() {
-		Set<KeyPairAlgorithm> algorithms = KeyPairAlgorithm.getAll(true);
-		KeyPairAlgorithm defaultAlgorithm = KeyPairAlgorithm.getDefault(true);
+		DefaultSet<KeyPairAlgorithm> algorithms = KeyPairAlgorithm.getAll(true);
 
-		Assert.assertTrue(algorithms.contains(defaultAlgorithm));
+		Assert.assertTrue(algorithms.contains(algorithms.getDefault()));
 		for (KeyPairAlgorithm algorithm : algorithms) {
 			System.out.println("Algorithm: " + algorithm);
 			try {
 				KeyPairGenerator generator = algorithm.getInstance();
-				Set<Integer> keySizes = algorithm.getStandardKeySizes();
+				DefaultSet<Integer> keySizes = algorithm.getStandardKeySizes();
 
 				if (keySizes.size() > 0) {
-					Integer defaultKeySize = algorithm.getDefaultKeySize();
+					Integer defaultKeySize = keySizes.getDefault();
 
 					Assert.assertTrue(keySizes.contains(defaultKeySize));
 					for (Integer keySize : keySizes) {

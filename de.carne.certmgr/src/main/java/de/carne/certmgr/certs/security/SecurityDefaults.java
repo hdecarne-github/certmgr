@@ -16,9 +16,8 @@
  */
 package de.carne.certmgr.certs.security;
 
-import java.util.HashSet;
 import java.util.Properties;
-import java.util.Set;
+import java.util.function.Function;
 
 import de.carne.util.PropertiesHelper;
 
@@ -34,57 +33,31 @@ class SecurityDefaults {
 	private static final String KEY_KEY_SIZE = ".keySize";
 	private static final String KEY_SIGNATURE_ALGORITHM = ".signatureAlgorithm";
 
-	public static String getDefaultKeyAlgorithmName() {
-		return getDefaultName(KEY_KEY_ALGORITHM);
+	public static DefaultSet<String> getKeyAlgorithmNames() {
+		return getValues(KEY_KEY_ALGORITHM, (s) -> s);
 	}
 
-	public static Set<String> getKeyAlgorithmNames() {
-		return getNames(KEY_KEY_ALGORITHM);
+	public static DefaultSet<Integer> getKeySizes(String algorithm) {
+		return getValues(algorithm + KEY_KEY_SIZE, (s) -> Integer.valueOf(s));
 	}
 
-	public static Set<Integer> getKeySizes(String algorithm) {
-		Set<String> sizeStrings = getNames(algorithm + KEY_KEY_SIZE);
-		Set<Integer> sizes = new HashSet<>(sizeStrings.size());
+	public static DefaultSet<String> getSignatureAlgorithmNames(String keyPairAlgorithm) {
+		return getValues(keyPairAlgorithm + KEY_SIGNATURE_ALGORITHM, (s) -> s);
+	}
 
-		for (String sizeString : sizeStrings) {
-			sizes.add(Integer.valueOf(sizeString));
+	private static <T> DefaultSet<T> getValues(String key, Function<String, T> conversion) {
+		DefaultSet<T> defaultValueSet = new DefaultSet<>();
+		int keyIndex = 1;
+		String valueString;
+
+		while ((valueString = DEFAULTS.getProperty(key + "." + keyIndex)) != null) {
+			defaultValueSet.add(conversion.apply(valueString));
+			keyIndex++;
 		}
-		return sizes;
-	}
-
-	public static Integer getDefaultKeySize(String algorithm) {
-		String sizeString = getDefaultName(algorithm + KEY_KEY_SIZE);
-
-		return Integer.valueOf(sizeString);
-	}
-
-	public static Set<String> getSignatureAlgorithmNames(String keyPairAlgorithm) {
-		return getNames(keyPairAlgorithm + KEY_SIGNATURE_ALGORITHM);
-	}
-
-	public static String getDefaultSignatureAlgorithm(String keyPairAlgorithm) {
-		return getDefaultName(keyPairAlgorithm + KEY_SIGNATURE_ALGORITHM);
-	}
-
-	private static String getDefaultName(String key) {
-		String defaultName = DEFAULTS.getProperty(key);
-
-		if (defaultName == null) {
-			throw new IllegalArgumentException("Unknown key: " + key);
+		if (keyIndex > 1) {
+			defaultValueSet.addDefault(conversion.apply(DEFAULTS.getProperty(key)));
 		}
-		return defaultName;
-	}
-
-	private static Set<String> getNames(String key) {
-		String name;
-		int keyNumber = 1;
-		Set<String> names = new HashSet<>();
-
-		while ((name = DEFAULTS.getProperty(key + "." + keyNumber)) != null) {
-			names.add(name);
-			keyNumber++;
-		}
-		return names;
+		return defaultValueSet;
 	}
 
 }

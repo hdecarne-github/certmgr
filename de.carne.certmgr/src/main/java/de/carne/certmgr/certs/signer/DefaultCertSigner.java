@@ -16,6 +16,11 @@
  */
 package de.carne.certmgr.certs.signer;
 
+import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.security.DefaultSet;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertSigner;
 
 /**
@@ -28,6 +33,8 @@ public class DefaultCertSigner implements CertSigner {
 	 */
 	public static final String PROVIDER_NAME = "BouncyCastle";
 
+	private final Issuer selfSignedIssuer = new DefaultIssuer(CertSignerI18N.formatSTR_SELFSIGNED_NAME());
+
 	@Override
 	public String providerName() {
 		return PROVIDER_NAME;
@@ -39,8 +46,60 @@ public class DefaultCertSigner implements CertSigner {
 	}
 
 	@Override
+	public DefaultSet<Issuer> getIssuers(UserCertStore store) {
+		DefaultSet<Issuer> issuers = new DefaultSet<>();
+
+		issuers.addDefault(this.selfSignedIssuer);
+		if (store != null) {
+			for (UserCertStoreEntry storeEntry : store.getEntries()) {
+				if (storeEntry.canIssue()) {
+					issuers.add(new DefaultIssuer(storeEntry));
+				}
+			}
+		}
+		return issuers;
+	}
+
+	@Override
+	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(KeyPairAlgorithm keyPairAlgorithm, Issuer issuer,
+			boolean expertMode) {
+		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
+
+		if (keyPairAlgorithm != null && issuer != null) {
+			String keyPairAlgorithmName;
+
+			if (this.selfSignedIssuer.equals(issuer)) {
+				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
+			} else {
+				keyPairAlgorithmName = issuer.storeEntry().getKeyAlgorithm();
+			}
+			if (keyPairAlgorithmName != null) {
+				signatureAlgorithms = SignatureAlgorithm.getAll(keyPairAlgorithmName, expertMode);
+			}
+		}
+		return signatureAlgorithms;
+	}
+
+	@Override
 	public String toString() {
 		return getDescription();
+	}
+
+	private class DefaultIssuer extends Issuer {
+
+		DefaultIssuer(UserCertStoreEntry storeEntry) {
+			super(storeEntry);
+		}
+
+		DefaultIssuer(String name) {
+			super(name);
+		}
+
+		@Override
+		public CertSigner signer() {
+			return DefaultCertSigner.this;
+		}
+
 	}
 
 }

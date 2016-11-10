@@ -67,7 +67,7 @@ public class Attributes {
 
 					this.children.add(extensionData.toAttributes());
 				} catch (IOException e) {
-					Exceptions.ignore(e);
+					Exceptions.warn(e);
 				}
 			}
 		}
@@ -82,7 +82,7 @@ public class Attributes {
 
 					this.children.add(extensionData.toAttributes());
 				} catch (IOException e) {
-					Exceptions.ignore(e);
+					Exceptions.warn(e);
 				}
 			}
 		}
