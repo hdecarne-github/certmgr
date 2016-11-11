@@ -30,8 +30,6 @@ import de.carne.certmgr.certs.spi.CertSigner;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -124,21 +122,21 @@ public class CertOptionsController extends StageController {
 		close(false);
 	}
 
-	void onKeyAlgChanged(KeyPairAlgorithm keyAlg) {
+	private void onKeyAlgChanged(KeyPairAlgorithm keyAlg) {
 		DefaultSet<Integer> keySizes = (keyAlg != null ? keyAlg.getStandardKeySizes() : null);
 
 		resetComboBoxOptions(this.ctlKeySizeOption, keySizes, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(keyAlg);
 	}
 
-	void onSignerChanged(CertSigner newSigner) {
+	private void onSignerChanged(CertSigner newSigner) {
 		DefaultSet<Issuer> issuers = (newSigner != null ? newSigner.getIssuers(this.store) : null);
 
 		resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(newSigner);
 	}
 
-	void onIssuerChanged(Issuer newIssuer) {
+	private void onIssuerChanged(Issuer newIssuer) {
 		resetSigAlgOptions(newIssuer);
 	}
 
@@ -146,33 +144,9 @@ public class CertOptionsController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
-		this.ctlKeyAlgOption.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<KeyPairAlgorithm>() {
-
-					@Override
-					public void changed(ObservableValue<? extends KeyPairAlgorithm> observable,
-							KeyPairAlgorithm oldValue, KeyPairAlgorithm newValue) {
-						onKeyAlgChanged(newValue);
-					}
-
-				});
-		this.ctlSignerOption.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<CertSigner>() {
-
-			@Override
-			public void changed(ObservableValue<? extends CertSigner> observable, CertSigner oldValue,
-					CertSigner newValue) {
-				onSignerChanged(newValue);
-			}
-
-		});
-		this.ctlIssuerInput.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Issuer>() {
-
-			@Override
-			public void changed(ObservableValue<? extends Issuer> observable, Issuer oldValue, Issuer newValue) {
-				onIssuerChanged(newValue);
-			}
-
-		});
+		this.ctlKeyAlgOption.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> onKeyAlgChanged(n));
+		this.ctlSignerOption.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> onSignerChanged(n));
+		this.ctlIssuerInput.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> onIssuerChanged(n));
 	}
 
 	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry storeEntryParam,

@@ -16,8 +16,14 @@
  */
 package de.carne.certmgr.jfx.storeoptions;
 
+import java.util.Comparator;
+
 import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.security.DefaultSet;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.jfx.scene.control.DialogController;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -35,6 +41,8 @@ public class StoreOptionsController extends DialogController<UserCertStore>
 
 	private UserCertStore store = null;
 
+	private boolean expertMode = false;
+
 	@FXML
 	TextField ctlNameInput;
 
@@ -51,32 +59,71 @@ public class StoreOptionsController extends DialogController<UserCertStore>
 	ComboBox<?> ctlDefCrlUpdateInput;
 
 	@FXML
-	ComboBox<?> ctlDefKeyAlgOption;
+	ComboBox<KeyPairAlgorithm> ctlDefKeyAlgOption;
 
 	@FXML
-	ComboBox<?> ctlDefKeySizeOption;
+	ComboBox<Integer> ctlDefKeySizeOption;
 
 	@FXML
-	ComboBox<?> ctlDefSigAlgOption;
+	ComboBox<SignatureAlgorithm> ctlDefSigAlgOption;
 
 	@FXML
 	void onCmdChoosePath(ActionEvent evt) {
 
 	}
 
-	@Override
-	protected void setupDialog(Dialog<UserCertStore> dialog) {
-
+	private void onDefKeyAlgChanged(KeyPairAlgorithm keyAlg) {
+		resetComboBoxOptions(this.ctlDefKeySizeOption, keyAlg.getStandardKeySizes(), (o1, o2) -> o1.compareTo(o2));
+		resetComboBoxOptions(this.ctlDefSigAlgOption, SignatureAlgorithm.getAll(keyAlg.algorithm(), this.expertMode),
+				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
-	public StoreOptionsController init(UserCertStore storeParam) {
-		this.store = storeParam;
+	@Override
+	protected void setupDialog(Dialog<UserCertStore> dialog) {
+		dialog.setTitle(StoreOptionsI18N.formatSTR_STAGE_TITLE());
+		this.ctlDefKeyAlgOption.getSelectionModel().selectedItemProperty()
+				.addListener((p, o, n) -> onDefKeyAlgChanged(n));
+	}
+
+	public StoreOptionsController init(boolean expertModeParam) {
+		this.store = null;
+		this.expertMode = expertModeParam;
+		initKeyAlgOptions();
 		return this;
+	}
+
+	public StoreOptionsController init(UserCertStore storeParam, boolean expertModeParam) {
+		assert storeParam != null;
+
+		this.store = storeParam;
+		this.expertMode = expertModeParam;
+		initKeyAlgOptions();
+		return this;
+	}
+
+	private void initKeyAlgOptions() {
+		resetComboBoxOptions(this.ctlDefKeyAlgOption, KeyPairAlgorithm.getAll(this.expertMode),
+				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
 	@Override
 	public UserCertStore call(ButtonType param) {
 		return null;
+	}
+
+	private static <T> void resetComboBoxOptions(ComboBox<T> control, DefaultSet<T> defaultSet,
+			Comparator<T> comparator) {
+		ObservableList<T> options = control.getItems();
+
+		options.clear();
+		if (defaultSet != null && !defaultSet.isEmpty()) {
+			options.addAll(defaultSet);
+			options.sort(comparator);
+			control.getSelectionModel().select(defaultSet.getDefault());
+			control.setDisable(false);
+		} else {
+			control.setDisable(!control.isEditable());
+		}
 	}
 
 }

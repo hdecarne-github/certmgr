@@ -54,8 +54,6 @@ import de.carne.util.Exceptions;
 import de.carne.util.prefs.DirectoryPreference;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -160,7 +158,8 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdNewStore(ActionEvent evt) {
 		try {
-			StoreOptionsController storeOptions = StoreOptionsDialog.load(this);
+			StoreOptionsController storeOptions = StoreOptionsDialog.load(this)
+					.init(this.userPreferences.expertMode.getBoolean(false));
 
 			storeOptions.showAndWait();
 		} catch (IOException e) {
@@ -274,11 +273,11 @@ public class StoreController extends StageController {
 		}
 	}
 
-	void onStoreViewSelectionChange(TreeItem<StoreEntryModel> selection) {
+	private void onStoreViewSelectionChange(TreeItem<StoreEntryModel> selection) {
 		updateDetailsView(selection);
 	}
 
-	void updateHeapStatus() {
+	private void updateHeapStatus() {
 		Runtime rt = Runtime.getRuntime();
 		long usedMemory = rt.totalMemory() - rt.freeMemory();
 		long maxMemory = rt.maxMemory();
@@ -319,15 +318,7 @@ public class StoreController extends StageController {
 		this.ctlDetailsViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlDetailsViewValue.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));
 		this.ctlStoreEntryView.getSelectionModel().selectedItemProperty()
-				.addListener(new ChangeListener<TreeItem<StoreEntryModel>>() {
-
-					@Override
-					public void changed(ObservableValue<? extends TreeItem<StoreEntryModel>> observable,
-							TreeItem<StoreEntryModel> oldValue, TreeItem<StoreEntryModel> newValue) {
-						onStoreViewSelectionChange(newValue);
-					}
-
-				});
+				.addListener((p, o, n) -> onStoreViewSelectionChange(n));
 		Windows.onHiding(stage, (ScheduledFuture<?> f) -> f.cancel(true), getExecutorService().scheduleAtFixedRate(
 				PlatformHelper.runLaterRunnable(() -> updateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
 	}

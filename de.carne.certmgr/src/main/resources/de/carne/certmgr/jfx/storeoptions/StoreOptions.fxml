@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<DialogPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.storeoptions.StoreOptionsController">
+<DialogPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.storeoptions.StoreOptionsController">
    <content>
       <AnchorPane prefHeight="200.0" prefWidth="500.0">
          <children>
@@ -65,7 +65,7 @@
                   <Label layoutX="10.0" layoutY="15.0" text="%_STR_LABEL_DEFKEYALG" GridPane.rowIndex="5" />
                   <ComboBox fx:id="ctlDefKeyAlgOption" layoutX="188.0" layoutY="163.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <Label layoutX="10.0" layoutY="121.0" text="%_STR_LABEL_DEFKEYSIZE" GridPane.rowIndex="6" />
-                  <ComboBox fx:id="ctlDefKeySizeOption" layoutX="188.0" layoutY="121.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <ComboBox fx:id="ctlDefKeySizeOption" editable="true" layoutX="188.0" layoutY="121.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                   <Label layoutX="10.0" layoutY="136.0" text="%_STR_LABEL_DEFSIGALG" GridPane.rowIndex="7" />
                   <ComboBox fx:id="ctlDefSigAlgOption" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                </children>
