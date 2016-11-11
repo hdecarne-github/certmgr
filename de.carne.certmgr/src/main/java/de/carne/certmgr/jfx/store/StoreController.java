@@ -39,6 +39,8 @@ import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.preferences.PreferencesController;
 import de.carne.certmgr.jfx.preferences.PreferencesDialog;
 import de.carne.certmgr.jfx.resources.Images;
+import de.carne.certmgr.jfx.storeoptions.StoreOptionsController;
+import de.carne.certmgr.jfx.storeoptions.StoreOptionsDialog;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.aboutinfo.AboutInfoController;
@@ -157,7 +159,13 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdNewStore(ActionEvent evt) {
+		try {
+			StoreOptionsController storeOptions = StoreOptionsDialog.load(this);
 
+			storeOptions.showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e);
+		}
 	}
 
 	@FXML
