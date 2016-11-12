@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -48,6 +49,7 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.nio.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
+import de.carne.util.prefs.PropertiesPreferencesFactory;
 
 /**
  * This class provides the actual certificate store functionality.
@@ -66,6 +68,8 @@ import de.carne.util.logging.Log;
 public final class UserCertStore {
 
 	private static final Log LOG = new Log();
+
+	private static final String PREFERENCES_FILENAME = ".preferences.properties";
 
 	private final UserCertStoreHandler storeHandler;
 
@@ -253,8 +257,8 @@ public final class UserCertStore {
 	 * <p>
 	 * This path is only available if this store was created/opened via
 	 * {@linkplain #createStore(Path)} or {@linkplain #openStore(Path)}.
-	 * Otherwise this path is {@code null} indicating that the store only
-	 * support read access.
+	 * Otherwise this path is {@code null} indicating that the store is
+	 * transient and only supports read access.
 	 *
 	 * @return This store's home path, or {@code null} if this store only
 	 *         supports read access.
@@ -268,14 +272,27 @@ public final class UserCertStore {
 	 * <p>
 	 * A store's name is derived from it's home path.
 	 *
-	 * @return This store's name, or {@code null} if this store only supports
-	 *         read access.
+	 * @return This store's name, or {@code null} if this store is transient.
 	 * @see #storeHome()
 	 */
 	public String storeName() {
 		Path storeHome = this.storeHandler.storeHome();
 
 		return (storeHome != null ? storeHome.getFileName().toString() : null);
+	}
+
+	/**
+	 * Get this store's preferences object.
+	 *
+	 * @return This store's preferences object, or {@code null} if this store is
+	 *         transient.
+	 * @see #storeHome()
+	 */
+	public Preferences storePreferences() {
+		Path storeHome = this.storeHandler.storeHome();
+
+		return (storeHome != null ? PropertiesPreferencesFactory.customRoot(storeHome.resolve(PREFERENCES_FILENAME))
+				: null);
 	}
 
 	/**
@@ -289,7 +306,7 @@ public final class UserCertStore {
 
 	/**
 	 * Get this store's entries.
-	 * 
+	 *
 	 * @return This store's entries.
 	 */
 	public synchronized Set<UserCertStoreEntry> getEntries() {
