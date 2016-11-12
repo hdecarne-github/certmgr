@@ -43,15 +43,15 @@ public class CRLUpdatePeriod extends AbstractPeriod {
 	 */
 	public static DefaultSet<CRLUpdatePeriod> getDefaultSet(Days defaultHint) {
 		DefaultSet<Days> defaultPeriods = SecurityDefaults.getCRLUpdatedPeriods();
-		Days defaultPeriod = (defaultPeriods.contains(defaultHint) ? defaultHint : defaultPeriods.getDefault());
 		DefaultSet<CRLUpdatePeriod> crlUpdatePeriods = new DefaultSet<>();
 
+		if (defaultHint != null) {
+			crlUpdatePeriods.addDefault(new CRLUpdatePeriod(defaultHint));
+		} else {
+			crlUpdatePeriods.addDefault(new CRLUpdatePeriod(defaultPeriods.getDefault()));
+		}
 		for (Days period : defaultPeriods) {
-			if (defaultPeriod.equals(period)) {
-				crlUpdatePeriods.addDefault(new CRLUpdatePeriod(period));
-			} else {
-				crlUpdatePeriods.add(new CRLUpdatePeriod(period));
-			}
+			crlUpdatePeriods.add(new CRLUpdatePeriod(period));
 		}
 		return crlUpdatePeriods;
 	}

@@ -26,7 +26,7 @@ public class CRTValidityPeriod extends AbstractPeriod {
 
 	/**
 	 * Construct {@code CRTValidityPeriod}.
-	 * 
+	 *
 	 * @param period The period value.
 	 */
 	public CRTValidityPeriod(Days period) {
@@ -43,15 +43,15 @@ public class CRTValidityPeriod extends AbstractPeriod {
 	 */
 	public static DefaultSet<CRTValidityPeriod> getDefaultSet(Days defaultHint) {
 		DefaultSet<Days> defaultPeriods = SecurityDefaults.getCRTValidityPeriods();
-		Days defaultPeriod = (defaultPeriods.contains(defaultHint) ? defaultHint : defaultPeriods.getDefault());
 		DefaultSet<CRTValidityPeriod> crlUpdatePeriods = new DefaultSet<>();
 
+		if (defaultHint != null) {
+			crlUpdatePeriods.addDefault(new CRTValidityPeriod(defaultHint));
+		} else {
+			crlUpdatePeriods.addDefault(new CRTValidityPeriod(defaultPeriods.getDefault()));
+		}
 		for (Days period : defaultPeriods) {
-			if (defaultPeriod.equals(period)) {
-				crlUpdatePeriods.addDefault(new CRTValidityPeriod(period));
-			} else {
-				crlUpdatePeriods.add(new CRTValidityPeriod(period));
-			}
+			crlUpdatePeriods.add(new CRTValidityPeriod(period));
 		}
 		return crlUpdatePeriods;
 	}

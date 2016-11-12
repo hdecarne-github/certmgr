@@ -52,7 +52,7 @@ public class Days implements Comparable<Days> {
 		int remainder = days;
 		int years = days / DAYS_PER_YEAR;
 
-		remainder -= years * DAYS_PER_MONTH;
+		remainder -= years * DAYS_PER_YEAR;
 
 		int months = remainder / DAYS_PER_MONTH;
 
