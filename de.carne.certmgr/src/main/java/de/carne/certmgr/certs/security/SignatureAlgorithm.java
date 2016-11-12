@@ -18,22 +18,19 @@ package de.carne.certmgr.certs.security;
 
 import java.security.Provider;
 import java.security.Provider.Service;
+import java.security.Security;
 
 import de.carne.certmgr.util.DefaultSet;
-
-import java.security.Security;
 
 /**
  * Signature algorithm provisioning.
  */
-public abstract class SignatureAlgorithm {
+public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 
 	private static final String SERVICE_TYPE_SIGNATURE = "Signature";
 
-	private final Service service;
-
 	SignatureAlgorithm(Service service) {
-		this.service = service;
+		super(service);
 	}
 
 	/**
@@ -78,24 +75,6 @@ public abstract class SignatureAlgorithm {
 			}
 		}
 		return signatureAlgorithms;
-	}
-
-	/**
-	 * Get this algorithm's {@link Service} object.
-	 *
-	 * @return This algorithm's {@link Service} object.
-	 */
-	protected Service service() {
-		return this.service;
-	}
-
-	/**
-	 * Get this algorithm's name.
-	 *
-	 * @return This algorithm's name.
-	 */
-	public String algorithm() {
-		return this.service.getAlgorithm();
 	}
 
 	private static class StandardKeyPairAlgorithm extends SignatureAlgorithm {

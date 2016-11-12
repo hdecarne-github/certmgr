@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.jfx;
+package de.carne.certmgr.jfx.util;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.jfx.resources.Images;

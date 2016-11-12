@@ -27,6 +27,8 @@ import de.carne.certmgr.certs.security.CRLUpdatePeriod;
 import de.carne.certmgr.certs.security.CRTValidityPeriod;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
+import de.carne.certmgr.jfx.util.converter.CRLUpdatePeriodStringConverter;
+import de.carne.certmgr.jfx.util.converter.CRTValidityPeriodStringConverter;
 import de.carne.certmgr.util.Days;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.Alerts;
@@ -46,6 +48,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Store options dialog.
@@ -127,15 +130,11 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		if (this.storePreferences != null) {
 			try {
 				this.storePreferences.defaultCRTValidityPeriod
-						.put(this.ctlDefCRTValidityInput.getSelectionModel().getSelectedItem().days().count());
-				this.storePreferences.defaultCRLUpdatePeriod
-						.put(this.ctlDefCRLUpdateInput.getSelectionModel().getSelectedItem().days().count());
-				this.storePreferences.defaultKeyPairAlgorithm
-						.put(this.ctlDefKeyAlgOption.getSelectionModel().getSelectedItem().algorithm());
-				this.storePreferences.defaultKeySize
-						.put(this.ctlDefKeySizeOption.getSelectionModel().getSelectedItem());
-				this.storePreferences.defaultSignatureAlgorithm
-						.put(this.ctlDefSigAlgOption.getSelectionModel().getSelectedItem().algorithm());
+						.put(this.ctlDefCRTValidityInput.getValue().days().count());
+				this.storePreferences.defaultCRLUpdatePeriod.put(this.ctlDefCRLUpdateInput.getValue().days().count());
+				this.storePreferences.defaultKeyPairAlgorithm.put(this.ctlDefKeyAlgOption.getValue().algorithm());
+				this.storePreferences.defaultKeySize.put(this.ctlDefKeySizeOption.getValue());
+				this.storePreferences.defaultSignatureAlgorithm.put(this.ctlDefSigAlgOption.getValue().algorithm());
 				this.storePreferences.sync();
 			} catch (Exception e) {
 				Alerts.unexpected(e).showAndWait();
@@ -147,8 +146,11 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	@Override
 	protected void setupDialog(Dialog<UserCertStore> dialog) {
 		dialog.setTitle(StorePreferencesI18N.formatSTR_STAGE_TITLE());
+		this.ctlDefCRTValidityInput.setConverter(new CRTValidityPeriodStringConverter());
+		this.ctlDefCRLUpdateInput.setConverter(new CRLUpdatePeriodStringConverter());
 		this.ctlDefKeyAlgOption.getSelectionModel().selectedItemProperty()
 				.addListener((p, o, n) -> onDefKeyAlgChanged(n));
+		this.ctlDefKeySizeOption.setConverter(new IntegerStringConverter());
 		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}
 

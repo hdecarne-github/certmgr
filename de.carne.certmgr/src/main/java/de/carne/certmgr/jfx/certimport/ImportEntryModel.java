@@ -17,7 +17,7 @@
 package de.carne.certmgr.jfx.certimport;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.certmgr.jfx.UserCertStoreEntryModel;
+import de.carne.certmgr.jfx.util.UserCertStoreEntryModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 

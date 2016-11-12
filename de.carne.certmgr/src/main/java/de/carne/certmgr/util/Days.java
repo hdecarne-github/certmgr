@@ -61,6 +61,15 @@ public class Days implements Comparable<Days> {
 	}
 
 	/**
+	 * Get this instance's period object.
+	 *
+	 * @return This instance's period object.
+	 */
+	public Period period() {
+		return this.period;
+	}
+
+	/**
 	 * Get this instance's number of days.
 	 *
 	 * @return This instance's number of days.

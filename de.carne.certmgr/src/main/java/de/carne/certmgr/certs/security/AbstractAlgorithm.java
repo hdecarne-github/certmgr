@@ -16,46 +16,40 @@
  */
 package de.carne.certmgr.certs.security;
 
-import de.carne.certmgr.util.Days;
+import java.security.Provider.Service;
 
 /**
- * Abstract base class for {@link Days} based objects.
+ * Abstract base class for {@link Service} based objects.
  */
-public abstract class AbstractPeriod {
+public abstract class AbstractAlgorithm {
 
-	private final Days period;
-
-	/**
-	 * Construct {@code AbstractPeriod}.
-	 *
-	 * @param period The period value to use for initialization.
-	 */
-	protected AbstractPeriod(Days period) {
-		this.period = period;
-	}
+	private final Service service;
 
 	/**
-	 * Get this instance's period.
+	 * Construct {@code AbstractAlgorithm}.
 	 *
-	 * @return This instance's period.
+	 * @param service The service value to use for initialization.
 	 */
-	public Days days() {
-		return this.period;
+	protected AbstractAlgorithm(Service service) {
+		this.service = service;
 	}
 
-	@Override
-	public int hashCode() {
-		return this.period.hashCode();
+	/**
+	 * Get this algorithm's {@link Service} object.
+	 *
+	 * @return This algorithm's {@link Service} object.
+	 */
+	protected Service service() {
+		return this.service;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return this == obj || (obj instanceof AbstractPeriod && (this.period.equals(((AbstractPeriod) obj).period)));
-	}
-
-	@Override
-	public String toString() {
-		return this.period.toString();
+	/**
+	 * Get this algorithm's name.
+	 *
+	 * @return This algorithm's name.
+	 */
+	public String algorithm() {
+		return this.service.getAlgorithm();
 	}
 
 }

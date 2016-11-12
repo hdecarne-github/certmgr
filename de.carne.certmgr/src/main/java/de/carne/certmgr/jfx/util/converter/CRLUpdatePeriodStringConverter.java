@@ -14,48 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.security;
+package de.carne.certmgr.jfx.util.converter;
 
+import de.carne.certmgr.certs.security.CRLUpdatePeriod;
 import de.carne.certmgr.util.Days;
+import javafx.util.StringConverter;
 
 /**
- * Abstract base class for {@link Days} based objects.
+ * {@link StringConverter} implementation for the {@code CRLUpdatePeriod} type.
  */
-public abstract class AbstractPeriod {
-
-	private final Days period;
-
-	/**
-	 * Construct {@code AbstractPeriod}.
-	 *
-	 * @param period The period value to use for initialization.
-	 */
-	protected AbstractPeriod(Days period) {
-		this.period = period;
-	}
-
-	/**
-	 * Get this instance's period.
-	 *
-	 * @return This instance's period.
-	 */
-	public Days days() {
-		return this.period;
-	}
+public class CRLUpdatePeriodStringConverter extends AbstractPeriodStringConverter<CRLUpdatePeriod> {
 
 	@Override
-	public int hashCode() {
-		return this.period.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return this == obj || (obj instanceof AbstractPeriod && (this.period.equals(((AbstractPeriod) obj).period)));
-	}
-
-	@Override
-	public String toString() {
-		return this.period.toString();
+	protected CRLUpdatePeriod fromDays(Days period) {
+		return new CRLUpdatePeriod(period);
 	}
 
 }

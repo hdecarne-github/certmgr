@@ -20,22 +20,19 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
+import java.security.Security;
 
 import de.carne.certmgr.util.DefaultSet;
-
-import java.security.Security;
 
 /**
  * Key pair algorithm provisioning.
  */
-public abstract class KeyPairAlgorithm {
+public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 
 	private static final String SERVICE_TYPE_KEY_PAIR_GENERATOR = "KeyPairGenerator";
 
-	private final Service service;
-
 	KeyPairAlgorithm(Service service) {
-		this.service = service;
+		super(service);
 	}
 
 	/**
@@ -77,31 +74,15 @@ public abstract class KeyPairAlgorithm {
 	}
 
 	/**
-	 * Get this algorithm's {@link Service} object.
-	 *
-	 * @return This algorithm's {@link Service} object.
-	 */
-	protected Service service() {
-		return this.service;
-	}
-
-	/**
-	 * Get this algorithm's name.
-	 *
-	 * @return This algorithm's name.
-	 */
-	public String algorithm() {
-		return this.service.getAlgorithm();
-	}
-
-	/**
 	 * Get a {@link KeyPairGenerator} instance for this algorithm.
 	 *
 	 * @return A {@link KeyPairGenerator} instance for this algorithm.
 	 * @throws GeneralSecurityException if no instance is available.
 	 */
 	public KeyPairGenerator getInstance() throws GeneralSecurityException {
-		return KeyPairGenerator.getInstance(this.service.getAlgorithm(), this.service.getProvider());
+		Service service = service();
+
+		return KeyPairGenerator.getInstance(service.getAlgorithm(), service.getProvider());
 	}
 
 	/**

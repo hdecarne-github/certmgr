@@ -24,7 +24,12 @@ import de.carne.certmgr.util.DefaultSet;
  */
 public class CRLUpdatePeriod extends AbstractPeriod {
 
-	private CRLUpdatePeriod(Days period) {
+	/**
+	 * Construct {@code CRLUpdatePeriod}.
+	 *
+	 * @param period The period value.
+	 */
+	public CRLUpdatePeriod(Days period) {
 		super(period);
 	}
 

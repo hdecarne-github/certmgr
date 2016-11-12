@@ -187,22 +187,22 @@ public class CertOptionsController extends StageController {
 	}
 
 	private void resetSigAlgOptions(CertSigner signer) {
-		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getSelectionModel().getSelectedItem();
-		Issuer issuer = this.ctlIssuerInput.getSelectionModel().getSelectedItem();
+		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getValue();
+		Issuer issuer = this.ctlIssuerInput.getValue();
 
 		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
 	}
 
 	private void resetSigAlgOptions(KeyPairAlgorithm keyPairAlgorithm) {
-		CertSigner signer = this.ctlSignerOption.getSelectionModel().getSelectedItem();
-		Issuer issuer = this.ctlIssuerInput.getSelectionModel().getSelectedItem();
+		CertSigner signer = this.ctlSignerOption.getValue();
+		Issuer issuer = this.ctlIssuerInput.getValue();
 
 		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
 	}
 
 	private void resetSigAlgOptions(Issuer issuer) {
-		CertSigner signer = this.ctlSignerOption.getSelectionModel().getSelectedItem();
-		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getSelectionModel().getSelectedItem();
+		CertSigner signer = this.ctlSignerOption.getValue();
+		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getValue();
 
 		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
 	}

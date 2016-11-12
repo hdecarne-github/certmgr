@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.certmgr.jfx.UserCertStoreEntryModel;
+import de.carne.certmgr.jfx.util.UserCertStoreEntryModel;
 import de.carne.jfx.util.ShortDate;
 import de.carne.util.Exceptions;
 import javafx.beans.property.ObjectProperty;

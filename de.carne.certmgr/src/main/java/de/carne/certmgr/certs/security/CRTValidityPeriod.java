@@ -24,7 +24,12 @@ import de.carne.certmgr.util.DefaultSet;
  */
 public class CRTValidityPeriod extends AbstractPeriod {
 
-	private CRTValidityPeriod(Days period) {
+	/**
+	 * Construct {@code CRTValidityPeriod}.
+	 * 
+	 * @param period The period value.
+	 */
+	public CRTValidityPeriod(Days period) {
 		super(period);
 	}
 
