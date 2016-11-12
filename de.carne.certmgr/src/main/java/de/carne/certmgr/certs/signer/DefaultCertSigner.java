@@ -18,9 +18,9 @@ package de.carne.certmgr.certs.signer;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.certmgr.certs.security.DefaultSet;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.util.DefaultSet;
 
 /**
  * Default (BouncyCastle based) service provider for certificate signing.

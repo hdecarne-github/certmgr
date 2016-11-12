@@ -18,6 +18,9 @@ package de.carne.certmgr.certs.security;
 
 import java.security.Provider;
 import java.security.Provider.Service;
+
+import de.carne.certmgr.util.DefaultSet;
+
 import java.security.Security;
 
 /**

@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.security;
+package de.carne.certmgr.util;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * Helper class combining a result set with a corresponding default value.
+ * Utilitiy class combining a result set with a corresponding default value.
  *
  * @param <T> The set element type.
  */

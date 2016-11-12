@@ -18,9 +18,9 @@ package de.carne.certmgr.certs.spi;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.certmgr.certs.security.DefaultSet;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.signer.Issuer;
+import de.carne.certmgr.util.DefaultSet;
 
 /**
  * Service provider interface for certificate signing.

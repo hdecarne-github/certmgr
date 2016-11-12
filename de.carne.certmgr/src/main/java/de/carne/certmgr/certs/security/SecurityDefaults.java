@@ -16,9 +16,12 @@
  */
 package de.carne.certmgr.certs.security;
 
+import java.time.Period;
 import java.util.Properties;
 import java.util.function.Function;
 
+import de.carne.certmgr.util.Days;
+import de.carne.certmgr.util.DefaultSet;
 import de.carne.util.PropertiesHelper;
 
 class SecurityDefaults {
@@ -32,6 +35,8 @@ class SecurityDefaults {
 	private static final String KEY_KEY_ALGORITHM = "keyAlgorithm";
 	private static final String KEY_KEY_SIZE = ".keySize";
 	private static final String KEY_SIGNATURE_ALGORITHM = ".signatureAlgorithm";
+	private static final String KEY_CRT_VALIDITY_PERIOD = "crtValidity";
+	private static final String KEY_CRL_UPDATE_PERIOD = "crlUpdate";
 
 	public static DefaultSet<String> getKeyAlgorithmNames() {
 		return getValues(KEY_KEY_ALGORITHM, (s) -> s);
@@ -43,6 +48,14 @@ class SecurityDefaults {
 
 	public static DefaultSet<String> getSignatureAlgorithmNames(String keyPairAlgorithm) {
 		return getValues(keyPairAlgorithm + KEY_SIGNATURE_ALGORITHM, (s) -> s);
+	}
+
+	public static DefaultSet<Days> getCRTValidityPeriods() {
+		return getValues(KEY_CRT_VALIDITY_PERIOD, (s) -> new Days(Period.parse(s)));
+	}
+
+	public static DefaultSet<Days> getCRLUpdatedPeriods() {
+		return getValues(KEY_CRL_UPDATE_PERIOD, (s) -> new Days(Period.parse(s)));
 	}
 
 	private static <T> DefaultSet<T> getValues(String key, Function<String, T> conversion) {

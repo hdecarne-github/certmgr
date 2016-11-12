@@ -21,9 +21,12 @@ import java.util.Comparator;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStorePreferences;
-import de.carne.certmgr.certs.security.DefaultSet;
+import de.carne.certmgr.certs.security.CRLUpdatePeriod;
+import de.carne.certmgr.certs.security.CRTValidityPeriod;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
+import de.carne.certmgr.util.Days;
+import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.DialogController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -57,10 +60,10 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	Button cmdChoosePathButton;
 
 	@FXML
-	ComboBox<?> ctlDefValidityInput;
+	ComboBox<CRTValidityPeriod> ctlDefCRTValidityInput;
 
 	@FXML
-	ComboBox<?> ctlDefCrlUpdateInput;
+	ComboBox<CRLUpdatePeriod> ctlDefCRLUpdateInput;
 
 	@FXML
 	ComboBox<KeyPairAlgorithm> ctlDefKeyAlgOption;
@@ -103,6 +106,8 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		this.store = null;
 		this.expertMode = expertModeParam;
 		this.ctlDefKeySizeOption.setEditable(this.expertMode);
+		initCRTValidities();
+		initCRLUpdatePeriods();
 		initKeyAlgOptions();
 		return this;
 	}
@@ -122,8 +127,34 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		this.ctlPathInput.setDisable(true);
 		this.cmdChoosePathButton.setDisable(true);
 		this.ctlDefKeySizeOption.setEditable(this.expertMode);
+		initCRTValidities();
+		initCRLUpdatePeriods();
 		initKeyAlgOptions();
 		return this;
+	}
+
+	private void initCRTValidities() {
+		this.ctlDefCRTValidityInput.setEditable(this.expertMode);
+
+		Days defaultHint = null;
+
+		if (this.storePreferences != null) {
+
+		}
+		resetComboBoxOptions(this.ctlDefCRTValidityInput, CRTValidityPeriod.getDefaultSet(defaultHint),
+				(o1, o2) -> o1.days().compareTo(o2.days()));
+	}
+
+	private void initCRLUpdatePeriods() {
+		this.ctlDefCRLUpdateInput.setEditable(this.expertMode);
+
+		Days defaultHint = null;
+
+		if (this.storePreferences != null) {
+
+		}
+		resetComboBoxOptions(this.ctlDefCRLUpdateInput, CRLUpdatePeriod.getDefaultSet(defaultHint),
+				(o1, o2) -> o1.days().compareTo(o2.days()));
 	}
 
 	private void initKeyAlgOptions() {
