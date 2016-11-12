@@ -17,6 +17,7 @@
 package de.carne.certmgr.jfx.storepreferences;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
@@ -28,7 +29,13 @@ import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.util.Days;
 import de.carne.certmgr.util.DefaultSet;
+import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.Strings;
+import de.carne.util.validation.InputValidator;
+import de.carne.util.validation.PathValidator;
+import de.carne.util.validation.ValidationException;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -79,7 +86,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	@FXML
 	void onCmdChoosePath(ActionEvent evt) {
 		DirectoryChooser chooser = new DirectoryChooser();
-		File path = chooser.showDialog(getUI().getDialogPane().getScene().getWindow());
+		File path = chooser.showDialog(getWindow());
 
 		if (path != null) {
 			this.ctlPathInput.setText(path.toString());
@@ -102,11 +109,47 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
+	private void onApply(ActionEvent evt) {
+		if (this.store == null) {
+			try {
+				Path storeHome = validateStoreHomeInput();
+
+				this.store = UserCertStore.createStore(storeHome);
+				this.storePreferences = this.store.storePreferences();
+			} catch (ValidationException e) {
+				ValidationAlerts.error(e).showAndWait();
+				evt.consume();
+			} catch (Exception e) {
+				Alerts.unexpected(e).showAndWait();
+				evt.consume();
+			}
+		}
+		if (this.storePreferences != null) {
+			try {
+				this.storePreferences.defaultCRTValidityPeriod
+						.put(this.ctlDefCRTValidityInput.getSelectionModel().getSelectedItem().days().count());
+				this.storePreferences.defaultCRLUpdatePeriod
+						.put(this.ctlDefCRLUpdateInput.getSelectionModel().getSelectedItem().days().count());
+				this.storePreferences.defaultKeyPairAlgorithm
+						.put(this.ctlDefKeyAlgOption.getSelectionModel().getSelectedItem().algorithm());
+				this.storePreferences.defaultKeySize
+						.put(this.ctlDefKeySizeOption.getSelectionModel().getSelectedItem());
+				this.storePreferences.defaultSignatureAlgorithm
+						.put(this.ctlDefSigAlgOption.getSelectionModel().getSelectedItem().algorithm());
+				this.storePreferences.sync();
+			} catch (Exception e) {
+				Alerts.unexpected(e).showAndWait();
+				evt.consume();
+			}
+		}
+	}
+
 	@Override
 	protected void setupDialog(Dialog<UserCertStore> dialog) {
 		dialog.setTitle(StorePreferencesI18N.formatSTR_STAGE_TITLE());
 		this.ctlDefKeyAlgOption.getSelectionModel().selectedItemProperty()
 				.addListener((p, o, n) -> onDefKeyAlgChanged(n));
+		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}
 
 	/**
@@ -123,6 +166,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		initCRTValidities();
 		initCRLUpdatePeriods();
 		initKeyAlgOptions();
+		((Button) lookupButton(ButtonType.APPLY)).setText(StorePreferencesI18N.formatSTR_TEXT_CREATE());
 		return this;
 	}
 
@@ -191,7 +235,22 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 
 	@Override
 	public UserCertStore call(ButtonType param) {
-		return null;
+		return this.store;
+	}
+
+	private Path validateStoreHomeInput() throws ValidationException {
+		String nameInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlNameInput.getText()),
+				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_NAME());
+		String pathInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlPathInput.getText()),
+				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_PATH());
+		Path path = PathValidator.isWritableDirectory(pathInput,
+				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_INVALID_PATH(pathInput));
+		Path storeHome = PathValidator.isPath(path, nameInput,
+				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_INVALID_NAME(nameInput));
+
+		InputValidator.isTrue(!Files.exists(storeHome),
+				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_STORE_HOME_EXISTS(storeHome));
+		return storeHome;
 	}
 
 	private static <T> void resetComboBoxOptions(ComboBox<T> control, DefaultSet<T> defaultSet,

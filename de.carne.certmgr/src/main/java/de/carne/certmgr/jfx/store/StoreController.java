@@ -22,9 +22,9 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStore;
@@ -161,12 +161,19 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdNewStore(ActionEvent evt) {
 		try {
-			StorePreferencesController storePreferences = StorePreferencesDialog.load(this)
+			StorePreferencesController createStore = StorePreferencesDialog.load(this)
 					.init(this.userPreferences.expertMode.getBoolean(false));
+			Optional<UserCertStore> createStoreResult = createStore.showAndWait();
 
-			storePreferences.showAndWait();
+			if (createStoreResult.isPresent()) {
+				UserCertStore store = createStoreResult.get();
+
+				this.storeProperty.set(store);
+				updateStoreEntryView();
+				this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(store.storeHome()));
+			}
 		} catch (IOException e) {
-			Alerts.unexpected(e);
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -188,12 +195,12 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdStorePreferences(ActionEvent evt) {
 		try {
-			StorePreferencesController storePreferences = StorePreferencesDialog.load(this).init(this.storeProperty.get(),
-					this.userPreferences.expertMode.getBoolean(false));
+			StorePreferencesController storePreferences = StorePreferencesDialog.load(this)
+					.init(this.storeProperty.get(), this.userPreferences.expertMode.getBoolean(false));
 
 			storePreferences.showAndWait();
 		} catch (IOException e) {
-			Alerts.unexpected(e);
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -220,7 +227,7 @@ public class StoreController extends StageController {
 
 			certOptions.show();
 		} catch (IOException e) {
-			Alerts.unexpected(e);
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -246,7 +253,7 @@ public class StoreController extends StageController {
 
 			importController.show();
 		} catch (IOException e) {
-			Alerts.unexpected(e);
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -256,7 +263,7 @@ public class StoreController extends StageController {
 			try {
 				loadStage(LogViewController.class).setToggle(this.cmdToggleLogView.selectedProperty()).show();
 			} catch (IOException e) {
-				Alerts.unexpected(e);
+				Alerts.unexpected(e).showAndWait();
 			}
 		}
 	}
@@ -266,11 +273,9 @@ public class StoreController extends StageController {
 		try {
 			PreferencesController editPreferences = PreferencesDialog.load(this).init(this.userPreferences);
 
-			if (editPreferences.showAndWait().isPresent()) {
-				this.userPreferences.sync();
-			}
-		} catch (IOException | BackingStoreException e) {
-			Alerts.unexpected(e);
+			editPreferences.showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -284,7 +289,7 @@ public class StoreController extends StageController {
 			aboutInfo.addInfo(getClass().getResource("AboutInfo3.txt"));
 			aboutInfo.showAndWait();
 		} catch (IOException e) {
-			Alerts.unexpected(e);
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -357,7 +362,7 @@ public class StoreController extends StageController {
 			updateStoreEntryView();
 			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(storeHome));
 		} catch (IOException e) {
-			Alerts.unexpected(e);
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 

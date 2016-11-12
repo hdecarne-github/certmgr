@@ -16,7 +16,10 @@
  */
 package de.carne.certmgr.jfx.preferences;
 
+import java.util.prefs.BackingStoreException;
+
 import de.carne.certmgr.jfx.store.UserPreferences;
+import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
@@ -56,13 +59,18 @@ public class PreferencesController extends DialogController<UserPreferences>
 
 	@Override
 	public UserPreferences call(ButtonType param) {
-		UserPreferences preferencesResult = null;
+		UserPreferences dialogResult = null;
 
 		if (ButtonType.APPLY.getButtonData() == param.getButtonData()) {
 			this.preferences.expertMode.put(this.ctlExpertModeOption.isSelected());
-			preferencesResult = this.preferences;
+			try {
+				this.preferences.sync();
+				dialogResult = this.preferences;
+			} catch (BackingStoreException e) {
+				Alerts.unexpected(e).showAndWait();
+			}
 		}
-		return preferencesResult;
+		return dialogResult;
 	}
 
 }

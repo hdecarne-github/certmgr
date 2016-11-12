@@ -65,14 +65,14 @@ public class Days implements Comparable<Days> {
 	 *
 	 * @return This instance's number of days.
 	 */
-	public int days() {
+	public int count() {
 		return this.period.getYears() * DAYS_PER_YEAR + this.period.getMonths() * DAYS_PER_MONTH
 				+ this.period.getDays();
 	}
 
 	@Override
 	public int compareTo(Days o) {
-		return this.days() - o.days();
+		return this.count() - o.count();
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class Days implements Comparable<Days> {
 
 	@Override
 	public boolean equals(Object obj) {
-		return this == obj || (obj instanceof Days && days() == ((Days) obj).days());
+		return this == obj || (obj instanceof Days && count() == ((Days) obj).count());
 	}
 
 	@Override
