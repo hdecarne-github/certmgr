@@ -58,7 +58,7 @@ public class PreferencesController extends DialogController<UserPreferences>
 	public UserPreferences call(ButtonType param) {
 		UserPreferences preferencesResult = null;
 
-		if (param == ButtonType.APPLY) {
+		if (ButtonType.APPLY.getButtonData() == param.getButtonData()) {
 			this.preferences.expertMode.put(this.ctlExpertModeOption.isSelected());
 			preferencesResult = this.preferences;
 		}

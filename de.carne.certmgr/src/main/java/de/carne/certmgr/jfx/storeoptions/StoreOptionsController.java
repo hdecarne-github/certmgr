@@ -16,9 +16,11 @@
  */
 package de.carne.certmgr.jfx.storeoptions;
 
+import java.nio.file.Path;
 import java.util.Comparator;
 
 import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.UserCertStoreOptionsPreferences;
 import de.carne.certmgr.certs.security.DefaultSet;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
@@ -40,6 +42,8 @@ public class StoreOptionsController extends DialogController<UserCertStore>
 		implements Callback<ButtonType, UserCertStore> {
 
 	private UserCertStore store = null;
+
+	private UserCertStoreOptionsPreferences storeOptionsPreferences = null;
 
 	private boolean expertMode = false;
 
@@ -96,7 +100,16 @@ public class StoreOptionsController extends DialogController<UserCertStore>
 		assert storeParam != null;
 
 		this.store = storeParam;
+		this.storeOptionsPreferences = new UserCertStoreOptionsPreferences(this.store);
 		this.expertMode = expertModeParam;
+
+		Path storeHome = this.store.storeHome();
+
+		this.ctlNameInput.setText(storeHome.getFileName().toString());
+		this.ctlNameInput.setDisable(true);
+		this.ctlPathInput.setText(storeHome.getParent().toString());
+		this.ctlPathInput.setDisable(true);
+		this.cmdChoosePathButton.setDisable(true);
 		initKeyAlgOptions();
 		return this;
 	}

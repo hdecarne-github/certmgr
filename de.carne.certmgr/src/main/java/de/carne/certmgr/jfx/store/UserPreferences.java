@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
 import de.carne.util.prefs.BooleanPreference;
 
 /**
- *
+ * Utility class providing access to store UI preferences.
  */
 public final class UserPreferences {
 
@@ -37,7 +37,12 @@ public final class UserPreferences {
 		// Make sure this class is not instantiated from outside this package
 	}
 
-	void sync() throws BackingStoreException {
+	/**
+	 * Sync the preferences to the backing store.
+	 *
+	 * @throws BackingStoreException if an error occurs during syncing.
+	 */
+	public void sync() throws BackingStoreException {
 		this.preferences.sync();
 	}
 

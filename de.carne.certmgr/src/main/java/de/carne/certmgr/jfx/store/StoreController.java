@@ -84,6 +84,9 @@ public class StoreController extends StageController {
 	private ObjectProperty<UserCertStore> storeProperty = new SimpleObjectProperty<>(null);
 
 	@FXML
+	MenuItem cmdStoreOptions;
+
+	@FXML
 	MenuItem cmdCopyEntry;
 
 	@FXML
@@ -179,6 +182,18 @@ public class StoreController extends StageController {
 			openStore(storeDirectory);
 			this.preferenceInitalDirectory.putValueFromFile(storeDirectory);
 			syncPreferences();
+		}
+	}
+
+	@FXML
+	void onCmdStoreOptions(ActionEvent evt) {
+		try {
+			StoreOptionsController storeOptions = StoreOptionsDialog.load(this).init(this.storeProperty.get(),
+					this.userPreferences.expertMode.getBoolean(false));
+
+			storeOptions.showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e);
 		}
 	}
 
@@ -293,6 +308,7 @@ public class StoreController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(Images.STORE32, Images.STORE16);
 		stage.setTitle(StoreI18N.formatSTR_STAGE_TITLE());
+		this.cmdStoreOptions.disableProperty().bind(this.storeProperty.isNull());
 		this.cmdCopyEntry.disableProperty()
 				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
 		this.cmdDeleteEntry.disableProperty()
