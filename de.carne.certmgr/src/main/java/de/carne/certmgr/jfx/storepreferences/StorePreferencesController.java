@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.jfx.storepreferences;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Comparator;
 
@@ -36,6 +37,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.util.Callback;
 
 /**
@@ -76,7 +78,12 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 
 	@FXML
 	void onCmdChoosePath(ActionEvent evt) {
+		DirectoryChooser chooser = new DirectoryChooser();
+		File path = chooser.showDialog(getUI().getDialogPane().getScene().getWindow());
 
+		if (path != null) {
+			this.ctlPathInput.setText(path.toString());
+		}
 	}
 
 	private void onDefKeyAlgChanged(KeyPairAlgorithm keyAlg) {
@@ -102,6 +109,13 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				.addListener((p, o, n) -> onDefKeyAlgChanged(n));
 	}
 
+	/**
+	 * Initialize dialog for creating a new store.
+	 *
+	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
+	 *        not ({@code false}).
+	 * @return This controller.
+	 */
 	public StorePreferencesController init(boolean expertModeParam) {
 		this.store = null;
 		this.expertMode = expertModeParam;
@@ -112,6 +126,14 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		return this;
 	}
 
+	/**
+	 * Initialize dialog for editing an existing store's preferences.
+	 *
+	 * @param storeParam The store to edit the preferences for.
+	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
+	 *        not ({@code false}).
+	 * @return This controller.
+	 */
 	public StorePreferencesController init(UserCertStore storeParam, boolean expertModeParam) {
 		assert storeParam != null;
 
@@ -139,7 +161,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		Days defaultHint = null;
 
 		if (this.storePreferences != null) {
-
+			defaultHint = new Days(this.storePreferences.defaultCRTValidityPeriod.getInt(0));
 		}
 		resetComboBoxOptions(this.ctlDefCRTValidityInput, CRTValidityPeriod.getDefaultSet(defaultHint),
 				(o1, o2) -> o1.days().compareTo(o2.days()));
@@ -151,7 +173,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		Days defaultHint = null;
 
 		if (this.storePreferences != null) {
-
+			defaultHint = new Days(this.storePreferences.defaultCRLUpdatePeriod.getInt(0));
 		}
 		resetComboBoxOptions(this.ctlDefCRLUpdateInput, CRLUpdatePeriod.getDefaultSet(defaultHint),
 				(o1, o2) -> o1.days().compareTo(o2.days()));

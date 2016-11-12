@@ -33,7 +33,7 @@ public final class UserCertStorePreferences {
 
 	private static final String STORE_NODE = "store";
 
-	private static final String STORE_DEFAULT_CRT_VALIDITY = "defcrtvalidity";
+	private static final String STORE_DEFAULT_CRT_VALIDITY_PERIOD = "defcrtvalidity";
 
 	private static final String STORE_DEFAULT_CRL_UPDATE_PERIOD = "defcrlupdate";
 
@@ -46,12 +46,12 @@ public final class UserCertStorePreferences {
 	private final Preferences preferences;
 
 	/**
-	 * Default CRT Validity (in days).
+	 * Default CRT Validity period (in days).
 	 */
-	public final IntPreference defaultCRTValidity;
+	public final IntPreference defaultCRTValidityPeriod;
 
 	/**
-	 * Default CRL update period (in days).
+	 * Default CRL Update period (in days).
 	 */
 	public final IntPreference defaultCRLUpdatePeriod;
 
@@ -61,7 +61,7 @@ public final class UserCertStorePreferences {
 	public final StringPreference defaultKeyPairAlgorithm;
 
 	/**
-	 * Default Key size.
+	 * Default Key Size.
 	 */
 	public final IntPreference defaultKeySize;
 
@@ -75,7 +75,7 @@ public final class UserCertStorePreferences {
 
 		Preferences optionsNode = this.preferences.node(STORE_NODE);
 
-		this.defaultCRTValidity = new IntPreference(optionsNode, STORE_DEFAULT_CRT_VALIDITY);
+		this.defaultCRTValidityPeriod = new IntPreference(optionsNode, STORE_DEFAULT_CRT_VALIDITY_PERIOD);
 		this.defaultCRLUpdatePeriod = new IntPreference(optionsNode, STORE_DEFAULT_CRL_UPDATE_PERIOD);
 		this.defaultKeyPairAlgorithm = new StringPreference(optionsNode, STORE_DEFAULT_KEY_PAIR_ALGORITHM);
 		this.defaultKeySize = new IntPreference(optionsNode, STORE_DEFAULT_KEY_SIZE);
