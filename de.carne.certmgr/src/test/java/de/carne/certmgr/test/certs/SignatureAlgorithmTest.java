@@ -44,9 +44,10 @@ public class SignatureAlgorithmTest {
 	 * Test the algorithm provisioning.
 	 */
 	@Test
-	public void testGetAll() {
-		for (KeyPairAlgorithm keyPairAlgorithm : KeyPairAlgorithm.getAll(false)) {
-			Set<SignatureAlgorithm> standardAlgorithms = SignatureAlgorithm.getAll(keyPairAlgorithm.algorithm(), false);
+	public void testGetDefaultSet() {
+		for (KeyPairAlgorithm keyPairAlgorithm : KeyPairAlgorithm.getDefaultSet(null, false)) {
+			Set<SignatureAlgorithm> standardAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithm.algorithm(),
+					null, false);
 
 			System.out.println(keyPairAlgorithm.algorithm() + " standard algorithms:");
 			for (SignatureAlgorithm standardAlgorithm : standardAlgorithms) {
@@ -54,8 +55,9 @@ public class SignatureAlgorithmTest {
 			}
 			Assert.assertTrue(standardAlgorithms.size() > 0);
 		}
-		for (KeyPairAlgorithm keyPairAlgorithm : KeyPairAlgorithm.getAll(true)) {
-			Set<SignatureAlgorithm> expertAlgorithms = SignatureAlgorithm.getAll(keyPairAlgorithm.algorithm(), true);
+		for (KeyPairAlgorithm keyPairAlgorithm : KeyPairAlgorithm.getDefaultSet(null, true)) {
+			Set<SignatureAlgorithm> expertAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithm.algorithm(),
+					null, true);
 
 			System.out.println(keyPairAlgorithm.algorithm() + " expert algorithms:");
 			for (SignatureAlgorithm expertAlgorithm : expertAlgorithms) {

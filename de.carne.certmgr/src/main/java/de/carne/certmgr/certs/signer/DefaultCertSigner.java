@@ -19,7 +19,6 @@ package de.carne.certmgr.certs.signer;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.DefaultSet;
-import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertSigner;
 
@@ -46,14 +45,18 @@ public class DefaultCertSigner implements CertSigner {
 	}
 
 	@Override
-	public DefaultSet<Issuer> getIssuers(UserCertStore store) {
+	public DefaultSet<Issuer> getIssuers(UserCertStore store, UserCertStoreEntry defaultHint) {
 		DefaultSet<Issuer> issuers = new DefaultSet<>();
 
 		issuers.addDefault(this.selfSignedIssuer);
 		if (store != null) {
 			for (UserCertStoreEntry storeEntry : store.getEntries()) {
 				if (storeEntry.canIssue()) {
-					issuers.add(new DefaultIssuer(storeEntry));
+					if (storeEntry.equals(defaultHint)) {
+						issuers.addDefault(new DefaultIssuer(storeEntry));
+					} else {
+						issuers.add(new DefaultIssuer(storeEntry));
+					}
 				}
 			}
 		}
@@ -61,20 +64,20 @@ public class DefaultCertSigner implements CertSigner {
 	}
 
 	@Override
-	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(KeyPairAlgorithm keyPairAlgorithm, Issuer issuer,
-			boolean expertMode) {
+	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, String keyPairAlgorithm,
+			String defaultHint, boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 
-		if (keyPairAlgorithm != null && issuer != null) {
+		if (issuer != null && keyPairAlgorithm != null) {
 			String keyPairAlgorithmName;
 
 			if (this.selfSignedIssuer.equals(issuer)) {
-				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
+				keyPairAlgorithmName = keyPairAlgorithm;
 			} else {
 				keyPairAlgorithmName = issuer.storeEntry().getKeyAlgorithm();
 			}
 			if (keyPairAlgorithmName != null) {
-				signatureAlgorithms = SignatureAlgorithm.getAll(keyPairAlgorithmName, expertMode);
+				signatureAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithmName, defaultHint, expertMode);
 			}
 		}
 		return signatureAlgorithms;

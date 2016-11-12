@@ -38,22 +38,25 @@ public abstract class KeyPairAlgorithm {
 	/**
 	 * Get the available key pair algorithms.
 	 *
+	 * @param defaultHint The default to return (may be {@code null}). If this
+	 *        algorithm is contained in the default set, it is also set as the
+	 *        default.
 	 * @param expertMode Whether only standard algorithms are considered
 	 *        ({@code false}) or all algorithms available on the current
 	 *        platform ({@code true}).
 	 * @return The available key pair algorithms
 	 */
-	public static DefaultSet<KeyPairAlgorithm> getAll(boolean expertMode) {
+	public static DefaultSet<KeyPairAlgorithm> getDefaultSet(String defaultHint, boolean expertMode) {
 		DefaultSet<KeyPairAlgorithm> keyPairAlgorithms = new DefaultSet<>();
-		DefaultSet<String> defaultNameSet = SecurityDefaults.getKeyAlgorithmNames();
-		String defaultName = defaultNameSet.getDefault();
+		DefaultSet<String> defaultNames = SecurityDefaults.getKeyAlgorithmNames();
+		String defaultName = (defaultNames.contains(defaultHint) ? defaultHint : defaultNames.getDefault());
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
 				if (!SERVICE_TYPE_KEY_PAIR_GENERATOR.equals(service.getType())) {
 					continue;
 				}
-				if (!expertMode && !defaultNameSet.contains(service.getAlgorithm())) {
+				if (!expertMode && !defaultNames.contains(service.getAlgorithm())) {
 					continue;
 				}
 
@@ -101,10 +104,17 @@ public abstract class KeyPairAlgorithm {
 	/**
 	 * Get this algorithm's standard key sizes.
 	 *
+	 * @param defaultHint The default to return (may be {@code null}). If not
+	 *        yet part of the default set, this size is added to the set.
 	 * @return This algorithm's standard key sizes.
 	 */
-	public DefaultSet<Integer> getStandardKeySizes() {
-		return SecurityDefaults.getKeySizes(algorithm());
+	public DefaultSet<Integer> getStandardKeySizes(Integer defaultHint) {
+		DefaultSet<Integer> standardKeySizes = SecurityDefaults.getKeySizes(algorithm());
+
+		if (defaultHint != null) {
+			standardKeySizes.addDefault(defaultHint);
+		}
+		return standardKeySizes;
 	}
 
 	private static class StandardKeyPairAlgorithm extends KeyPairAlgorithm {

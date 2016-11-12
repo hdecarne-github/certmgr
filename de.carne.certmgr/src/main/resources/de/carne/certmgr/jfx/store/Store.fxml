@@ -44,7 +44,7 @@
                      </graphic>
                   </MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem fx:id="cmdStoreOptions" mnemonicParsing="false" onAction="#onCmdStoreOptions" text="%_STR_MENU_STORE_OPTIONS" />
+              <MenuItem fx:id="cmdStorePreferences" mnemonicParsing="false" onAction="#onCmdStorePreferences" text="%_STR_MENU_STORE_PREFERENCES" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#onCmdClose" text="%_STR_MENU_CLOSE" />
             </items>

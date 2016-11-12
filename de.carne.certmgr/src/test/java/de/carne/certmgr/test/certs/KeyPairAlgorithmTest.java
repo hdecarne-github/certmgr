@@ -47,15 +47,15 @@ public class KeyPairAlgorithmTest {
 	 * Test the algorithm provisioning.
 	 */
 	@Test
-	public void testGetAll() {
-		Set<KeyPairAlgorithm> standardAlgorithms = KeyPairAlgorithm.getAll(false);
+	public void testGetDefaultSet() {
+		Set<KeyPairAlgorithm> standardAlgorithms = KeyPairAlgorithm.getDefaultSet(null, false);
 
 		System.out.println("Standard algorithms:");
 		for (KeyPairAlgorithm standardAlgorithm : standardAlgorithms) {
 			System.out.println(standardAlgorithm);
 		}
 
-		Set<KeyPairAlgorithm> expertAlgorithms = KeyPairAlgorithm.getAll(true);
+		Set<KeyPairAlgorithm> expertAlgorithms = KeyPairAlgorithm.getDefaultSet(null, true);
 
 		System.out.println("Expert algorithms:");
 		for (KeyPairAlgorithm expertAlgorithm : expertAlgorithms) {
@@ -72,14 +72,14 @@ public class KeyPairAlgorithmTest {
 	 */
 	@Test
 	public void testKeySizes() {
-		DefaultSet<KeyPairAlgorithm> algorithms = KeyPairAlgorithm.getAll(true);
+		DefaultSet<KeyPairAlgorithm> algorithms = KeyPairAlgorithm.getDefaultSet(null, true);
 
 		Assert.assertTrue(algorithms.contains(algorithms.getDefault()));
 		for (KeyPairAlgorithm algorithm : algorithms) {
 			System.out.println("Algorithm: " + algorithm);
 			try {
 				KeyPairGenerator generator = algorithm.getInstance();
-				DefaultSet<Integer> keySizes = algorithm.getStandardKeySizes();
+				DefaultSet<Integer> keySizes = algorithm.getStandardKeySizes(null);
 
 				if (keySizes.size() > 0) {
 					Integer defaultKeySize = keySizes.getDefault();

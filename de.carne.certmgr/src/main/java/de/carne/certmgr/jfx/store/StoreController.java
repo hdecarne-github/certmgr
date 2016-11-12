@@ -39,8 +39,8 @@ import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.preferences.PreferencesController;
 import de.carne.certmgr.jfx.preferences.PreferencesDialog;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.certmgr.jfx.storeoptions.StoreOptionsController;
-import de.carne.certmgr.jfx.storeoptions.StoreOptionsDialog;
+import de.carne.certmgr.jfx.storepreferences.StorePreferencesController;
+import de.carne.certmgr.jfx.storepreferences.StorePreferencesDialog;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.aboutinfo.AboutInfoController;
@@ -84,7 +84,7 @@ public class StoreController extends StageController {
 	private ObjectProperty<UserCertStore> storeProperty = new SimpleObjectProperty<>(null);
 
 	@FXML
-	MenuItem cmdStoreOptions;
+	MenuItem cmdStorePreferences;
 
 	@FXML
 	MenuItem cmdCopyEntry;
@@ -161,10 +161,10 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdNewStore(ActionEvent evt) {
 		try {
-			StoreOptionsController storeOptions = StoreOptionsDialog.load(this)
+			StorePreferencesController storePreferences = StorePreferencesDialog.load(this)
 					.init(this.userPreferences.expertMode.getBoolean(false));
 
-			storeOptions.showAndWait();
+			storePreferences.showAndWait();
 		} catch (IOException e) {
 			Alerts.unexpected(e);
 		}
@@ -186,12 +186,12 @@ public class StoreController extends StageController {
 	}
 
 	@FXML
-	void onCmdStoreOptions(ActionEvent evt) {
+	void onCmdStorePreferences(ActionEvent evt) {
 		try {
-			StoreOptionsController storeOptions = StoreOptionsDialog.load(this).init(this.storeProperty.get(),
+			StorePreferencesController storePreferences = StorePreferencesDialog.load(this).init(this.storeProperty.get(),
 					this.userPreferences.expertMode.getBoolean(false));
 
-			storeOptions.showAndWait();
+			storePreferences.showAndWait();
 		} catch (IOException e) {
 			Alerts.unexpected(e);
 		}
@@ -308,7 +308,7 @@ public class StoreController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(Images.STORE32, Images.STORE16);
 		stage.setTitle(StoreI18N.formatSTR_STAGE_TITLE());
-		this.cmdStoreOptions.disableProperty().bind(this.storeProperty.isNull());
+		this.cmdStorePreferences.disableProperty().bind(this.storeProperty.isNull());
 		this.cmdCopyEntry.disableProperty()
 				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
 		this.cmdDeleteEntry.disableProperty()

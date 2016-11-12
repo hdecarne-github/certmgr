@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.prefs.Preferences;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -49,7 +48,6 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.nio.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
-import de.carne.util.prefs.PropertiesPreferencesFactory;
 
 /**
  * This class provides the actual certificate store functionality.
@@ -68,8 +66,6 @@ import de.carne.util.prefs.PropertiesPreferencesFactory;
 public final class UserCertStore {
 
 	private static final Log LOG = new Log();
-
-	private static final String PREFERENCES_FILENAME = ".preferences.properties";
 
 	private final UserCertStoreHandler storeHandler;
 
@@ -288,11 +284,10 @@ public final class UserCertStore {
 	 *         transient.
 	 * @see #storeHome()
 	 */
-	public Preferences storePreferences() {
+	public UserCertStorePreferences storePreferences() {
 		Path storeHome = this.storeHandler.storeHome();
 
-		return (storeHome != null ? PropertiesPreferencesFactory.customRoot(storeHome.resolve(PREFERENCES_FILENAME))
-				: null);
+		return (storeHome != null ? new UserCertStorePreferences(storeHome) : null);
 	}
 
 	/**

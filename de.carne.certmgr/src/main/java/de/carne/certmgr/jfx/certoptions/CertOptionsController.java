@@ -21,6 +21,7 @@ import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.DefaultSet;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
@@ -50,6 +51,8 @@ public class CertOptionsController extends StageController {
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertOptionsController.class);
 
 	private UserCertStore store = null;
+
+	private UserCertStorePreferences storePreferences = null;
 
 	private UserCertStoreEntry storeEntry = null;
 
@@ -123,14 +126,22 @@ public class CertOptionsController extends StageController {
 	}
 
 	private void onKeyAlgChanged(KeyPairAlgorithm keyAlg) {
-		DefaultSet<Integer> keySizes = (keyAlg != null ? keyAlg.getStandardKeySizes() : null);
+		DefaultSet<Integer> keySizes = null;
 
+		if (keyAlg != null) {
+			Integer defaultHint = null;
+
+			if (keyAlg.algorithm().equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
+				defaultHint = this.storePreferences.defaultKeySize.get();
+			}
+			keySizes = keyAlg.getStandardKeySizes(defaultHint);
+		}
 		resetComboBoxOptions(this.ctlKeySizeOption, keySizes, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(keyAlg);
 	}
 
 	private void onSignerChanged(CertSigner newSigner) {
-		DefaultSet<Issuer> issuers = (newSigner != null ? newSigner.getIssuers(this.store) : null);
+		DefaultSet<Issuer> issuers = (newSigner != null ? newSigner.getIssuers(this.store, this.storeEntry) : null);
 
 		resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(newSigner);
@@ -152,6 +163,7 @@ public class CertOptionsController extends StageController {
 	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry storeEntryParam,
 			boolean expertModeParam) {
 		this.store = storeParam;
+		this.storePreferences = this.store.storePreferences();
 		this.storeEntry = storeEntryParam;
 		this.expertMode = expertModeParam;
 		initKeyAlgOptions();
@@ -160,7 +172,8 @@ public class CertOptionsController extends StageController {
 	}
 
 	private void initKeyAlgOptions() {
-		resetComboBoxOptions(this.ctlKeyAlgOption, KeyPairAlgorithm.getAll(this.expertMode),
+		resetComboBoxOptions(this.ctlKeyAlgOption,
+				KeyPairAlgorithm.getDefaultSet(this.storePreferences.defaultKeyPairAlgorithm.get(), this.expertMode),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
@@ -198,7 +211,16 @@ public class CertOptionsController extends StageController {
 		DefaultSet<SignatureAlgorithm> sigAlgs = null;
 
 		if (signer != null) {
-			sigAlgs = signer.getSignatureAlgorithms(keyPairAlgorithm, issuer, this.expertMode);
+			String keyPairAlgorithmName = null;
+			String defaultHint = null;
+
+			if (keyPairAlgorithm != null) {
+				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
+				if (keyPairAlgorithmName.equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
+					defaultHint = this.storePreferences.defaultSignatureAlgorithm.get();
+				}
+			}
+			sigAlgs = signer.getSignatureAlgorithms(issuer, keyPairAlgorithmName, defaultHint, this.expertMode);
 		}
 		resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs, (o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}

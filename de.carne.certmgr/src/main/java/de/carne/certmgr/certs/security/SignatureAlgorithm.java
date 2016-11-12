@@ -38,15 +38,19 @@ public abstract class SignatureAlgorithm {
 	 *
 	 * @param keyPairAlgorithm The key pair algorithm to get the signature
 	 *        algorithms for.
+	 * @param defaultHint The default to return (may be {@code null}). If this
+	 *        algorithm is contained in the default set, it is also set as the
+	 *        default.
 	 * @param expertMode Whether only standard algorithms are considered
 	 *        ({@code false}) or all algorithms available on the current
 	 *        platform ({@code true}).
 	 * @return The available signature algorithms
 	 */
-	public static DefaultSet<SignatureAlgorithm> getAll(String keyPairAlgorithm, boolean expertMode) {
+	public static DefaultSet<SignatureAlgorithm> getDefaultSet(String keyPairAlgorithm, String defaultHint,
+			boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
-		DefaultSet<String> defaultNameSet = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
-		String defaultName = defaultNameSet.getDefault();
+		DefaultSet<String> defaultNames = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
+		String defaultName = (defaultNames.contains(defaultHint) ? defaultHint : defaultNames.getDefault());
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
@@ -56,7 +60,7 @@ public abstract class SignatureAlgorithm {
 
 				String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
 
-				if (!expertMode && !defaultNameSet.contains(upperCaseAlgorithm)) {
+				if (!expertMode && !defaultNames.contains(upperCaseAlgorithm)) {
 					continue;
 				}
 

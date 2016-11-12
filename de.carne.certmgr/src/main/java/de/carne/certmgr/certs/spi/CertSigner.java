@@ -17,8 +17,8 @@
 package de.carne.certmgr.certs.spi;
 
 import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.DefaultSet;
-import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.signer.Issuer;
 
@@ -38,11 +38,25 @@ public interface CertSigner extends NamedProvider {
 	 * Get the available issuers.
 	 *
 	 * @param store The store to use for issuer provisioning.
+	 * @param defaultHint The default to return (may be {@code null}). If the
+	 *        issuer representing this store entry is part of the default set,
+	 *        it is also set as the default.
 	 * @return The available issuers (may be an empty set).
 	 */
-	DefaultSet<Issuer> getIssuers(UserCertStore store);
+	DefaultSet<Issuer> getIssuers(UserCertStore store, UserCertStoreEntry defaultHint);
 
-	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(KeyPairAlgorithm keyPairAlgorithm, Issuer issuer,
+	/**
+	 * @param issuer
+	 * @param keyPairAlgorithm
+	 * @param defaultHint The default to return (may be {@code null}). If this
+	 *        algorithm is contained in the default set, it is also set as the
+	 *        default.
+	 * @param expertMode Whether only standard algorithms are considered
+	 *        ({@code false}) or all algorithms available on the current
+	 *        platform ({@code true}).
+	 * @return The available signature algorithms
+	 */
+	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, String keyPairAlgorithm, String defaultHint,
 			boolean expertMode);
 
 }

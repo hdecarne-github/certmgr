@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.jfx.storeoptions;
+package de.carne.certmgr.jfx.storepreferences;
 
 import java.io.IOException;
 
@@ -25,9 +25,9 @@ import javafx.scene.control.Dialog;
 /**
  * Store options dialog.
  */
-public class StoreOptionsDialog extends Dialog<UserCertStore> {
+public class StorePreferencesDialog extends Dialog<UserCertStore> {
 
-	private StoreOptionsDialog(StoreOptionsController controller) {
+	private StorePreferencesDialog(StorePreferencesController controller) {
 		setResultConverter(controller);
 	}
 
@@ -39,10 +39,10 @@ public class StoreOptionsDialog extends Dialog<UserCertStore> {
 	 *         dialog.
 	 * @throws IOException if an I/O error occurs during dialog loading.
 	 */
-	public static StoreOptionsController load(StageController owner) throws IOException {
+	public static StorePreferencesController load(StageController owner) throws IOException {
 		assert owner != null;
 
-		return owner.loadDialog((c) -> new StoreOptionsDialog(c), StoreOptionsController.class);
+		return owner.loadDialog((c) -> new StorePreferencesDialog(c), StorePreferencesController.class);
 	}
 
 }

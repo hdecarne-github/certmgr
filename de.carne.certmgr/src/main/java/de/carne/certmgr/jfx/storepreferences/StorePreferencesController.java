@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.jfx.storeoptions;
+package de.carne.certmgr.jfx.storepreferences;
 
 import java.nio.file.Path;
 import java.util.Comparator;
 
 import de.carne.certmgr.certs.UserCertStore;
-import de.carne.certmgr.certs.UserCertStoreOptionsPreferences;
+import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.DefaultSet;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
@@ -38,12 +38,12 @@ import javafx.util.Callback;
 /**
  * Store options dialog.
  */
-public class StoreOptionsController extends DialogController<UserCertStore>
+public class StorePreferencesController extends DialogController<UserCertStore>
 		implements Callback<ButtonType, UserCertStore> {
 
 	private UserCertStore store = null;
 
-	private UserCertStoreOptionsPreferences storeOptionsPreferences = null;
+	private UserCertStorePreferences storePreferences = null;
 
 	private boolean expertMode = false;
 
@@ -77,30 +77,41 @@ public class StoreOptionsController extends DialogController<UserCertStore>
 	}
 
 	private void onDefKeyAlgChanged(KeyPairAlgorithm keyAlg) {
-		resetComboBoxOptions(this.ctlDefKeySizeOption, keyAlg.getStandardKeySizes(), (o1, o2) -> o1.compareTo(o2));
-		resetComboBoxOptions(this.ctlDefSigAlgOption, SignatureAlgorithm.getAll(keyAlg.algorithm(), this.expertMode),
+		Integer keySizeDefaultHint = null;
+		String sigAlgDefaultHint = null;
+
+		if (this.storePreferences != null
+				&& keyAlg.algorithm().equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
+			keySizeDefaultHint = this.storePreferences.defaultKeySize.get();
+			sigAlgDefaultHint = this.storePreferences.defaultSignatureAlgorithm.get();
+		}
+		resetComboBoxOptions(this.ctlDefKeySizeOption, keyAlg.getStandardKeySizes(keySizeDefaultHint),
+				(o1, o2) -> o1.compareTo(o2));
+		resetComboBoxOptions(this.ctlDefSigAlgOption,
+				SignatureAlgorithm.getDefaultSet(keyAlg.algorithm(), sigAlgDefaultHint, this.expertMode),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
 	@Override
 	protected void setupDialog(Dialog<UserCertStore> dialog) {
-		dialog.setTitle(StoreOptionsI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(StorePreferencesI18N.formatSTR_STAGE_TITLE());
 		this.ctlDefKeyAlgOption.getSelectionModel().selectedItemProperty()
 				.addListener((p, o, n) -> onDefKeyAlgChanged(n));
 	}
 
-	public StoreOptionsController init(boolean expertModeParam) {
+	public StorePreferencesController init(boolean expertModeParam) {
 		this.store = null;
 		this.expertMode = expertModeParam;
+		this.ctlDefKeySizeOption.setEditable(this.expertMode);
 		initKeyAlgOptions();
 		return this;
 	}
 
-	public StoreOptionsController init(UserCertStore storeParam, boolean expertModeParam) {
+	public StorePreferencesController init(UserCertStore storeParam, boolean expertModeParam) {
 		assert storeParam != null;
 
 		this.store = storeParam;
-		this.storeOptionsPreferences = new UserCertStoreOptionsPreferences(this.store);
+		this.storePreferences = this.store.storePreferences();
 		this.expertMode = expertModeParam;
 
 		Path storeHome = this.store.storeHome();
@@ -110,12 +121,18 @@ public class StoreOptionsController extends DialogController<UserCertStore>
 		this.ctlPathInput.setText(storeHome.getParent().toString());
 		this.ctlPathInput.setDisable(true);
 		this.cmdChoosePathButton.setDisable(true);
+		this.ctlDefKeySizeOption.setEditable(this.expertMode);
 		initKeyAlgOptions();
 		return this;
 	}
 
 	private void initKeyAlgOptions() {
-		resetComboBoxOptions(this.ctlDefKeyAlgOption, KeyPairAlgorithm.getAll(this.expertMode),
+		String defaultHint = null;
+
+		if (this.storePreferences != null) {
+			defaultHint = this.storePreferences.defaultKeyPairAlgorithm.get();
+		}
+		resetComboBoxOptions(this.ctlDefKeyAlgOption, KeyPairAlgorithm.getDefaultSet(defaultHint, this.expertMode),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 

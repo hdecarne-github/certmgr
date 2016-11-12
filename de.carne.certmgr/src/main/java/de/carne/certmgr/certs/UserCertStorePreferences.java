@@ -16,28 +16,32 @@
  */
 package de.carne.certmgr.certs;
 
+import java.nio.file.Path;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import de.carne.util.prefs.IntPreference;
+import de.carne.util.prefs.PropertiesPreferencesFactory;
 import de.carne.util.prefs.StringPreference;
 
 /**
- * Utility class providing access to store options preferences.
+ * Utility class providing access to store preferences.
  */
-public final class UserCertStoreOptionsPreferences {
+public final class UserCertStorePreferences {
 
-	private static final String STORE_OPTIONS_NODE = "store";
+	private static final String PREFERENCES_FILENAME = ".preferences.properties";
 
-	private static final String STORE_OPTION_DEFAULT_CRT_VALIDITY = "defcrtvalidity";
+	private static final String STORE_NODE = "store";
 
-	private static final String STORE_OPTION_DEFAULT_CRL_UPDATE_PERIOD = "defcrlupdate";
+	private static final String STORE_DEFAULT_CRT_VALIDITY = "defcrtvalidity";
 
-	private static final String STORE_OPTION_DEFAULT_KEY_PAIR_ALGORITHM = "defkeyalg";
+	private static final String STORE_DEFAULT_CRL_UPDATE_PERIOD = "defcrlupdate";
 
-	private static final String STORE_OPTION_DEFAULT_KEY_SIZE = "defkeysize";
+	private static final String STORE_DEFAULT_KEY_PAIR_ALGORITHM = "defkeyalg";
 
-	private static final String STORE_OPTION_DEFAULT_SIGNATURE_ALGORITHM = "defsigalg";
+	private static final String STORE_DEFAULT_KEY_SIZE = "defkeysize";
+
+	private static final String STORE_DEFAULT_SIGNATURE_ALGORITHM = "defsigalg";
 
 	private final Preferences preferences;
 
@@ -66,21 +70,16 @@ public final class UserCertStoreOptionsPreferences {
 	 */
 	public final StringPreference defaultSignatureAlgorithm;
 
-	/**
-	 * Construct {@code UserCertStoreOptionsPreferences}.
-	 *
-	 * @param store The store to get the preferences from. This must be a
-	 *        persistent store.
-	 * @see UserCertStore#storePreferences()
-	 */
-	public UserCertStoreOptionsPreferences(UserCertStore store) {
-		this.preferences = store.storePreferences().node(STORE_OPTIONS_NODE);
-		this.defaultCRTValidity = new IntPreference(this.preferences, STORE_OPTION_DEFAULT_CRT_VALIDITY);
-		this.defaultCRLUpdatePeriod = new IntPreference(this.preferences, STORE_OPTION_DEFAULT_CRL_UPDATE_PERIOD);
-		this.defaultKeyPairAlgorithm = new StringPreference(this.preferences, STORE_OPTION_DEFAULT_KEY_PAIR_ALGORITHM);
-		this.defaultKeySize = new IntPreference(this.preferences, STORE_OPTION_DEFAULT_KEY_SIZE);
-		this.defaultSignatureAlgorithm = new StringPreference(this.preferences,
-				STORE_OPTION_DEFAULT_SIGNATURE_ALGORITHM);
+	UserCertStorePreferences(Path storeHome) {
+		this.preferences = PropertiesPreferencesFactory.customRoot(storeHome.resolve(PREFERENCES_FILENAME));
+
+		Preferences optionsNode = this.preferences.node(STORE_NODE);
+
+		this.defaultCRTValidity = new IntPreference(optionsNode, STORE_DEFAULT_CRT_VALIDITY);
+		this.defaultCRLUpdatePeriod = new IntPreference(optionsNode, STORE_DEFAULT_CRL_UPDATE_PERIOD);
+		this.defaultKeyPairAlgorithm = new StringPreference(optionsNode, STORE_DEFAULT_KEY_PAIR_ALGORITHM);
+		this.defaultKeySize = new IntPreference(optionsNode, STORE_DEFAULT_KEY_SIZE);
+		this.defaultSignatureAlgorithm = new StringPreference(optionsNode, STORE_DEFAULT_SIGNATURE_ALGORITHM);
 	}
 
 	/**
