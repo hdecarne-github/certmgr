@@ -49,21 +49,24 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 	public static DefaultSet<KeyPairAlgorithm> getDefaultSet(String defaultHint, boolean expertMode) {
 		DefaultSet<KeyPairAlgorithm> keyPairAlgorithms = new DefaultSet<>();
 		DefaultSet<String> defaultNames = SecurityDefaults.getKeyAlgorithmNames();
-		String defaultName = (defaultNames.contains(defaultHint) ? defaultHint : defaultNames.getDefault());
+		String defaultName = (defaultHint != null ? defaultHint : defaultNames.getDefault());
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
 				if (!SERVICE_TYPE_KEY_PAIR_GENERATOR.equals(service.getType())) {
 					continue;
 				}
-				if (!expertMode && !defaultNames.contains(service.getAlgorithm())) {
+
+				String algorithm = service.getAlgorithm();
+
+				if (!expertMode && !defaultName.equals(algorithm) && !defaultNames.contains(algorithm)) {
 					continue;
 				}
 
 				KeyPairAlgorithm keyPairAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
 						: new StandardKeyPairAlgorithm(service));
 
-				if (keyPairAlgorithm.algorithm().equals(defaultName)) {
+				if (algorithm.equals(defaultName)) {
 					keyPairAlgorithms.addDefault(keyPairAlgorithm);
 				} else {
 					keyPairAlgorithms.add(keyPairAlgorithm);

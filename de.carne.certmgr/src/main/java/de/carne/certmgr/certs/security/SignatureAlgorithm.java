@@ -50,7 +50,7 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 			boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 		DefaultSet<String> defaultNames = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
-		String defaultName = (defaultNames.contains(defaultHint) ? defaultHint : defaultNames.getDefault());
+		String defaultName = (defaultHint != null ? defaultHint : defaultNames.getDefault()).toUpperCase();
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
@@ -60,14 +60,15 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 
 				String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
 
-				if (!expertMode && !defaultNames.contains(upperCaseAlgorithm)) {
+				if (!expertMode && !defaultName.equals(upperCaseAlgorithm)
+						&& !defaultNames.contains(upperCaseAlgorithm)) {
 					continue;
 				}
 
 				SignatureAlgorithm signatureAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
 						: new StandardKeyPairAlgorithm(service));
 
-				if (signatureAlgorithm.algorithm().equals(defaultName)) {
+				if (upperCaseAlgorithm.equals(defaultName)) {
 					signatureAlgorithms.addDefault(signatureAlgorithm);
 				} else {
 					signatureAlgorithms.add(signatureAlgorithm);
