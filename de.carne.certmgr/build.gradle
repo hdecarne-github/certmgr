@@ -24,9 +24,14 @@ sourceSets {
 		}
 	}
 
-	// Make generated classes/resources available to the main source set
+	// Make generated classes/resources available to the main and test source set
 	main {
-		compileClasspath += sourceSets.generated.runtimeClasspath
+		compileClasspath += sourceSets.generated.output
+		runtimeClasspath += sourceSets.generated.output
+	}
+	test {
+		compileClasspath += sourceSets.generated.output
+		runtimeClasspath += sourceSets.generated.output
 	}
 }
 
