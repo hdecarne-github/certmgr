@@ -1,22 +1,14 @@
-# Install latest JDK, as JavaFX depends on it
-sudo: false
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
-
 language: java
+
 jdk:
   - oraclejdk8
+
 os:
   - linux
-branches:
-  only:
-    - master
 
 script:
   - ./gradlew check
-  - ./gradlew codeCoverageReport
+  - ./gradlew jacocoTestReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
@@ -27,6 +19,14 @@ notifications:
     on_success: change
     on_failure: always
 
+# Install latest JDK, as JavaFX depends on it
+sudo: false
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+# See https://docs.travis-ci.com/user/languages/java/#Caching
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/

@@ -1,14 +1,4 @@
-allprojects {
-
-	buildscript {
-		repositories {
-			mavenLocal()
-			mavenCentral()
-		}
-		dependencies {
-			classpath 'de.carne:gradleplugins:0.3.1'
-		}
-	}
+subprojects {
 
 	apply plugin: 'java'
 	apply plugin: 'jacoco'
@@ -20,26 +10,19 @@ allprojects {
 		mavenLocal()
 		mavenCentral()
 	}
-	
-}
 
-subprojects {
+	buildscript {
+		repositories {
+			mavenLocal()
+			mavenCentral()
+		}
+		dependencies {
+			classpath 'de.carne:gradleplugins:0.3.1'
+		}
+	}
 	
 	dependencies {
 		testCompile('junit:junit:4.12')
-	}
-	
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = '2.14.1'
-}
-
-task codeCoverageReport(type: JacocoReport) {
-	executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-	subprojects.each {
-		sourceSets it.sourceSets.main
 	}
 
     reports {
@@ -48,8 +31,9 @@ task codeCoverageReport(type: JacocoReport) {
         html.enabled false
         csv.enabled false
     }
+	
 }
 
-codeCoverageReport.dependsOn {
-    subprojects*.test
+task wrapper(type: Wrapper) {
+	gradleVersion = '2.14.1'
 }
