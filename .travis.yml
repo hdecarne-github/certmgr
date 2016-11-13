@@ -1,15 +1,3 @@
-notifications:
-  email:
-    recipients:
-      - hdecarne@gmail.com
-    on_success: change
-    on_failure: always
-
-language: java
-
-jdk:
-  - oraclejdk8
-
 # Install latest JDK, as JavaFX depends on it
 sudo: false
 addons:
@@ -17,12 +5,27 @@ addons:
     packages:
       - oracle-java8-installer
 
+language: java
+jdk:
+  - oraclejdk8
 os:
   - linux
-
 branches:
   only:
     - master
+
+script:
+  - ./gradlew check
+  - ./gradlew codeCoverageReport
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email:
+    recipients:
+      - hdecarne@gmail.com
+    on_success: change
+    on_failure: always
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
