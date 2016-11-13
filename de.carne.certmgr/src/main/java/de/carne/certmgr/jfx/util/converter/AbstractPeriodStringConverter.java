@@ -22,17 +22,43 @@ import java.util.regex.Pattern;
 
 import de.carne.certmgr.certs.security.AbstractPeriod;
 import de.carne.certmgr.util.Days;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 
 /**
- * Abstract {@link StringConverter} implementation for {@link AbstractPeriod}
- * based classes.
+ * Utility class used to support editing of {@link AbstractPeriod} based values.
  *
- * @param <T> The type to convert.
+ * @param <T> The type to edit.
  */
 public abstract class AbstractPeriodStringConverter<T extends AbstractPeriod> extends StringConverter<T> {
 
 	private final static Pattern STRING_PATTERN = Pattern.compile(".+ \\[(.+)\\]");
+
+	/**
+	 * Attach this converter to a {@link ComboBox}.
+	 *
+	 * @param comboBox The combobox to attach to.
+	 */
+	public void attach(ComboBox<T> comboBox) {
+		comboBox.setConverter(this);
+		if (comboBox.isEditable()) {
+
+			TextField editor = comboBox.getEditor();
+
+			editor.focusedProperty().addListener((p, o, n) -> onFocusedChanged(editor, n));
+		}
+	}
+
+	private void onFocusedChanged(TextField textField, Boolean focused) {
+		if (focused) {
+			Matcher stringPatternMatcher = STRING_PATTERN.matcher(textField.getText());
+
+			if (stringPatternMatcher.matches()) {
+				textField.setText(stringPatternMatcher.group(1));
+			}
+		}
+	}
 
 	@Override
 	public String toString(T object) {

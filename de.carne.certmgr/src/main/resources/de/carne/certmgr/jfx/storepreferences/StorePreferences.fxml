@@ -60,8 +60,8 @@
                   <Separator prefWidth="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
                   <Label layoutX="10.0" layoutY="46.0" text="%_STR_LABEL_DEFCRTVALIDITY" GridPane.rowIndex="3" />
                   <ComboBox fx:id="ctlDefCRTValidityInput" editable="true" layoutX="188.0" layoutY="183.0" maxWidth="1.7976931348623157E308" promptText="%_STR_PROMPT_DEFCRTVALIDITY" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Label layoutX="10.0" layoutY="79.0" text="%_STR_LABEL_CRLUPDATE" GridPane.rowIndex="4" />
-                  <ComboBox fx:id="ctlDefCRLUpdateInput" editable="true" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" promptText="%_STR_PROMPT_CRLUPDATE" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label layoutX="10.0" layoutY="79.0" text="%_STR_LABEL_DEFCRLUPDATE" GridPane.rowIndex="4" />
+                  <ComboBox fx:id="ctlDefCRLUpdateInput" editable="true" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" promptText="%_STR_PROMPT_DEFCRLUPDATE" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                   <Label layoutX="10.0" layoutY="15.0" text="%_STR_LABEL_DEFKEYALG" GridPane.rowIndex="5" />
                   <ComboBox fx:id="ctlDefKeyAlgOption" layoutX="188.0" layoutY="163.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <Label layoutX="10.0" layoutY="121.0" text="%_STR_LABEL_DEFKEYSIZE" GridPane.rowIndex="6" />

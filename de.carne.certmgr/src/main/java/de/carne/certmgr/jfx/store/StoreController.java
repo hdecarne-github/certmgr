@@ -111,6 +111,9 @@ public class StoreController extends StageController {
 	CheckMenuItem cmdToggleLogView;
 
 	@FXML
+	Button cmdStorePreferencesButton;
+
+	@FXML
 	Button cmdCopyEntryButton;
 
 	@FXML
@@ -326,6 +329,7 @@ public class StoreController extends StageController {
 		this.cmdExportCert.disableProperty()
 				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
 		this.cmdImportCerts.disableProperty().bind(this.storeProperty.isNull());
+		this.cmdStorePreferencesButton.disableProperty().bind(this.storeProperty.isNull());
 		this.cmdCopyEntryButton.disableProperty().bind(this.cmdCopyEntry.disableProperty());
 		this.cmdDeleteEntryButton.disableProperty().bind(this.cmdDeleteEntry.disableProperty());
 		this.cmdNewCertButton.disableProperty().bind(this.cmdNewCert.disableProperty());

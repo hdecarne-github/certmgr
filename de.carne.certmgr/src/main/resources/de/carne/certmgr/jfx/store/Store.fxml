@@ -43,8 +43,14 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem fx:id="cmdStorePreferences" mnemonicParsing="false" onAction="#onCmdStorePreferences" text="%_STR_MENU_STORE_PREFERENCES" />
+              <MenuItem fx:id="cmdStorePreferences" mnemonicParsing="false" onAction="#onCmdStorePreferences" text="%_STR_MENU_STORE_PREFERENCES">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageStorePreferences16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></MenuItem>
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#onCmdClose" text="%_STR_MENU_CLOSE" />
             </items>
@@ -147,6 +153,15 @@
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../resources/imageOpenStore16.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="cmdStorePreferencesButton" layoutX="48.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdStorePreferences">
+               <graphic>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../resources/imageStorePreferences16.png" />
                      </image>
                   </ImageView>
                </graphic>
