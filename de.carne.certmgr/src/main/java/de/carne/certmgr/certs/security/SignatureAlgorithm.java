@@ -50,7 +50,7 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 			boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 		DefaultSet<String> defaultNames = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
-		String defaultName = (defaultHint != null ? defaultHint : defaultNames.getDefault()).toUpperCase();
+		String defaultName = (defaultHint != null ? defaultHint.toUpperCase() : defaultNames.getDefault());
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {

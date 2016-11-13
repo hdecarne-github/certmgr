@@ -45,6 +45,11 @@ public class DefaultCertSigner implements CertSigner {
 	}
 
 	@Override
+	public boolean hasFeature(Feature feature) {
+		return true;
+	}
+
+	@Override
 	public DefaultSet<Issuer> getIssuers(UserCertStore store, UserCertStoreEntry defaultHint) {
 		DefaultSet<Issuer> issuers = new DefaultSet<>();
 

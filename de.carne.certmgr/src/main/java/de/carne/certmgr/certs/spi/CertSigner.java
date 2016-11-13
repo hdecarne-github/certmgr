@@ -28,11 +28,46 @@ import de.carne.certmgr.util.DefaultSet;
 public interface CertSigner extends NamedProvider {
 
 	/**
+	 * Service features.
+	 */
+	public enum Feature {
+
+		/**
+		 * Service supports custom issuers.
+		 */
+		CUSTOM_ISSUER,
+
+		/**
+		 * Service supports custom signature algorithms.
+		 */
+		CUSTOM_SIGNATURE_ALGORITHM,
+
+		/**
+		 * Service supports custom validity.
+		 */
+		CUSTOM_VALIDITY,
+
+		/**
+		 * Service supports custom extensions.
+		 */
+		CUSTOM_EXTENSIONS
+
+	}
+
+	/**
 	 * Get this provider's description.
 	 *
 	 * @return This provider's description.
 	 */
 	String getDescription();
+
+	/**
+	 * Check whether this service supports a specific feature.
+	 *
+	 * @param feature The feature to check.
+	 * @return {@code true} if the submitted feature is supported.
+	 */
+	boolean hasFeature(Feature feature);
 
 	/**
 	 * Get the available issuers.

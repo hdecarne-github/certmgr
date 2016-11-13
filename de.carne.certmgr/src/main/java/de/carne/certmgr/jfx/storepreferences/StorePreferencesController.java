@@ -148,8 +148,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	@Override
 	protected void setupDialog(Dialog<UserCertStore> dialog) {
 		dialog.setTitle(StorePreferencesI18N.formatSTR_STAGE_TITLE());
-		this.ctlDefKeyAlgOption.getSelectionModel().selectedItemProperty()
-				.addListener((p, o, n) -> onDefKeyAlgChanged(n));
+		this.ctlDefKeyAlgOption.valueProperty().addListener((p, o, n) -> onDefKeyAlgChanged(n));
 		this.ctlDefKeySizeOption.setConverter(new IntegerStringConverter());
 		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}

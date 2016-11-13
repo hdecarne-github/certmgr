@@ -257,7 +257,7 @@ public class CertImportController extends StageController {
 		this.ctlImportEntryViewCRL.setCellValueFactory(new TreeItemPropertyValueFactory<>("hasCRL"));
 		this.ctlImportEntryView.setTreeColumn(this.ctlImportEntryViewDN);
 		this.ctlFileSourceOption.setSelected(true);
-		this.ctlServerSourceProtocolInput.getSelectionModel().select(SSLPeer.Protocol.SSL);
+		this.ctlServerSourceProtocolInput.setValue(SSLPeer.Protocol.SSL);
 	}
 
 	@Override

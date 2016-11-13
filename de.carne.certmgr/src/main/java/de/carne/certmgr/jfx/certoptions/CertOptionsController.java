@@ -16,11 +16,14 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.UserCertStoreEntryId;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
@@ -42,6 +45,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Certificate (CRT/CSR) creation dialog.
@@ -145,6 +149,7 @@ public class CertOptionsController extends StageController {
 
 		resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(newSigner);
+		resetValidityInput(newSigner);
 	}
 
 	private void onIssuerChanged(Issuer newIssuer) {
@@ -155,20 +160,39 @@ public class CertOptionsController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
-		this.ctlKeyAlgOption.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> onKeyAlgChanged(n));
-		this.ctlSignerOption.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> onSignerChanged(n));
-		this.ctlIssuerInput.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> onIssuerChanged(n));
+		this.ctlKeyAlgOption.valueProperty().addListener((p, o, n) -> onKeyAlgChanged(n));
+		this.ctlKeySizeOption.setConverter(new IntegerStringConverter());
+		this.ctlSignerOption.valueProperty().addListener((p, o, n) -> onSignerChanged(n));
+		this.ctlIssuerInput.valueProperty().addListener((p, o, n) -> onIssuerChanged(n));
 	}
 
+	/**
+	 * Initialize dialog for certificate generation.
+	 *
+	 * @param storeParam The store to add the generated certificate to.
+	 * @param storeEntryParam The (optional) store entry to use for certificate
+	 *        signing.
+	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
+	 *        not ({@code false}).
+	 * @return This controller.
+	 */
 	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry storeEntryParam,
 			boolean expertModeParam) {
 		this.store = storeParam;
 		this.storePreferences = this.store.storePreferences();
 		this.storeEntry = storeEntryParam;
 		this.expertMode = expertModeParam;
+		initCertificateNames();
 		initKeyAlgOptions();
 		initSignerOptions();
 		return this;
+	}
+
+	private void initCertificateNames() {
+		UserCertStoreEntryId entryId = this.store.generateEntryId(CertOptionsI18N.formatSTR_TEXT_ALIASHINT());
+
+		this.ctlAliasInput.setText(entryId.getAlias());
+		this.ctlDNInput.setText(CertOptionsI18N.formatSTR_TEXT_DEFAULTDN(entryId.getAlias(), this.store.storeName()));
 	}
 
 	private void initKeyAlgOptions() {
@@ -183,7 +207,7 @@ public class CertOptionsController extends StageController {
 		signerOptions.clear();
 		signerOptions.addAll(CertSigners.REGISTERED.providers());
 		signerOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		this.ctlSignerOption.getSelectionModel().select(CertSigners.DEFAULT);
+		this.ctlSignerOption.setValue(CertSigners.DEFAULT);
 	}
 
 	private void resetSigAlgOptions(CertSigner signer) {
@@ -225,6 +249,24 @@ public class CertOptionsController extends StageController {
 		resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs, (o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
+	private void resetValidityInput(CertSigner signer) {
+		if (signer != null && signer.hasFeature(CertSigner.Feature.CUSTOM_VALIDITY)) {
+			LocalDate notBeforeValue = LocalDate.now();
+			LocalDate notAfterValue = notBeforeValue.plus(this.storePreferences.defaultCRTValidityPeriod.get(),
+					ChronoUnit.DAYS);
+
+			this.ctlNotBeforeInput.setValue(notBeforeValue);
+			this.ctlNotBeforeInput.setDisable(false);
+			this.ctlNotAfterInput.setValue(notAfterValue);
+			this.ctlNotAfterInput.setDisable(false);
+		} else {
+			this.ctlNotBeforeInput.setValue(null);
+			this.ctlNotBeforeInput.setDisable(true);
+			this.ctlNotAfterInput.setValue(null);
+			this.ctlNotAfterInput.setDisable(true);
+		}
+	}
+
 	@Override
 	protected Preferences getPreferences() {
 		return this.preferences;
@@ -238,7 +280,7 @@ public class CertOptionsController extends StageController {
 		if (defaultSet != null && !defaultSet.isEmpty()) {
 			options.addAll(defaultSet);
 			options.sort(comparator);
-			control.getSelectionModel().select(defaultSet.getDefault());
+			control.setValue(defaultSet.getDefault());
 			control.setDisable(false);
 		} else {
 			control.setDisable(!control.isEditable());

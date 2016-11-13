@@ -291,6 +291,16 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Generate a new entry id.
+	 *
+	 * @param aliasHint The preferred alias for the generated id.
+	 * @return A entry id not yet used in this store.
+	 */
+	public UserCertStoreEntryId generateEntryId(String aliasHint) {
+		return this.storeHandler.nextEntryId(aliasHint);
+	}
+
+	/**
 	 * Get this store's entry count.
 	 *
 	 * @return This store's entry count.
