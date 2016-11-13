@@ -36,13 +36,25 @@ public class DaysTest {
 	public void testDays() {
 		DaysI18N.formatSTR_DAYS(0);
 
+		Days t0Days = new Days(0);
 		Days t1Day = new Days(1);
 		Days t30Days = new Days(30);
 		Days t365Days = new Days(365);
+		Days t396Days = new Days(396);
 
+		t0Days.hashCode();
+		t1Day.hashCode();
+		t30Days.hashCode();
+		t365Days.hashCode();
+		t396Days.hashCode();
+		Assert.assertEquals(t0Days.count(), 0);
 		Assert.assertEquals(t1Day.count(), 1);
 		Assert.assertEquals(t30Days.count(), 30);
 		Assert.assertEquals(t365Days.count(), 365);
+		Assert.assertEquals(t396Days.count(), 396);
+		Assert.assertEquals(t0Days.period().getDays(), 0);
+		Assert.assertEquals(t0Days.period().getMonths(), 0);
+		Assert.assertEquals(t0Days.period().getYears(), 0);
 		Assert.assertEquals(t1Day.period().getDays(), 1);
 		Assert.assertEquals(t1Day.period().getMonths(), 0);
 		Assert.assertEquals(t1Day.period().getYears(), 0);
@@ -52,9 +64,19 @@ public class DaysTest {
 		Assert.assertEquals(t365Days.period().getDays(), 0);
 		Assert.assertEquals(t365Days.period().getMonths(), 0);
 		Assert.assertEquals(t365Days.period().getYears(), 1);
+		Assert.assertEquals(t396Days.period().getDays(), 1);
+		Assert.assertEquals(t396Days.period().getMonths(), 1);
+		Assert.assertEquals(t396Days.period().getYears(), 1);
+		Assert.assertEquals(t0Days.toString(), "P0D");
+		Assert.assertEquals(t1Day.toString(), "P1D");
+		Assert.assertEquals(t30Days.toString(), "P1M");
+		Assert.assertEquals(t365Days.toString(), "P1Y");
+		Assert.assertEquals(t396Days.toString(), "P1Y1M1D");
+		Assert.assertEquals(t0Days.toLocalizedString(), "0 day(s)");
 		Assert.assertEquals(t1Day.toLocalizedString(), "1 day(s)");
 		Assert.assertEquals(t30Days.toLocalizedString(), "1 month(s)");
 		Assert.assertEquals(t365Days.toLocalizedString(), "1 year(s)");
+		Assert.assertEquals(t396Days.toLocalizedString(), "1 year(s) 1 month(s) 1 day(s)");
 
 		Days t1DPeriod = new Days(Period.parse("P1D"));
 		Days t1MPeriod = new Days(Period.parse("P1M"));
@@ -64,6 +86,10 @@ public class DaysTest {
 		Assert.assertEquals(t1MPeriod, t30Days);
 		Assert.assertEquals(t1YPeriod, t365Days);
 
+		Assert.assertFalse(t30Days.equals(this));
+		Assert.assertFalse(t30Days.equals(t1Day));
+		Assert.assertTrue(t30Days.equals(t30Days));
+		Assert.assertFalse(t30Days.equals(t365Days));
 		Assert.assertTrue(t30Days.compareTo(t1Day) > 0);
 		Assert.assertTrue(t30Days.compareTo(t30Days) == 0);
 		Assert.assertTrue(t30Days.compareTo(t365Days) < 0);
