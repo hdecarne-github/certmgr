@@ -21,3 +21,9 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+sudo: false
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
