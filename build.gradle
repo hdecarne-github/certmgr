@@ -29,6 +29,16 @@ subprojects {
 	dependencies {
 		testCompile('junit:junit:4.12')
 	}
+
+	jacocoTestReport {
+		reports {
+			xml.enabled true
+			xml.destination "${buildDir}/reports/jacoco/report.xml"
+			html.enabled true
+			html.destination "${buildDir}/reports/jacoco"
+			csv.enabled false
+		}
+	}	
 	
 }
 
@@ -38,21 +48,22 @@ task wrapper(type: Wrapper) {
 
 task codeCoverageReport(type: JacocoReport) {
 
-    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+	executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
-    subprojects.each {
-       sourceSets it.sourceSets.main
-    }
+	subprojects.each {
+		sourceSets it.sourceSets.main
+	}
 
-    reports {
-      xml.enabled true
-      xml.destination "${buildDir}/reports/jacoco/report.xml"
-      html.enabled true
-      html.destination "${buildDir}/reports/jacoco"
-      csv.enabled false
-    }
+	reports {
+		xml.enabled true
+		xml.destination "${buildDir}/reports/jacoco/report.xml"
+		html.enabled true
+		html.destination "${buildDir}/reports/jacoco"
+		csv.enabled false
+	}
+	
 }
 
 codeCoverageReport.dependsOn {
-    subprojects*.test
+	subprojects*.test
 }
