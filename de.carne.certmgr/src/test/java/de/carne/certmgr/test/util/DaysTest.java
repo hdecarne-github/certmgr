@@ -16,10 +16,13 @@
  */
 package de.carne.certmgr.test.util;
 
+import java.time.Period;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import de.carne.certmgr.util.Days;
+import de.carne.certmgr.util.DaysI18N;
 
 /**
  * Test {@link Days} class functionality.
@@ -31,6 +34,8 @@ public class DaysTest {
 	 */
 	@Test
 	public void testDays() {
+		DaysI18N.formatSTR_DAYS(0);
+
 		Days t1Day = new Days(1);
 		Days t30Days = new Days(30);
 		Days t365Days = new Days(365);
@@ -47,6 +52,21 @@ public class DaysTest {
 		Assert.assertEquals(t365Days.period().getDays(), 0);
 		Assert.assertEquals(t365Days.period().getMonths(), 0);
 		Assert.assertEquals(t365Days.period().getYears(), 1);
+		Assert.assertEquals(t1Day.toLocalizedString(), "1 day(s)");
+		Assert.assertEquals(t30Days.toLocalizedString(), "1 month(s)");
+		Assert.assertEquals(t365Days.toLocalizedString(), "1 year(s)");
+
+		Days t1DPeriod = new Days(Period.parse("P1D"));
+		Days t1MPeriod = new Days(Period.parse("P1M"));
+		Days t1YPeriod = new Days(Period.parse("P1Y"));
+
+		Assert.assertEquals(t1DPeriod, t1Day);
+		Assert.assertEquals(t1MPeriod, t30Days);
+		Assert.assertEquals(t1YPeriod, t365Days);
+
+		Assert.assertTrue(t30Days.compareTo(t1Day) > 0);
+		Assert.assertTrue(t30Days.compareTo(t30Days) == 0);
+		Assert.assertTrue(t30Days.compareTo(t365Days) < 0);
 	}
 
 }
