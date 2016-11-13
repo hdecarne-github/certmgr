@@ -25,12 +25,14 @@ subprojects {
 		testCompile('junit:junit:4.12')
 	}
 
-    reports {
-        xml.enabled true
-        xml.destination "${buildDir}/reports/jacoco/report.xml"
-        html.enabled false
-        csv.enabled false
-    }
+	jacocoTestReport {
+		reports {
+			xml.enabled true
+			xml.destination "${buildDir}/reports/jacoco/report.xml"
+			html.enabled false
+			csv.enabled false
+		}
+	}
 	
 }
 
