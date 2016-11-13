@@ -12,7 +12,7 @@ jdk:
 
 os:
   - linux
-  - osx
+#  - osx
 
 branches:
   only:
