@@ -17,9 +17,12 @@
 package de.carne.certmgr.test.certs.io;
 
 import java.io.IOException;
+import java.security.Security;
 import java.util.List;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.carne.certmgr.certs.StaticPassword;
@@ -33,17 +36,57 @@ public class CertReadersWritersTest {
 
 	private static final char[] TEST_PASSWORD = "password".toCharArray();
 
-	private static final String KEYSTORE_NAME = "keystore.jks";
+	private static final String PEM_NAME = "input.pem";
+
+	private static final String KEYSTORE_NAME = "input.jks";
+
+	private static final String PKCS12_NAME = "input.p12";
 
 	/**
-	 * Test Certificate Readers and Writers.
+	 * Register BouncyCastle Provider.
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		Security.addProvider(new BouncyCastleProvider());
+	}
+
+	/**
+	 * Test PEM Reader and Writer.
 	 */
 	@Test
-	public void testCertReadersWriters() {
+	public void testPEMReaderWriter() {
+		try (URLCertReaderInput input = new URLCertReaderInput(getClass().getResource(PEM_NAME))) {
+			List<Object> certObjects = CertReaders.read(input, StaticPassword.getInstance(TEST_PASSWORD));
+
+			Assert.assertEquals(certObjects.size(), 2);
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	/**
+	 * Test JKS Reader and Writer.
+	 */
+	@Test
+	public void testJKSReaderWriter() {
 		try (URLCertReaderInput input = new URLCertReaderInput(getClass().getResource(KEYSTORE_NAME))) {
 			List<Object> certObjects = CertReaders.read(input, StaticPassword.getInstance(TEST_PASSWORD));
 
-			Assert.assertEquals(certObjects.size(), 0);
+			Assert.assertEquals(certObjects.size(), 2);
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	/**
+	 * Test PKCS#12 Reader and Writer.
+	 */
+	@Test
+	public void testPKCS12ReaderWriter() {
+		try (URLCertReaderInput input = new URLCertReaderInput(getClass().getResource(PKCS12_NAME))) {
+			List<Object> certObjects = CertReaders.read(input, StaticPassword.getInstance(TEST_PASSWORD));
+
+			Assert.assertEquals(certObjects.size(), 2);
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}

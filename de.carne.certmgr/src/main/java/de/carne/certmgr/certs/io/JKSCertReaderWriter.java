@@ -93,15 +93,9 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 				while (aliases.hasMoreElements()) {
 					String alias = aliases.nextElement();
-					Key aliasKey = null;
-					Certificate aliasCertificate = null;
+					Key aliasKey = getAliasKey(keyStore, alias, password);
+					Certificate aliasCertificate = keyStore.getCertificate(alias);
 
-					if (keyStore.isKeyEntry(alias)) {
-						aliasKey = getAliasKey(keyStore, alias, password);
-					}
-					if (keyStore.isCertificateEntry(alias)) {
-						aliasCertificate = keyStore.getCertificate(alias);
-					}
 					if (aliasKey == null && aliasCertificate == null) {
 						LOG.warning("Ignoring key store entry ''{0}'' due to missing data", alias);
 					} else {

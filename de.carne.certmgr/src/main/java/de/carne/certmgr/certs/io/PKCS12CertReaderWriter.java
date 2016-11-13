@@ -152,8 +152,8 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	private InputDecryptorProvider buildInputDecryptorProvider(String resource, PasswordCallback password,
 			PKCSException decryptException) throws IOException {
-		char[] passwordChars = (decryptException != null ? password.queryPassword(resource)
-				: password.requeryPassword(resource, decryptException));
+		char[] passwordChars = (decryptException != null ? password.requeryPassword(resource, decryptException)
+				: password.queryPassword(resource));
 
 		if (passwordChars == null) {
 			throw new PasswordRequiredException(resource, decryptException);
