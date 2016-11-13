@@ -32,9 +32,9 @@ subprojects {
 
 	jacocoTestReport {
 		reports {
-			xml.enabled true
+			xml.enabled false
 			xml.destination "${buildDir}/reports/jacoco/coverage.xml"
-			html.enabled true
+			html.enabled false
 			html.destination "${buildDir}/reports/jacoco"
 			csv.enabled false
 		}
@@ -46,7 +46,7 @@ task wrapper(type: Wrapper) {
 	gradleVersion = '2.14.1'
 }
 
-task codeCoverageReport(type: JacocoReport) {
+task jacocoCoverageReport(type: JacocoReport) {
 
 	executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
@@ -64,6 +64,6 @@ task codeCoverageReport(type: JacocoReport) {
 	
 }
 
-codeCoverageReport.dependsOn {
+jacocoCoverageReport.dependsOn {
 	subprojects*.test
 }

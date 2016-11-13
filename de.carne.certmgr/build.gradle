@@ -37,7 +37,7 @@ sourceSets {
 
 jar {
 	// Include generated classes/resources in jar 
-	from sourceSets.generated.runtimeClasspath
+	from sourceSets.generated.output
 
 	//Include all jars this project depends on in the jar (ApplicationLoader will make them available at runtime)
 	from configurations.runtime.collect {

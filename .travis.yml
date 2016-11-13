@@ -16,7 +16,7 @@ notifications:
   email:
     recipients:
       - hdecarne@gmail.com
-    on_success: change
+    on_success: alwqys
     on_failure: always
 
 # Install latest JDK, as JavaFX depends on it
