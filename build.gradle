@@ -32,9 +32,9 @@ subprojects {
 
 	jacocoTestReport {
 		reports {
-			xml.enabled false
+			xml.enabled true
 			xml.destination "${buildDir}/reports/jacoco/coverage.xml"
-			html.enabled false
+			html.enabled true
 			html.destination "${buildDir}/reports/jacoco"
 			csv.enabled false
 		}
