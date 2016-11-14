@@ -133,6 +133,13 @@ public class UserCertStoreTest {
 				Assert.fail(e.getMessage());
 			}
 		}
+		try {
+			UserCertStore importStore = UserCertStore.createFromServer(Protocol.STARTTLS_SMTP, SSL_HOST, SSL_PORT);
+
+			Assert.assertNull(importStore);
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
 	}
 
 }
