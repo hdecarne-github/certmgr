@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.net.SSLPeer.Protocol;
 import de.carne.io.IOHelper;
 
 /**
@@ -87,6 +88,47 @@ public class UserCertStoreTest {
 			Assert.assertEquals(openendStore.size(), 0);
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
+		}
+	}
+
+	private final static String SSL_HOST = "google.com";
+	private final static int SSL_PORT = 443;
+	private final static String SMTP_HOST = "smtp.gmail.com";
+	private final static int SMTP_PORT = 587;
+	private final static String IMAP_HOST = "imap.gmail.com";
+	private final static int IMAP_PORT = -1;
+
+	/**
+	 * Test import of server certificates.
+	 */
+	@Test
+	public void testServerImport() {
+		try {
+			UserCertStore importStore = UserCertStore.createFromServer(Protocol.SSL, SSL_HOST, SSL_PORT);
+
+			Assert.assertNotNull(importStore);
+			Assert.assertTrue(importStore.size() > 0);
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
+		try {
+			UserCertStore importStore = UserCertStore.createFromServer(Protocol.STARTTLS_SMTP, SMTP_HOST, SMTP_PORT);
+
+			Assert.assertNotNull(importStore);
+			Assert.assertTrue(importStore.size() > 0);
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
+		if (IMAP_PORT > 0) {
+			try {
+				UserCertStore importStore = UserCertStore.createFromServer(Protocol.STARTTLS_IMAP, IMAP_HOST,
+						IMAP_PORT);
+
+				Assert.assertNotNull(importStore);
+				Assert.assertTrue(importStore.size() > 0);
+			} catch (IOException e) {
+				Assert.fail(e.getMessage());
+			}
 		}
 	}
 
