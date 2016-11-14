@@ -10,7 +10,9 @@ script:
   - ./gradlew check
   - ./gradlew jacocoTestReport
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash) -s de.carne.certmgr
+  - bash <(curl -s https://codecov.io/bash) -s de.carne -t a881b42b-df99-4330-88e8-91c25988dd52
+  - bash <(curl -s https://codecov.io/bash) -s de.carne.jfx -t e0e8d917-0d54-4579-ab40-aec292cce610
 
 notifications:
   email:
