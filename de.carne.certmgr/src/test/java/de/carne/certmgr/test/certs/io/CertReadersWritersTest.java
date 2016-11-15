@@ -25,38 +25,30 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.carne.certmgr.certs.StaticPassword;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.URLCertReaderInput;
+import de.carne.certmgr.test.certs.TestCerts;
 
 /**
  * Test Certificate Readers and Writers.
  */
 public class CertReadersWritersTest {
 
-	private static final char[] TEST_PASSWORD = "password".toCharArray();
-
-	private static final String PEM_NAME = "input.pem";
-
-	private static final String KEYSTORE_NAME = "input.jks";
-
-	private static final String PKCS12_NAME = "input.p12";
-
 	/**
 	 * Register BouncyCastle Provider.
 	 */
 	@BeforeClass
-	public static void setUpBeforeClass() {
+	public static void registerBouncyCastle() {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 
 	/**
-	 * Test PEM Reader and Writer.
+	 * Test JKS Reader and Writer.
 	 */
 	@Test
-	public void testPEMReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(getClass().getResource(PEM_NAME))) {
-			List<Object> certObjects = CertReaders.read(input, StaticPassword.getInstance(TEST_PASSWORD));
+	public void testJKSReaderWriter() {
+		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.jksInputURL())) {
+			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
 		} catch (IOException e) {
@@ -65,12 +57,12 @@ public class CertReadersWritersTest {
 	}
 
 	/**
-	 * Test JKS Reader and Writer.
+	 * Test PEM Reader and Writer.
 	 */
 	@Test
-	public void testJKSReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(getClass().getResource(KEYSTORE_NAME))) {
-			List<Object> certObjects = CertReaders.read(input, StaticPassword.getInstance(TEST_PASSWORD));
+	public void testPEMReaderWriter() {
+		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.pemInputURL())) {
+			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
 		} catch (IOException e) {
@@ -83,8 +75,8 @@ public class CertReadersWritersTest {
 	 */
 	@Test
 	public void testPKCS12ReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(getClass().getResource(PKCS12_NAME))) {
-			List<Object> certObjects = CertReaders.read(input, StaticPassword.getInstance(TEST_PASSWORD));
+		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.pkcs12InputURL())) {
+			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
 		} catch (IOException e) {

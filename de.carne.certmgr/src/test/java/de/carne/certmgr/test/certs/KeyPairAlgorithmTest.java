@@ -39,7 +39,7 @@ public class KeyPairAlgorithmTest {
 	 * Register BouncyCastle Provider.
 	 */
 	@BeforeClass
-	public static void setUpBeforeClass() {
+	public static void registerBouncyCastle() {
 		Security.addProvider(new BouncyCastleProvider());
 	}
 
