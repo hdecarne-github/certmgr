@@ -37,8 +37,8 @@ subprojects {
 			html.destination "${buildDir}/reports/jacoco"
 			csv.enabled false
 		}
-	}	
-	
+	}
+
 }
 
 task wrapper(type: Wrapper) {

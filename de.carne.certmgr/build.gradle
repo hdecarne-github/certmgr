@@ -15,7 +15,7 @@ dependencies {
 	compile project(':de.carne.jfx')
 	compile('org.bouncycastle:bcpkix-jdk15on:1.55')
 }
-
+	
 sourceSets {
 	// Add source directory for generated sources
 	generated {
@@ -32,6 +32,12 @@ sourceSets {
 	test {
 		compileClasspath += sourceSets.generated.output
 		runtimeClasspath += sourceSets.generated.output
+	}
+}
+
+test {
+	jacoco {
+		excludes += ["**/jfx/**"]
 	}
 }
 
