@@ -1,7 +1,5 @@
 allprojects {
 
-	apply plugin: 'jacoco'
-
 	repositories {
 		mavenLocal()
 		mavenCentral()
@@ -12,6 +10,7 @@ allprojects {
 subprojects {
 
 	apply plugin: 'java'
+	apply plugin: 'jacoco'
 	    
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
@@ -44,26 +43,4 @@ subprojects {
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.14.1'
-}
-
-task jacocoCoverageReport(type: JacocoReport) {
-
-	executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
-
-	subprojects.each {
-		sourceSets it.sourceSets.main
-	}
-
-	reports {
-		xml.enabled true
-		xml.destination "${buildDir}/reports/jacoco/coverage.xml"
-		html.enabled true
-		html.destination "${buildDir}/reports/jacoco"
-		csv.enabled false
-	}
-	
-}
-
-jacocoCoverageReport.dependsOn {
-	subprojects*.test
 }

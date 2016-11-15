@@ -11,8 +11,6 @@ script:
   - ./gradlew jacocoTestReport
 after_success:
   - bash <(curl -s https://codecov.io/bash) -s de.carne.certmgr
-  - bash <(curl -s https://codecov.io/bash) -s de.carne -t a881b42b-df99-4330-88e8-91c25988dd52 -C $(cd de.carne; git rev-parse HEAD)
-  - bash <(curl -s https://codecov.io/bash) -s de.carne.jfx -t e0e8d917-0d54-4579-ab40-aec292cce610 -C $(cd de.carne.jfx; git rev-parse HEAD)
 
 notifications:
   email:
