@@ -35,12 +35,6 @@ sourceSets {
 	}
 }
 
-test {
-	jacoco {
-		excludes = ["*/jfx/*"]
-	}
-}
-
 jar {
 	// Include generated classes/resources in jar 
 	from sourceSets.generated.output

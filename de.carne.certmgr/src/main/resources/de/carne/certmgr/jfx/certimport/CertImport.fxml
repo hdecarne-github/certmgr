@@ -40,7 +40,7 @@
             <ToggleGroup fx:id="ImportSource" />
          </toggleGroup>
       </RadioButton>
-      <HBox GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+      <HBox spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
          <children>
             <TextField fx:id="ctlFileSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_FILE" HBox.hgrow="ALWAYS" />
             <Button fx:id="ctlChooseFileSourceButton" mnemonicParsing="false" onAction="#onCmdChooseFileSource" HBox.hgrow="NEVER">
@@ -55,7 +55,7 @@
          </children>
       </HBox>
       <RadioButton fx:id="ctlDirectorySourceOption" layoutX="12.0" layoutY="33.0" mnemonicParsing="false" text="%_STR_LABEL_DIRECTORY" toggleGroup="$ImportSource" GridPane.rowIndex="2" />
-      <HBox layoutX="168.0" layoutY="33.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+      <HBox layoutX="168.0" layoutY="33.0" spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
          <children>
             <TextField fx:id="ctlDirectorySourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_DIRECTORY" HBox.hgrow="ALWAYS" />
             <Button fx:id="ctlChooseDirectorySourceButton" mnemonicParsing="false" onAction="#onCmdChooseDirectorySource" HBox.hgrow="NEVER">
@@ -73,7 +73,7 @@
       <RadioButton fx:id="ctlURLSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_LABEL_URL" toggleGroup="$ImportSource" GridPane.rowIndex="3" />
       <TextField fx:id="ctlURLSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_URL" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
       <RadioButton fx:id="ctlServerSourceOption" layoutX="12.0" layoutY="12.0" mnemonicParsing="false" text="%_STR_LABEL_SERVER" toggleGroup="$ImportSource" GridPane.rowIndex="4" />
-      <HBox GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4">
+      <HBox spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4">
          <children>
             <TextField fx:id="ctlServerSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_SERVER" HBox.hgrow="ALWAYS" />
             <ChoiceBox fx:id="ctlServerSourceProtocolInput" />

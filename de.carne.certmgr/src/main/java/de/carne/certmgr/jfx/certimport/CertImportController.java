@@ -217,7 +217,7 @@ public class CertImportController extends StageController {
 
 		LogMonitor logMonitor = task.logMonitor();
 
-		if (!logMonitor.isEmpty()) {
+		if (logMonitor.notEmpty()) {
 			Alerts.logs(AlertType.WARNING, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_LOGS(),
 					logMonitor.getRecords()).showAndWait();
 		}
@@ -450,6 +450,8 @@ public class CertImportController extends StageController {
 
 		private final LogMonitor logMonitor = new LogMonitor(LogLevel.LEVEL_WARNING);
 
+		private LogMonitor.Session logMonitorSession = null;
+
 		private final P createParams;
 
 		CreateStoreTask(P createParams) {
@@ -462,7 +464,7 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected UserCertStore call() throws Exception {
-			this.logMonitor.includePackage(UserCertStore.class.getPackage());
+			this.logMonitorSession = this.logMonitor.start().includePackage(UserCertStore.class.getPackage());
 			return createStore(this.createParams);
 		}
 
@@ -470,6 +472,7 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected void succeeded() {
+			this.logMonitorSession.close();
 			onReloadTaskSucceeded(this, getValue());
 			this.logMonitor.close();
 			super.succeeded();
@@ -477,6 +480,7 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected void failed() {
+			this.logMonitorSession.close();
 			onReloadTaskFailed(this, getException());
 			this.logMonitor.close();
 			super.failed();
