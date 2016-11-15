@@ -383,7 +383,7 @@ public final class UserCertStore {
 	private static UserCertStore createFromCertObjects(List<Object> certObjects) throws IOException {
 		UserCertStore store = null;
 
-		if (!certObjects.isEmpty()) {
+		if (certObjects != null && !certObjects.isEmpty()) {
 			store = new UserCertStore(new TransientUserCertStoreHandler());
 			store.mergeCertObjects(certObjects, NoPassword.getInstance());
 		}
@@ -391,9 +391,19 @@ public final class UserCertStore {
 	}
 
 	private synchronized void mergeCertObjects(List<Object> certObjects, PasswordCallback password) throws IOException {
+		// First merge CRT and CSR objects as they provide the entry's DN
 		for (Object certObject : certObjects) {
 			if (certObject instanceof X509Certificate) {
 				mergeX509Certificate((X509Certificate) certObject);
+			} else if (certObject instanceof PKCS10CertificateRequest) {
+				mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject);
+			}
+		}
+		for (Object certObject : certObjects) {
+			if (certObject instanceof KeyPair) {
+				mergeKey((KeyPair) certObject);
+			} else if (certObject instanceof X509CRL) {
+				mergeX509CRL((X509CRL) certObject);
 			}
 		}
 		resetIssuers();
@@ -402,12 +412,59 @@ public final class UserCertStore {
 	private Entry mergeX509Certificate(X509Certificate crt) throws IOException {
 		Entry matchingEntry = matchX509Certificate(crt);
 
-		if (matchingEntry == null) {
+		if (matchingEntry != null) {
+			CRTEntry crtEntry = this.storeHandler.createCRTEntry(matchingEntry.id(), crt);
+
+			matchingEntry.setCRT(crtEntry);
+		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(null);
 			CRTEntry crtEntry = this.storeHandler.createCRTEntry(entryId, crt);
 
 			matchingEntry = new Entry(entryId, crt.getSubjectX500Principal(), crtEntry);
 			this.storeEntries.put(entryId, matchingEntry);
+		}
+		return matchingEntry;
+	}
+
+	private Entry mergeKey(KeyPair key) throws IOException {
+		Entry matchingEntry = matchKey(key);
+
+		if (matchingEntry != null) {
+			KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, NoPassword.getInstance());
+
+			matchingEntry.setKey(keyEntry);
+		} else {
+			LOG.warning("Ignoring unmatching key pair ''{0}''", key);
+		}
+		return matchingEntry;
+	}
+
+	private Entry mergePKCS10CertificateRequest(PKCS10CertificateRequest csr) throws IOException {
+		Entry matchingEntry = matchPKCS10CertificateRequest(csr);
+
+		if (matchingEntry != null) {
+			CSREntry csrEntry = this.storeHandler.createCSREntry(matchingEntry.id(), csr);
+
+			matchingEntry.setCSR(csrEntry);
+		} else {
+			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(null);
+			CSREntry csrEntry = this.storeHandler.createCSREntry(entryId, csr);
+
+			matchingEntry = new Entry(entryId, csr.getSubjectX500Principal(), csrEntry);
+			this.storeEntries.put(entryId, matchingEntry);
+		}
+		return matchingEntry;
+	}
+
+	private Entry mergeX509CRL(X509CRL crl) throws IOException {
+		Entry matchingEntry = matchX509CRL(crl);
+
+		if (matchingEntry != null) {
+			CRLEntry crlEntry = this.storeHandler.createCRLEntry(matchingEntry.id(), crl);
+
+			matchingEntry.setCRL(crlEntry);
+		} else {
+			LOG.warning("Ignoring unmatching CRL ''{0}''", crl);
 		}
 		return matchingEntry;
 	}
@@ -511,6 +568,50 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
+	private Entry matchKey(KeyPair key) throws IOException {
+		PublicKey publicKey = key.getPublic();
+		Entry matchingEntry = null;
+
+		for (Entry entry : this.storeEntries.values()) {
+			if (publicKey.equals(entry.getPublicKey())) {
+				matchingEntry = entry;
+				break;
+			}
+		}
+		return matchingEntry;
+	}
+
+	private Entry matchPKCS10CertificateRequest(PKCS10CertificateRequest csr) throws IOException {
+		X500Principal csrDN = csr.getSubjectX500Principal();
+		PublicKey csrPublicKey = csr.getPublicKey();
+		Entry matchingEntry = null;
+
+		for (Entry entry : this.storeEntries.values()) {
+			if (csrDN.equals(entry.dn()) && csrPublicKey.equals(entry.getPublicKey())) {
+				matchingEntry = entry;
+				break;
+			}
+		}
+		return matchingEntry;
+	}
+
+	private Entry matchX509CRL(X509CRL crl) throws IOException {
+		Entry matchingEntry = null;
+
+		for (Entry entry : this.storeEntries.values()) {
+			try {
+				crl.verify(entry.getPublicKey());
+				matchingEntry = entry;
+				break;
+			} catch (SignatureException e) {
+				Exceptions.ignore(e);
+			} catch (GeneralSecurityException e) {
+				throw new CertProviderException(e);
+			}
+		}
+		return matchingEntry;
+	}
+
 	private class Entry extends UserCertStoreEntry {
 
 		private Entry issuer = null;
@@ -540,16 +641,8 @@ public final class UserCertStore {
 			this(id, dn, crtEntry, null, null, null);
 		}
 
-		Entry(UserCertStoreEntryId id, X500Principal dn, KeyEntry keyEntry) {
-			this(id, dn, null, keyEntry, null, null);
-		}
-
 		Entry(UserCertStoreEntryId id, X500Principal dn, CSREntry csrEntry) {
 			this(id, dn, null, null, csrEntry, null);
-		}
-
-		Entry(UserCertStoreEntryId id, X500Principal dn, CRLEntry crlEntry) {
-			this(id, dn, null, null, null, crlEntry);
 		}
 
 		@Override
@@ -576,6 +669,10 @@ public final class UserCertStore {
 			return (this.crtEntry != null ? this.crtEntry.getCRT() : null);
 		}
 
+		void setCRT(CRTEntry crtEntry) {
+			this.crtEntry = crtEntry;
+		}
+
 		@Override
 		public boolean hasDecryptedKey() {
 			return this.keyEntry != null && this.keyEntry.isDecrypted();
@@ -591,6 +688,10 @@ public final class UserCertStore {
 			return (this.keyEntry != null ? this.keyEntry.getKey(password) : null);
 		}
 
+		void setKey(KeyEntry keyEntry) {
+			this.keyEntry = keyEntry;
+		}
+
 		@Override
 		public boolean hasCSR() {
 			return this.csrEntry != null;
@@ -601,6 +702,10 @@ public final class UserCertStore {
 			return (this.csrEntry != null ? this.csrEntry.getCSR() : null);
 		}
 
+		void setCSR(CSREntry csrEntry) {
+			this.csrEntry = csrEntry;
+		}
+
 		@Override
 		public boolean hasCRL() {
 			return this.crlEntry != null;
@@ -609,6 +714,10 @@ public final class UserCertStore {
 		@Override
 		public X509CRL getCRL() throws IOException {
 			return (this.crlEntry != null ? this.crlEntry.getCRL() : null);
+		}
+
+		void setCRL(CRLEntry crlEntry) {
+			this.crlEntry = crlEntry;
 		}
 
 		public PublicKey getPublicKey() throws IOException {
