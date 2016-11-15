@@ -143,7 +143,9 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		PKCS12PfxPdu pkcs12 = null;
 
 		try (InputStream stream = input.stream()) {
-			pkcs12 = new PKCS12PfxPdu(IOHelper.readBytes(stream, CertReader.READ_LIMIT));
+			if (stream != null) {
+				pkcs12 = new PKCS12PfxPdu(IOHelper.readBytes(stream, CertReader.READ_LIMIT));
+			}
 		} catch (IOException e) {
 			LOG.info(e, "No PKCS#12 objects recognized in: ''{0}''", input);
 		}
