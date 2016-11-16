@@ -28,11 +28,13 @@ public class TestCerts {
 
 	private static final char[] TEST_PASSWORD = "password".toCharArray();
 
-	private static final String PEM_NAME = "input.pem";
+	private static final String SIMPLE_PEM_NAME = "simple.pem";
 
-	private static final String KEYSTORE_NAME = "input.jks";
+	private static final String SIMPLE_KEYSTORE_NAME = "simple.jks";
 
-	private static final String PKCS12_NAME = "input.p12";
+	private static final String SIMPLE_PKCS12_NAME = "simple.p12";
+
+	private static final String TEST_STORE_ZIP_NAME = "test.domain.zip";
 
 	/**
 	 * @return The password callback for test data access.
@@ -42,24 +44,36 @@ public class TestCerts {
 	}
 
 	/**
-	 * @return JKS data URL.
+	 * @return Simple JKS data URL.
 	 */
-	public static URL jksInputURL() {
-		return TestCerts.class.getResource(KEYSTORE_NAME);
+	public static URL simpleJKSURL() {
+		return TestCerts.class.getResource(SIMPLE_KEYSTORE_NAME);
 	}
 
 	/**
-	 * @return PEM data URL.
+	 * @return Simple PEM data URL.
 	 */
-	public static URL pemInputURL() {
-		return TestCerts.class.getResource(PEM_NAME);
+	public static URL simplePEMURL() {
+		return TestCerts.class.getResource(SIMPLE_PEM_NAME);
 	}
 
 	/**
-	 * @return PKCS#12 data URL.
+	 * @return Simple PKCS#12 data URL.
 	 */
-	public static URL pkcs12InputURL() {
-		return TestCerts.class.getResource(PKCS12_NAME);
+	public static URL simplePKCS12URL() {
+		return TestCerts.class.getResource(SIMPLE_PKCS12_NAME);
+	}
+
+	/**
+	 * Test store name.
+	 */
+	public static final String TEST_STORE_NAME = "test.domain";
+
+	/**
+	 * @return Test store ZIP archive.
+	 */
+	public static URL testStoreZIPURL() {
+		return TestCerts.class.getResource(TEST_STORE_ZIP_NAME);
 	}
 
 }

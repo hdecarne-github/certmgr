@@ -21,8 +21,10 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
+import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
+import java.util.stream.Collectors;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.AfterClass;
@@ -60,6 +62,7 @@ public class UserCertStoreTest {
 	public static void setupTempPath() throws IOException {
 		tempPath = Files.createTempDirectory(UserCertStoreTest.class.getSimpleName());
 		System.out.println("Using temporary directory: " + tempPath);
+		IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath, null);
 	}
 
 	/**
@@ -119,19 +122,36 @@ public class UserCertStoreTest {
 			Assert.assertEquals("SHA256WITHRSA", loadPreferences.defaultSignatureAlgorithm.get());
 			Assert.assertEquals(NAME_STORE1, openendStore.storeName());
 			Assert.assertEquals(0, openendStore.getEntries().size());
-			Assert.assertEquals(0, traverStore(openendStore.getRootEntries()));
+			Assert.assertEquals(0, traverseStore(openendStore.getRootEntries()));
 		} catch (IOException | BackingStoreException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
-	private int traverStore(Set<UserCertStoreEntry> entries) {
+	private int traverseStore(Set<UserCertStoreEntry> entries) {
 		int entryCount = 0;
 
 		for (UserCertStoreEntry entry : entries) {
-			entryCount = 1 + traverStore(entry.issuedEntries());
+			entryCount = 1 + traverseStore(entry.issuedEntries());
 		}
 		return entryCount;
+	}
+
+	/**
+	 * Test store creation from file list source.
+	 */
+	@Test
+	public void testFilesSourceStore() {
+		try {
+			List<Path> files = Files.walk(tempPath.resolve(TestCerts.TEST_STORE_NAME))
+					.filter((p) -> Files.isRegularFile(p)).collect(Collectors.toList());
+			UserCertStore importStore = UserCertStore.createFromFiles(files, TestCerts.password());
+
+			Assert.assertNotNull(importStore);
+			Assert.assertTrue(importStore.size() > 0);
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	private final static String TEST_SSL_HOST = "google.com";
@@ -188,7 +208,7 @@ public class UserCertStoreTest {
 	@Test
 	public void testURLSourceStore() {
 		try {
-			UserCertStore importStore = UserCertStore.createFromURL(TestCerts.pkcs12InputURL(), TestCerts.password());
+			UserCertStore importStore = UserCertStore.createFromURL(TestCerts.simplePKCS12URL(), TestCerts.password());
 
 			Assert.assertNotNull(importStore);
 			Assert.assertTrue(importStore.size() > 0);

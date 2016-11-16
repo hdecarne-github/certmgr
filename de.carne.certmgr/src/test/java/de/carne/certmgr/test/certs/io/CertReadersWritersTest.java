@@ -47,7 +47,7 @@ public class CertReadersWritersTest {
 	 */
 	@Test
 	public void testJKSReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.jksInputURL())) {
+		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.simpleJKSURL())) {
 			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
@@ -61,7 +61,7 @@ public class CertReadersWritersTest {
 	 */
 	@Test
 	public void testPEMReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.pemInputURL())) {
+		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.simplePEMURL())) {
 			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
@@ -75,7 +75,7 @@ public class CertReadersWritersTest {
 	 */
 	@Test
 	public void testPKCS12ReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.pkcs12InputURL())) {
+		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.simplePKCS12URL())) {
 			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
