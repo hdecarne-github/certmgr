@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,6 +37,7 @@ import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
+import de.carne.io.IOHelper;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
@@ -322,8 +322,7 @@ public class CertImportController extends StageController {
 
 				@Override
 				protected UserCertStore createStore(Path params) throws IOException {
-					List<Path> files = Files.walk(params).filter((p) -> Files.isRegularFile(p))
-							.collect(Collectors.toList());
+					List<Path> files = IOHelper.collectDirectoryFiles(params);
 
 					return UserCertStore.createFromFiles(files,
 							PasswordDialog.enterPassword(CertImportController.this));

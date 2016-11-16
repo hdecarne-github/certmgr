@@ -24,7 +24,6 @@ import java.security.Security;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
-import java.util.stream.Collectors;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.AfterClass;
@@ -45,6 +44,8 @@ public class UserCertStoreTest {
 
 	private static Path tempPath = null;
 
+	private static Path testStorePath = null;
+
 	/**
 	 * Register BouncyCastle Provider.
 	 */
@@ -62,7 +63,7 @@ public class UserCertStoreTest {
 	public static void setupTempPath() throws IOException {
 		tempPath = Files.createTempDirectory(UserCertStoreTest.class.getSimpleName());
 		System.out.println("Using temporary directory: " + tempPath);
-		IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath, null);
+		testStorePath = IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath, null);
 	}
 
 	/**
@@ -72,7 +73,11 @@ public class UserCertStoreTest {
 	 */
 	@AfterClass
 	public static void deleteTempPath() throws Exception {
-		IOHelper.deleteDirectoryTree(tempPath);
+		try {
+			IOHelper.deleteDirectoryTree(tempPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static final String NAME_STORE1 = "store1";
@@ -143,8 +148,7 @@ public class UserCertStoreTest {
 	@Test
 	public void testFilesSourceStore() {
 		try {
-			List<Path> files = Files.walk(tempPath.resolve(TestCerts.TEST_STORE_NAME))
-					.filter((p) -> Files.isRegularFile(p)).collect(Collectors.toList());
+			List<Path> files = IOHelper.collectDirectoryFiles(testStorePath.resolve(TestCerts.TEST_STORE_NAME));
 			UserCertStore importStore = UserCertStore.createFromFiles(files, TestCerts.password());
 
 			Assert.assertNotNull(importStore);
