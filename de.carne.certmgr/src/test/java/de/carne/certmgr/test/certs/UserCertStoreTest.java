@@ -35,6 +35,9 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.net.SSLPeer.Protocol;
+import de.carne.certmgr.certs.x509.Attributes;
+import de.carne.certmgr.certs.x509.X509CRLHelper;
+import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.io.IOHelper;
 
 /**
@@ -63,7 +66,8 @@ public class UserCertStoreTest {
 	public static void setupTempPath() throws IOException {
 		tempPath = Files.createTempDirectory(UserCertStoreTest.class.getSimpleName());
 		System.out.println("Using temporary directory: " + tempPath);
-		testStorePath = IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath, null);
+		testStorePath = IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath, null)
+				.resolve(TestCerts.TEST_STORE_NAME);
 	}
 
 	/**
@@ -83,7 +87,7 @@ public class UserCertStoreTest {
 	private static final String NAME_STORE1 = "store1";
 
 	/**
-	 * Test create/open/access store operations.
+	 * Test create/open store operations.
 	 */
 	@Test
 	public void testCreateAndOpenStore() {
@@ -108,36 +112,72 @@ public class UserCertStoreTest {
 			UserCertStore openendStore = UserCertStore.openStore(storeHome);
 
 			Assert.assertEquals(0, openendStore.size());
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
+	}
 
-			UserCertStorePreferences initPreferences = openendStore.storePreferences();
+	/**
+	 * Test access store operations.
+	 */
+	@Test
+	public void testAccessStore() {
+		try {
+			UserCertStore store = UserCertStore.openStore(testStorePath);
 
-			initPreferences.defaultCRTValidityPeriod.putInt(365);
-			initPreferences.defaultCRLUpdatePeriod.putInt(30);
-			initPreferences.defaultKeyPairAlgorithm.put("RSA");
-			initPreferences.defaultKeySize.putInt(4096);
-			initPreferences.defaultSignatureAlgorithm.put("SHA256WITHRSA");
-			initPreferences.sync();
+			Assert.assertEquals(5, store.size());
+			Assert.assertEquals(TestCerts.TEST_STORE_NAME, store.storeName());
+			Assert.assertEquals(5, store.getEntries().size());
+			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
-			UserCertStorePreferences loadPreferences = openendStore.storePreferences();
+			UserCertStorePreferences loadPreferences = store.storePreferences();
 
 			Assert.assertEquals(Integer.valueOf(365), loadPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(30), loadPreferences.defaultCRLUpdatePeriod.get());
 			Assert.assertEquals("RSA", loadPreferences.defaultKeyPairAlgorithm.get());
-			Assert.assertEquals(Integer.valueOf(4096), loadPreferences.defaultKeySize.get());
+			Assert.assertEquals(Integer.valueOf(2048), loadPreferences.defaultKeySize.get());
 			Assert.assertEquals("SHA256WITHRSA", loadPreferences.defaultSignatureAlgorithm.get());
-			Assert.assertEquals(NAME_STORE1, openendStore.storeName());
-			Assert.assertEquals(0, openendStore.getEntries().size());
-			Assert.assertEquals(0, traverseStore(openendStore.getRootEntries()));
+
+			UserCertStorePreferences setPreferences = store.storePreferences();
+
+			setPreferences.defaultCRTValidityPeriod.putInt(180);
+			setPreferences.defaultCRLUpdatePeriod.putInt(7);
+			setPreferences.defaultKeyPairAlgorithm.put("EC");
+			setPreferences.defaultKeySize.putInt(521);
+			setPreferences.defaultSignatureAlgorithm.put("SHA256WITHECDSA");
+			setPreferences.sync();
+
+			UserCertStorePreferences getPreferences = store.storePreferences();
+
+			Assert.assertEquals(Integer.valueOf(180), getPreferences.defaultCRTValidityPeriod.get());
+			Assert.assertEquals(Integer.valueOf(7), getPreferences.defaultCRLUpdatePeriod.get());
+			Assert.assertEquals("EC", getPreferences.defaultKeyPairAlgorithm.get());
+			Assert.assertEquals(Integer.valueOf(521), getPreferences.defaultKeySize.get());
+			Assert.assertEquals("SHA256WITHECDSA", getPreferences.defaultSignatureAlgorithm.get());
 		} catch (IOException | BackingStoreException e) {
 			Assert.fail(e.getMessage());
 		}
 	}
 
 	private int traverseStore(Set<UserCertStoreEntry> entries) {
-		int entryCount = 0;
+		int entryCount = 1;
 
-		for (UserCertStoreEntry entry : entries) {
-			entryCount = 1 + traverseStore(entry.issuedEntries());
+		try {
+			for (UserCertStoreEntry entry : entries) {
+				Attributes.toAttributes(entry);
+				if (entry.hasCRT()) {
+					X509CertificateHelper.toAttributes(entry.getCRT());
+				}
+				if (entry.hasCSR()) {
+					entry.getCSR().toAttributes();
+				}
+				if (entry.hasCRL()) {
+					X509CRLHelper.toAttributes(entry.getCRL());
+				}
+				entryCount = traverseStore(entry.issuedEntries());
+			}
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
 		}
 		return entryCount;
 	}
@@ -148,7 +188,7 @@ public class UserCertStoreTest {
 	@Test
 	public void testFilesSourceStore() {
 		try {
-			List<Path> files = IOHelper.collectDirectoryFiles(testStorePath.resolve(TestCerts.TEST_STORE_NAME));
+			List<Path> files = IOHelper.collectDirectoryFiles(testStorePath);
 			UserCertStore importStore = UserCertStore.createFromFiles(files, TestCerts.password());
 
 			Assert.assertNotNull(importStore);
