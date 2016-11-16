@@ -23,12 +23,15 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.net.SSLPeer;
 import de.carne.certmgr.certs.spi.CertReader;
@@ -67,6 +70,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 /**
  * Certificate import dialog.
@@ -81,6 +85,8 @@ public class CertImportController extends StageController {
 			"initialDirectory", true);
 
 	private UserCertStoreTreeTableViewHelper<ImportEntryModel> importEntryViewHelper = null;
+
+	private Callback<Set<UserCertStoreEntry>, Boolean> importer = null;
 
 	private UserCertStore sourceStore = null;
 
@@ -207,7 +213,15 @@ public class CertImportController extends StageController {
 
 	@FXML
 	void onCmdImport(ActionEvent evt) {
-		close(true);
+		try {
+			Set<UserCertStoreEntry> importSelection = validateImportSelection();
+
+			if (Boolean.TRUE.equals(this.importer.call(importSelection))) {
+				close(true);
+			}
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		}
 	}
 
 	@FXML
@@ -262,6 +276,19 @@ public class CertImportController extends StageController {
 		this.ctlImportEntryView.setTreeColumn(this.ctlImportEntryViewDN);
 		this.ctlFileSourceOption.setSelected(true);
 		this.ctlServerSourceProtocolInput.setValue(SSLPeer.Protocol.SSL);
+	}
+
+	/**
+	 * Initialize the dialog for certificate import.
+	 *
+	 * @param importerParam The callback to invoke for import.
+	 * @return This controller.
+	 */
+	public CertImportController init(Callback<Set<UserCertStoreEntry>, Boolean> importerParam) {
+		assert importerParam != null;
+
+		this.importer = importerParam;
+		return this;
 	}
 
 	@Override
@@ -448,6 +475,12 @@ public class CertImportController extends StageController {
 			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
 		}
 		return new ServerParams(protocol, host, port);
+	}
+
+	private Set<UserCertStoreEntry> validateImportSelection() throws ValidationException {
+		Set<UserCertStoreEntry> importSelection = new HashSet<>();
+
+		return importSelection;
 	}
 
 	private abstract class CreateStoreTask<P> extends BackgroundTask<UserCertStore> {
