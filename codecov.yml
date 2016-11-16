@@ -25,5 +25,5 @@ parsers:
   javascript:
     enable_partials: false
 ignore:
-  - "src/main/java/de/carne/certmgr/jfx"
+  - "de.carne.certmgr/src/main/java/de/carne/certmgr/jfx"
   
