@@ -18,7 +18,6 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.security.PublicKey;
-import java.security.cert.X509CRL;
 import java.security.cert.X509Extension;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
@@ -128,19 +127,6 @@ public class Attributes {
 		entryAttributes.addChild(AttributesI18N.formatSTR_ENTRY_ID(), entry.id().toString());
 		entryAttributes.addChild(AttributesI18N.formatSTR_ENTRY_DN(), X500Names.toString(entry.dn()));
 		return entryAttributes;
-	}
-
-	/**
-	 * Get a CRL object's {@code Attributes}.
-	 *
-	 * @param crl The CRL object to get the attributes for.
-	 * @return The CRL object's attributes.
-	 */
-	public static Attributes toAttributes(X509CRL crl) {
-		Attributes crlAttributes = new Attributes(AttributesI18N.formatSTR_CRL(), null);
-
-		crlAttributes.addExtension(crl);
-		return crlAttributes;
 	}
 
 	static String printBytes(byte[] bytes) {
