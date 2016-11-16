@@ -101,7 +101,7 @@
         <columns>
           <TreeTableColumn fx:id="ctlImportEntryViewSelected" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="30.0" sortable="false" style="-fx-alignment: CENTER;">
                <graphic>
-                  <CheckBox mnemonicParsing="false" />
+                  <CheckBox fx:id="ctlSelectAllOption" mnemonicParsing="false" />
                </graphic></TreeTableColumn>
           <TreeTableColumn fx:id="ctlImportEntryViewDN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_DN" />
             <TreeTableColumn fx:id="ctlImportEntryViewCRT" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_CRT" />
