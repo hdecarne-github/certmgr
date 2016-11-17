@@ -301,6 +301,35 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Import an store entry from another store by merging the entry's
+	 * certificate objects.
+	 *
+	 * @param entry The store entry to merge.
+	 * @param password The password callback to use for new password querying.
+	 * @throws IOException if an I/O error occurs during import.
+	 */
+	public void importEntry(UserCertStoreEntry entry, PasswordCallback password) throws IOException {
+		assert entry != null;
+		assert password != null;
+
+		List<Object> certObjects = new ArrayList<>();
+
+		if (entry.hasCRT()) {
+			certObjects.add(entry.getCRT());
+		}
+		if (entry.hasKey()) {
+			certObjects.add(entry.getKey());
+		}
+		if (entry.hasCSR()) {
+			certObjects.add(entry.getCSR());
+		}
+		if (entry.hasCRL()) {
+			certObjects.add(entry.getCRL());
+		}
+		mergeCertObjects(certObjects, password);
+	}
+
+	/**
 	 * Get this store's entry count.
 	 *
 	 * @return This store's entry count.
@@ -401,7 +430,7 @@ public final class UserCertStore {
 		}
 		for (Object certObject : certObjects) {
 			if (certObject instanceof KeyPair) {
-				mergeKey((KeyPair) certObject);
+				mergeKey((KeyPair) certObject, password);
 			} else if (certObject instanceof X509CRL) {
 				mergeX509CRL((X509CRL) certObject);
 			}
@@ -426,11 +455,11 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
-	private Entry mergeKey(KeyPair key) throws IOException {
+	private Entry mergeKey(KeyPair key, PasswordCallback password) throws IOException {
 		Entry matchingEntry = matchKey(key);
 
 		if (matchingEntry != null) {
-			KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, NoPassword.getInstance());
+			KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, password);
 
 			matchingEntry.setKey(keyEntry);
 		} else {

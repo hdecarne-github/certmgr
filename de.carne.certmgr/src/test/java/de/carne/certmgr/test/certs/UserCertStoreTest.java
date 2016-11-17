@@ -77,11 +77,7 @@ public class UserCertStoreTest {
 	 */
 	@AfterClass
 	public static void deleteTempPath() throws Exception {
-		try {
-			IOHelper.deleteDirectoryTree(tempPath);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		IOHelper.deleteDirectoryTree(tempPath);
 	}
 
 	private static final String NAME_STORE1 = "store1";

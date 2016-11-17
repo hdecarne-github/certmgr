@@ -29,6 +29,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertReaders;
@@ -60,6 +61,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.CheckBoxTreeTableCell;
@@ -86,7 +88,7 @@ public class CertImportController extends StageController {
 
 	private UserCertStoreTreeTableViewHelper<ImportEntryModel> importEntryViewHelper = null;
 
-	private Callback<Set<UserCertStoreEntry>, Boolean> importer = null;
+	private Callback<CertImportRequest, IOException> importer = null;
 
 	private UserCertStore sourceStore = null;
 
@@ -215,12 +217,21 @@ public class CertImportController extends StageController {
 	void onCmdImport(ActionEvent evt) {
 		try {
 			Set<UserCertStoreEntry> importSelection = validateImportSelection();
+			PasswordCallback newPassword = PasswordDialog.enterNewPassword(this);
 
-			if (Boolean.TRUE.equals(this.importer.call(importSelection))) {
-				close(true);
+			for (UserCertStoreEntry importEntry : importSelection) {
+				CertImportRequest importRequest = new CertImportRequest(importEntry, newPassword);
+				IOException importException = this.importer.call(importRequest);
+
+				if (importException != null) {
+					throw importException;
+				}
 			}
+			close(true);
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -284,7 +295,7 @@ public class CertImportController extends StageController {
 	 * @param importerParam The callback to invoke for import.
 	 * @return This controller.
 	 */
-	public CertImportController init(Callback<Set<UserCertStoreEntry>, Boolean> importerParam) {
+	public CertImportController init(Callback<CertImportRequest, IOException> importerParam) {
 		assert importerParam != null;
 
 		this.importer = importerParam;
@@ -479,7 +490,26 @@ public class CertImportController extends StageController {
 	private Set<UserCertStoreEntry> validateImportSelection() throws ValidationException {
 		Set<UserCertStoreEntry> importSelection = new HashSet<>();
 
+		collectImportSelection(importSelection, this.ctlImportEntryView.getRoot());
+		InputValidator.isTrue(!importSelection.isEmpty(),
+				(a) -> CertImportI18N.formatSTR_MESSAGE_EMPTY_IMPORT_SELECTION());
 		return importSelection;
+	}
+
+	private void collectImportSelection(Set<UserCertStoreEntry> importSelection,
+			TreeItem<ImportEntryModel> importItem) {
+		ImportEntryModel importEntry = importItem.getValue();
+
+		if (importEntry != null && importEntry.getSelected().booleanValue()) {
+			UserCertStoreEntry selectedEntry = importEntry.getEntry();
+
+			if (!selectedEntry.isExternal()) {
+				importSelection.add(selectedEntry);
+			}
+		}
+		for (TreeItem<ImportEntryModel> importItemChild : importItem.getChildren()) {
+			collectImportSelection(importSelection, importItemChild);
+		}
 	}
 
 	private abstract class CreateStoreTask<P> extends BackgroundTask<UserCertStore> {

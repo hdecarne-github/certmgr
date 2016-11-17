@@ -16,6 +16,8 @@
  */
 package de.carne.certmgr.certs;
 
+import java.util.Objects;
+
 import de.carne.util.Strings;
 
 /**
@@ -24,7 +26,7 @@ import de.carne.util.Strings;
  * <p>
  * The actual id consists of two elements. A required id value and an optional
  * alias string. The semantic of the alias string is handler specific.
- * 
+ *
  * @see UserCertStoreHandler
  */
 public final class UserCertStoreEntryId {
@@ -65,10 +67,12 @@ public final class UserCertStoreEntryId {
 	public boolean equals(Object obj) {
 		boolean equal = false;
 
-		if (obj instanceof UserCertStoreEntryId) {
-			UserCertStoreEntryId other = (UserCertStoreEntryId) obj;
+		if (this == obj) {
+			equal = true;
+		} else if (obj instanceof UserCertStoreEntryId) {
+			UserCertStoreEntryId o = (UserCertStoreEntryId) obj;
 
-			equal = this.id == other.id && this.alias.equals(other.alias);
+			equal = this.id == o.id && Objects.equals(this.alias, o.alias);
 		}
 		return equal;
 	}

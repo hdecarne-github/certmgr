@@ -34,6 +34,7 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
+import de.carne.certmgr.jfx.certimport.CertImportRequest;
 import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.preferences.PreferencesController;
 import de.carne.certmgr.jfx.preferences.PreferencesDialog;
@@ -252,7 +253,8 @@ public class StoreController extends StageController {
 	@FXML
 	void onCmdImportCerts(ActionEvent evt) {
 		try {
-			CertImportController importController = loadStage(CertImportController.class);
+			CertImportController importController = loadStage(CertImportController.class)
+					.init((r) -> onImportRequest(r));
 
 			importController.show();
 		} catch (IOException e) {
@@ -300,7 +302,7 @@ public class StoreController extends StageController {
 		updateDetailsView(selection);
 	}
 
-	private void updateHeapStatus() {
+	private void onUpdateHeapStatus() {
 		Runtime rt = Runtime.getRuntime();
 		long usedMemory = rt.totalMemory() - rt.freeMemory();
 		long maxMemory = rt.maxMemory();
@@ -310,6 +312,18 @@ public class StoreController extends StageController {
 
 		this.ctlHeapStatusLabel.setText(
 				StoreI18N.formatSTR_HEAP_STATUS(usedFormat.format(usedMemory), usageFormat.format(usageRatio)));
+	}
+
+	private IOException onImportRequest(CertImportRequest importRequest) {
+		IOException importException = null;
+
+		try {
+			this.storeProperty.get().importEntry(importRequest.entry(), importRequest.newPassword());
+		} catch (IOException e) {
+			importException = e;
+		}
+		updateStoreEntryView();
+		return importException;
 	}
 
 	@Override
@@ -345,7 +359,7 @@ public class StoreController extends StageController {
 		this.ctlStoreEntryView.getSelectionModel().selectedItemProperty()
 				.addListener((p, o, n) -> onStoreViewSelectionChange(n));
 		Windows.onHiding(stage, (ScheduledFuture<?> f) -> f.cancel(true), getExecutorService().scheduleAtFixedRate(
-				PlatformHelper.runLaterRunnable(() -> updateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
+				PlatformHelper.runLaterRunnable(() -> onUpdateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
 	}
 
 	@Override
