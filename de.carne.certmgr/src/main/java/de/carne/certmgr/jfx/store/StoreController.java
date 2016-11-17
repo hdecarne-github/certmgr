@@ -323,7 +323,10 @@ public class StoreController extends StageController {
 		} catch (IOException e) {
 			importException = e;
 		}
-		updateStoreEntryView();
+		PlatformHelper.runLater(() -> {
+			updateStoreEntryView();
+			return null;
+		});
 		return importException;
 	}
 

@@ -104,6 +104,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 					if (!isAliasInUse(alias)) {
 						break;
 					}
+					aliasIndex++;
 				}
 			}
 		}

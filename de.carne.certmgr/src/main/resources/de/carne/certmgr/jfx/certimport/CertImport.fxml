@@ -20,8 +20,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<StackPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
    <children>
       <GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
         <columnConstraints>
@@ -75,7 +74,6 @@
                   </Button>
                </children>
             </HBox>
-            <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" onAction="#onCmdReload" text="%_STR_LABEL_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
             <RadioButton fx:id="ctlURLSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" text="%_STR_LABEL_URL" toggleGroup="$ImportSource" GridPane.rowIndex="3" />
             <TextField fx:id="ctlURLSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_URL" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
             <RadioButton fx:id="ctlServerSourceOption" layoutX="12.0" layoutY="12.0" mnemonicParsing="false" text="%_STR_LABEL_SERVER" toggleGroup="$ImportSource" GridPane.rowIndex="4" />
@@ -85,6 +83,7 @@
                   <ChoiceBox fx:id="ctlServerSourceProtocolInput" />
                </children>
             </HBox>
+            <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" onAction="#onCmdReload" text="%_STR_LABEL_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
             <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="204.0" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
                <children>
                   <ImageView fx:id="ctlStatusImage" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
@@ -108,7 +107,7 @@
               <columns>
                 <TreeTableColumn fx:id="ctlImportEntryViewSelected" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="30.0" sortable="false" style="-fx-alignment: CENTER;">
                      <graphic>
-                        <CheckBox fx:id="ctlSelectAllOption" mnemonicParsing="false" />
+                        <CheckBox fx:id="ctlSelectAllOption" mnemonicParsing="false" onAction="#onCmdSelectAll" />
                      </graphic>
                   </TreeTableColumn>
                 <TreeTableColumn fx:id="ctlImportEntryViewDN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_DN" />

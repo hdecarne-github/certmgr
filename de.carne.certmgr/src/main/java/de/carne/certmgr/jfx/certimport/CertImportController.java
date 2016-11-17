@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -218,25 +219,26 @@ public class CertImportController extends StageController {
 	}
 
 	@FXML
+	void onCmdSelectAll(ActionEvent evt) {
+		boolean select = this.ctlSelectAllOption.isSelected();
+
+		forAllImportEntries(this.ctlImportEntryView.getRoot(), (i) -> {
+			ImportEntryModel importEntry = i.getValue();
+
+			if (importEntry != null) {
+				importEntry.setSelected(select);
+			}
+		});
+	}
+
+	@FXML
 	void onCmdImport(ActionEvent evt) {
 		try {
 			Set<UserCertStoreEntry> importSelection = validateImportSelection();
-			PasswordCallback newPassword = PasswordDialog.enterNewPassword(this);
 
-			for (UserCertStoreEntry importEntry : importSelection) {
-				CertImportRequest importRequest = new CertImportRequest(importEntry, newPassword,
-						CertImportI18N.formatSTR_TEXT_ALIASHINT());
-				IOException importException = this.importer.call(importRequest);
-
-				if (importException != null) {
-					throw importException;
-				}
-			}
-			close(true);
+			getExecutorService().submit(new ImportSelectionTask(importSelection));
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
-		} catch (IOException e) {
-			Alerts.unexpected(e).showAndWait();
 		}
 	}
 
@@ -451,6 +453,7 @@ public class CertImportController extends StageController {
 			this.ctlStatusImage.setImage(Images.WARNING16);
 			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NO_STORE());
 		}
+		this.ctlSelectAllOption.setSelected(false);
 	}
 
 	private Path validateFileSourceInput() throws ValidationException {
@@ -502,33 +505,33 @@ public class CertImportController extends StageController {
 	private Set<UserCertStoreEntry> validateImportSelection() throws ValidationException {
 		Set<UserCertStoreEntry> importSelection = new HashSet<>();
 
-		collectImportSelection(importSelection, this.ctlImportEntryView.getRoot());
+		forAllImportEntries(this.ctlImportEntryView.getRoot(), (i) -> {
+			ImportEntryModel importEntry = i.getValue();
+
+			if (importEntry != null && importEntry.getSelected().booleanValue()) {
+				UserCertStoreEntry selectedEntry = importEntry.getEntry();
+
+				if (!selectedEntry.isExternal()) {
+					importSelection.add(selectedEntry);
+				}
+			}
+		});
 		InputValidator.isTrue(!importSelection.isEmpty(),
 				(a) -> CertImportI18N.formatSTR_MESSAGE_EMPTY_IMPORT_SELECTION());
 		return importSelection;
 	}
 
-	private void collectImportSelection(Set<UserCertStoreEntry> importSelection,
-			TreeItem<ImportEntryModel> importItem) {
-		ImportEntryModel importEntry = importItem.getValue();
-
-		if (importEntry != null && importEntry.getSelected().booleanValue()) {
-			UserCertStoreEntry selectedEntry = importEntry.getEntry();
-
-			if (!selectedEntry.isExternal()) {
-				importSelection.add(selectedEntry);
-			}
-		}
+	private void forAllImportEntries(TreeItem<ImportEntryModel> importItem,
+			Consumer<TreeItem<ImportEntryModel>> consumer) {
+		consumer.accept(importItem);
 		for (TreeItem<ImportEntryModel> importItemChild : importItem.getChildren()) {
-			collectImportSelection(importSelection, importItemChild);
+			forAllImportEntries(importItemChild, consumer);
 		}
 	}
 
 	private abstract class CreateStoreTask<P> extends BackgroundTask<UserCertStore> {
 
 		private final LogMonitor logMonitor = new LogMonitor(LogLevel.LEVEL_WARNING);
-
-		private LogMonitor.Session logMonitorSession = null;
 
 		private final P createParams;
 
@@ -542,15 +545,19 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected UserCertStore call() throws Exception {
-			this.logMonitorSession = this.logMonitor.start().includePackage(UserCertStore.class.getPackage());
-			return createStore(this.createParams);
+			UserCertStore store;
+
+			try (LogMonitor.Session session = this.logMonitor.start()
+					.includePackage(UserCertStore.class.getPackage())) {
+				store = createStore(this.createParams);
+			}
+			return store;
 		}
 
 		protected abstract UserCertStore createStore(P param) throws IOException;
 
 		@Override
 		protected void succeeded() {
-			this.logMonitorSession.close();
 			onReloadTaskSucceeded(this, getValue());
 			this.logMonitor.close();
 			super.succeeded();
@@ -558,10 +565,49 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected void failed() {
-			this.logMonitorSession.close();
 			onReloadTaskFailed(this, getException());
 			this.logMonitor.close();
 			super.failed();
+		}
+
+	}
+
+	IOException callImporter(CertImportRequest importRequest) {
+		return this.importer.call(importRequest);
+	}
+
+	private class ImportSelectionTask extends BackgroundTask<Void> {
+
+		private final Set<UserCertStoreEntry> importSelection;
+
+		ImportSelectionTask(Set<UserCertStoreEntry> importSelection) {
+			this.importSelection = importSelection;
+		}
+
+		@Override
+		protected Void call() throws Exception {
+			PasswordCallback newPassword = PasswordDialog.enterNewPassword(CertImportController.this);
+
+			for (UserCertStoreEntry importEntry : this.importSelection) {
+				CertImportRequest importRequest = new CertImportRequest(importEntry, newPassword,
+						CertImportI18N.formatSTR_TEXT_ALIASHINT());
+				IOException importException = callImporter(importRequest);
+
+				if (importException != null) {
+					throw importException;
+				}
+			}
+			return null;
+		}
+
+		@Override
+		protected void succeeded() {
+			close(true);
+		}
+
+		@Override
+		protected void failed() {
+			Alerts.unexpected(getException());
 		}
 
 	}
