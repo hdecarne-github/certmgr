@@ -19,6 +19,7 @@ package de.carne.certmgr.certs.x509;
 import java.security.cert.X509Certificate;
 
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.certmgr.util.Keys;
 
 /**
  * Utility class providing {@link X509Certificate} related functions.
@@ -43,7 +44,7 @@ public final class X509CertificateHelper {
 		crtAttributes.addChild(AttributesI18N.formatSTR_CRT_NOTAFTER(), Attributes.printShortDate(crt.getNotAfter()));
 		crtAttributes.addChild(AttributesI18N.formatSTR_CRT_SUBJECTDN(),
 				X500Names.toString(crt.getSubjectX500Principal()));
-		crtAttributes.addChild(AttributesI18N.formatSTR_CRT_PUBLICKEY(), Attributes.printPublicKey(crt.getPublicKey()));
+		crtAttributes.addChild(AttributesI18N.formatSTR_CRT_PUBLICKEY(), Keys.toString(crt.getPublicKey()));
 		crtAttributes.addExtension(crt);
 		return crtAttributes;
 	}

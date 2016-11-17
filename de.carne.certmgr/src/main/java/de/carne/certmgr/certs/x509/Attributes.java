@@ -17,9 +17,7 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
-import java.security.PublicKey;
 import java.security.cert.X509Extension;
-import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -153,18 +151,6 @@ public class Attributes {
 
 	static String printShortDate(Date date) {
 		return ShortDate.FORMAT.format(date);
-	}
-
-	static String printPublicKey(PublicKey publicKey) {
-		StringBuilder buffer = new StringBuilder();
-
-		buffer.append(publicKey.getAlgorithm());
-		if (publicKey instanceof RSAPublicKey) {
-			RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
-
-			buffer.append("/").append(rsaPublicKey.getModulus().bitLength());
-		}
-		return buffer.toString();
 	}
 
 }

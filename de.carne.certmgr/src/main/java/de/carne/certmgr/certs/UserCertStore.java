@@ -44,7 +44,9 @@ import de.carne.certmgr.certs.io.FileCertReaderInput;
 import de.carne.certmgr.certs.io.StringCertReaderInput;
 import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
+import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.certmgr.util.Keys;
 import de.carne.nio.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
@@ -444,9 +446,13 @@ public final class UserCertStore {
 		Entry matchingEntry = matchX509Certificate(crt);
 
 		if (matchingEntry != null) {
-			CRTEntry crtEntry = this.storeHandler.createCRTEntry(matchingEntry.id(), crt);
+			if (!matchingEntry.hasCRT()) {
+				CRTEntry crtEntry = this.storeHandler.createCRTEntry(matchingEntry.id(), crt);
 
-			matchingEntry.setCRT(crtEntry);
+				matchingEntry.setCRT(crtEntry);
+			} else {
+				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CRT_ALREADY_SET(matchingEntry));
+			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
 			CRTEntry crtEntry = this.storeHandler.createCRTEntry(entryId, crt);
@@ -461,11 +467,15 @@ public final class UserCertStore {
 		Entry matchingEntry = matchKey(key);
 
 		if (matchingEntry != null) {
-			KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, password);
+			if (!matchingEntry.hasKey()) {
+				KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, password);
 
-			matchingEntry.setKey(keyEntry);
+				matchingEntry.setKey(keyEntry);
+			} else {
+				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_KEY_ALREADY_SET(matchingEntry));
+			}
 		} else {
-			LOG.warning("Ignoring unmatching key pair ''{0}''", key);
+			LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_DANGLING_KEY(Keys.toString(key.getPublic())));
 		}
 		return matchingEntry;
 	}
@@ -474,9 +484,13 @@ public final class UserCertStore {
 		Entry matchingEntry = matchPKCS10CertificateRequest(csr);
 
 		if (matchingEntry != null) {
-			CSREntry csrEntry = this.storeHandler.createCSREntry(matchingEntry.id(), csr);
+			if (!matchingEntry.hasCSR()) {
+				CSREntry csrEntry = this.storeHandler.createCSREntry(matchingEntry.id(), csr);
 
-			matchingEntry.setCSR(csrEntry);
+				matchingEntry.setCSR(csrEntry);
+			} else {
+				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CSR_ALREADY_SET(matchingEntry));
+			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
 			CSREntry csrEntry = this.storeHandler.createCSREntry(entryId, csr);
@@ -491,11 +505,16 @@ public final class UserCertStore {
 		Entry matchingEntry = matchX509CRL(crl);
 
 		if (matchingEntry != null) {
-			CRLEntry crlEntry = this.storeHandler.createCRLEntry(matchingEntry.id(), crl);
+			if (!matchingEntry.hasCRL()) {
+				CRLEntry crlEntry = this.storeHandler.createCRLEntry(matchingEntry.id(), crl);
 
-			matchingEntry.setCRL(crlEntry);
+				matchingEntry.setCRL(crlEntry);
+			} else {
+				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CRL_ALREADY_SET(matchingEntry));
+			}
 		} else {
-			LOG.warning("Ignoring unmatching CRL ''{0}''", crl);
+			LOG.warning(
+					UserCertStoreI18N.formatSTR_MESSAGE_DANGLING_CRL(X500Names.toString(crl.getIssuerX500Principal())));
 		}
 		return matchingEntry;
 	}

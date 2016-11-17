@@ -129,14 +129,22 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 	@Override
 	public CSREntry createCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Path entryPath = entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR);
+
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+			PEM_IO.write(output, csr, id.getAlias());
+		}
+		return new PersistentCSREntry(id, csr, Files.getLastModifiedTime(entryPath));
 	}
 
 	@Override
 	public CRLEntry createCRLEntry(UserCertStoreEntryId id, X509CRL crl) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Path entryPath = entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL);
+
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+			PEM_IO.write(output, crl, id.getAlias());
+		}
+		return new PersistentCRLEntry(id, crl, Files.getLastModifiedTime(entryPath));
 	}
 
 	private boolean isAliasInUse(String alias) {
