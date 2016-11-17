@@ -220,7 +220,8 @@ public class CertImportController extends StageController {
 			PasswordCallback newPassword = PasswordDialog.enterNewPassword(this);
 
 			for (UserCertStoreEntry importEntry : importSelection) {
-				CertImportRequest importRequest = new CertImportRequest(importEntry, newPassword);
+				CertImportRequest importRequest = new CertImportRequest(importEntry, newPassword,
+						CertImportI18N.formatSTR_TEXT_ALIASHINT());
 				IOException importException = this.importer.call(importRequest);
 
 				if (importException != null) {

@@ -318,7 +318,8 @@ public class StoreController extends StageController {
 		IOException importException = null;
 
 		try {
-			this.storeProperty.get().importEntry(importRequest.entry(), importRequest.newPassword());
+			this.storeProperty.get().importEntry(importRequest.entry(), importRequest.newPassword(),
+					importRequest.aliasHint());
 		} catch (IOException e) {
 			importException = e;
 		}

@@ -28,9 +28,12 @@ public final class CertImportRequest {
 
 	private final PasswordCallback newPassword;
 
-	CertImportRequest(UserCertStoreEntry entry, PasswordCallback newPassword) {
+	private final String aliasHint;
+
+	CertImportRequest(UserCertStoreEntry entry, PasswordCallback newPassword, String aliasHint) {
 		this.entry = entry;
 		this.newPassword = newPassword;
+		this.aliasHint = aliasHint;
 	}
 
 	/**
@@ -44,11 +47,20 @@ public final class CertImportRequest {
 
 	/**
 	 * Get the password callback for new password queries.
-	 * 
+	 *
 	 * @return The password callback for new password queries.
 	 */
 	public PasswordCallback newPassword() {
 		return this.newPassword;
+	}
+
+	/**
+	 * Get the preferred alias for the imported entry.
+	 *
+	 * @return The preferred alias for the imported entry.
+	 */
+	public String aliasHint() {
+		return this.aliasHint;
 	}
 
 }

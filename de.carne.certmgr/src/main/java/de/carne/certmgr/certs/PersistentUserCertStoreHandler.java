@@ -18,11 +18,13 @@ package de.carne.certmgr.certs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.security.KeyPair;
@@ -110,8 +112,12 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 	@Override
 	public CRTEntry createCRTEntry(UserCertStoreEntryId id, X509Certificate crt) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Path entryPath = entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT);
+
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+			PEM_IO.write(output, crt, id.getAlias());
+		}
+		return new PersistentCRTEntry(id, crt, Files.getLastModifiedTime(entryPath));
 	}
 
 	@Override

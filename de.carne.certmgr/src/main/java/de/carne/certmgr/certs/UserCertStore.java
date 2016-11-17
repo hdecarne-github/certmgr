@@ -306,9 +306,10 @@ public final class UserCertStore {
 	 *
 	 * @param entry The store entry to merge.
 	 * @param password The password callback to use for new password querying.
+	 * @param aliasHint The preferred alias for the generated entry's id.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
-	public void importEntry(UserCertStoreEntry entry, PasswordCallback password) throws IOException {
+	public void importEntry(UserCertStoreEntry entry, PasswordCallback password, String aliasHint) throws IOException {
 		assert entry != null;
 		assert password != null;
 
@@ -326,7 +327,7 @@ public final class UserCertStore {
 		if (entry.hasCRL()) {
 			certObjects.add(entry.getCRL());
 		}
-		mergeCertObjects(certObjects, password);
+		mergeCertObjects(certObjects, password, aliasHint);
 	}
 
 	/**
@@ -414,18 +415,19 @@ public final class UserCertStore {
 
 		if (certObjects != null && !certObjects.isEmpty()) {
 			store = new UserCertStore(new TransientUserCertStoreHandler());
-			store.mergeCertObjects(certObjects, NoPassword.getInstance());
+			store.mergeCertObjects(certObjects, NoPassword.getInstance(), null);
 		}
 		return store;
 	}
 
-	private synchronized void mergeCertObjects(List<Object> certObjects, PasswordCallback password) throws IOException {
+	private synchronized void mergeCertObjects(List<Object> certObjects, PasswordCallback password, String aliasHint)
+			throws IOException {
 		// First merge CRT and CSR objects as they provide the entry's DN
 		for (Object certObject : certObjects) {
 			if (certObject instanceof X509Certificate) {
-				mergeX509Certificate((X509Certificate) certObject);
+				mergeX509Certificate((X509Certificate) certObject, aliasHint);
 			} else if (certObject instanceof PKCS10CertificateRequest) {
-				mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject);
+				mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject, aliasHint);
 			}
 		}
 		for (Object certObject : certObjects) {
@@ -438,7 +440,7 @@ public final class UserCertStore {
 		resetIssuers();
 	}
 
-	private Entry mergeX509Certificate(X509Certificate crt) throws IOException {
+	private Entry mergeX509Certificate(X509Certificate crt, String aliasHint) throws IOException {
 		Entry matchingEntry = matchX509Certificate(crt);
 
 		if (matchingEntry != null) {
@@ -446,7 +448,7 @@ public final class UserCertStore {
 
 			matchingEntry.setCRT(crtEntry);
 		} else {
-			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(null);
+			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
 			CRTEntry crtEntry = this.storeHandler.createCRTEntry(entryId, crt);
 
 			matchingEntry = new Entry(entryId, crt.getSubjectX500Principal(), crtEntry);
@@ -468,7 +470,7 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
-	private Entry mergePKCS10CertificateRequest(PKCS10CertificateRequest csr) throws IOException {
+	private Entry mergePKCS10CertificateRequest(PKCS10CertificateRequest csr, String aliasHint) throws IOException {
 		Entry matchingEntry = matchPKCS10CertificateRequest(csr);
 
 		if (matchingEntry != null) {
@@ -476,7 +478,7 @@ public final class UserCertStore {
 
 			matchingEntry.setCSR(csrEntry);
 		} else {
-			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(null);
+			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
 			CSREntry csrEntry = this.storeHandler.createCSREntry(entryId, csr);
 
 			matchingEntry = new Entry(entryId, csr.getSubjectX500Principal(), csrEntry);
