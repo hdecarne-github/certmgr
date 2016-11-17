@@ -26,4 +26,5 @@ parsers:
     enable_partials: false
 ignore:
   - "de.carne.certmgr/src/main/java/de/carne/certmgr/jfx"
-  
+fixes:
+  - "de.carne.certmgr/::src/"
