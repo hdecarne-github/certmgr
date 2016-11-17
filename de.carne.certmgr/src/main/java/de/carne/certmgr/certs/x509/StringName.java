@@ -16,20 +16,26 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import java.io.IOException;
+
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.util.Strings;
+
 /**
  * Base class for {@link String} based general name objects.
  */
-public abstract class StringName extends GeneralName {
+public class StringName extends GeneralName {
 
 	private final String name;
 
 	/**
 	 * Construct {@code StringName}.
-	 * 
+	 *
 	 * @param type The name type.
 	 * @param name The name.
 	 */
-	public StringName(GeneralNameType type, String name) {
+	protected StringName(GeneralNameType type, String name) {
 		super(type);
 
 		assert name != null;
@@ -40,6 +46,19 @@ public abstract class StringName extends GeneralName {
 	@Override
 	public String toString() {
 		return getType().name() + ":" + this.name;
+	}
+
+	/**
+	 * Decode a generic {@code StringName} from an ASN.1 data object.
+	 *
+	 * @param type The name type.
+	 * @param primitive The ASN.1 data object to decode.
+	 * @return The decoded name object.
+	 * @throws IOException if an I/O error occurs during decoding.
+	 */
+	public static StringName genericDecode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
+		return new StringName(type,
+				Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
 	}
 
 }
