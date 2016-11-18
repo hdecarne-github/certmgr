@@ -17,12 +17,9 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
-import java.util.Iterator;
 
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1TaggedObject;
 
 /**
@@ -64,13 +61,11 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 */
 	public static AuthorityKeyIdentifierExtensionData decode(ASN1Primitive primitive, boolean critical)
 			throws IOException {
-		ASN1Sequence sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
-		Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
+		ASN1Primitive[] sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
 		byte[] keyIdentifier = null;
 
-		while (sequenceIterator.hasNext()) {
-			ASN1TaggedObject taggedObject = decodePrimitive(sequenceIterator.next().toASN1Primitive(),
-					ASN1TaggedObject.class);
+		for (ASN1Primitive sequenceEntry : sequence) {
+			ASN1TaggedObject taggedObject = decodePrimitive(sequenceEntry, ASN1TaggedObject.class);
 			int taggedObjectTag = taggedObject.getTagNo();
 
 			switch (taggedObjectTag) {
@@ -82,7 +77,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 			case 2:
 				break;
 			default:
-
+				throw new IOException("Unsupported tag: " + taggedObjectTag);
 			}
 		}
 		return new AuthorityKeyIdentifierExtensionData(critical, keyIdentifier);

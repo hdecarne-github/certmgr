@@ -17,13 +17,10 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.bouncycastle.asn1.ASN1Boolean;
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
 
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.9">Basic
@@ -72,21 +69,15 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static BasicConstraintsExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
-		ASN1Sequence sequence = decodeSequence(primitive, 0, 2);
-		Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
+		ASN1Primitive[] sequence = decodeSequence(primitive, 0, 2);
 		boolean decodedCA = false;
 		Integer decodedPathLenConstraint = null;
 
-		if (sequenceIterator.hasNext()) {
-			ASN1Primitive caPrimitive = sequenceIterator.next().toASN1Primitive();
-
-			decodedCA = decodePrimitive(caPrimitive, ASN1Boolean.class).isTrue();
+		if (sequence.length > 0) {
+			decodedCA = decodePrimitive(sequence[0], ASN1Boolean.class).isTrue();
 		}
-		if (sequenceIterator.hasNext()) {
-			ASN1Primitive pathLenConstraintPrimitive = sequenceIterator.next().toASN1Primitive();
-
-			decodedPathLenConstraint = decodePrimitive(pathLenConstraintPrimitive, ASN1Integer.class).getValue()
-					.intValue();
+		if (sequence.length > 1) {
+			decodedPathLenConstraint = decodePrimitive(sequence[1], ASN1Integer.class).getValue().intValue();
 		}
 		return new BasicConstraintsExtensionData(critical, decodedCA, decodedPathLenConstraint);
 	}

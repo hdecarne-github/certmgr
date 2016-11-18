@@ -19,12 +19,9 @@ package de.carne.certmgr.certs.x509;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 
@@ -43,12 +40,11 @@ public class GeneralNames extends ASN1Data {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static GeneralNames decode(ASN1Primitive primitive) throws IOException {
-		ASN1Sequence sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
-		Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
+		ASN1Primitive[] sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
 		GeneralNames generalNames = new GeneralNames();
 
-		while (sequenceIterator.hasNext()) {
-			generalNames.addName(GeneralName.decode(sequenceIterator.next().toASN1Primitive()));
+		for (ASN1Primitive sequenceEntry : sequence) {
+			generalNames.addName(GeneralName.decode(sequenceEntry));
 		}
 		return generalNames;
 	}

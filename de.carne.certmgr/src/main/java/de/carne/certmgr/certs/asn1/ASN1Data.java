@@ -17,7 +17,9 @@
 package de.carne.certmgr.certs.asn1;
 
 import java.io.IOException;
+import java.util.Iterator;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 
@@ -35,9 +37,26 @@ public abstract class ASN1Data {
 	 * @return The decoded sequence object.
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
-	protected static ASN1Sequence decodeSequence(ASN1Primitive primitive, int min, int max) throws IOException {
-		ASN1Sequence sequence = decodePrimitive(primitive, ASN1Sequence.class);
-		int sequenceSize = sequence.size();
+	protected static ASN1Primitive[] decodeSequence(ASN1Primitive primitive, int min, int max) throws IOException {
+		ASN1Primitive[] decoded;
+
+		if (primitive instanceof ASN1Sequence) {
+			ASN1Sequence sequence = decodePrimitive(primitive, ASN1Sequence.class);
+
+			decoded = new ASN1Primitive[sequence.size()];
+
+			Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
+			int sequenceIndex = 0;
+
+			while (sequenceIterator.hasNext()) {
+				decoded[sequenceIndex] = sequenceIterator.next().toASN1Primitive();
+				sequenceIndex++;
+			}
+		} else {
+			decoded = new ASN1Primitive[] { primitive };
+		}
+
+		int sequenceSize = decoded.length;
 
 		if (sequenceSize < min) {
 			throw new IOException("Unxpected min sequence size " + sequenceSize + " (expected " + min + ")");
@@ -45,7 +64,7 @@ public abstract class ASN1Data {
 		if (max < sequenceSize) {
 			throw new IOException("Unxpected max sequence size " + sequenceSize + " (expected " + max + ")");
 		}
-		return sequence;
+		return decoded;
 	}
 
 	/**

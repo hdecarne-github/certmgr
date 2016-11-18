@@ -69,8 +69,8 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static KeyUsageExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
-		Set<KeyUsage> usages = new HashSet<>();
 		byte[] bitBytes = decodePrimitive(primitive, ASN1BitString.class).getBytes();
+		Set<KeyUsage> usages = new HashSet<>();
 
 		if (bitBytes.length != 0) {
 			boolean anyUsage = true;

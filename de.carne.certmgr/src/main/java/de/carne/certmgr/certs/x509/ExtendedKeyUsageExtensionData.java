@@ -18,13 +18,10 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
 
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.12">Extended
@@ -72,15 +69,11 @@ public class ExtendedKeyUsageExtensionData extends X509ExtensionData {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static ExtendedKeyUsageExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
-		ASN1Sequence sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
-		Iterator<ASN1Encodable> sequenceIterator = sequence.iterator();
+		ASN1Primitive[] sequence = decodeSequence(primitive, 0, Integer.MAX_VALUE);
 		Set<ExtendedKeyUsage> usages = new HashSet<>();
 
-		while (sequenceIterator.hasNext()) {
-			ASN1Primitive sequencePrimitive = sequenceIterator.next().toASN1Primitive();
-
-			usages.add(
-					ExtendedKeyUsage.fromValue(decodePrimitive(sequencePrimitive, ASN1ObjectIdentifier.class).getId()));
+		for (ASN1Primitive sequenceEntry : sequence) {
+			usages.add(ExtendedKeyUsage.fromValue(decodePrimitive(sequenceEntry, ASN1ObjectIdentifier.class).getId()));
 		}
 		return new ExtendedKeyUsageExtensionData(critical, usages);
 	}
