@@ -18,25 +18,26 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 
-import org.bouncycastle.asn1.ASN1OctetString;
+import javax.security.auth.x500.X500Principal;
+
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.util.Strings;
+
+import de.carne.certmgr.certs.x500.X500Names;
 
 /**
- * Class for {@link String} based general name objects.
+ * Class for directory names.
  */
-public class StringName extends GeneralName {
+public class DirectoryName extends GeneralName {
 
-	private final String name;
+	private final X500Principal name;
 
 	/**
-	 * Construct {@code StringName}.
+	 * Construct {@code DirectoryName}.
 	 *
-	 * @param type The name type.
-	 * @param name The name.
+	 * @param name The X.500 name represented by this instance.
 	 */
-	public StringName(GeneralNameType type, String name) {
-		super(type);
+	public DirectoryName(X500Principal name) {
+		super(GeneralNameType.DIRECTORY_NAME);
 
 		assert name != null;
 
@@ -45,20 +46,18 @@ public class StringName extends GeneralName {
 
 	@Override
 	public String toString() {
-		return getType().name() + ":" + this.name;
+		return getType().name() + ":" + X500Names.toString(this.name);
 	}
 
 	/**
-	 * Decode {@code StringName} from an ASN.1 data object.
+	 * Decode {@code DirectoryName} from an ASN.1 data object.
 	 *
-	 * @param type The actual general name type.
 	 * @param primitive The ASN.1 data object to decode.
-	 * @return The decoded general name object.
+	 * @return The decoded directory name object.
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
-	public static StringName decode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
-		return new StringName(type,
-				Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
+	public static DirectoryName decode(ASN1Primitive primitive) throws IOException {
+		return new DirectoryName(new X500Principal(primitive.getEncoded()));
 	}
 
 }

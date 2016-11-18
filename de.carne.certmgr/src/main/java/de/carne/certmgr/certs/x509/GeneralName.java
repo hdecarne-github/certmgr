@@ -56,25 +56,25 @@ public abstract class GeneralName extends ASN1Data {
 			name = null;
 			break;
 		case GeneralNameType.RFC822_NAME_TAG:
-			name = StringName.genericDecode(GeneralNameType.RFC822_NAME, taggedObject.getObject());
+			name = StringName.decode(GeneralNameType.RFC822_NAME, taggedObject.getObject());
 			break;
 		case GeneralNameType.DNS_NAME_TAG:
-			name = StringName.genericDecode(GeneralNameType.DNS_NAME, taggedObject.getObject());
+			name = StringName.decode(GeneralNameType.DNS_NAME, taggedObject.getObject());
 			break;
 		case GeneralNameType.X400_ADDRESS_TAG:
 			name = null;
 			break;
 		case GeneralNameType.DIRECTORY_NAME_TAG:
-			name = StringName.genericDecode(GeneralNameType.DIRECTORY_NAME, taggedObject.getObject());
+			name = DirectoryName.decode(taggedObject.getObject());
 			break;
 		case GeneralNameType.EDI_PARTY_NAME_TAG:
 			name = null;
 			break;
 		case GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER_TAG:
-			name = StringName.genericDecode(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, taggedObject.getObject());
+			name = StringName.decode(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, taggedObject.getObject());
 			break;
 		case GeneralNameType.IP_ADDRESS_TAG:
-			name = StringName.genericDecode(GeneralNameType.IP_ADDRESS, taggedObject.getObject());
+			name = StringName.decode(GeneralNameType.IP_ADDRESS, taggedObject.getObject());
 			break;
 		case GeneralNameType.REGISTERED_ID_TAG:
 			name = null;
