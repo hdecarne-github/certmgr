@@ -124,9 +124,9 @@ public class UserCertStoreTest {
 		try {
 			UserCertStore store = UserCertStore.openStore(testStorePath);
 
-			Assert.assertEquals(6, store.size());
+			Assert.assertEquals(12, store.size());
 			Assert.assertEquals(TestCerts.TEST_STORE_NAME, store.storeName());
-			Assert.assertEquals(6, store.getEntries().size());
+			Assert.assertEquals(12, store.getEntries().size());
 			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
 			UserCertStorePreferences loadPreferences = store.storePreferences();
@@ -153,6 +153,14 @@ public class UserCertStoreTest {
 			Assert.assertEquals("EC", getPreferences.defaultKeyPairAlgorithm.get());
 			Assert.assertEquals(Integer.valueOf(521), getPreferences.defaultKeySize.get());
 			Assert.assertEquals("SHA256WITHECDSA", getPreferences.defaultSignatureAlgorithm.get());
+
+			UserCertStore importStore = UserCertStore.createFromFiles(IOHelper.collectDirectoryFiles(testStorePath),
+					TestCerts.password());
+
+			for (UserCertStoreEntry importStoreEntry : importStore.getEntries()) {
+				store.importEntry(importStoreEntry, TestCerts.password(), "Imported");
+			}
+			Assert.assertEquals(12, store.size());
 		} catch (IOException | BackingStoreException e) {
 			Assert.fail(e.getMessage());
 		}

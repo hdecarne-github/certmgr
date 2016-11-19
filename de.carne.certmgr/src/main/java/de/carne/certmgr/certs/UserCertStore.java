@@ -22,6 +22,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.SignatureException;
@@ -685,7 +686,7 @@ public final class UserCertStore {
 				crl.verify(entry.getPublicKey());
 				matchingEntry = entry;
 				break;
-			} catch (SignatureException e) {
+			} catch (SignatureException | InvalidKeyException e) {
 				Exceptions.ignore(e);
 			} catch (GeneralSecurityException e) {
 				throw new CertProviderException(e);
