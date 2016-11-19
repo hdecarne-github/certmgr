@@ -31,13 +31,16 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.carne.certmgr.certs.NoPassword;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.net.SSLPeer.Protocol;
+import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
+import de.carne.certmgr.util.DefaultSet;
 import de.carne.io.IOHelper;
 
 /**
@@ -176,6 +179,25 @@ public class UserCertStoreTest {
 			Assert.fail(e.getMessage());
 		}
 		return entryCount;
+	}
+
+	/**
+	 * Test store creation from platform key stores.
+	 */
+	@Test
+	public void testPlatformKeyStoreSourceStore() {
+		try {
+			DefaultSet<PlatformKeyStore> platformKeyStores = PlatformKeyStore.getDefaultSet();
+
+			for (PlatformKeyStore platformKeyStore : platformKeyStores) {
+				UserCertStore importStore = UserCertStore.createFromPlatformKeyStore(platformKeyStore,
+						NoPassword.getInstance());
+
+				traverseStore(importStore.getEntries());
+			}
+		} catch (IOException e) {
+			Assert.fail(e.getMessage());
+		}
 	}
 
 	/**

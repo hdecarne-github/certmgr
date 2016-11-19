@@ -43,9 +43,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.FileCertReaderInput;
+import de.carne.certmgr.certs.io.JKSCertReaderWriter;
 import de.carne.certmgr.certs.io.StringCertReaderInput;
 import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
+import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.util.Keys;
@@ -124,9 +126,26 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Create a certificate store backed up by a platform key store.
+	 *
+	 * @param platformKeyStore The platform key store providing the certificate
+	 *        data.
+	 * @param password The callback to use for querying passwords (if needed).
+	 * @return The created certificate store.
+	 * @throws PasswordRequiredException if no valid password was given.
+	 * @throws IOException if an I/O error occurs while reading/decoding
+	 *         certificate data.
+	 */
+	public static UserCertStore createFromPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
+			throws IOException {
+		assert platformKeyStore != null;
+		assert password != null;
+
+		return createFromCertObjects(JKSCertReaderWriter.readPlatformKeyStore(platformKeyStore, password));
+	}
+
+	/**
 	 * Create a certificate store backed up by a single file.
-	 * <p>
-	 * The created certificate store supports only read access.
 	 *
 	 * @param file The file providing the certificate data.
 	 * @param password The callback to use for querying passwords (if needed).
@@ -144,8 +163,6 @@ public final class UserCertStore {
 
 	/**
 	 * Create a certificate store backed up by multiple files.
-	 * <p>
-	 * The created certificate store supports only read access.
 	 *
 	 * @param files The files providing the certificate data.
 	 * @param password The callback to use for querying passwords (if needed).
@@ -176,8 +193,6 @@ public final class UserCertStore {
 
 	/**
 	 * Create a certificate store backed up by an {@link URL}.
-	 * <p>
-	 * The created certificate store supports only read access.
 	 *
 	 * @param url The URL to use for certificate data access.
 	 * @param password The callback to use for querying passwords (if needed).
@@ -200,8 +215,6 @@ public final class UserCertStore {
 
 	/**
 	 * Create a certificate store backed up by server provided certificate data.
-	 * <p>
-	 * The created certificate store supports only read access.
 	 *
 	 * @param protocol The protocol to use for accessing the server.
 	 * @param host The host to retrieve the certificate data from.
@@ -227,8 +240,6 @@ public final class UserCertStore {
 
 	/**
 	 * Create a certificate store backed up by text data.
-	 * <p>
-	 * The created certificate store supports only read access.
 	 *
 	 * @param data The text containing the certificate data.
 	 * @param name The name to use when referring to the text data (e.g. during

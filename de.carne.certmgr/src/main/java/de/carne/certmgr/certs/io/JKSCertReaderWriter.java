@@ -22,7 +22,6 @@ import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
@@ -31,9 +30,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
+import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.util.Strings;
@@ -45,6 +47,8 @@ import de.carne.util.logging.Log;
 public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	private static final Log LOG = new Log();
+
+	private static final String INPUT_KEYSTORE_TYPE = "CaseExactJKS";
 
 	/**
 	 * Provider name.
@@ -71,19 +75,52 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		assert input != null;
 		assert password != null;
 
-		LOG.debug("Trying to read KeyStore objects from: ''{0}''...", input);
+		LOG.debug("Trying to read KeyStore objects from file: ''{0}''...", input);
 
+		List<Object> keyStoreObjects = null;
+
+		try (InputStream inputStream = input.stream()) {
+			if (inputStream != null) {
+				keyStoreObjects = readKeyStore(INPUT_KEYSTORE_TYPE, inputStream, input.toString(), password);
+			}
+		}
+		return keyStoreObjects;
+	}
+
+	/**
+	 * Read certificate object from a platform store.
+	 *
+	 * @param platformKeyStore The platform store to read from.
+	 * @param password The callback to use for querying passwords (if needed).
+	 * @return The list of read certificate objects, or {@code null} if the
+	 *         input is not recognized.
+	 * @throws IOException if an I/O error occurs while reading.
+	 */
+	@Nullable
+	public static List<Object> readPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
+			throws IOException {
+		assert platformKeyStore != null;
+		assert password != null;
+
+		LOG.debug("Trying to read KeyStore objects from platform store: ''{0}''...", platformKeyStore);
+
+		return readKeyStore(platformKeyStore.algorithm(), null, platformKeyStore.toString(), password);
+	}
+
+	@Nullable
+	private static List<Object> readKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
+			PasswordCallback password) throws IOException {
 		List<Object> keyStoreObjects = null;
 		KeyStore keyStore = null;
 
 		try {
-			keyStore = loadKeyStore(input, password);
+			keyStore = loadKeyStore(keyStoreType, inputStream, resource, password);
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		} catch (PasswordRequiredException e) {
 			throw e;
 		} catch (IOException e) {
-			LOG.info(e, "No KeyStore objects recognized in: ''{0}''", input);
+			LOG.info(e, "No KeyStore objects recognized in: ''{0}''", resource);
 		}
 		if (keyStore != null) {
 			try {
@@ -119,20 +156,15 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return keyStoreObjects;
 	}
 
-	private KeyStore loadKeyStore(CertReaderInput input, PasswordCallback password)
-			throws GeneralSecurityException, IOException {
-		KeyStore keyStore = null;
+	private static KeyStore loadKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
+			PasswordCallback password) throws GeneralSecurityException, IOException {
+		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
 		char[] passwordChars = null;
 		Throwable passwordException = null;
 
 		do {
-			try (InputStream keyStoreStream = input.stream()) {
-				if (keyStoreStream != null) {
-					if (keyStore == null) {
-						keyStore = getKeyStoreInstance();
-					}
-					keyStore.load(input.stream(), passwordChars);
-				}
+			try {
+				keyStore.load(inputStream, passwordChars);
 				passwordException = null;
 			} catch (IOException e) {
 				if (e.getCause() instanceof UnrecoverableKeyException) {
@@ -142,16 +174,16 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 				}
 			}
 			if (passwordException != null) {
-				passwordChars = password.requeryPassword(input.toString(), passwordException);
+				passwordChars = password.requeryPassword(resource, passwordException);
 				if (passwordChars == null) {
-					throw new PasswordRequiredException(input.toString(), passwordException);
+					throw new PasswordRequiredException(resource, passwordException);
 				}
 			}
 		} while (passwordException != null);
 		return keyStore;
 	}
 
-	private Key getAliasKey(KeyStore keyStore, String alias, PasswordCallback password)
+	private static Key getAliasKey(KeyStore keyStore, String alias, PasswordCallback password)
 			throws GeneralSecurityException {
 		Key key = null;
 		Throwable passwordException = null;
@@ -172,7 +204,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return key;
 	}
 
-	private KeyPair getKey(String alias, Key aliasKey, Certificate aliasCertificate) {
+	private static KeyPair getKey(String alias, Key aliasKey, Certificate aliasCertificate) {
 		KeyPair keyPair = null;
 
 		if (aliasKey != null) {
@@ -188,7 +220,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return keyPair;
 	}
 
-	private X509Certificate getCRT(String alias, Certificate aliasCertificate) {
+	private static X509Certificate getCRT(String alias, Certificate aliasCertificate) {
 		X509Certificate crt = null;
 
 		if (aliasCertificate != null) {
@@ -200,10 +232,6 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			}
 		}
 		return crt;
-	}
-
-	private static KeyStore getKeyStoreInstance() throws KeyStoreException {
-		return KeyStore.getInstance("CaseExactJKS");
 	}
 
 }
