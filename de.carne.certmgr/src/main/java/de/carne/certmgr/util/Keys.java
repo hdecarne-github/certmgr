@@ -17,6 +17,7 @@
 package de.carne.certmgr.util;
 
 import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
 /**
@@ -30,7 +31,7 @@ public final class Keys {
 
 	/**
 	 * Get the public key's string representation.
-	 * 
+	 *
 	 * @param publicKey The public key to format.
 	 * @return The public key's string representation.
 	 */
@@ -42,6 +43,10 @@ public final class Keys {
 			RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
 
 			buffer.append("/").append(rsaPublicKey.getModulus().bitLength());
+		} else if (publicKey instanceof ECPublicKey) {
+			ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
+
+			buffer.append("/").append(ecPublicKey.getParams().getCurve().getField().getFieldSize());
 		}
 		return buffer.toString();
 	}

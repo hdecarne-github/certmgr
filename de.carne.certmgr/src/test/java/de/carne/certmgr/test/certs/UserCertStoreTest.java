@@ -121,18 +121,18 @@ public class UserCertStoreTest {
 		try {
 			UserCertStore store = UserCertStore.openStore(testStorePath);
 
-			Assert.assertEquals(5, store.size());
+			Assert.assertEquals(6, store.size());
 			Assert.assertEquals(TestCerts.TEST_STORE_NAME, store.storeName());
-			Assert.assertEquals(5, store.getEntries().size());
+			Assert.assertEquals(6, store.getEntries().size());
 			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
 			UserCertStorePreferences loadPreferences = store.storePreferences();
 
 			Assert.assertEquals(Integer.valueOf(365), loadPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(30), loadPreferences.defaultCRLUpdatePeriod.get());
-			Assert.assertEquals("RSA", loadPreferences.defaultKeyPairAlgorithm.get());
-			Assert.assertEquals(Integer.valueOf(2048), loadPreferences.defaultKeySize.get());
-			Assert.assertEquals("SHA256WITHRSA", loadPreferences.defaultSignatureAlgorithm.get());
+			Assert.assertEquals("EC", loadPreferences.defaultKeyPairAlgorithm.get());
+			Assert.assertEquals(Integer.valueOf(521), loadPreferences.defaultKeySize.get());
+			Assert.assertEquals("SHA256WITHECDSA", loadPreferences.defaultSignatureAlgorithm.get());
 
 			UserCertStorePreferences setPreferences = store.storePreferences();
 

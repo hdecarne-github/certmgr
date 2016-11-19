@@ -39,6 +39,8 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.FileCertReaderInput;
 import de.carne.certmgr.certs.io.StringCertReaderInput;
@@ -261,6 +263,7 @@ public final class UserCertStore {
 	 * @return This store's home path, or {@code null} if this store only
 	 *         supports read access.
 	 */
+	@Nullable
 	public Path storeHome() {
 		return this.storeHandler.storeHome();
 	}
@@ -273,6 +276,7 @@ public final class UserCertStore {
 	 * @return This store's name, or {@code null} if this store is transient.
 	 * @see #storeHome()
 	 */
+	@Nullable
 	public String storeName() {
 		Path storeHome = this.storeHandler.storeHome();
 
@@ -304,7 +308,7 @@ public final class UserCertStore {
 
 	/**
 	 * Delete a store entry.
-	 * 
+	 *
 	 * @param entry The entry to delete.
 	 * @throws IOException if an I/O error occurs during deletion.
 	 */

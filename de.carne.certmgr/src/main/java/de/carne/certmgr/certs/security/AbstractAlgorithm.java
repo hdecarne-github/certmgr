@@ -52,4 +52,9 @@ public abstract class AbstractAlgorithm {
 		return this.service.getAlgorithm();
 	}
 
+	@Override
+	public String toString() {
+		return this.service.getAlgorithm() + "/" + this.service.getProvider().getName();
+	}
+
 }

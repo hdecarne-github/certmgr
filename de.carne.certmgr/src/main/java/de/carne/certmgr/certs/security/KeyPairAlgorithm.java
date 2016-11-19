@@ -145,13 +145,6 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 					&& service().equals(((ExpertKeyPairAlgorithm) obj).service()));
 		}
 
-		@Override
-		public String toString() {
-			Service service = service();
-
-			return service.getAlgorithm() + "/" + service.getProvider().getName();
-		}
-
 	}
 
 }

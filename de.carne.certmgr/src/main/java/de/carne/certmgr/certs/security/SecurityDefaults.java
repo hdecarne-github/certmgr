@@ -37,6 +37,7 @@ class SecurityDefaults {
 	private static final String KEY_SIGNATURE_ALGORITHM = ".signatureAlgorithm";
 	private static final String KEY_CRT_VALIDITY_PERIOD = "crtValidity";
 	private static final String KEY_CRL_UPDATE_PERIOD = "crlUpdate";
+	private static final String KEY_PLATFORM_KEY_STORE = "platformKeyStore";
 
 	public static DefaultSet<String> getKeyAlgorithmNames() {
 		return getValues(KEY_KEY_ALGORITHM, (s) -> s);
@@ -56,6 +57,10 @@ class SecurityDefaults {
 
 	public static DefaultSet<Days> getCRLUpdatedPeriods() {
 		return getValues(KEY_CRL_UPDATE_PERIOD, (s) -> new Days(Period.parse(s)));
+	}
+
+	public static DefaultSet<String> getPlatformKeyStoreNames() {
+		return getValues(KEY_PLATFORM_KEY_STORE, (s) -> s);
 	}
 
 	private static <T> DefaultSet<T> getValues(String key, Function<String, T> conversion) {
