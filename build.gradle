@@ -1,14 +1,11 @@
 allprojects {
-
 	repositories {
 		mavenLocal()
 		mavenCentral()
 	}
-
 }
 
 subprojects {
-
 	apply plugin: 'java'
 	apply plugin: 'jacoco'
 	    
@@ -21,14 +18,27 @@ subprojects {
 			mavenCentral()
 		}
 		dependencies {
-			classpath 'de.carne:gradleplugins:0.3.1'
+			classpath("de.carne:gradleplugins:0.3.1")
+		}
+	}
+	
+	configurations {
+		checkerFrameworkAnnotatedJDK {
+			description = 'a copy of JDK classes with Checker Framework type qualifers inserted'
+		}
+		checkerFramework {
+			description = 'The Checker Framework: custom pluggable types for Java'
 		}
 	}
 	
 	dependencies {
+		ext.checkerFrameworkVersion = '2.1.5'
+		checkerFrameworkAnnotatedJDK("org.checkerframework:jdk8:${checkerFrameworkVersion}")
+		checkerFramework("org.checkerframework:checker:${checkerFrameworkVersion}")
+		compile("org.checkerframework:checker-qual:${checkerFrameworkVersion}")
 		testCompile('junit:junit:4.12')
 	}
-
+	
 	jacocoTestReport {
 		reports {
 			xml.enabled true
@@ -38,7 +48,6 @@ subprojects {
 			csv.enabled false
 		}
 	}
-
 }
 
 task wrapper(type: Wrapper) {

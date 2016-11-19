@@ -9,11 +9,11 @@ def formatBuild() {
 
 apply plugin: 'de.carne.gradleplugins.java'
 apply plugin: 'distribution'
- 
-dependencies {
-	compile project(':de.carne')
-	compile project(':de.carne.jfx')
-	compile('org.bouncycastle:bcpkix-jdk15on:1.55')
+
+configurations {
+	generatedCompile {
+		description = 'compile generated sources'
+	}
 }
 	
 sourceSets {
@@ -23,16 +23,14 @@ sourceSets {
 			srcDir "${buildDir}/generated/main/java/"
 		}
 	}
-
-	// Make generated classes/resources available to the main and test source set
-	main {
-		compileClasspath += sourceSets.generated.output
-		runtimeClasspath += sourceSets.generated.output
-	}
-	test {
-		compileClasspath += sourceSets.generated.output
-		runtimeClasspath += sourceSets.generated.output
-	}
+}
+ 
+dependencies {
+	generatedCompile("org.checkerframework:checker-qual:${checkerFrameworkVersion}")
+    compile sourceSets.generated.output
+	compile project(':de.carne')
+	compile project(':de.carne.jfx')
+	compile('org.bouncycastle:bcpkix-jdk15on:1.55')
 }
 
 jar {
