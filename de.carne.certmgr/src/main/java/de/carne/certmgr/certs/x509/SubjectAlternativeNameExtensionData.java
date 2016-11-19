@@ -81,12 +81,8 @@ public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
 	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
-		int nameIndex = 0;
 
-		for (GeneralName name : this.generalNames.getNames()) {
-			extensionAttributes.addChild(AttributesI18N.formatSTR_GENERALNAME(nameIndex), name.toString());
-			nameIndex++;
-		}
+		extensionAttributes.add(this.generalNames);
 		return extensionAttributes;
 	}
 

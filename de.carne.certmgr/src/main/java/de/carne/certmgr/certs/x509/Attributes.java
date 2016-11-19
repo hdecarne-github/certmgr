@@ -16,22 +16,19 @@
  */
 package de.carne.certmgr.certs.x509;
 
-import java.io.IOException;
-import java.security.cert.X509Extension;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.jfx.util.ShortDate;
-import de.carne.util.Exceptions;
 
 /**
- * This class provides a generic way to display the content/attributes of all
- * kind of Certificate objects.
+ * This class provides a generic way to access the content/attributes of all
+ * kind of X.509 certificate objects.
  */
 public class Attributes {
 
@@ -46,43 +43,25 @@ public class Attributes {
 		this.value = value;
 	}
 
-	Attributes addChild(String childName, String childValue) {
+	Attributes add(String childName) {
+		return add(childName, null);
+	}
+
+	Attributes add(String childName, String childValue) {
 		Attributes childAttributes = new Attributes(childName, childValue);
 
 		this.children.add(childAttributes);
 		return childAttributes;
 	}
 
-	void addExtension(X509Extension extension) {
-		Set<String> criticalExtensionOIDs = extension.getCriticalExtensionOIDs();
+	Attributes add(Attributes childAttributes) {
+		this.children.add(childAttributes);
+		return childAttributes;
+	}
 
-		if (criticalExtensionOIDs != null) {
-			for (String criticalExtensionOID : criticalExtensionOIDs) {
-				try {
-					X509ExtensionData extensionData = X509ExtensionData.decode(criticalExtensionOID, true,
-							extension.getExtensionValue(criticalExtensionOID));
-
-					this.children.add(extensionData.toAttributes());
-				} catch (IOException e) {
-					Exceptions.warn(e);
-				}
-			}
-		}
-
-		Set<String> nonCriticalExtensionOIDs = extension.getNonCriticalExtensionOIDs();
-
-		if (nonCriticalExtensionOIDs != null) {
-			for (String nonCriticalExtensionOID : nonCriticalExtensionOIDs) {
-				try {
-					X509ExtensionData extensionData = X509ExtensionData.decode(nonCriticalExtensionOID, false,
-							extension.getExtensionValue(nonCriticalExtensionOID));
-
-					this.children.add(extensionData.toAttributes());
-				} catch (IOException e) {
-					Exceptions.warn(e);
-				}
-			}
-		}
+	Attributes add(AttributesContent content) {
+		content.addAttributes(this);
+		return this;
 	}
 
 	/**
@@ -122,8 +101,8 @@ public class Attributes {
 	public static Attributes toAttributes(UserCertStoreEntry entry) {
 		Attributes entryAttributes = new Attributes(AttributesI18N.formatSTR_ENTRY(), null);
 
-		entryAttributes.addChild(AttributesI18N.formatSTR_ENTRY_ID(), entry.id().toString());
-		entryAttributes.addChild(AttributesI18N.formatSTR_ENTRY_DN(), X500Names.toString(entry.dn()));
+		entryAttributes.add(AttributesI18N.formatSTR_ENTRY_ID(), entry.id().toString());
+		entryAttributes.add(AttributesI18N.formatSTR_ENTRY_DN(), X500Names.toString(entry.dn()));
 		return entryAttributes;
 	}
 
@@ -151,6 +130,10 @@ public class Attributes {
 
 	static String printShortDate(Date date) {
 		return ShortDate.FORMAT.format(date);
+	}
+
+	static String printSerial(BigInteger serial) {
+		return serial.toString();
 	}
 
 }

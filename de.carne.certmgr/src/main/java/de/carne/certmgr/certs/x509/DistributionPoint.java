@@ -26,7 +26,7 @@ import de.carne.certmgr.certs.asn1.ASN1Data;
 /**
  * Distribution point object.
  */
-public class DistributionPoint extends ASN1Data {
+public class DistributionPoint extends ASN1Data implements AttributesContent {
 
 	private final DistributionPointName name;
 	private final ReasonFlags reasons;
@@ -35,11 +35,11 @@ public class DistributionPoint extends ASN1Data {
 	/**
 	 * Construct {@code DistributionPoint}.
 	 *
-	 * @param name
-	 * @param reasons
-	 * @param crlIssuer
+	 * @param name The (optional) distribution point's name data.
+	 * @param reasons The (optional) distribution point's reason flags.
+	 * @param crlIssuer The (optional) distribution point's CRL issuer.
 	 */
-	protected DistributionPoint(DistributionPointName name, ReasonFlags reasons, GeneralNames crlIssuer) {
+	public DistributionPoint(DistributionPointName name, ReasonFlags reasons, GeneralNames crlIssuer) {
 		this.name = name;
 		this.reasons = reasons;
 		this.crlIssuer = crlIssuer;
@@ -54,7 +54,7 @@ public class DistributionPoint extends ASN1Data {
 	 */
 	public static DistributionPoint decode(ASN1Primitive primitive) throws IOException {
 		ASN1Primitive[] sequence = decodeSequence(primitive, 1, Integer.MAX_VALUE);
-		DistributionPointName distributionPoint = null;
+		DistributionPointName name = null;
 		ReasonFlags reasons = null;
 		GeneralNames crlIssuer = null;
 
@@ -64,19 +64,38 @@ public class DistributionPoint extends ASN1Data {
 
 			switch (taggedObjectTag) {
 			case 0:
-				distributionPoint = DistributionPointName.decode(taggedObject.getObject());
+				assert name == null;
+
+				name = DistributionPointName.decode(taggedObject.getObject());
 				break;
 			case 1:
+				assert reasons == null;
+
 				reasons = ReasonFlags.decode(taggedObject.getObject());
 				break;
 			case 2:
+				assert crlIssuer == null;
+
 				crlIssuer = GeneralNames.decode(taggedObject.getObject());
 				break;
 			default:
 				throw new IOException("Unsupported tag: " + taggedObjectTag);
 			}
 		}
-		return new DistributionPoint(distributionPoint, reasons, crlIssuer);
+		return new DistributionPoint(name, reasons, crlIssuer);
+	}
+
+	@Override
+	public void addAttributes(Attributes attributes) {
+		if (this.name != null) {
+			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_NAME()).add(this.name);
+		}
+		if (this.reasons != null) {
+			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_REASONS()).add(this.reasons);
+		}
+		if (this.crlIssuer != null) {
+			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_CRLISSUER()).add(this.crlIssuer);
+		}
 	}
 
 }

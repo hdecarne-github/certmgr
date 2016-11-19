@@ -121,7 +121,7 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 		Attributes extensionAttributes = super.toAttributes();
 
 		for (KeyUsage usage : this.usages) {
-			extensionAttributes.addChild(usage.name(), null);
+			extensionAttributes.add(usage.name(), null);
 		}
 		return extensionAttributes;
 	}

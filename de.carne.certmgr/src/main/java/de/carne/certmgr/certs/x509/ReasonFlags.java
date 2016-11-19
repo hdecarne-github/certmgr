@@ -28,7 +28,7 @@ import de.carne.certmgr.certs.asn1.ASN1Data;
 /**
  * Distribution point object.
  */
-public class ReasonFlags extends ASN1Data {
+public class ReasonFlags extends ASN1Data implements AttributesContent {
 
 	private final Set<ReasonFlag> reasonFlags;
 
@@ -55,6 +55,12 @@ public class ReasonFlags extends ASN1Data {
 		Set<ReasonFlag> reasonFlags = new HashSet<>();
 
 		return new ReasonFlags(reasonFlags);
+	}
+
+	@Override
+	public void addAttributes(Attributes attributes) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

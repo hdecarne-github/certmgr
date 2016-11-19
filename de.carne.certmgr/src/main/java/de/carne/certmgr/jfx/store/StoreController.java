@@ -22,6 +22,7 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -72,6 +73,8 @@ import javafx.stage.Stage;
  * Application main dialog for store management.
  */
 public class StoreController extends StageController {
+
+	private static final int DETAILS_VIEW_ATTRIBUTE_LIMIT = 100;
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(StoreController.class);
 
@@ -174,7 +177,7 @@ public class StoreController extends StageController {
 
 				this.storeProperty.set(store);
 				updateStoreEntryView();
-				this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(store.storeHome()));
+				this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_TEXT_STORE_STATUS(store.storeHome()));
 			}
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
@@ -298,7 +301,7 @@ public class StoreController extends StageController {
 		}
 	}
 
-	private void onStoreViewSelectionChange(TreeItem<StoreEntryModel> selection) {
+	private void onStoreViewSelectionChanged(TreeItem<StoreEntryModel> selection) {
 		updateDetailsView(selection);
 	}
 
@@ -311,7 +314,7 @@ public class StoreController extends StageController {
 		NumberFormat usageFormat = NumberFormat.getPercentInstance();
 
 		this.ctlHeapStatusLabel.setText(
-				StoreI18N.formatSTR_HEAP_STATUS(usedFormat.format(usedMemory), usageFormat.format(usageRatio)));
+				StoreI18N.formatSTR_TEXT_HEAP_STATUS(usedFormat.format(usedMemory), usageFormat.format(usageRatio)));
 	}
 
 	private IOException onImportRequest(CertImportRequest importRequest) {
@@ -361,7 +364,7 @@ public class StoreController extends StageController {
 		this.ctlDetailsViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlDetailsViewValue.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));
 		this.ctlStoreEntryView.getSelectionModel().selectedItemProperty()
-				.addListener((p, o, n) -> onStoreViewSelectionChange(n));
+				.addListener((p, o, n) -> onStoreViewSelectionChanged(n));
 		Windows.onHiding(stage, (ScheduledFuture<?> f) -> f.cancel(true), getExecutorService().scheduleAtFixedRate(
 				PlatformHelper.runLaterRunnable(() -> onUpdateHeapStatus()), 0, 500, TimeUnit.MILLISECONDS));
 	}
@@ -382,7 +385,7 @@ public class StoreController extends StageController {
 		try {
 			this.storeProperty.set(UserCertStore.openStore(storeHome.toPath()));
 			updateStoreEntryView();
-			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_STORE_STATUS(storeHome));
+			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_TEXT_STORE_STATUS(storeHome));
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
 		}
@@ -444,11 +447,19 @@ public class StoreController extends StageController {
 	}
 
 	private void updateDetailsViewHelper(TreeItem<AttributeModel> parentItem, Attributes attribute, boolean expand) {
-		TreeItem<AttributeModel> attributeItem = new TreeItem<>(
-				new AttributeModel(attribute.name(), attribute.value()));
+		TreeItem<AttributeModel> attributeItem = new TreeItem<>(new AttributeModel(attribute));
+		List<Attributes> attributeChildren = attribute.children();
+		int childCount = attributeChildren.size();
+		int childIndex = 0;
 
-		for (Attributes child : attribute.children()) {
+		for (Attributes child : attributeChildren) {
+			if (childIndex >= DETAILS_VIEW_ATTRIBUTE_LIMIT) {
+				attributeItem.getChildren().add(new TreeItem<>(
+						new AttributeModel(StoreI18N.formatSTR_TEXT_DETAILS_OMITTED(childCount - childIndex))));
+				break;
+			}
 			updateDetailsViewHelper(attributeItem, child, false);
+			childIndex++;
 		}
 		parentItem.getChildren().add(attributeItem);
 		attributeItem.setExpanded(expand);

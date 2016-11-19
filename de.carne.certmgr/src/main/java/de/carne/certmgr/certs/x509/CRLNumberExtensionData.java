@@ -74,7 +74,7 @@ public class CRLNumberExtensionData extends X509ExtensionData {
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.addChild(AttributesI18N.formatSTR_CRLNUMBER(), this.crlNumber.toString());
+		extensionAttributes.add(AttributesI18N.formatSTR_CRLNUMBER(), this.crlNumber.toString());
 		return extensionAttributes;
 	}
 

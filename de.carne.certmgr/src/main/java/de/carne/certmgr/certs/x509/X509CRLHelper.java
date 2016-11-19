@@ -16,7 +16,16 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import java.math.BigInteger;
+import java.security.cert.CRLReason;
 import java.security.cert.X509CRL;
+import java.security.cert.X509CRLEntry;
+import java.util.Date;
+import java.util.Set;
+
+import javax.security.auth.x500.X500Principal;
+
+import de.carne.certmgr.certs.x500.X500Names;
 
 /**
  * Utility class providing {@link X509CRL} related functions.
@@ -30,9 +39,38 @@ public final class X509CRLHelper {
 	 * @return The CRL object's attributes.
 	 */
 	public static Attributes toAttributes(X509CRL crl) {
+		assert crl != null;
+
 		Attributes crlAttributes = new Attributes(AttributesI18N.formatSTR_CRL(), null);
 
-		crlAttributes.addExtension(crl);
+		crlAttributes.add(AttributesI18N.formatSTR_CRL_VERSION(), Integer.toString(crl.getVersion()));
+		crlAttributes.add(AttributesI18N.formatSTR_CRL_THISUPDATE(), Attributes.printShortDate(crl.getThisUpdate()));
+		crlAttributes.add(AttributesI18N.formatSTR_CRL_NEXTUPDATE(), Attributes.printShortDate(crl.getNextUpdate()));
+		crlAttributes.add(AttributesI18N.formatSTR_CRL_SIGALG(), crl.getSigAlgName());
+		crlAttributes.add(AttributesI18N.formatSTR_CRL_ISSUERDN(), X500Names.toString(crl.getIssuerX500Principal()));
+		X509ExtensionHelper.addAttributes(crlAttributes, crl);
+
+		Set<? extends X509CRLEntry> crlEntries = crl.getRevokedCertificates();
+
+		if (crlEntries != null) {
+			Attributes crlEntryAttributes = crlAttributes.add(AttributesI18N.formatSTR_CRL_ENTRIES());
+			for (X509CRLEntry crlEntry : crlEntries) {
+				BigInteger serial = crlEntry.getSerialNumber();
+				X500Principal issuer = crlEntry.getCertificateIssuer();
+				String entryKey = (issuer != null
+						? AttributesI18N.formatSTR_CRL_ENTRY_KEY_INDIRECT(Attributes.printSerial(serial), issuer)
+						: AttributesI18N.formatSTR_CRL_ENTRY_KEY(Attributes.printSerial(serial)));
+				CRLReason revocationReason = crlEntry.getRevocationReason();
+				Date revocationDate = crlEntry.getRevocationDate();
+				String entryReason = (revocationReason != null
+						? AttributesI18N.formatSTR_CRL_ENTRY_REASON(revocationReason.name(),
+								Attributes.printShortDate(revocationDate))
+						: AttributesI18N.formatSTR_CRL_ENTRY_REASON_NULL(Attributes.printShortDate(revocationDate)));
+
+				crlEntryAttributes.add(entryKey, entryReason);
+				X509ExtensionHelper.addAttributes(crlEntryAttributes, crlEntry);
+			}
+		}
 		return crlAttributes;
 	}
 

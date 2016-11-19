@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.jfx.store;
 
+import de.carne.certmgr.certs.x509.Attributes;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -45,6 +46,15 @@ public class AttributeModel {
 	public AttributeModel(String name, String value) {
 		this.nameProperty = new SimpleStringProperty(name);
 		this.valueProperty = new SimpleStringProperty(value);
+	}
+
+	/**
+	 * Construct {@code AttributeValue}.
+	 *
+	 * @param attributes The attribute's name and value.
+	 */
+	public AttributeModel(Attributes attributes) {
+		this(attributes.name(), attributes.value());
 	}
 
 	/**

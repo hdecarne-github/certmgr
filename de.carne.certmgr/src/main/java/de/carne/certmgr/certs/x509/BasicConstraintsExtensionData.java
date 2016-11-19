@@ -123,12 +123,12 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.addChild(AttributesI18N.formatSTR_BASICCONSTRAINTS_CA(), Boolean.toString(this.ca));
+		extensionAttributes.add(AttributesI18N.formatSTR_BC_CA(), Boolean.toString(this.ca));
 
 		if (this.pathLenConstraint != null) {
 			int pathLenConstraintValue = this.pathLenConstraint.intValue();
 
-			extensionAttributes.addChild(AttributesI18N.formatSTR_BASICCONSTRAINTS_PATHLENCONSTRAINT(),
+			extensionAttributes.add(AttributesI18N.formatSTR_BC_PATHLENCONSTRAINT(),
 					(pathLenConstraintValue >= 0 ? Integer.toString(this.pathLenConstraint.intValue()) : "\u221E"));
 		}
 		return extensionAttributes;

@@ -28,7 +28,7 @@ import de.carne.certmgr.certs.asn1.ASN1Data;
 /**
  * Sequence of general name object.
  */
-public class GeneralNames extends ASN1Data {
+public class GeneralNames extends ASN1Data implements AttributesContent {
 
 	private List<GeneralName> names = new ArrayList<>();
 
@@ -67,6 +67,16 @@ public class GeneralNames extends ASN1Data {
 	 */
 	public List<GeneralName> getNames() {
 		return Collections.unmodifiableList(this.names);
+	}
+
+	@Override
+	public void addAttributes(Attributes attributes) {
+		int nameIndex = 0;
+
+		for (GeneralName name : this.names) {
+			attributes.add(AttributesI18N.formatSTR_GENERALNAME(nameIndex), name.toString());
+			nameIndex++;
+		}
 	}
 
 }

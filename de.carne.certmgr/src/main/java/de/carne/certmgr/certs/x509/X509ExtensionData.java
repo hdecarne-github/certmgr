@@ -27,7 +27,7 @@ import de.carne.certmgr.certs.asn1.OIDs;
 /**
  * Base class for X.509 extension object data.
  */
-public abstract class X509ExtensionData extends ASN1Data {
+public abstract class X509ExtensionData extends ASN1Data implements AttributesProvider {
 
 	private final String oid;
 
@@ -119,11 +119,7 @@ public abstract class X509ExtensionData extends ASN1Data {
 		this.critical = critical;
 	}
 
-	/**
-	 * Get this extension data's {@link Attributes}.
-	 *
-	 * @return This extension data's {@link Attributes}.
-	 */
+	@Override
 	public Attributes toAttributes() {
 		String extensionName = OIDs.toString(this.oid);
 

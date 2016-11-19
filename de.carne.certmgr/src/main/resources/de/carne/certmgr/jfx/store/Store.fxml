@@ -259,9 +259,9 @@
       </SplitPane>
       <HBox VBox.vgrow="NEVER">
          <children>
-            <Label fx:id="ctlStoreStatusLabel" maxWidth="1.7976931348623157E308" text="%STR_STORE_STATUS_NONE" HBox.hgrow="ALWAYS" />
+            <Label fx:id="ctlStoreStatusLabel" maxWidth="1.7976931348623157E308" text="%STR_TEXT_STORE_STATUS_NONE" HBox.hgrow="ALWAYS" />
             <Separator orientation="VERTICAL" HBox.hgrow="NEVER" />
-            <Label fx:id="ctlHeapStatusLabel" text="%STR_HEAP_STATUS" HBox.hgrow="NEVER" />
+            <Label fx:id="ctlHeapStatusLabel" text="%STR_TEXT_HEAP_STATUS" HBox.hgrow="NEVER" />
          </children>
          <padding>
             <Insets left="2.0" right="2.0" />

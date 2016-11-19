@@ -26,14 +26,14 @@ import de.carne.certmgr.certs.asn1.ASN1Data;
 /**
  * Distribution point name object.
  */
-public class DistributionPointName extends ASN1Data {
+public class DistributionPointName extends ASN1Data implements AttributesContent {
 
 	private final GeneralNames fullName;
 
 	/**
-	 * Construct {@code DistributionPoint}.
+	 * Construct {@code DistributionPointName}.
 	 *
-	 * @param type The name type.
+	 * @param fullName The names.
 	 */
 	public DistributionPointName(GeneralNames fullName) {
 		assert fullName != null;
@@ -42,10 +42,10 @@ public class DistributionPointName extends ASN1Data {
 	}
 
 	/**
-	 * Decode {@code DistributionPoint} object from an ASN.1 data object.
+	 * Decode {@code DistributionPointName} object from an ASN.1 data object.
 	 *
 	 * @param primitive The ASN.1 data object to decode.
-	 * @return The decoded distribution point object.
+	 * @return The decoded distribution point name object.
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static DistributionPointName decode(ASN1Primitive primitive) throws IOException {
@@ -55,14 +55,24 @@ public class DistributionPointName extends ASN1Data {
 
 		switch (taggedObjectTag) {
 		case 0:
+			assert fullName == null;
+
 			fullName = GeneralNames.decode(taggedObject.getObject());
 			break;
 		case 1:
+			// TODO
 			break;
 		default:
 			throw new IOException("Unsupported tag: " + taggedObjectTag);
 		}
 		return new DistributionPointName(fullName);
+	}
+
+	@Override
+	public void addAttributes(Attributes attributes) {
+		if (this.fullName != null) {
+			attributes.add(this.fullName);
+		}
 	}
 
 }
