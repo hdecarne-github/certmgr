@@ -16,6 +16,8 @@
  */
 package de.carne.certmgr.certs;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Callback interface used to query passwords on demand.
  */
@@ -29,6 +31,7 @@ public interface PasswordCallback {
 	 * @return The provided password, or {@code null} if the password query was
 	 *         cancelled.
 	 */
+	@Nullable
 	char[] queryPassword(String resource);
 
 	/**
@@ -40,6 +43,7 @@ public interface PasswordCallback {
 	 * @return The provided password or {@code null} if the password query was
 	 *         cancelled.
 	 */
+	@Nullable
 	char[] requeryPassword(String resource, Throwable cause);
 
 }

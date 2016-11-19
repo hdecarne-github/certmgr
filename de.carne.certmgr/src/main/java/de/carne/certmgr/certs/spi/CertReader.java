@@ -19,6 +19,8 @@ package de.carne.certmgr.certs.spi;
 import java.io.IOException;
 import java.util.List;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaderInput;
 import de.carne.certmgr.certs.io.CertReaders;
@@ -46,6 +48,7 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
+	@Nullable
 	List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException;
 
 }

@@ -24,6 +24,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
 
@@ -122,7 +123,7 @@ public class PKCS10CertificateRequest {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return obj instanceof PKCS10CertificateRequest && this.csr.equals(((PKCS10CertificateRequest) obj).csr);
 	}
 

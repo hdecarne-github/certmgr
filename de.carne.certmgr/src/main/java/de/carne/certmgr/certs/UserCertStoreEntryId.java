@@ -18,6 +18,8 @@ package de.carne.certmgr.certs;
 
 import java.util.Objects;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import de.carne.util.Strings;
 
 /**
@@ -64,7 +66,7 @@ public final class UserCertStoreEntryId {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		boolean equal = false;
 
 		if (this == obj) {

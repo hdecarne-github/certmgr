@@ -46,6 +46,7 @@ import org.bouncycastle.pkcs.PKCS12SafeBagFactory;
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
 import org.bouncycastle.pkcs.PKCSException;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
@@ -139,6 +140,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		return pkcs12Objects;
 	}
 
+	@Nullable
 	private PKCS12PfxPdu readPKCS12(CertReaderInput input) {
 		PKCS12PfxPdu pkcs12 = null;
 
@@ -153,7 +155,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	private InputDecryptorProvider buildInputDecryptorProvider(String resource, PasswordCallback password,
-			PKCSException decryptException) throws IOException {
+			@Nullable PKCSException decryptException) throws IOException {
 		char[] passwordChars = (decryptException != null ? password.requeryPassword(resource, decryptException)
 				: password.queryPassword(resource));
 
@@ -224,8 +226,8 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		return privateKey;
 	}
 
-	private void resolveKey(KeyPairResolver<ASN1Encodable> keyPairs, Attribute[] safeBagAttributes, PublicKey publicKey,
-			PrivateKey privateKey) {
+	private void resolveKey(KeyPairResolver<ASN1Encodable> keyPairs, Attribute[] safeBagAttributes,
+			@Nullable PublicKey publicKey, @Nullable PrivateKey privateKey) {
 		for (Attribute safeBagAttribute : safeBagAttributes) {
 			if (safeBagAttribute.getAttrType().equals(PKCS12SafeBag.localKeyIdAttribute)) {
 				ASN1Encodable keyId = safeBagAttribute.getAttributeValues()[0];

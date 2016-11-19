@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import de.carne.certmgr.certs.spi.CertReader;
 
 /**
@@ -50,6 +52,7 @@ public abstract class CertReaderInput implements Closeable {
 	 * @return {@link InputStream} access to the input data.
 	 * @throws IOException if an I/O error occurs while accessing the data.
 	 */
+	@Nullable
 	public InputStream stream() throws IOException {
 		return null;
 	}

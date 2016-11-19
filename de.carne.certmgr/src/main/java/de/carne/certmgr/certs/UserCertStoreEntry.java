@@ -24,6 +24,8 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.util.Exceptions;
@@ -255,7 +257,7 @@ public abstract class UserCertStoreEntry {
 
 	/**
 	 * Get this entry's key algorithm.
-	 * 
+	 *
 	 * @return This entry's key algorithm or {@code null} if the key algorithm
 	 *         could not be determined.
 	 */
@@ -278,7 +280,7 @@ public abstract class UserCertStoreEntry {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		boolean equal = false;
 
 		if (obj instanceof UserCertStoreEntry) {
