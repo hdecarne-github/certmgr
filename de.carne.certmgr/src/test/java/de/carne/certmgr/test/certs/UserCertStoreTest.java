@@ -21,6 +21,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
@@ -34,6 +35,7 @@ import org.junit.Test;
 import de.carne.certmgr.certs.NoPassword;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.UserCertStoreEntryId;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.net.SSLPeer.Protocol;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
@@ -129,6 +131,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(12, store.getEntries().size());
 			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
+			// Check preferences access
 			UserCertStorePreferences loadPreferences = store.storePreferences();
 
 			Assert.assertEquals(Integer.valueOf(365), loadPreferences.defaultCRTValidityPeriod.get());
@@ -154,9 +157,27 @@ public class UserCertStoreTest {
 			Assert.assertEquals(Integer.valueOf(521), getPreferences.defaultKeySize.get());
 			Assert.assertEquals("SHA256WITHECDSA", getPreferences.defaultSignatureAlgorithm.get());
 
+			// Import access (with already existing entries)
 			UserCertStore importStore = UserCertStore.createFromFiles(IOHelper.collectDirectoryFiles(testStorePath),
 					TestCerts.password());
 
+			for (UserCertStoreEntry importStoreEntry : importStore.getEntries()) {
+				store.importEntry(importStoreEntry, TestCerts.password(), "Imported");
+			}
+			Assert.assertEquals(12, store.size());
+
+			// Delete access
+			List<UserCertStoreEntryId> deleteIds = new ArrayList<>();
+
+			for (UserCertStoreEntry storeEntry : store.getEntries()) {
+				deleteIds.add(storeEntry.id());
+			}
+			for (UserCertStoreEntryId deleteId : deleteIds) {
+				store.deleteEntry(deleteId);
+			}
+			Assert.assertEquals(0, store.size());
+
+			// Import access (now with empty store)
 			for (UserCertStoreEntry importStoreEntry : importStore.getEntries()) {
 				store.importEntry(importStoreEntry, TestCerts.password(), "Imported");
 			}

@@ -230,12 +230,11 @@ public class StoreController extends StageController {
 
 		if (entry != null) {
 			Optional<ButtonType> confirmation = Alerts
-					.message(AlertType.CONFIRMATION, StoreI18N.formatSTR_MESSAGE_CONFIRM_DELETE(entry))
-					.showAndWait();
+					.message(AlertType.CONFIRMATION, StoreI18N.formatSTR_MESSAGE_CONFIRM_DELETE(entry)).showAndWait();
 
 			if (confirmation.isPresent() && confirmation.get().getButtonData() == ButtonData.OK_DONE) {
 				try {
-					this.storeProperty.get().deleteEntry(entry);
+					this.storeProperty.get().deleteEntry(entry.id());
 				} catch (IOException e) {
 					Alerts.unexpected(e).showAndWait();
 				}

@@ -321,17 +321,17 @@ public final class UserCertStore {
 	/**
 	 * Delete a store entry.
 	 *
-	 * @param entry The entry to delete.
+	 * @param entryId The entry id to delete.
 	 * @throws IOException if an I/O error occurs during deletion.
 	 */
-	public synchronized void deleteEntry(UserCertStoreEntry entry) throws IOException {
-		assert entry != null;
+	public synchronized void deleteEntry(UserCertStoreEntryId entryId) throws IOException {
+		assert entryId != null;
 
-		if (!this.storeEntries.containsKey(entry.id())) {
-			throw new IllegalArgumentException("Invalid entry: " + entry);
+		if (!this.storeEntries.containsKey(entryId)) {
+			throw new IllegalArgumentException("Invalid entry: " + entryId);
 		}
-		this.storeEntries.remove(entry.id());
-		this.storeHandler.deleteEntry(entry.id());
+		this.storeEntries.remove(entryId);
+		this.storeHandler.deleteEntry(entryId);
 		resetIssuers();
 	}
 
@@ -559,13 +559,8 @@ public final class UserCertStore {
 		for (Entry entry : this.storeEntries.values()) {
 			UserCertStoreEntry issuer = entry.issuer();
 
-			if (issuer != null && !entry.isSelfSigned()) {
-				if (issuer.isExternal()) {
-					entry.setIssuer(null);
-					externalIssuers.put(issuer.dn(), this.storeEntries.get(issuer.id()));
-				} else if (!this.storeEntries.containsKey(issuer.id())) {
-					entry.setIssuer(null);
-				}
+			if (issuer != null && issuer.isExternal()) {
+				externalIssuers.put(issuer.dn(), this.storeEntries.get(issuer.id()));
 			}
 		}
 
@@ -573,7 +568,9 @@ public final class UserCertStore {
 		Set<UserCertStoreEntryId> usedExternalIssuerIds = new HashSet<>(this.storeEntries.size());
 
 		for (Entry entry : this.storeEntries.values()) {
-			if (entry.issuer() == null) {
+			UserCertStoreEntry issuer = entry.issuer();
+
+			if (issuer == null) {
 				if (entry.hasCRT()) {
 					X509Certificate entryCRT = entry.getCRT();
 					Entry foundIssuerEntry = null;
@@ -606,6 +603,8 @@ public final class UserCertStore {
 					// Without a CRT an entry is always self-signed
 					entry.setIssuer(entry);
 				}
+			} else if (issuer.isExternal()) {
+				usedExternalIssuerIds.add(issuer.id());
 			}
 		}
 
@@ -613,9 +612,7 @@ public final class UserCertStore {
 		for (Entry externalIssuer : externalIssuers.values()) {
 			UserCertStoreEntryId externalIssuerId = externalIssuer.id();
 
-			if (usedExternalIssuerIds.contains(externalIssuerId)) {
-				this.storeEntries.put(externalIssuerId, externalIssuer);
-			} else {
+			if (!usedExternalIssuerIds.contains(externalIssuer.id())) {
 				this.storeEntries.remove(externalIssuerId);
 			}
 		}
