@@ -91,6 +91,11 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 		return new TransientCSREntry(csr);
 	}
 
+	@Override
+	public void deleteEntry(UserCertStoreEntryId id) throws IOException {
+		// Nothing to do here
+	}
+
 	private static class TransientCSREntry implements CSREntry {
 
 		private final PKCS10CertificateRequest csr;

@@ -303,6 +303,23 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Delete a store entry.
+	 * 
+	 * @param entry The entry to delete.
+	 * @throws IOException if an I/O error occurs during deletion.
+	 */
+	public synchronized void deleteEntry(UserCertStoreEntry entry) throws IOException {
+		assert entry != null;
+
+		if (!this.storeEntries.containsKey(entry.id())) {
+			throw new IllegalArgumentException("Invalid entry: " + entry);
+		}
+		this.storeEntries.remove(entry.id());
+		this.storeHandler.deleteEntry(entry.id());
+		resetIssuers();
+	}
+
+	/**
 	 * Import an store entry from another store by merging the entry's
 	 * certificate objects.
 	 *

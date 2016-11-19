@@ -260,7 +260,7 @@ public class CertImportController extends StageController {
 	}
 
 	void onReloadTaskFailed(CreateStoreTask<?> task, Throwable e) {
-		Alerts.message(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e).showAndWait();
+		Alerts.error(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e).showAndWait();
 	}
 
 	@Override
@@ -436,7 +436,7 @@ public class CertImportController extends StageController {
 				});
 			}
 		} catch (IOException e) {
-			Alerts.message(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
+			Alerts.error(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
 

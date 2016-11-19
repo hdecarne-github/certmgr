@@ -147,6 +147,18 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		return new PersistentCRLEntry(id, crl, Files.getLastModifiedTime(entryPath));
 	}
 
+	@Override
+	public void deleteEntry(UserCertStoreEntryId id) throws IOException {
+		String alias = id.getAlias();
+
+		if (alias != null) {
+			Files.deleteIfExists(entryPath(DIR_CRT, alias, EXTENSION_CRT));
+			Files.deleteIfExists(entryPath(DIR_KEY, alias, EXTENSION_KEY));
+			Files.deleteIfExists(entryPath(DIR_CSR, alias, EXTENSION_CSR));
+			Files.deleteIfExists(entryPath(DIR_CRL, alias, EXTENSION_CRL));
+		}
+	}
+
 	private boolean isAliasInUse(String alias) {
 		return Files.exists(entryPath(DIR_CRT, alias, EXTENSION_CRT))
 				|| Files.exists(entryPath(DIR_KEY, alias, EXTENSION_KEY))

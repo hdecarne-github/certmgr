@@ -58,7 +58,10 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -223,7 +226,22 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdDeleteEntry(ActionEvent evt) {
+		UserCertStoreEntry entry = getSelectedStoreEntry();
 
+		if (entry != null) {
+			Optional<ButtonType> confirmation = Alerts
+					.message(AlertType.CONFIRMATION, StoreI18N.formatSTR_MESSAGE_CONFIRM_DELETE(entry))
+					.showAndWait();
+
+			if (confirmation.isPresent() && confirmation.get().getButtonData() == ButtonData.OK_DONE) {
+				try {
+					this.storeProperty.get().deleteEntry(entry);
+				} catch (IOException e) {
+					Alerts.unexpected(e).showAndWait();
+				}
+			}
+			updateStoreEntryView();
+		}
 	}
 
 	@FXML

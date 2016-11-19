@@ -54,4 +54,6 @@ abstract class UserCertStoreHandler {
 
 	public abstract CRLEntry createCRLEntry(UserCertStoreEntryId id, X509CRL crl) throws IOException;
 
+	public abstract void deleteEntry(UserCertStoreEntryId id) throws IOException;
+
 }
