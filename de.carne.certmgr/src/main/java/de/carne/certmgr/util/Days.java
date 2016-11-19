@@ -18,6 +18,8 @@ package de.carne.certmgr.util;
 
 import java.time.Period;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Utility class used to manage a period of days.
  * <p>
@@ -90,7 +92,7 @@ public class Days implements Comparable<Days> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return this == obj || (obj instanceof Days && count() == ((Days) obj).count());
 	}
 
