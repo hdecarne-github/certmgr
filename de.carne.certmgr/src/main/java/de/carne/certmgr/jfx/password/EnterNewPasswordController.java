@@ -16,7 +16,13 @@
  */
 package de.carne.certmgr.jfx.password;
 
+import java.util.Objects;
+
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.PasswordField;
 
 /**
@@ -29,6 +35,24 @@ public class EnterNewPasswordController extends PasswordController {
 
 	@FXML
 	PasswordField ctlPasswordInput2;
+
+	private void onOk(ActionEvent evt) {
+		String passwordInput1 = this.ctlPasswordInput1.getText();
+		String passwordInput2 = this.ctlPasswordInput2.getText();
+
+		if (!Objects.equals(passwordInput1, passwordInput2)) {
+			evt.consume();
+		}
+	}
+
+	@Override
+	protected void setupDialog(Dialog<PasswordResult> dialog) {
+		super.setupDialog(dialog);
+		((Button) lookupButton(ButtonType.YES)).setText(EnterNewPasswordI18N.formatSTR_LABEL_OK());
+		((Button) lookupButton(ButtonType.NO)).setText(EnterNewPasswordI18N.formatSTR_LABEL_CANCEL());
+		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterNewPasswordI18N.formatSTR_LABEL_CANCELALL());
+		addButtonEventFilter(ButtonType.YES, (evt) -> onOk(evt));
+	}
 
 	@Override
 	protected String getHeaderText(String resource) {
