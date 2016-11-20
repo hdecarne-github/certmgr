@@ -35,6 +35,7 @@
             <RowConstraints vgrow="NEVER" />
             <RowConstraints vgrow="NEVER" />
             <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
             <RowConstraints vgrow="ALWAYS" />
             <RowConstraints vgrow="NEVER" />
         </rowConstraints>
@@ -83,8 +84,10 @@
                   <ChoiceBox fx:id="ctlServerSourceProtocolInput" />
                </children>
             </HBox>
-            <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" onAction="#onCmdReload" text="%_STR_LABEL_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
-            <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="204.0" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6">
+            <RadioButton fx:id="ctlPlatformSourceOption" layoutX="14.0" layoutY="133.0" mnemonicParsing="false" text="%_STR_LABEL_PLATFORM" toggleGroup="$ImportSource" GridPane.rowIndex="5" />
+            <ChoiceBox fx:id="ctlPlatformSourceInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <RadioButton fx:id="ctlClipboardSourceOption" layoutX="12.0" layoutY="54.0" mnemonicParsing="false" onAction="#onCmdReload" text="%_STR_LABEL_CLIPBOARD" toggleGroup="$ImportSource" GridPane.rowIndex="6" />
+            <HBox alignment="CENTER_LEFT" layoutX="12.0" layoutY="204.0" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7">
                <children>
                   <ImageView fx:id="ctlStatusImage" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
                      <image>
@@ -103,7 +106,7 @@
                   </Button>
                </children>
             </HBox>
-            <TreeTableView fx:id="ctlImportEntryView" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS">
+            <TreeTableView fx:id="ctlImportEntryView" editable="true" prefHeight="200.0" prefWidth="200.0" showRoot="false" GridPane.columnSpan="2147483647" GridPane.hgrow="ALWAYS" GridPane.rowIndex="8" GridPane.vgrow="ALWAYS">
               <columns>
                 <TreeTableColumn fx:id="ctlImportEntryViewSelected" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="30.0" sortable="false" style="-fx-alignment: CENTER;">
                      <graphic>
@@ -117,7 +120,7 @@
                   <TreeTableColumn fx:id="ctlImportEntryViewCRL" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_CSR" />
               </columns>
             </TreeTableView>
-            <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="8">
+            <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="9">
                <children>
                   <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdImport" text="%_STR_BUTTON_IMPORT" />
                   <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />

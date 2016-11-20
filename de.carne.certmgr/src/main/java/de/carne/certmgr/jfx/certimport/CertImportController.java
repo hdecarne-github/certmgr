@@ -35,10 +35,12 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.net.SSLPeer;
+import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
+import de.carne.certmgr.util.DefaultSet;
 import de.carne.io.IOHelper;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
@@ -131,6 +133,12 @@ public class CertImportController extends StageController {
 	ChoiceBox<SSLPeer.Protocol> ctlServerSourceProtocolInput;
 
 	@FXML
+	RadioButton ctlPlatformSourceOption;
+
+	@FXML
+	ChoiceBox<PlatformKeyStore> ctlPlatformSourceInput;
+
+	@FXML
 	RadioButton ctlClipboardSourceOption;
 
 	@FXML
@@ -213,6 +221,8 @@ public class CertImportController extends StageController {
 			validateAndReloadURLSource();
 		} else if (this.ctlServerSourceOption.isSelected()) {
 			validateAndReloadServerSource();
+		} else if (this.ctlPlatformSourceOption.isSelected()) {
+			validateAndReloadPlatformSource();
 		} else if (this.ctlClipboardSourceOption.isSelected()) {
 			validateAndReloadClipboardSource();
 		}
@@ -279,6 +289,9 @@ public class CertImportController extends StageController {
 		this.ctlServerSourceProtocolInput.disableProperty()
 				.bind(Bindings.not(this.ctlServerSourceOption.selectedProperty()));
 		this.ctlServerSourceProtocolInput.getItems().addAll(SSLPeer.Protocol.values());
+		this.ctlPlatformSourceInput.disableProperty()
+				.bind(Bindings.not(this.ctlPlatformSourceOption.selectedProperty()));
+		setupPlatformSourceInput();
 		this.ctlImportEntryViewSelected
 				.setCellFactory(CheckBoxTreeTableCell.forTreeTableColumn(this.ctlImportEntryViewSelected));
 		this.ctlImportEntryViewSelected.setCellValueFactory(new TreeItemPropertyValueFactory<>("selected"));
@@ -294,6 +307,17 @@ public class CertImportController extends StageController {
 		this.ctlImportEntryView.setTreeColumn(this.ctlImportEntryViewDN);
 		this.ctlFileSourceOption.setSelected(true);
 		this.ctlServerSourceProtocolInput.setValue(SSLPeer.Protocol.SSL);
+	}
+
+	private void setupPlatformSourceInput() {
+		DefaultSet<PlatformKeyStore> platformSources = PlatformKeyStore.getDefaultSet();
+
+		if (!platformSources.isEmpty()) {
+			this.ctlPlatformSourceInput.getItems().addAll(platformSources);
+			this.ctlPlatformSourceInput.setValue(platformSources.getDefault());
+		} else {
+			this.ctlPlatformSourceOption.setDisable(true);
+		}
 	}
 
 	/**
@@ -393,6 +417,24 @@ public class CertImportController extends StageController {
 		}
 	}
 
+	private void validateAndReloadPlatformSource() {
+		try {
+			PlatformKeyStore platformSource = validatePlatformSourceInput();
+
+			getExecutorService().submit(new CreateStoreTask<PlatformKeyStore>(platformSource) {
+
+				@Override
+				protected UserCertStore createStore(PlatformKeyStore params) throws IOException {
+					return UserCertStore.createFromPlatformKeyStore(params,
+							PasswordDialog.enterPassword(CertImportController.this));
+				}
+
+			});
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		}
+	}
+
 	private void validateAndReloadClipboardSource() {
 		try {
 			Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -423,6 +465,7 @@ public class CertImportController extends StageController {
 
 				});
 			} else if (clipboard.hasString()) {
+
 				String stringSource = clipboard.getString();
 
 				getExecutorService().submit(new CreateStoreTask<String>(stringSource) {
@@ -435,7 +478,9 @@ public class CertImportController extends StageController {
 
 				});
 			}
-		} catch (IOException e) {
+		} catch (
+
+		IOException e) {
 			Alerts.error(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
 		}
 	}
@@ -500,6 +545,11 @@ public class CertImportController extends StageController {
 			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
 		}
 		return new ServerParams(protocol, host, port);
+	}
+
+	private PlatformKeyStore validatePlatformSourceInput() throws ValidationException {
+		return InputValidator.notNull(this.ctlPlatformSourceInput.getValue(),
+				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_PLATFORMKEYSTORE());
 	}
 
 	private Set<UserCertStoreEntry> validateImportSelection() throws ValidationException {
