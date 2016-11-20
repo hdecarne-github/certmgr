@@ -625,7 +625,7 @@ public final class UserCertStore {
 			try {
 				crt.verify(issuerCRT.getPublicKey());
 				isIssuedBy = true;
-			} catch (SignatureException e) {
+			} catch (SignatureException | InvalidKeyException e) {
 				Exceptions.ignore(e);
 			} catch (GeneralSecurityException e) {
 				throw new CertProviderException(e);

@@ -18,11 +18,13 @@ package de.carne.certmgr.jfx.password;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
 import de.carne.util.Exceptions;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.util.Callback;
@@ -35,10 +37,12 @@ public final class PasswordDialog implements PasswordCallback {
 
 	private final StageController owner;
 	private final Class<? extends PasswordController> controllerClass;
+	private boolean cancelAll = false;
+	private char[] rememberedPassword = null;
 
-	private PasswordDialog(StageController owner, boolean newPassword) {
+	private PasswordDialog(StageController owner, Class<? extends PasswordController> passwordController) {
 		this.owner = owner;
-		this.controllerClass = (newPassword ? EnterNewPasswordController.class : EnterPasswordController.class);
+		this.controllerClass = passwordController;
 	}
 
 	/**
@@ -48,7 +52,7 @@ public final class PasswordDialog implements PasswordCallback {
 	 * @return The created {@link PasswordCallback}.
 	 */
 	public static PasswordDialog enterPassword(StageController owner) {
-		return new PasswordDialog(owner, false);
+		return new PasswordDialog(owner, EnterPasswordController.class);
 	}
 
 	/**
@@ -58,85 +62,89 @@ public final class PasswordDialog implements PasswordCallback {
 	 * @return The created {@link PasswordCallback}.
 	 */
 	public static PasswordDialog enterNewPassword(StageController owner) {
-		return new PasswordDialog(owner, true);
+		return new PasswordDialog(owner, EnterNewPasswordController.class);
 	}
 
 	@Override
 	public char[] queryPassword(String resource) {
-		return PlatformHelper.runLater(() -> queryPasswordDialog(resource));
+		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, null));
 	}
 
 	@Override
 	public char[] requeryPassword(String resource, Throwable cause) {
-		return PlatformHelper.runLater(() -> requeryPasswordDialog(resource, cause));
+		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, cause));
 	}
 
-	private char[] queryPasswordDialog(String resource) {
-		char[] password = null;
+	private char[] queryPasswordHelper(Supplier<PasswordResult> query) {
+		PasswordResult passwordResult;
+
+		if (this.cancelAll) {
+			passwordResult = PasswordResult.CANCEL;
+		} else if (this.rememberedPassword != null) {
+			passwordResult = new PasswordResult(ButtonType.YES, this.rememberedPassword, true);
+		} else {
+			passwordResult = PlatformHelper.runLater(query);
+		}
+
+		ButtonData dialogResultData = passwordResult.dialogResult().getButtonData();
+
+		if (dialogResultData == ButtonData.YES) {
+			this.cancelAll = false;
+			this.rememberedPassword = (passwordResult.rememberPassword() ? passwordResult.password() : null);
+		} else if (dialogResultData == ButtonData.NO) {
+			this.cancelAll = false;
+			this.rememberedPassword = null;
+		} else {
+			this.cancelAll = true;
+			this.rememberedPassword = null;
+		}
+		return passwordResult.password();
+	}
+
+	private PasswordResult queryPasswordDialogHelper(String resource, Throwable cause) {
+		PasswordResult passwordResult = PasswordResult.CANCEL;
 
 		try {
-			PasswordController controller = this.owner.loadDialog((c) -> new PasswordInputDialog(c),
-					this.controllerClass);
-
-			controller.setResource(resource);
-
-			Optional<String> dialogResult = controller.showAndWait();
+			Optional<PasswordResult> dialogResult = this.owner
+					.loadDialog((c) -> new PasswordInputDialog(c), this.controllerClass)
+					.init(resource, this.rememberedPassword != null, cause).showAndWait();
 
 			if (dialogResult.isPresent()) {
-				password = dialogResult.get().toCharArray();
+				passwordResult = dialogResult.get();
 			}
 		} catch (IOException e) {
 			Exceptions.warn(e);
 		}
-		return password;
+		return passwordResult;
 	}
 
-	private char[] requeryPasswordDialog(String resource, Throwable cause) {
-		char[] password = null;
-
-		try {
-			PasswordController controller = this.owner.loadDialog((c) -> new PasswordInputDialog(c),
-					this.controllerClass);
-
-			controller.setResource(resource);
-			controller.setPasswordException(cause);
-
-			Optional<String> dialogResult = controller.showAndWait();
-
-			if (dialogResult.isPresent()) {
-				password = dialogResult.get().toCharArray();
-			}
-		} catch (IOException e) {
-			Exceptions.warn(e);
-		}
-		return password;
-	}
-
-	private class PasswordInputDialog extends Dialog<String> {
+	private class PasswordInputDialog extends Dialog<PasswordResult> {
 
 		private final PasswordController controller;
 
 		PasswordInputDialog(PasswordController controller) {
 			this.controller = controller;
-			setResultConverter(new Callback<ButtonType, String>() {
+			setResultConverter(new Callback<ButtonType, PasswordResult>() {
 
 				@Override
-				public String call(ButtonType param) {
+				public PasswordResult call(ButtonType param) {
 					return getPasswordInputResult(param);
 				}
 
 			});
 		}
 
-		String getPasswordInputResult(ButtonType button) {
-			String passwordInput;
+		PasswordResult getPasswordInputResult(ButtonType button) {
+			PasswordResult passwordResult = PasswordResult.CANCEL;
+			ButtonData dialogResultData = button.getButtonData();
 
-			if (ButtonType.NEXT.equals(button) || ButtonType.APPLY.equals(button)) {
-				passwordInput = this.controller.getPasswordInput();
-			} else {
-				passwordInput = null;
+			if (dialogResultData == ButtonData.YES) {
+				passwordResult = new PasswordResult(button, this.controller.getPasswordInput().toCharArray(),
+						this.controller.getRememberPasswordOption());
+			} else if (dialogResultData == ButtonData.NO) {
+				passwordResult = new PasswordResult(button, null, this.controller.getRememberPasswordOption());
 			}
-			return passwordInput;
+			return passwordResult;
 		}
 
 	}

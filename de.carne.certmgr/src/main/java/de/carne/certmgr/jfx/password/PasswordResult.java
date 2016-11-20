@@ -16,24 +16,34 @@
  */
 package de.carne.certmgr.jfx.password;
 
-import de.carne.jfx.scene.control.DialogController;
-import de.carne.jfx.util.DialogHelper;
+import javafx.scene.control.ButtonType;
 
-/**
- * Base class for all password controllers.
- */
-abstract class PasswordController extends DialogController<PasswordResult> {
+final class PasswordResult {
 
-	public PasswordController init(String resource, boolean rememberPassword, Throwable passwordException) {
-		getUI().setHeaderText(getHeaderText(resource));
-		DialogHelper.setExceptionContent(getUI(), passwordException);
-		return this;
+	public static final PasswordResult CANCEL = new PasswordResult(ButtonType.CANCEL, null, false);
+
+	private final ButtonType dialogResult;
+
+	private final char[] password;
+
+	private final boolean rememberPassword;
+
+	PasswordResult(ButtonType dialogResult, char[] password, boolean rememberPassword) {
+		this.dialogResult = dialogResult;
+		this.password = password;
+		this.rememberPassword = rememberPassword;
 	}
 
-	protected abstract String getHeaderText(String resource);
+	public ButtonType dialogResult() {
+		return this.dialogResult;
+	}
 
-	protected abstract String getPasswordInput();
+	public char[] password() {
+		return this.password;
+	}
 
-	protected abstract boolean getRememberPasswordOption();
+	public boolean rememberPassword() {
+		return this.rememberPassword;
+	}
 
 }

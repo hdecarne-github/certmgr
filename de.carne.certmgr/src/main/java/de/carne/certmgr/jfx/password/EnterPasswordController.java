@@ -21,7 +21,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 
 /**
- *
+ * Controller for entering an existing password.
  */
 public class EnterPasswordController extends PasswordController {
 
@@ -32,6 +32,12 @@ public class EnterPasswordController extends PasswordController {
 	CheckBox ctlRememberPassword;
 
 	@Override
+	public PasswordController init(String resource, boolean rememberPassword, Throwable passwordException) {
+		this.ctlRememberPassword.setSelected(rememberPassword);
+		return super.init(resource, rememberPassword, passwordException);
+	}
+
+	@Override
 	protected String getHeaderText(String resource) {
 		return EnterPasswordI18N.formatSTR_LABEL_ENTER_PASSWORD_HEADER(resource);
 	}
@@ -39,6 +45,11 @@ public class EnterPasswordController extends PasswordController {
 	@Override
 	protected String getPasswordInput() {
 		return this.ctlPasswordInput.getText();
+	}
+
+	@Override
+	protected boolean getRememberPasswordOption() {
+		return this.ctlRememberPassword.isSelected();
 	}
 
 }

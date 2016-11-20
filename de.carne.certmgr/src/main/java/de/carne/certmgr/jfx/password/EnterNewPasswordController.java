@@ -20,7 +20,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 
 /**
- *
+ * Controller for entering a new password.
  */
 public class EnterNewPasswordController extends PasswordController {
 
@@ -32,13 +32,17 @@ public class EnterNewPasswordController extends PasswordController {
 
 	@Override
 	protected String getHeaderText(String resource) {
-		// TODO Auto-generated method stub
-		return null;
+		return EnterNewPasswordI18N.formatSTR_LABEL_ENTER_NEWPASSWORD_HEADER(resource);
 	}
 
 	@Override
 	protected String getPasswordInput() {
 		return this.ctlPasswordInput1.getText();
+	}
+
+	@Override
+	protected boolean getRememberPasswordOption() {
+		return false;
 	}
 
 }
