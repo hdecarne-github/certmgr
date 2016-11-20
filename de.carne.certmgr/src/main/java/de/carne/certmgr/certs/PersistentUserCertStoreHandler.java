@@ -123,8 +123,12 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 	@Override
 	public KeyEntry createKeyEntry(UserCertStoreEntryId id, KeyPair key, PasswordCallback password) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		Path entryPath = entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY);
+
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+			PEM_IO.write(output, key, id.getAlias(), password);
+		}
+		return new PersistentKeyEntry(id, key, Files.getLastModifiedTime(entryPath));
 	}
 
 	@Override
