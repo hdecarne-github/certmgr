@@ -41,7 +41,7 @@ public final class X509CRLHelper {
 	public static Attributes toAttributes(X509CRL crl) {
 		assert crl != null;
 
-		Attributes crlAttributes = new Attributes(AttributesI18N.formatSTR_CRL(), null);
+		Attributes crlAttributes = new Attributes(AttributesI18N.formatSTR_CRL());
 
 		crlAttributes.add(AttributesI18N.formatSTR_CRL_VERSION(), Integer.toString(crl.getVersion()));
 		crlAttributes.add(AttributesI18N.formatSTR_CRL_THISUPDATE(), Attributes.printShortDate(crl.getThisUpdate()));

@@ -33,7 +33,7 @@ public final class X509CertificateHelper {
 	 * @return The CRT object's attributes.
 	 */
 	public static Attributes toAttributes(X509Certificate crt) {
-		Attributes crtAttributes = new Attributes(AttributesI18N.formatSTR_CRT(), null);
+		Attributes crtAttributes = new Attributes(AttributesI18N.formatSTR_CRT());
 
 		crtAttributes.add(AttributesI18N.formatSTR_CRT_VERSION(), Integer.toString(crt.getVersion()));
 		crtAttributes.add(AttributesI18N.formatSTR_CRT_SERIALNUMBER(), crt.getSerialNumber().toString());

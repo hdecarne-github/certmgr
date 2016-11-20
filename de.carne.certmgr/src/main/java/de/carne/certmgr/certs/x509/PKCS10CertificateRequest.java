@@ -19,14 +19,28 @@ package de.carne.certmgr.certs.x509;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+import java.security.cert.X509Extension;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.bouncycastle.asn1.ASN1Boolean;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.pkcs.Attribute;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
+import de.carne.certmgr.certs.asn1.ASN1Data;
+import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.certmgr.util.Keys;
 
 /**
  * This class represents a PKCS#10 Certificate Signing Request (CSR) object.
@@ -37,18 +51,21 @@ import de.carne.certmgr.certs.CertProviderException;
  * In the current implementation this class is wrapper around BouncyCastle's
  * {@link PKCS10CertificationRequest} class.
  */
-public class PKCS10CertificateRequest {
+public class PKCS10CertificateRequest extends ASN1Data implements X509Extension {
 
 	private final JcaPKCS10CertificationRequest csr;
-
 	private final X500Principal subject;
-
 	private final PublicKey publicKey;
+	private final Map<String, byte[]> criticalExtensions;
+	private final Map<String, byte[]> nonCriticalExtensions;
 
-	private PKCS10CertificateRequest(JcaPKCS10CertificationRequest csr, X500Principal subject, PublicKey publicKey) {
+	private PKCS10CertificateRequest(JcaPKCS10CertificationRequest csr, X500Principal subject, PublicKey publicKey,
+			Map<String, byte[]> criticalExtensions, Map<String, byte[]> nonCriticalExtensions) {
 		this.csr = csr;
 		this.subject = subject;
 		this.publicKey = publicKey;
+		this.criticalExtensions = criticalExtensions;
+		this.nonCriticalExtensions = nonCriticalExtensions;
 	}
 
 	/**
@@ -63,6 +80,8 @@ public class PKCS10CertificateRequest {
 		JcaPKCS10CertificationRequest csr;
 		X500Principal subject;
 		PublicKey publicKey;
+		Map<String, byte[]> criticalExtensions = new HashMap<>();
+		Map<String, byte[]> nonCriticalExtensions = new HashMap<>();
 
 		try {
 			if (pkcs10 instanceof JcaPKCS10CertificationRequest) {
@@ -72,10 +91,44 @@ public class PKCS10CertificateRequest {
 			}
 			subject = new X500Principal(csr.getSubject().getEncoded());
 			publicKey = csr.getPublicKey();
+
+			Attribute[] extensionAttributes = csr.getAttributes(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest);
+
+			if (extensionAttributes != null) {
+				for (Attribute extensionAttribute : extensionAttributes) {
+					ASN1Encodable[] values = extensionAttribute.getAttributeValues();
+
+					if (values != null) {
+						for (ASN1Encodable value : values) {
+							ASN1Primitive[] extensionPrimitives = decodeSequence(value.toASN1Primitive(), 0,
+									Integer.MAX_VALUE);
+
+							for (ASN1Primitive extensionPrimitive : extensionPrimitives) {
+								ASN1Primitive[] sequence = decodeSequence(extensionPrimitive, 2, 3);
+								String extensionOID = decodePrimitive(sequence[0], ASN1ObjectIdentifier.class).getId();
+								boolean criticalFlag = true;
+								byte[] extensionData;
+
+								if (sequence.length == 3) {
+									criticalFlag = decodePrimitive(sequence[1], ASN1Boolean.class).isTrue();
+									extensionData = sequence[2].getEncoded();
+								} else {
+									extensionData = sequence[1].getEncoded();
+								}
+								if (criticalFlag) {
+									criticalExtensions.put(extensionOID, extensionData);
+								} else {
+									nonCriticalExtensions.put(extensionOID, extensionData);
+								}
+							}
+						}
+					}
+				}
+			}
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
-		return new PKCS10CertificateRequest(csr, subject, publicKey);
+		return new PKCS10CertificateRequest(csr, subject, publicKey, criticalExtensions, nonCriticalExtensions);
 	}
 
 	/**
@@ -86,6 +139,15 @@ public class PKCS10CertificateRequest {
 	 */
 	public PKCS10CertificationRequest toPKCS10() throws IOException {
 		return this.csr;
+	}
+
+	/**
+	 * Get the name of the signature algorithm used to sign the CSR.
+	 *
+	 * @return The name of the signature algorithm used to sign the CSR.
+	 */
+	public String getSigAlgName() {
+		return this.csr.getSignatureAlgorithm().toString();
 	}
 
 	/**
@@ -112,9 +174,33 @@ public class PKCS10CertificateRequest {
 	 * @return This CSR object's attributes.
 	 */
 	public Attributes toAttributes() {
-		Attributes csrAttributes = new Attributes(AttributesI18N.formatSTR_CSR(), null);
+		Attributes csrAttributes = new Attributes(AttributesI18N.formatSTR_CSR());
 
+		csrAttributes.add(AttributesI18N.formatSTR_CSR_SIGALG(), getSigAlgName());
+		csrAttributes.add(AttributesI18N.formatSTR_CSR_SUBJECTDN(), X500Names.toString(getSubjectX500Principal()));
+		csrAttributes.add(AttributesI18N.formatSTR_CSR_PUBLICKEY(), Keys.toString(getPublicKey()));
+		X509ExtensionHelper.addAttributes(csrAttributes, this);
 		return csrAttributes;
+	}
+
+	@Override
+	public boolean hasUnsupportedCriticalExtension() {
+		return false;
+	}
+
+	@Override
+	public Set<String> getCriticalExtensionOIDs() {
+		return Collections.unmodifiableSet(this.criticalExtensions.keySet());
+	}
+
+	@Override
+	public Set<String> getNonCriticalExtensionOIDs() {
+		return Collections.unmodifiableSet(this.nonCriticalExtensions.keySet());
+	}
+
+	@Override
+	public byte[] getExtensionValue(String oid) {
+		return this.criticalExtensions.getOrDefault(oid, this.nonCriticalExtensions.get(oid));
 	}
 
 	@Override

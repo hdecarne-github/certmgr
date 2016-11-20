@@ -38,6 +38,10 @@ public class Attributes {
 
 	private final List<Attributes> children = new ArrayList<>();
 
+	Attributes(String name) {
+		this(name, null);
+	}
+
 	Attributes(String name, String value) {
 		this.name = name;
 		this.value = value;
@@ -99,7 +103,7 @@ public class Attributes {
 	 * @return The store entry's attributes.
 	 */
 	public static Attributes toAttributes(UserCertStoreEntry entry) {
-		Attributes entryAttributes = new Attributes(AttributesI18N.formatSTR_ENTRY(), null);
+		Attributes entryAttributes = new Attributes(AttributesI18N.formatSTR_ENTRY());
 
 		entryAttributes.add(AttributesI18N.formatSTR_ENTRY_ID(), entry.id().toString());
 		entryAttributes.add(AttributesI18N.formatSTR_ENTRY_DN(), X500Names.toString(entry.dn()));
