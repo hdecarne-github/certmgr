@@ -71,6 +71,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
+	@Nullable
 	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
 		assert input != null;
 		assert password != null;

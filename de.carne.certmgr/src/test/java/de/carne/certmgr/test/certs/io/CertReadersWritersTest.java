@@ -64,7 +64,7 @@ public class CertReadersWritersTest {
 		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.simplePEMURL())) {
 			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
 
-			Assert.assertEquals(certObjects.size(), 2);
+			Assert.assertEquals(2, certObjects.size());
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}

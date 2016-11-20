@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * {@link CertReaderInput} implementation for accessing file based data.
  */
@@ -30,12 +32,17 @@ public class FileCertReaderInput extends CertReaderInput {
 
 	/**
 	 * Construct {@code FileCertReaderInput}.
-	 * 
+	 *
 	 * @param file The file to access.
 	 */
 	public FileCertReaderInput(Path file) {
 		super(file.toString());
 		this.file = file;
+	}
+
+	@Override
+	public @Nullable Path fileName() {
+		return this.file.getFileName();
 	}
 
 	@Override

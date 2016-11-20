@@ -19,6 +19,12 @@ package de.carne.certmgr.certs.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import de.carne.util.Strings;
 
 /**
  * {@link CertReaderInput} implementation for accessing URL based data.
@@ -35,6 +41,15 @@ public class URLCertReaderInput extends CertReaderInput {
 	public URLCertReaderInput(URL url) {
 		super(url.toExternalForm());
 		this.url = url;
+	}
+
+	@Override
+	public @Nullable Path fileName() {
+		String urlPath = this.url.getPath();
+		int nameIndex = urlPath.lastIndexOf('/');
+		String fileName = (nameIndex >= 0 ? urlPath.substring(nameIndex + 1) : urlPath);
+
+		return (Strings.notEmpty(fileName) ? Paths.get(fileName) : null);
 	}
 
 	@Override

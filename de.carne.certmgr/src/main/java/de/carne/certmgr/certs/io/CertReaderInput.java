@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -44,6 +45,16 @@ public abstract class CertReaderInput implements Closeable {
 		assert resource != null;
 
 		this.resource = resource;
+	}
+
+	/**
+	 * Get the file name associated with the input's data for reader matching.
+	 *
+	 * @return The file name associated with the input's data. May be
+	 *         {@code null} if the data cannot be associated with any file.
+	 */
+	public @Nullable Path fileName() {
+		return null;
 	}
 
 	/**

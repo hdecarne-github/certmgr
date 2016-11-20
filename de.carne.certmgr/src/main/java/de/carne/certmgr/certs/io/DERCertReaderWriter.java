@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -70,6 +71,9 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 
 		List<Object> certObjects = parseObjects(input, "CRL", BouncyCastleProvider.PROVIDER_NAME);
 
+		if (certObjects == null) {
+			certObjects = parseObjects(input, "CERTIFICATE", BouncyCastleProvider.PROVIDER_NAME);
+		}
 		return certObjects;
 	}
 
@@ -77,10 +81,17 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 		List<Object> certObjects = null;
 
 		try (InputStream stream = input.stream()) {
-			X509StreamParser parser = X509StreamParser.getInstance(type, provider);
+			if (stream != null) {
+				X509StreamParser parser = X509StreamParser.getInstance(type, provider);
 
-			parser.init(stream);
-			certObjects = new ArrayList<Object>(parser.readAll());
+				parser.init(stream);
+
+				Collection<Object> parsedObjects = parser.readAll();
+
+				if (parsedObjects != null && !parsedObjects.isEmpty()) {
+					certObjects = new ArrayList<>(parsedObjects);
+				}
+			}
 		} catch (StreamParsingException e) {
 			Exceptions.ignore(e);
 		} catch (GeneralSecurityException | NoSuchParserException e) {

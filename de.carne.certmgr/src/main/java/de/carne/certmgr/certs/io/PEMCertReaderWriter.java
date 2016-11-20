@@ -45,6 +45,7 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
@@ -97,6 +98,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
+	@Nullable
 	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
 		assert input != null;
 

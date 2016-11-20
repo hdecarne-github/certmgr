@@ -17,6 +17,11 @@
 package de.carne.certmgr.certs.io;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 import de.carne.certmgr.certs.PasswordCallback;
@@ -50,15 +55,44 @@ public final class CertReaders {
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	public static List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
+		Path inputFileName = input.fileName();
+		Deque<CertReader> readers = new ArrayDeque<>();
+
+		if (inputFileName != null) {
+			for (CertReader reader : REGISTERED.providers()) {
+				if (matchFileName(reader, inputFileName)) {
+					readers.addFirst(reader);
+				} else {
+					readers.addLast(reader);
+				}
+			}
+		} else {
+			readers.addAll(REGISTERED.providers());
+		}
+
 		List<Object> certObjects = null;
 
-		for (CertReader reader : REGISTERED.providers()) {
+		for (CertReader reader : readers) {
 			certObjects = reader.read(input, password);
 			if (certObjects != null) {
 				break;
 			}
 		}
 		return certObjects;
+	}
+
+	private static boolean matchFileName(CertReader reader, Path fileName) {
+		boolean matches = false;
+
+		for (String filterExtension : reader.fileExtensions()) {
+			PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + filterExtension);
+
+			if (matcher.matches(fileName)) {
+				matches = true;
+				break;
+			}
+		}
+		return matches;
 	}
 
 }
