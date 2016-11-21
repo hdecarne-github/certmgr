@@ -16,6 +16,8 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import de.carne.certmgr.util.Bytes;
+
 /**
  * Custom Extension data.
  * <p>
@@ -65,7 +67,7 @@ public class CustomExtensionData extends X509ExtensionData {
 		Attributes extensionAttributes = super.toAttributes();
 
 		extensionAttributes.add(AttributesI18N.formatSTR_EXTENSION_DATA(this.encoded.length),
-				Attributes.printBytes(this.encoded, 8));
+				Bytes.toString(this.encoded, 16));
 		return extensionAttributes;
 	}
 

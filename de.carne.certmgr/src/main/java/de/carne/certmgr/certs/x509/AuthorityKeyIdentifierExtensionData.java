@@ -22,6 +22,8 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
 
+import de.carne.certmgr.util.Bytes;
+
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.1">Authority
  * Key Identifier Extension</a> data.
@@ -96,8 +98,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.add(AttributesI18N.formatSTR_KEYIDENTIFIER(),
-				Attributes.printBytes(this.keyIdentifier));
+		extensionAttributes.add(AttributesI18N.formatSTR_KEYIDENTIFIER(), Bytes.toString(this.keyIdentifier));
 		return extensionAttributes;
 	}
 

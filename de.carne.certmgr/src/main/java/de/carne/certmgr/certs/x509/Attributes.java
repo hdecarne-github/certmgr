@@ -110,28 +110,6 @@ public class Attributes {
 		return entryAttributes;
 	}
 
-	static String printBytes(byte[] bytes) {
-		return printBytes(bytes, bytes.length);
-	}
-
-	static String printBytes(byte[] bytes, int len) {
-		StringBuilder buffer = new StringBuilder();
-		int byteIndex = 0;
-
-		for (byte b : bytes) {
-			if (byteIndex > 0) {
-				buffer.append(' ');
-			}
-			if (byteIndex >= len) {
-				buffer.append('\u2026');
-				break;
-			}
-			buffer.append(String.format("%02X", b & 0xff));
-			byteIndex++;
-		}
-		return buffer.toString();
-	}
-
 	static String printShortDate(Date date) {
 		return ShortDate.FORMAT.format(date);
 	}

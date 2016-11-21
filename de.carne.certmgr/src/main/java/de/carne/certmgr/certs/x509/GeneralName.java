@@ -53,7 +53,7 @@ public abstract class GeneralName extends ASN1Data {
 
 		switch (nameTypeTag) {
 		case GeneralNameType.OTHER_NAME_TAG:
-			name = null;
+			name = OtherName.decode(taggedObject.getObject());
 			break;
 		case GeneralNameType.RFC822_NAME_TAG:
 			name = StringName.decode(GeneralNameType.RFC822_NAME, taggedObject.getObject());
