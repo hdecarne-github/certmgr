@@ -53,22 +53,28 @@ public final class X509CRLHelper {
 		Set<? extends X509CRLEntry> crlEntries = crl.getRevokedCertificates();
 
 		if (crlEntries != null) {
-			Attributes crlEntryAttributes = crlAttributes.add(AttributesI18N.formatSTR_CRL_ENTRIES());
+			int entryIndex = 0;
+
 			for (X509CRLEntry crlEntry : crlEntries) {
 				BigInteger serial = crlEntry.getSerialNumber();
 				X500Principal issuer = crlEntry.getCertificateIssuer();
-				String entryKey = (issuer != null
-						? AttributesI18N.formatSTR_CRL_ENTRY_KEY_INDIRECT(Attributes.printSerial(serial), issuer)
-						: AttributesI18N.formatSTR_CRL_ENTRY_KEY(Attributes.printSerial(serial)));
-				CRLReason revocationReason = crlEntry.getRevocationReason();
+				String entrySerial = (issuer != null
+						? AttributesI18N.formatSTR_CRL_ENTRY_SERIAL_INDIRECT(Attributes.printSerial(serial), issuer)
+						: AttributesI18N.formatSTR_CRL_ENTRY_SERIAL(Attributes.printSerial(serial)));
+				Attributes crlEntryAttributes = crlAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY(entryIndex),
+						entrySerial);
 				Date revocationDate = crlEntry.getRevocationDate();
-				String entryReason = (revocationReason != null
-						? AttributesI18N.formatSTR_CRL_ENTRY_REASON(revocationReason.name(),
-								Attributes.printShortDate(revocationDate))
-						: AttributesI18N.formatSTR_CRL_ENTRY_REASON_NULL(Attributes.printShortDate(revocationDate)));
 
-				crlEntryAttributes.add(entryKey, entryReason);
+				crlEntryAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY_DATE(),
+						Attributes.printShortDate(revocationDate));
+
+				CRLReason revocationReason = crlEntry.getRevocationReason();
+
+				if (revocationReason != null) {
+					crlEntryAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY_REASON(), revocationReason.name());
+				}
 				X509ExtensionHelper.addAttributes(crlEntryAttributes, crlEntry);
+				entryIndex++;
 			}
 		}
 		return crlAttributes;

@@ -38,20 +38,15 @@ import javafx.scene.control.TreeTableView;
  */
 public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntryModel> {
 
-	private class TreeItemComparator implements Comparator<TreeItem<T>> {
-
-		TreeItemComparator() {
-			// Just to make the construct visible to outer class
-		}
+	private final Comparator<TreeItem<T>> comparator = new Comparator<TreeItem<T>>() {
 
 		@Override
 		public int compare(TreeItem<T> o1, TreeItem<T> o2) {
 			return o1.getValue().compareTo(o2.getValue());
 		}
 
-	}
+	};
 
-	private final TreeItemComparator comparator = new TreeItemComparator();
 	private final TreeTableView<T> treeTableView;
 	private final Function<UserCertStoreEntry, T> modelFactory;
 
