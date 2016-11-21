@@ -95,7 +95,7 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 		Map<UserCertStoreEntry, TreeItem<T>> itemsToUpdate = new HashMap<>(items.size());
 
 		for (TreeItem<T> item : items) {
-			if (entries.contains(item.getValue())) {
+			if (entries.contains(item.getValue().getEntry())) {
 				// entry does still exist -> remember for update
 				itemsToUpdate.put(item.getValue().getEntry(), item);
 			} else {
