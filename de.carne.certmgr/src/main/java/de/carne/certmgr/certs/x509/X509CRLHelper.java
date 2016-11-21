@@ -71,7 +71,8 @@ public final class X509CRLHelper {
 				CRLReason revocationReason = crlEntry.getRevocationReason();
 
 				if (revocationReason != null) {
-					crlEntryAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY_REASON(), revocationReason.name());
+					crlEntryAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY_REASON(),
+							ReasonFlag.fromValue(revocationReason.ordinal()).name());
 				}
 				X509ExtensionHelper.addAttributes(crlEntryAttributes, crlEntry);
 				entryIndex++;
