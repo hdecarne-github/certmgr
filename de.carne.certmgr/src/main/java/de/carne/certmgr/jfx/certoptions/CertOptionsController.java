@@ -182,10 +182,15 @@ public class CertOptionsController extends StageController {
 		this.storePreferences = this.store.storePreferences();
 		this.storeEntry = storeEntryParam;
 		this.expertMode = expertModeParam;
+		initExpertMode();
 		initCertificateNames();
 		initKeyAlgOptions();
 		initSignerOptions();
 		return this;
+	}
+
+	private void initExpertMode() {
+		this.ctlKeySizeOption.setEditable(this.expertMode);
 	}
 
 	private void initCertificateNames() {

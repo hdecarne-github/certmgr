@@ -32,6 +32,6 @@ public final class CertSigners {
 	/**
 	 * The default {@link CertSigner}.
 	 */
-	public static final CertSigner DEFAULT = REGISTERED.get(DefaultCertSigner.PROVIDER_NAME);
+	public static final CertSigner DEFAULT = REGISTERED.get(LocalCertSigner.PROVIDER_NAME);
 
 }

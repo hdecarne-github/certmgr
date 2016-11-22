@@ -1,1 +1,2 @@
-de.carne.certmgr.certs.signer.DefaultCertSigner
+de.carne.certmgr.certs.signer.LocalCertSigner
+de.carne.certmgr.certs.signer.RemoteCertSigner

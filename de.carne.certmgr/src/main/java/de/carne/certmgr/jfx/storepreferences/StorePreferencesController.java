@@ -164,9 +164,9 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		this.store = null;
 		this.expertMode = expertModeParam;
 		initExpertMode();
-		initCRTValidities();
-		initCRLUpdatePeriods();
-		initKeyAlgOptions();
+		initDefCRTValidityPeriods();
+		initDefCRLUpdatePeriods();
+		initDefKeyAlgOptions();
 		((Button) lookupButton(ButtonType.APPLY)).setText(StorePreferencesI18N.formatSTR_TEXT_CREATE());
 		return this;
 	}
@@ -194,9 +194,9 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		this.ctlPathInput.setDisable(true);
 		this.cmdChoosePathButton.setDisable(true);
 		initExpertMode();
-		initCRTValidities();
-		initCRLUpdatePeriods();
-		initKeyAlgOptions();
+		initDefCRTValidityPeriods();
+		initDefCRLUpdatePeriods();
+		initDefKeyAlgOptions();
 		return this;
 	}
 
@@ -214,7 +214,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		this.ctlDefKeySizeOption.setEditable(this.expertMode);
 	}
 
-	private void initCRTValidities() {
+	private void initDefCRTValidityPeriods() {
 		Days defaultHint = null;
 
 		if (this.storePreferences != null) {
@@ -224,7 +224,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				(o1, o2) -> o1.days().compareTo(o2.days()));
 	}
 
-	private void initCRLUpdatePeriods() {
+	private void initDefCRLUpdatePeriods() {
 		Days defaultHint = null;
 
 		if (this.storePreferences != null) {
@@ -234,7 +234,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				(o1, o2) -> o1.days().compareTo(o2.days()));
 	}
 
-	private void initKeyAlgOptions() {
+	private void initDefKeyAlgOptions() {
 		String defaultHint = null;
 
 		if (this.storePreferences != null) {

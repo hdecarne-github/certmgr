@@ -23,14 +23,14 @@ import de.carne.certmgr.certs.spi.CertSigner;
 import de.carne.certmgr.util.DefaultSet;
 
 /**
- * Default (BouncyCastle based) service provider for certificate signing.
+ * Signing servicer for local certificate generation and signing.
  */
-public class DefaultCertSigner implements CertSigner {
+public class LocalCertSigner implements CertSigner {
 
 	/**
 	 * Provider name.
 	 */
-	public static final String PROVIDER_NAME = "BouncyCastle";
+	public static final String PROVIDER_NAME = "LOCAL";
 
 	private final Issuer selfSignedIssuer = new DefaultIssuer(CertSignerI18N.formatSTR_SELFSIGNED_NAME());
 
@@ -41,7 +41,7 @@ public class DefaultCertSigner implements CertSigner {
 
 	@Override
 	public String getDescription() {
-		return CertSignerI18N.formatSTR_DEFAULT_DESCRIPTION();
+		return CertSignerI18N.formatSTR_LOCAL_DESCRIPTION();
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class DefaultCertSigner implements CertSigner {
 
 		@Override
 		public CertSigner signer() {
-			return DefaultCertSigner.this;
+			return LocalCertSigner.this;
 		}
 
 	}
