@@ -81,7 +81,7 @@ public final class UserCertStoreEntryId {
 
 	@Override
 	public String toString() {
-		return (Strings.notEmpty(this.alias) ? this.alias : "<" + this.id + ">");
+		return (Strings.notEmpty(this.alias) ? this.alias : UserCertStoreI18N.formatSTR_TEXT_EXTERNALENTRY());
 	}
 
 }
