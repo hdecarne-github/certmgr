@@ -63,11 +63,15 @@ public class CustomExtensionData extends X509ExtensionData {
 	}
 
 	@Override
+	public String toValueString() {
+		return Bytes.toString(this.encoded, 16);
+	}
+
+	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.add(AttributesI18N.formatSTR_EXTENSION_DATA(this.encoded.length),
-				Bytes.toString(this.encoded, 16));
+		extensionAttributes.add(AttributesI18N.formatSTR_EXTENSION_DATA(this.encoded.length), toValueString());
 		return extensionAttributes;
 	}
 

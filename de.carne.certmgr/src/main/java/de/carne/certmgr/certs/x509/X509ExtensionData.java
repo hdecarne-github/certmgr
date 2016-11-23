@@ -119,12 +119,24 @@ public abstract class X509ExtensionData extends ASN1Data implements AttributesPr
 		this.critical = critical;
 	}
 
+	/**
+	 * Get the extension's value string representation.
+	 * 
+	 * @return The extension's value string representation.
+	 */
+	public abstract String toValueString();
+
 	@Override
 	public Attributes toAttributes() {
 		String extensionName = OIDs.toString(this.oid);
 
 		return new Attributes(AttributesI18N.formatSTR_EXTENSION(extensionName), (this.critical
 				? AttributesI18N.formatSTR_EXTENSION_CRITICAL() : AttributesI18N.formatSTR_EXTENSION_NONCRITICAL()));
+	}
+
+	@Override
+	public String toString() {
+		return OIDs.toString(this.oid);
 	}
 
 }

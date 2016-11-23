@@ -117,6 +117,19 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	}
 
 	@Override
+	public String toValueString() {
+		StringBuilder buffer = new StringBuilder();
+
+		for (KeyUsage usage : this.usages) {
+			if (buffer.length() > 0) {
+				buffer.append(", ");
+			}
+			buffer.append(usage.name());
+		}
+		return null;
+	}
+
+	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 

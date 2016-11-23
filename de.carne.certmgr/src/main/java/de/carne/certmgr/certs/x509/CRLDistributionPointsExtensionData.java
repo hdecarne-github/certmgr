@@ -65,6 +65,13 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData {
 	}
 
 	@Override
+	public String toValueString() {
+		assert false;
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 		int nameIndex = 0;

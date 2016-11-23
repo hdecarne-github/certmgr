@@ -120,6 +120,11 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	}
 
 	@Override
+	public String toValueString() {
+		return AttributesI18N.formatSTR_BC_VALUE(this.ca);
+	}
+
+	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 

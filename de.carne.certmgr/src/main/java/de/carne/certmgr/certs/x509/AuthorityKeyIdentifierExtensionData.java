@@ -95,10 +95,15 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	}
 
 	@Override
+	public String toValueString() {
+		return Bytes.toString(this.keyIdentifier);
+	}
+
+	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.add(AttributesI18N.formatSTR_KEYIDENTIFIER(), Bytes.toString(this.keyIdentifier));
+		extensionAttributes.add(AttributesI18N.formatSTR_KEYIDENTIFIER(), toValueString());
 		return extensionAttributes;
 	}
 

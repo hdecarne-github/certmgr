@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Primitive;
 
+import de.carne.util.Strings;
+
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.6">Subject
  * Alternative Name Extension</a> data.
@@ -76,6 +78,11 @@ public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
 	 */
 	public List<GeneralName> getNames() {
 		return this.generalNames.getNames();
+	}
+
+	@Override
+	public String toValueString() {
+		return Strings.join(this.generalNames.getNames(), ", ");
 	}
 
 	@Override
