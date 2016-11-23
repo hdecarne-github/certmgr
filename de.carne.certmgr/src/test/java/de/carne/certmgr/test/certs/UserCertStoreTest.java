@@ -21,6 +21,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
+import java.security.cert.X509Extension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,7 @@ import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
+import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.io.IOHelper;
 
@@ -195,12 +197,15 @@ public class UserCertStoreTest {
 				Attributes.toAttributes(entry);
 				if (entry.hasCRT()) {
 					X509CertificateHelper.toAttributes(entry.getCRT());
+					accessExtensionValues(entry.getCRT());
 				}
 				if (entry.hasCSR()) {
 					entry.getCSR().toAttributes();
+					accessExtensionValues(entry.getCSR());
 				}
 				if (entry.hasCRL()) {
 					X509CRLHelper.toAttributes(entry.getCRL());
+					accessExtensionValues(entry.getCRL());
 				}
 				entryCount = traverseStore(entry.issuedEntries());
 			}
@@ -208,6 +213,30 @@ public class UserCertStoreTest {
 			Assert.fail(e.getMessage());
 		}
 		return entryCount;
+	}
+
+	private void accessExtensionValues(X509Extension extension) throws IOException {
+		Set<String> criticalExtensionOIDs = extension.getCriticalExtensionOIDs();
+
+		if (criticalExtensionOIDs != null) {
+			for (String criticalExtensionOID : extension.getCriticalExtensionOIDs()) {
+				X509ExtensionData extensionData = X509ExtensionData.decode(criticalExtensionOID, true,
+						extension.getExtensionValue(criticalExtensionOID));
+
+				extensionData.toValueString();
+			}
+		}
+
+		Set<String> nonCriticalExtensionOIDs = extension.getNonCriticalExtensionOIDs();
+
+		if (nonCriticalExtensionOIDs != null) {
+			for (String nonCriticalExtensionOID : nonCriticalExtensionOIDs) {
+				X509ExtensionData extensionData = X509ExtensionData.decode(nonCriticalExtensionOID, true,
+						extension.getExtensionValue(nonCriticalExtensionOID));
+
+				extensionData.toValueString();
+			}
+		}
 	}
 
 	/**
