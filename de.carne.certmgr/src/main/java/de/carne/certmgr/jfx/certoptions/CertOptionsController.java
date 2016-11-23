@@ -30,6 +30,7 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.signer.CertSigners;
 import de.carne.certmgr.certs.signer.Issuer;
 import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.application.PlatformHelper;
@@ -43,6 +44,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -118,6 +121,18 @@ public class CertOptionsController extends StageController {
 
 	@FXML
 	Button cmdDeleteExtension;
+
+	@FXML
+	TableView<X509ExtensionData> ctlExtensionData;
+
+	@FXML
+	TableColumn<X509ExtensionDataModel, Boolean> ctlExtensionDataCritical;
+
+	@FXML
+	TableColumn<X509ExtensionDataModel, String> ctlExtensionDataName;
+
+	@FXML
+	TableColumn<X509ExtensionDataModel, String> ctlExtensionDataValue;
 
 	@FXML
 	void onCmdSubmit(ActionEvent evt) {
