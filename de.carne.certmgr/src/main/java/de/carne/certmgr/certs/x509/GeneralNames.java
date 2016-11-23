@@ -18,7 +18,7 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -28,7 +28,7 @@ import de.carne.certmgr.certs.asn1.ASN1Data;
 /**
  * Sequence of general name object.
  */
-public class GeneralNames extends ASN1Data implements AttributesContent {
+public class GeneralNames extends ASN1Data implements Iterable<GeneralName>, AttributesContent {
 
 	private List<GeneralName> names = new ArrayList<>();
 
@@ -60,13 +60,9 @@ public class GeneralNames extends ASN1Data implements AttributesContent {
 		this.names.add(name);
 	}
 
-	/**
-	 * Get the contained name objects.
-	 *
-	 * @return The contained name objects.
-	 */
-	public List<GeneralName> getNames() {
-		return Collections.unmodifiableList(this.names);
+	@Override
+	public Iterator<GeneralName> iterator() {
+		return this.names.iterator();
 	}
 
 	@Override

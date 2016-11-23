@@ -32,6 +32,16 @@ import de.carne.jfx.util.ShortDate;
  */
 public class Attributes {
 
+	/**
+	 * Length limit for short formats.
+	 */
+	public static int FORMAT_LIMIT_SHORT = 16;
+
+	/**
+	 * Length limit for long formats.
+	 */
+	public static int FORMAT_LIMIT_LONG = 256;
+
 	private final String name;
 
 	private final String value;

@@ -64,7 +64,7 @@ public class CustomExtensionData extends X509ExtensionData {
 
 	@Override
 	public String toValueString() {
-		return Bytes.toString(this.encoded, 16);
+		return Bytes.toString(this.encoded, Attributes.FORMAT_LIMIT_SHORT);
 	}
 
 	@Override

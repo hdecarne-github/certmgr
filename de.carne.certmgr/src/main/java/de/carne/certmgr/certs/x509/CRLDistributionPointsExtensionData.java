@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Primitive;
 
+import de.carne.util.Strings;
+
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.13">CRL
  * Distribution Points Extension</a> data.
@@ -66,9 +68,17 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData {
 
 	@Override
 	public String toValueString() {
-		assert false;
-		// TODO Auto-generated method stub
-		return null;
+		return Strings.join(this.distributionPoints, (o) -> toValueString(o), ", ", Attributes.FORMAT_LIMIT_LONG);
+	}
+
+	private String toValueString(DistributionPoint distributionPoint) {
+		String valueString = "";
+		GeneralNames crlIssuer = distributionPoint.getCRLIssuer();
+
+		if (crlIssuer != null) {
+			valueString = Strings.join(crlIssuer, ", ", Attributes.FORMAT_LIMIT_LONG);
+		}
+		return valueString;
 	}
 
 	@Override

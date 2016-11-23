@@ -50,7 +50,8 @@ public class OtherName extends GeneralName {
 
 	@Override
 	public String toString() {
-		return getType().name() + ":" + OIDs.toString(this.oid) + ":" + Bytes.toString(this.nameBytes, 16);
+		return getType().name() + ":" + OIDs.toString(this.oid) + ":"
+				+ Bytes.toString(this.nameBytes, Attributes.FORMAT_LIMIT_SHORT);
 	}
 
 	/**

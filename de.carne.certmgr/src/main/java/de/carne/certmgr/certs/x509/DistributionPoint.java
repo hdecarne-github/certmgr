@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 
@@ -83,6 +84,36 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 			}
 		}
 		return new DistributionPoint(name, reasons, crlIssuer);
+	}
+
+	/**
+	 * Get the defined distribution point name object.
+	 *
+	 * @return The defined distribution point name object or {@code null} if
+	 *         none has been defined.
+	 */
+	public @Nullable DistributionPointName getName() {
+		return this.name;
+	}
+
+	/**
+	 * Get the defined distribution point reasons.
+	 *
+	 * @return The defined distribution point reasons or {@code null} if none
+	 *         have been defined.
+	 */
+	public @Nullable ReasonFlags getReasons() {
+		return this.reasons;
+	}
+
+	/**
+	 * Get the defined CRL issuer's names.
+	 *
+	 * @return The defined CRL issuer's names or {@code null} if none have been
+	 *         defined.
+	 */
+	public @Nullable GeneralNames getCRLIssuer() {
+		return this.crlIssuer;
 	}
 
 	@Override

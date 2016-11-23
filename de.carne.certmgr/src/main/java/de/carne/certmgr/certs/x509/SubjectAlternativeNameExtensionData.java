@@ -17,7 +17,6 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Primitive;
 
@@ -72,17 +71,17 @@ public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
 	}
 
 	/**
-	 * Get the contained name objects.
-	 *
-	 * @return The contained name objects.
+	 * Get the defined general names.
+	 * 
+	 * @return The defined general names.
 	 */
-	public List<GeneralName> getNames() {
-		return this.generalNames.getNames();
+	public GeneralNames getGeneralNames() {
+		return this.generalNames;
 	}
 
 	@Override
 	public String toValueString() {
-		return Strings.join(this.generalNames.getNames(), ", ");
+		return Strings.join(this.generalNames, ", ", Attributes.FORMAT_LIMIT_LONG);
 	}
 
 	@Override
