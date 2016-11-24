@@ -33,6 +33,11 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 */
 	public static final String OID = "2.5.29.19";
 
+	/**
+	 * The default to use for this extension's critical flag.
+	 */
+	public static final boolean CRITICAL_DEFAULT = false;
+
 	private boolean ca = false;
 
 	private Integer pathLenConstraint = null;

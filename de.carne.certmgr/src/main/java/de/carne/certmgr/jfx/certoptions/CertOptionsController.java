@@ -16,9 +16,11 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStore;
@@ -30,11 +32,19 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.signer.CertSigners;
 import de.carne.certmgr.certs.signer.Issuer;
 import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
+import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
+import de.carne.certmgr.certs.x509.ExtendedKeyUsageExtensionData;
+import de.carne.certmgr.certs.x509.KeyUsageExtensionData;
+import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.application.PlatformHelper;
+import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -64,6 +74,20 @@ public class CertOptionsController extends StageController {
 	private UserCertStoreEntry storeEntry = null;
 
 	private boolean expertMode = false;
+
+	private final ObjectProperty<BasicConstraintsExtensionData> basicConstraintsExtension = new SimpleObjectProperty<>(
+			null);
+
+	private final ObjectProperty<KeyUsageExtensionData> keyUsageExtension = new SimpleObjectProperty<>(null);
+
+	private final ObjectProperty<ExtendedKeyUsageExtensionData> extendedKeyUsageExtension = new SimpleObjectProperty<>(
+			null);
+
+	private final ObjectProperty<SubjectAlternativeNameExtensionData> subjectAlternativeExtension = new SimpleObjectProperty<>(
+			null);
+
+	private final ObjectProperty<CRLDistributionPointsExtensionData> crlDistributionPointsExtension = new SimpleObjectProperty<>(
+			null);
 
 	@FXML
 	Menu ctlStorePresetsMenu;
@@ -126,13 +150,60 @@ public class CertOptionsController extends StageController {
 	TableView<X509ExtensionData> ctlExtensionData;
 
 	@FXML
-	TableColumn<X509ExtensionDataModel, Boolean> ctlExtensionDataCritical;
+	TableColumn<ExtensionDataModel, Boolean> ctlExtensionDataCritical;
 
 	@FXML
-	TableColumn<X509ExtensionDataModel, String> ctlExtensionDataName;
+	TableColumn<ExtensionDataModel, String> ctlExtensionDataName;
 
 	@FXML
-	TableColumn<X509ExtensionDataModel, String> ctlExtensionDataValue;
+	TableColumn<ExtensionDataModel, String> ctlExtensionDataValue;
+
+	@FXML
+	void onCmdAddBasicConstraints(ActionEvent evt) {
+		try {
+			BasicConstraintsController extensionDialog = BasicConstraintsDialog.load(this);
+			BasicConstraintsExtensionData extensionData = this.basicConstraintsExtension.get();
+
+			if (extensionData != null) {
+				extensionDialog.init(extensionData, this.expertMode);
+			} else {
+				extensionDialog.init(this.expertMode);
+			}
+
+			Optional<BasicConstraintsExtensionData> dialogResult = extensionDialog.showAndWait();
+
+			if (dialogResult.isPresent()) {
+				extensionData = dialogResult.get();
+			}
+		} catch (IOException e) {
+			Alerts.unexpected(e).showAndWait();
+		}
+	}
+
+	@FXML
+	void onCmdAddKeyUsage(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdAddExtendedKeyUsage(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdAddSubjectAlternativeName(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdAddCRLDistributionPoints(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdAddCustomExtension(ActionEvent evt) {
+
+	}
 
 	@FXML
 	void onCmdSubmit(ActionEvent evt) {
@@ -179,6 +250,15 @@ public class CertOptionsController extends StageController {
 		this.ctlKeySizeOption.setConverter(new IntegerStringConverter());
 		this.ctlSignerOption.valueProperty().addListener((p, o, n) -> onSignerChanged(n));
 		this.ctlIssuerInput.valueProperty().addListener((p, o, n) -> onIssuerChanged(n));
+		this.cmdAddBasicConstraints.disableProperty().bind(this.basicConstraintsExtension.isNotNull());
+		this.cmdAddKeyUsage.disableProperty().bind(this.keyUsageExtension.isNotNull());
+		this.cmdAddExtendedKeyUsage.disableProperty().bind(this.extendedKeyUsageExtension.isNotNull());
+		this.cmdAddSubjectAlternativeName.disableProperty().bind(this.subjectAlternativeExtension.isNotNull());
+		this.cmdAddCRLDistributionPoints.disableProperty().bind(this.crlDistributionPointsExtension.isNotNull());
+		this.cmdEditExtension.disableProperty()
+				.bind(this.ctlExtensionData.getSelectionModel().selectedItemProperty().isNull());
+		this.cmdDeleteExtension.disableProperty()
+				.bind(this.ctlExtensionData.getSelectionModel().selectedItemProperty().isNull());
 	}
 
 	/**

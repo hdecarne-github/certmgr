@@ -26,7 +26,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 /**
  * Model class for display and editing of {@link X509ExtensionData} objects.
  */
-public final class X509ExtensionDataModel {
+public final class ExtensionDataModel {
 
 	private X509ExtensionData extensionData;
 
@@ -41,7 +41,7 @@ public final class X509ExtensionDataModel {
 	 *
 	 * @param extensionData The extension data represented by this model.
 	 */
-	public X509ExtensionDataModel(X509ExtensionData extensionData) {
+	public ExtensionDataModel(X509ExtensionData extensionData) {
 		this.extensionData = extensionData;
 		this.criticalProperty = new SimpleBooleanProperty(extensionData.getCritical());
 		this.nameProperty = new ReadOnlyStringWrapper(OIDs.toString(this.extensionData.oid()));

@@ -92,12 +92,12 @@
             <Label text="%_STR_LABEL_EXTENSIONS" />
             <MenuButton mnemonicParsing="false">
               <items>
-                <MenuItem fx:id="cmdAddBasicConstraints" mnemonicParsing="false" text="%_STR_MENU_ADD_BASICCONTSTRAINTS" />
-                <MenuItem fx:id="cmdAddKeyUsage" mnemonicParsing="false" text="%_STR_MENU_ADD_KEYUSSAGE" />
-                  <MenuItem fx:id="cmdAddExtendedKeyUsage" mnemonicParsing="false" text="%_STR_MENU_ADD_EXTENDEDKEYUSSAGE" />
-                  <MenuItem fx:id="cmdAddSubjectAlternativeName" mnemonicParsing="false" text="%_STR_MENU_ADD_SUBJECTALTERNATIVENAME" />
-                  <MenuItem fx:id="cmdAddCRLDistributionPoints" mnemonicParsing="false" text="%_STR_MENU_ADD_CRLDISTRIBUTIONPOINTS" />
-                  <MenuItem fx:id="cmdAddCustomExtension" mnemonicParsing="false" text="%_STR_MENU_ADD_CUSTOMEXTENSION" />
+                <MenuItem fx:id="cmdAddBasicConstraints" mnemonicParsing="false" onAction="#onCmdAddBasicConstraints" text="%_STR_MENU_ADD_BASICCONTSTRAINTS" />
+                <MenuItem fx:id="cmdAddKeyUsage" mnemonicParsing="false" onAction="#onCmdAddKeyUsage" text="%_STR_MENU_ADD_KEYUSSAGE" />
+                  <MenuItem fx:id="cmdAddExtendedKeyUsage" mnemonicParsing="false" onAction="#onCmdAddExtendedKeyUsage" text="%_STR_MENU_ADD_EXTENDEDKEYUSSAGE" />
+                  <MenuItem fx:id="cmdAddSubjectAlternativeName" mnemonicParsing="false" onAction="#onCmdAddSubjectAlternativeName" text="%_STR_MENU_ADD_SUBJECTALTERNATIVENAME" />
+                  <MenuItem fx:id="cmdAddCRLDistributionPoints" mnemonicParsing="false" onAction="#onCmdAddCRLDistributionPoints" text="%_STR_MENU_ADD_CRLDISTRIBUTIONPOINTS" />
+                  <MenuItem fx:id="cmdAddCustomExtension" mnemonicParsing="false" onAction="#onCmdAddCustomExtension" text="%_STR_MENU_ADD_CUSTOMEXTENSION" />
               </items>
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
