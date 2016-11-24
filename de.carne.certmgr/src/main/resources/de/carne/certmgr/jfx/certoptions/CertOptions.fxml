@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
+<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
@@ -92,11 +92,11 @@
             <Label text="%_STR_LABEL_EXTENSIONS" />
             <MenuButton mnemonicParsing="false">
               <items>
-                <MenuItem fx:id="cmdAddBasicConstraints" mnemonicParsing="false" onAction="#onCmdAddBasicConstraints" text="%_STR_MENU_ADD_BASICCONTSTRAINTS" />
-                <MenuItem fx:id="cmdAddKeyUsage" mnemonicParsing="false" onAction="#onCmdAddKeyUsage" text="%_STR_MENU_ADD_KEYUSSAGE" />
-                  <MenuItem fx:id="cmdAddExtendedKeyUsage" mnemonicParsing="false" onAction="#onCmdAddExtendedKeyUsage" text="%_STR_MENU_ADD_EXTENDEDKEYUSSAGE" />
-                  <MenuItem fx:id="cmdAddSubjectAlternativeName" mnemonicParsing="false" onAction="#onCmdAddSubjectAlternativeName" text="%_STR_MENU_ADD_SUBJECTALTERNATIVENAME" />
-                  <MenuItem fx:id="cmdAddCRLDistributionPoints" mnemonicParsing="false" onAction="#onCmdAddCRLDistributionPoints" text="%_STR_MENU_ADD_CRLDISTRIBUTIONPOINTS" />
+                <MenuItem fx:id="cmdAddBasicConstraints" mnemonicParsing="false" onAction="#onCmdEditBasicConstraints" text="%_STR_MENU_ADD_BASICCONTSTRAINTS" />
+                <MenuItem fx:id="cmdAddKeyUsage" mnemonicParsing="false" onAction="#onCmdEditKeyUsage" text="%_STR_MENU_ADD_KEYUSSAGE" />
+                  <MenuItem fx:id="cmdAddExtendedKeyUsage" mnemonicParsing="false" onAction="#onCmdEditExtendedKeyUsage" text="%_STR_MENU_ADD_EXTENDEDKEYUSSAGE" />
+                  <MenuItem fx:id="cmdAddSubjectAlternativeName" mnemonicParsing="false" onAction="#onCmdEditSubjectAlternativeName" text="%_STR_MENU_ADD_SUBJECTALTERNATIVENAME" />
+                  <MenuItem fx:id="cmdAddCRLDistributionPoints" mnemonicParsing="false" onAction="#onCmdEditCRLDistributionPoints" text="%_STR_MENU_ADD_CRLDISTRIBUTIONPOINTS" />
                   <MenuItem fx:id="cmdAddCustomExtension" mnemonicParsing="false" onAction="#onCmdAddCustomExtension" text="%_STR_MENU_ADD_CUSTOMEXTENSION" />
               </items>
                <graphic>

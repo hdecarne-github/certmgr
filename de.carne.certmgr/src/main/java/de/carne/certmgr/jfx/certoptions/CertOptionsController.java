@@ -161,7 +161,7 @@ public class CertOptionsController extends StageController {
 	TableColumn<ExtensionDataModel, String> ctlExtensionDataValue;
 
 	@FXML
-	void onCmdAddBasicConstraints(ActionEvent evt) {
+	void onCmdEditBasicConstraints(ActionEvent evt) {
 		try {
 			BasicConstraintsController extensionDialog = BasicConstraintsDialog.load(this);
 			BasicConstraintsExtensionData extensionData = this.basicConstraintsExtension.get();
@@ -185,22 +185,22 @@ public class CertOptionsController extends StageController {
 	}
 
 	@FXML
-	void onCmdAddKeyUsage(ActionEvent evt) {
+	void onCmdEditKeyUsage(ActionEvent evt) {
 
 	}
 
 	@FXML
-	void onCmdAddExtendedKeyUsage(ActionEvent evt) {
+	void onCmdEditExtendedKeyUsage(ActionEvent evt) {
 
 	}
 
 	@FXML
-	void onCmdAddSubjectAlternativeName(ActionEvent evt) {
+	void onCmdEditSubjectAlternativeName(ActionEvent evt) {
 
 	}
 
 	@FXML
-	void onCmdAddCRLDistributionPoints(ActionEvent evt) {
+	void onCmdEditCRLDistributionPoints(ActionEvent evt) {
 
 	}
 
@@ -211,12 +211,29 @@ public class CertOptionsController extends StageController {
 
 	@FXML
 	void onCmdEditExtension(ActionEvent evt) {
+		ExtensionDataModel extensionDataItem = this.ctlExtensionData.getSelectionModel().getSelectedItem();
 
+		if (extensionDataItem != null) {
+			X509ExtensionData extensionData = extensionDataItem.getExtensionData();
+
+			if (extensionData instanceof BasicConstraintsExtensionData) {
+				onCmdEditBasicConstraints(evt);
+			}
+		}
 	}
 
 	@FXML
 	void onCmdDeleteExtension(ActionEvent evt) {
+		ExtensionDataModel extensionDataItem = this.ctlExtensionData.getSelectionModel().getSelectedItem();
 
+		if (extensionDataItem != null) {
+			X509ExtensionData extensionData = extensionDataItem.getExtensionData();
+
+			if (extensionData instanceof BasicConstraintsExtensionData) {
+				this.basicConstraintsExtension.set(null);
+			}
+			this.ctlExtensionData.getItems().remove(extensionDataItem);
+		}
 	}
 
 	@FXML

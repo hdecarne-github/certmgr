@@ -21,7 +21,11 @@ import java.util.Arrays;
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.validation.InputValidator;
+import de.carne.util.validation.ValidationException;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -36,7 +40,9 @@ import javafx.util.converter.IntegerStringConverter;
 public class BasicConstraintsController extends DialogController<BasicConstraintsExtensionData>
 		implements Callback<ButtonType, BasicConstraintsExtensionData> {
 
-	private static DefaultSet<Integer> DEFAULT_PATH_LENS = new DefaultSet<>(Arrays.asList(0, 1, 2, 3, 4, 5));
+	private static DefaultSet<Integer> DEFAULT_PATH_LENS = new DefaultSet<>(Arrays.asList(null, 0, 1, 2, 3, 4, 5));
+
+	private BasicConstraintsExtensionData extensionDataResult = null;
 
 	@FXML
 	CheckBox ctlCritical;
@@ -47,11 +53,28 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	@FXML
 	ComboBox<Integer> ctlPathLenConstraint;
 
+	private void onApply(ActionEvent evt) {
+		try {
+			boolean critical = this.ctlCritical.isSelected();
+			boolean ca = this.ctlCA.isSelected();
+			Integer pathLenConstraint = null;
+
+			if (ca) {
+				pathLenConstraint = valdiateAndGetPathLenConstraint();
+			}
+			this.extensionDataResult = new BasicConstraintsExtensionData(critical, ca, pathLenConstraint);
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+			evt.consume();
+		}
+	}
+
 	@Override
 	protected void setupDialog(Dialog<BasicConstraintsExtensionData> dialog) {
 		dialog.setTitle(BasicConstraintsI18N.formatSTR_STAGE_TITLE());
 		this.ctlPathLenConstraint.disableProperty().bind(Bindings.not(this.ctlCA.selectedProperty()));
 		this.ctlPathLenConstraint.setConverter(new IntegerStringConverter());
+		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}
 
 	/**
@@ -78,6 +101,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	 */
 	public BasicConstraintsController init(BasicConstraintsExtensionData data, boolean expertMode) {
 		init(expertMode);
+		this.ctlCritical.setSelected(data.getCritical());
 		this.ctlCA.setSelected(data.getCA());
 		this.ctlPathLenConstraint.setValue(data.getPathLenConstraint());
 		return this;
@@ -92,15 +116,19 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 		this.ctlPathLenConstraint.setValue(DEFAULT_PATH_LENS.getDefault());
 	}
 
+	private Integer valdiateAndGetPathLenConstraint() throws ValidationException {
+		Integer pathLenConstraint = this.ctlPathLenConstraint.getValue();
+
+		if (pathLenConstraint != null) {
+			InputValidator.isTrue(pathLenConstraint.intValue() >= 0,
+					(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT());
+		}
+		return pathLenConstraint;
+	}
+
 	@Override
 	public BasicConstraintsExtensionData call(ButtonType param) {
-		BasicConstraintsExtensionData extensionData = null;
-
-		if (ButtonType.APPLY.equals(param)) {
-			extensionData = new BasicConstraintsExtensionData(this.ctlCritical.isSelected(), this.ctlCA.isSelected(),
-					this.ctlPathLenConstraint.getValue());
-		}
-		return extensionData;
+		return this.extensionDataResult;
 	}
 
 }
