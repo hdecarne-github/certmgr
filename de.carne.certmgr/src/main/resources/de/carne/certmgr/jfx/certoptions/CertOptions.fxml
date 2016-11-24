@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
+<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
@@ -107,7 +107,7 @@
                   </ImageView>
                </graphic>
             </MenuButton>
-          <Button fx:id="cmdEditExtension" mnemonicParsing="false">
+          <Button fx:id="cmdEditExtension" mnemonicParsing="false" onAction="#onCmdEditExtension">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -116,7 +116,7 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="cmdDeleteExtension" layoutX="10.0" layoutY="39.0" mnemonicParsing="false">
+            <Button fx:id="cmdDeleteExtension" layoutX="10.0" layoutY="39.0" mnemonicParsing="false" onAction="#onCmdDeleteExtension">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -127,7 +127,7 @@
             </Button>
         </items>
       </ToolBar>
-      <TableView fx:id="ctlExtensionData" prefHeight="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="14">
+      <TableView fx:id="ctlExtensionData" editable="true" prefHeight="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="14">
         <columns>
           <TableColumn fx:id="ctlExtensionDataCritical" maxWidth="1.7976931348623157E308" prefWidth="50.0" text="%_STR_COL_CRITICAL" />
           <TableColumn fx:id="ctlExtensionDataName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="%_STR_COL_NAME" />

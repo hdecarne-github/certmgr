@@ -16,7 +16,10 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.util.Arrays;
+
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
+import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.DialogController;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -25,12 +28,15 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.util.Callback;
+import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Basic constraints dialog.
  */
 public class BasicConstraintsController extends DialogController<BasicConstraintsExtensionData>
 		implements Callback<ButtonType, BasicConstraintsExtensionData> {
+
+	private static DefaultSet<Integer> DEFAULT_PATH_LENS = new DefaultSet<>(Arrays.asList(0, 1, 2, 3, 4, 5));
 
 	@FXML
 	CheckBox ctlCritical;
@@ -45,14 +51,18 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	protected void setupDialog(Dialog<BasicConstraintsExtensionData> dialog) {
 		dialog.setTitle(BasicConstraintsI18N.formatSTR_STAGE_TITLE());
 		this.ctlPathLenConstraint.disableProperty().bind(Bindings.not(this.ctlCA.selectedProperty()));
+		this.ctlPathLenConstraint.setConverter(new IntegerStringConverter());
 	}
 
 	/**
 	 * Initialize the dialog.
 	 *
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not
+	 *        ({@code false}).
 	 * @return This controller.
 	 */
 	public BasicConstraintsController init(boolean expertMode) {
+		this.ctlCA.setSelected(BasicConstraintsExtensionData.CRITICAL_DEFAULT);
 		initExpertMode(expertMode);
 		initPathLenConstraint();
 		return this;
@@ -62,10 +72,14 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	 * Initialize the dialog with existing extension data.
 	 *
 	 * @param data The extension data to use.
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not
+	 *        ({@code false}).
 	 * @return This controller.
 	 */
 	public BasicConstraintsController init(BasicConstraintsExtensionData data, boolean expertMode) {
 		init(expertMode);
+		this.ctlCA.setSelected(data.getCA());
+		this.ctlPathLenConstraint.setValue(data.getPathLenConstraint());
 		return this;
 	}
 
@@ -74,13 +88,19 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	}
 
 	private void initPathLenConstraint() {
-
+		this.ctlPathLenConstraint.getItems().addAll(DEFAULT_PATH_LENS);
+		this.ctlPathLenConstraint.setValue(DEFAULT_PATH_LENS.getDefault());
 	}
 
 	@Override
 	public BasicConstraintsExtensionData call(ButtonType param) {
-		// TODO Auto-generated method stub
-		return null;
+		BasicConstraintsExtensionData extensionData = null;
+
+		if (ButtonType.APPLY.equals(param)) {
+			extensionData = new BasicConstraintsExtensionData(this.ctlCritical.isSelected(), this.ctlCA.isSelected(),
+					this.ctlPathLenConstraint.getValue());
+		}
+		return extensionData;
 	}
 
 }

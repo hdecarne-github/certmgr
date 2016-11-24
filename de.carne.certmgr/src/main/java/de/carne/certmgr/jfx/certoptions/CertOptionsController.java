@@ -57,6 +57,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -147,7 +149,7 @@ public class CertOptionsController extends StageController {
 	Button cmdDeleteExtension;
 
 	@FXML
-	TableView<X509ExtensionData> ctlExtensionData;
+	TableView<ExtensionDataModel> ctlExtensionData;
 
 	@FXML
 	TableColumn<ExtensionDataModel, Boolean> ctlExtensionDataCritical;
@@ -174,6 +176,8 @@ public class CertOptionsController extends StageController {
 
 			if (dialogResult.isPresent()) {
 				extensionData = dialogResult.get();
+				setExtensionData(extensionData);
+				this.basicConstraintsExtension.set(extensionData);
 			}
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
@@ -202,6 +206,16 @@ public class CertOptionsController extends StageController {
 
 	@FXML
 	void onCmdAddCustomExtension(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdEditExtension(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdDeleteExtension(ActionEvent evt) {
 
 	}
 
@@ -259,6 +273,10 @@ public class CertOptionsController extends StageController {
 				.bind(this.ctlExtensionData.getSelectionModel().selectedItemProperty().isNull());
 		this.cmdDeleteExtension.disableProperty()
 				.bind(this.ctlExtensionData.getSelectionModel().selectedItemProperty().isNull());
+		this.ctlExtensionDataCritical.setCellFactory(CheckBoxTableCell.forTableColumn(this.ctlExtensionDataCritical));
+		this.ctlExtensionDataCritical.setCellValueFactory(new PropertyValueFactory<>("critical"));
+		this.ctlExtensionDataName.setCellValueFactory(new PropertyValueFactory<>("name"));
+		this.ctlExtensionDataValue.setCellValueFactory(new PropertyValueFactory<>("value"));
 	}
 
 	/**
@@ -370,6 +388,25 @@ public class CertOptionsController extends StageController {
 	@Override
 	protected Preferences getPreferences() {
 		return this.preferences;
+	}
+
+	private void setExtensionData(X509ExtensionData extensionData) {
+		ObservableList<ExtensionDataModel> extensionDataItems = this.ctlExtensionData.getItems();
+		ExtensionDataModel extensionDataModel = null;
+
+		for (ExtensionDataModel extensionDataItem : extensionDataItems) {
+			if (extensionData.getClass().equals(extensionDataItem.getExtensionData().getClass())) {
+				extensionDataModel = extensionDataItem;
+				break;
+			}
+		}
+		if (extensionDataModel != null) {
+			extensionDataModel.setExtensionData(extensionData);
+		} else {
+			extensionDataModel = new ExtensionDataModel(extensionData);
+			extensionDataItems.add(extensionDataModel);
+			extensionDataItems.sort((o1, o2) -> o1.getExtensionData().oid().compareTo(o2.getExtensionData().oid()));
+		}
 	}
 
 	private static <T> void resetComboBoxOptions(ComboBox<T> control, DefaultSet<T> defaultSet,

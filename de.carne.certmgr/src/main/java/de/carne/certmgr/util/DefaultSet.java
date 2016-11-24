@@ -18,6 +18,7 @@ package de.carne.certmgr.util;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Utilitiy class combining a result set with a corresponding default value.
@@ -43,10 +44,16 @@ public final class DefaultSet<T> extends HashSet<T> {
 	/**
 	 * Construct {@code DefaultSet}.
 	 *
-	 * @param elements The initial set content.
+	 * @param elements The initial set elements.
 	 */
 	public DefaultSet(Collection<? extends T> elements) {
 		super(elements);
+
+		Iterator<? extends T> iterator = elements.iterator();
+
+		if (iterator.hasNext()) {
+			addDefault(iterator.next());
+		}
 	}
 
 	@Override
