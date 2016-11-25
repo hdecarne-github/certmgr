@@ -78,6 +78,8 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 	 * @return This controller.
 	 */
 	public KeyUsageController init(boolean expertMode) {
+		this.ctlCritical.setSelected(KeyUsageExtensionData.CRITICAL_DEFAULT);
+
 		ObservableList<KeyUsage> usageItems = this.ctlUsages.getItems();
 
 		for (KeyUsage usage : KeyUsage.instances()) {
@@ -85,7 +87,7 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 				usageItems.add(usage);
 			}
 		}
-		usageItems.sort((o1, o2) -> o1.value().compareTo(o2.value()));
+		usageItems.sort((o1, o2) -> o1.name().compareTo(o2.name()));
 		this.ctlUsages.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		this.ctlAnyUsage.setSelected(false);
 		return this;

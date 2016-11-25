@@ -79,7 +79,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	 * @return This controller.
 	 */
 	public BasicConstraintsController init(boolean expertMode) {
-		this.ctlCA.setSelected(BasicConstraintsExtensionData.CRITICAL_DEFAULT);
+		this.ctlCritical.setSelected(BasicConstraintsExtensionData.CRITICAL_DEFAULT);
 		initExpertMode(expertMode);
 		initPathLenConstraint();
 		return this;

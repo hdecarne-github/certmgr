@@ -78,6 +78,8 @@ public class ExtendedKeyUsageController extends DialogController<ExtendedKeyUsag
 	 * @return This controller.
 	 */
 	public ExtendedKeyUsageController init(boolean expertMode) {
+		this.ctlCritical.setSelected(ExtendedKeyUsageExtensionData.CRITICAL_DEFAULT);
+
 		ObservableList<ExtendedKeyUsage> usageItems = this.ctlUsages.getItems();
 
 		for (ExtendedKeyUsage usage : ExtendedKeyUsage.instances()) {
@@ -85,7 +87,7 @@ public class ExtendedKeyUsageController extends DialogController<ExtendedKeyUsag
 				usageItems.add(usage);
 			}
 		}
-		usageItems.sort((o1, o2) -> o1.value().compareTo(o2.value()));
+		usageItems.sort((o1, o2) -> o1.name().compareTo(o2.name()));
 		this.ctlUsages.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		this.ctlAnyUsage.setSelected(false);
 		return this;

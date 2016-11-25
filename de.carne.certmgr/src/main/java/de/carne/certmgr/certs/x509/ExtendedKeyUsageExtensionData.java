@@ -37,6 +37,11 @@ public class ExtendedKeyUsageExtensionData extends X509ExtensionData implements 
 	 */
 	public static final String OID = "2.5.29.37";
 
+	/**
+	 * The default to use for this extension's critical flag.
+	 */
+	public static final boolean CRITICAL_DEFAULT = true;
+
 	private final Set<ExtendedKeyUsage> usages;
 
 	/**
