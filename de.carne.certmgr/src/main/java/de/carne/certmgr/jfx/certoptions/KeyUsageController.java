@@ -16,15 +16,20 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import de.carne.certmgr.certs.x509.KeyUsage;
 import de.carne.certmgr.certs.x509.KeyUsageExtensionData;
 import de.carne.jfx.scene.control.DialogController;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.util.Callback;
 
 /**
@@ -46,8 +51,16 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 
 	private void onApply(ActionEvent evt) {
 		boolean critical = this.ctlCritical.isSelected();
+		Set<KeyUsage> usages = new HashSet<>();
 
-		this.extensionDataResult = new KeyUsageExtensionData(critical);
+		if (this.ctlAnyUsage.isSelected()) {
+			usages.add(KeyUsage.ANY);
+		} else {
+			for (KeyUsage usage : this.ctlUsages.getSelectionModel().getSelectedItems()) {
+				usages.add(usage);
+			}
+		}
+		this.extensionDataResult = new KeyUsageExtensionData(critical, usages);
 	}
 
 	@Override
@@ -65,7 +78,16 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 	 * @return This controller.
 	 */
 	public KeyUsageController init(boolean expertMode) {
-		// Nothing to do here
+		ObservableList<KeyUsage> usageItems = this.ctlUsages.getItems();
+
+		for (KeyUsage usage : KeyUsage.instances()) {
+			if (!KeyUsage.ANY.equals(usage)) {
+				usageItems.add(usage);
+			}
+		}
+		usageItems.sort((o1, o2) -> o1.value().compareTo(o2.value()));
+		this.ctlUsages.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		this.ctlAnyUsage.setSelected(false);
 		return this;
 	}
 
@@ -80,6 +102,13 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 	public KeyUsageController init(KeyUsageExtensionData data, boolean expertMode) {
 		init(expertMode);
 		this.ctlCritical.setSelected(data.getCritical());
+		if (data.hasUsage(KeyUsage.ANY)) {
+			this.ctlAnyUsage.setSelected(true);
+		} else {
+			for (KeyUsage usage : data) {
+				this.ctlUsages.getSelectionModel().select(usage);
+			}
+		}
 		return this;
 	}
 

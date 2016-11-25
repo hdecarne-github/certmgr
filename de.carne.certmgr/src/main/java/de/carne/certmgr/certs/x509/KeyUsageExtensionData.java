@@ -18,16 +18,19 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1Primitive;
 
+import de.carne.util.Strings;
+
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.3">Key Usage
  * Extension</a> data.
  */
-public class KeyUsageExtensionData extends X509ExtensionData {
+public class KeyUsageExtensionData extends X509ExtensionData implements Iterable<KeyUsage> {
 
 	/**
 	 * Extension OID.
@@ -122,16 +125,13 @@ public class KeyUsageExtensionData extends X509ExtensionData {
 	}
 
 	@Override
-	public String toValueString() {
-		StringBuilder buffer = new StringBuilder();
+	public Iterator<KeyUsage> iterator() {
+		return this.usages.iterator();
+	}
 
-		for (KeyUsage usage : this.usages) {
-			if (buffer.length() > 0) {
-				buffer.append(", ");
-			}
-			buffer.append(usage.name());
-		}
-		return null;
+	@Override
+	public String toValueString() {
+		return Strings.join(this.usages, ", ");
 	}
 
 	@Override

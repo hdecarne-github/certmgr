@@ -186,7 +186,26 @@ public class CertOptionsController extends StageController {
 
 	@FXML
 	void onCmdEditKeyUsage(ActionEvent evt) {
+		try {
+			KeyUsageController extensionDialog = KeyUsageDialog.load(this);
+			KeyUsageExtensionData extensionData = this.keyUsageExtension.get();
 
+			if (extensionData != null) {
+				extensionDialog.init(extensionData, this.expertMode);
+			} else {
+				extensionDialog.init(this.expertMode);
+			}
+
+			Optional<KeyUsageExtensionData> dialogResult = extensionDialog.showAndWait();
+
+			if (dialogResult.isPresent()) {
+				extensionData = dialogResult.get();
+				setExtensionData(extensionData);
+				this.keyUsageExtension.set(extensionData);
+			}
+		} catch (IOException e) {
+			Alerts.unexpected(e).showAndWait();
+		}
 	}
 
 	@FXML
@@ -218,6 +237,8 @@ public class CertOptionsController extends StageController {
 
 			if (extensionData instanceof BasicConstraintsExtensionData) {
 				onCmdEditBasicConstraints(evt);
+			} else if (extensionData instanceof KeyUsageExtensionData) {
+				onCmdEditKeyUsage(evt);
 			}
 		}
 	}
@@ -231,6 +252,8 @@ public class CertOptionsController extends StageController {
 
 			if (extensionData instanceof BasicConstraintsExtensionData) {
 				this.basicConstraintsExtension.set(null);
+			} else if (extensionData instanceof BasicConstraintsExtensionData) {
+				this.keyUsageExtension.set(null);
 			}
 			this.ctlExtensionData.getItems().remove(extensionDataItem);
 		}
