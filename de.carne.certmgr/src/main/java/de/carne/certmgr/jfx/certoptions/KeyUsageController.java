@@ -33,7 +33,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.util.Callback;
 
 /**
- * Basic constraints dialog.
+ * Key usage dialog.
  */
 public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 		implements Callback<ButtonType, KeyUsageExtensionData> {
@@ -65,7 +65,7 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 
 	@Override
 	protected void setupDialog(Dialog<KeyUsageExtensionData> dialog) {
-		dialog.setTitle(BasicConstraintsI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(KeyUsageI18N.formatSTR_STAGE_TITLE());
 		this.ctlUsages.disableProperty().bind(this.ctlAnyUsage.selectedProperty());
 		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}
