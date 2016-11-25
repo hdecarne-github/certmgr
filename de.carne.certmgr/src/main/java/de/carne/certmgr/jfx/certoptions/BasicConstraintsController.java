@@ -16,10 +16,7 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import java.util.Arrays;
-
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
-import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.validation.InputValidator;
@@ -32,15 +29,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.util.Callback;
-import javafx.util.converter.IntegerStringConverter;
 
 /**
  * Basic constraints dialog.
  */
 public class BasicConstraintsController extends DialogController<BasicConstraintsExtensionData>
 		implements Callback<ButtonType, BasicConstraintsExtensionData> {
-
-	private static DefaultSet<Integer> DEFAULT_PATH_LENS = new DefaultSet<>(Arrays.asList(null, 0, 1, 2, 3, 4, 5));
 
 	private BasicConstraintsExtensionData extensionDataResult = null;
 
@@ -51,7 +45,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	CheckBox ctlCA;
 
 	@FXML
-	ComboBox<Integer> ctlPathLenConstraint;
+	ComboBox<BasicConstraintsPathLen> ctlPathLenConstraint;
 
 	private void onApply(ActionEvent evt) {
 		try {
@@ -73,7 +67,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	protected void setupDialog(Dialog<BasicConstraintsExtensionData> dialog) {
 		dialog.setTitle(BasicConstraintsI18N.formatSTR_STAGE_TITLE());
 		this.ctlPathLenConstraint.disableProperty().bind(Bindings.not(this.ctlCA.selectedProperty()));
-		this.ctlPathLenConstraint.setConverter(new IntegerStringConverter());
+		this.ctlPathLenConstraint.setConverter(BasicConstraintsPathLen.CONVERTER);
 		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}
 
@@ -103,7 +97,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 		init(expertMode);
 		this.ctlCritical.setSelected(data.getCritical());
 		this.ctlCA.setSelected(data.getCA());
-		this.ctlPathLenConstraint.setValue(data.getPathLenConstraint());
+		this.ctlPathLenConstraint.setValue(BasicConstraintsPathLen.valueOf(data.getPathLenConstraint()));
 		return this;
 	}
 
@@ -112,18 +106,19 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	}
 
 	private void initPathLenConstraint() {
-		this.ctlPathLenConstraint.getItems().addAll(DEFAULT_PATH_LENS);
-		this.ctlPathLenConstraint.setValue(DEFAULT_PATH_LENS.getDefault());
+		this.ctlPathLenConstraint.getItems().addAll(BasicConstraintsPathLen.DEFAULT_SET);
+		this.ctlPathLenConstraint.getItems().sort((o1, o2) -> o1.compareTo(o2));
+		this.ctlPathLenConstraint.setValue(BasicConstraintsPathLen.DEFAULT_SET.getDefault());
 	}
 
 	private Integer valdiateAndGetPathLenConstraint() throws ValidationException {
-		Integer pathLenConstraint = this.ctlPathLenConstraint.getValue();
+		BasicConstraintsPathLen pathLenConstraint = InputValidator.notNull(this.ctlPathLenConstraint.getValue(),
+				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_NO_PATH_LEN_CONSTRAINT());
+		Integer pathLenConstraintValue = pathLenConstraint.value();
 
-		if (pathLenConstraint != null) {
-			InputValidator.isTrue(pathLenConstraint.intValue() >= 0,
-					(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT());
-		}
-		return pathLenConstraint;
+		InputValidator.isTrue(pathLenConstraintValue == null || pathLenConstraintValue.intValue() >= 0,
+				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT());
+		return pathLenConstraintValue;
 	}
 
 	@Override
