@@ -25,7 +25,7 @@ import de.carne.certmgr.certs.asn1.OIDs;
 import de.carne.certmgr.util.Bytes;
 
 /**
- * Class for directory names.
+ * General name of type Other.
  */
 public class OtherName extends GeneralName {
 
@@ -48,12 +48,6 @@ public class OtherName extends GeneralName {
 		this.nameBytes = nameBytes;
 	}
 
-	@Override
-	public String toString() {
-		return getType().name() + ":" + OIDs.toString(this.oid) + ":"
-				+ Bytes.toString(this.nameBytes, Attributes.FORMAT_LIMIT_SHORT);
-	}
-
 	/**
 	 * Decode {@code OtherName} from an ASN.1 data object.
 	 *
@@ -67,6 +61,11 @@ public class OtherName extends GeneralName {
 		byte[] nameBytes = sequence[1].getEncoded();
 
 		return new OtherName(oid, nameBytes);
+	}
+
+	@Override
+	public String toValueString() {
+		return OIDs.toString(this.oid) + ":" + Bytes.toString(this.nameBytes, Attributes.FORMAT_LIMIT_SHORT);
 	}
 
 }
