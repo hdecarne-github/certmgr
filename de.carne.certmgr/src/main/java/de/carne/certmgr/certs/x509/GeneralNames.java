@@ -66,7 +66,7 @@ public class GeneralNames extends ASN1Data implements Iterable<GeneralName>, Att
 	}
 
 	@Override
-	public void addAttributes(Attributes attributes) {
+	public void addToAttributes(Attributes attributes) {
 		int nameIndex = 0;
 
 		for (GeneralName name : this.names) {

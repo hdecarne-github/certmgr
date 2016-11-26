@@ -117,7 +117,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	}
 
 	@Override
-	public void addAttributes(Attributes attributes) {
+	public void addToAttributes(Attributes attributes) {
 		if (this.name != null) {
 			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_NAME()).add(this.name);
 		}

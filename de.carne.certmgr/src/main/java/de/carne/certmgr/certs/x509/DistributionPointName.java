@@ -69,7 +69,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	}
 
 	@Override
-	public void addAttributes(Attributes attributes) {
+	public void addToAttributes(Attributes attributes) {
 		if (this.fullName != null) {
 			attributes.add(this.fullName);
 		}

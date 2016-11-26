@@ -58,7 +58,7 @@ public class ReasonFlags extends ASN1Data implements AttributesContent {
 	}
 
 	@Override
-	public void addAttributes(Attributes attributes) {
+	public void addToAttributes(Attributes attributes) {
 		// TODO Auto-generated method stub
 
 	}

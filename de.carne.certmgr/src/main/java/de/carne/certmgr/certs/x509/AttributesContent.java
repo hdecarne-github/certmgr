@@ -28,6 +28,6 @@ public interface AttributesContent {
 	 * @param attributes The {@link Attributes} object to add the objects
 	 *        content to.
 	 */
-	void addAttributes(Attributes attributes);
+	void addToAttributes(Attributes attributes);
 
 }

@@ -74,7 +74,7 @@ public class Attributes {
 	}
 
 	Attributes add(AttributesContent content) {
-		content.addAttributes(this);
+		content.addToAttributes(this);
 		return this;
 	}
 
