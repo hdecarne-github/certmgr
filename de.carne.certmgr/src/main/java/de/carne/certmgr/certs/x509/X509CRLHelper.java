@@ -32,6 +32,10 @@ import de.carne.certmgr.certs.x500.X500Names;
  */
 public final class X509CRLHelper {
 
+	private X509CRLHelper() {
+		// Make sure this class is not instantiated from outside
+	}
+
 	/**
 	 * Get a CRL object's {@code Attributes}.
 	 *

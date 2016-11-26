@@ -31,7 +31,7 @@ import javafx.scene.control.Dialog;
 import javafx.util.Callback;
 
 /**
- * Basic constraints dialog.
+ * Basic Constraints dialog.
  */
 public class BasicConstraintsController extends DialogController<BasicConstraintsExtensionData>
 		implements Callback<ButtonType, BasicConstraintsExtensionData> {

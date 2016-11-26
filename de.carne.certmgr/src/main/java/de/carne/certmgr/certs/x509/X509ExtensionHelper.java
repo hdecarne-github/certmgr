@@ -27,6 +27,10 @@ import de.carne.util.Exceptions;
  */
 public final class X509ExtensionHelper {
 
+	private X509ExtensionHelper() {
+		// Make sure this class is not instantiated from outside
+	}
+
 	/**
 	 * Adds an Extension object's attributes to an {@code Attributes} object.
 	 *

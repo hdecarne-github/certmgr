@@ -26,6 +26,10 @@ import de.carne.certmgr.util.Keys;
  */
 public final class X509CertificateHelper {
 
+	private X509CertificateHelper() {
+		// Make sure this class is not instantiated from outside
+	}
+
 	/**
 	 * Get a CRT object's {@code Attributes}.
 	 *

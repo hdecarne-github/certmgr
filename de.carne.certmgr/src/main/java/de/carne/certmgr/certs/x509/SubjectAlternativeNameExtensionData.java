@@ -33,6 +33,11 @@ public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
 	 */
 	public static final String OID = "2.5.29.17";
 
+	/**
+	 * The default to use for this extension's critical flag.
+	 */
+	public static final boolean CRITICAL_DEFAULT = false;
+
 	private final GeneralNames generalNames;
 
 	/**
@@ -72,7 +77,7 @@ public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
 
 	/**
 	 * Get the defined general names.
-	 * 
+	 *
 	 * @return The defined general names.
 	 */
 	public GeneralNames getGeneralNames() {
