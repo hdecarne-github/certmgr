@@ -35,6 +35,11 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData {
 	 */
 	public static final String OID = "2.5.29.31";
 
+	/**
+	 * The default to use for this extension's critical flag.
+	 */
+	public static final boolean CRITICAL_DEFAULT = false;
+
 	private final List<DistributionPoint> distributionPoints = new ArrayList<>();
 
 	/**
