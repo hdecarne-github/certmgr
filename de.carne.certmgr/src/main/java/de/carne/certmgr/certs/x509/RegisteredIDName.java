@@ -18,47 +18,47 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 
-import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.util.Strings;
+
+import de.carne.certmgr.certs.asn1.OIDs;
 
 /**
- * Generic class for {@link String} based general name objects.
+ * General name of type Registered ID.
  */
-public class StringName extends GeneralName {
+public class RegisteredIDName extends GeneralName {
 
-	private final String name;
+	private final String oid;
 
 	/**
-	 * Construct {@code StringName}.
+	 * Construct {@code RegisteredIDName}.
 	 *
-	 * @param type The name type.
-	 * @param name The name.
+	 * @param oid The name object's OID.
 	 */
-	public StringName(GeneralNameType type, String name) {
-		super(type);
+	public RegisteredIDName(String oid) {
+		super(GeneralNameType.REGISTERED_ID);
 
-		assert name != null;
+		assert oid != null;
 
-		this.name = name;
+		this.oid = oid;
 	}
 
 	/**
-	 * Decode {@code StringName} from an ASN.1 data object.
+	 * Decode {@code RegisteredIDName} from an ASN.1 data object.
 	 *
-	 * @param type The actual general name type.
 	 * @param primitive The ASN.1 data object to decode.
-	 * @return The decoded general name object.
+	 * @return The decoded registered ID object.
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
-	public static StringName decode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
-		return new StringName(type,
-				Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
+	public static RegisteredIDName decode(ASN1Primitive primitive) throws IOException {
+		String oid = decodePrimitive(primitive, ASN1ObjectIdentifier.class).getId();
+
+		return new RegisteredIDName(oid);
 	}
 
 	@Override
 	public String toValueString() {
-		return this.name;
+		return OIDs.toString(this.oid);
 	}
 
 }

@@ -18,47 +18,46 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 
-import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.util.Strings;
+
+import de.carne.certmgr.util.Bytes;
 
 /**
- * Generic class for {@link String} based general name objects.
+ * Generic class for any kind of general name objects.
  */
-public class StringName extends GeneralName {
+public class GenericName extends GeneralName {
 
-	private final String name;
+	private final byte[] nameBytes;
 
 	/**
-	 * Construct {@code StringName}.
+	 * Construct {@code GenericName}.
 	 *
 	 * @param type The name type.
-	 * @param name The name.
+	 * @param nameBytes The name object's data.
 	 */
-	public StringName(GeneralNameType type, String name) {
+	public GenericName(GeneralNameType type, byte[] nameBytes) {
 		super(type);
 
-		assert name != null;
+		assert nameBytes != null;
 
-		this.name = name;
+		this.nameBytes = nameBytes;
 	}
 
 	/**
-	 * Decode {@code StringName} from an ASN.1 data object.
+	 * Decode {@code GenericName} from an ASN.1 data object.
 	 *
-	 * @param type The actual general name type.
+	 * @param type The name type.
 	 * @param primitive The ASN.1 data object to decode.
-	 * @return The decoded general name object.
+	 * @return The decoded generic name object.
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
-	public static StringName decode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
-		return new StringName(type,
-				Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
+	public static GenericName decode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
+		return new GenericName(type, primitive.getEncoded());
 	}
 
 	@Override
 	public String toValueString() {
-		return this.name;
+		return Bytes.toString(this.nameBytes, Attributes.FORMAT_LIMIT_SHORT);
 	}
 
 }

@@ -24,7 +24,7 @@ import org.bouncycastle.asn1.ASN1TaggedObject;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 
 /**
- * General name object.
+ * Base class for general name object.
  */
 public abstract class GeneralName extends ASN1Data {
 
@@ -62,22 +62,22 @@ public abstract class GeneralName extends ASN1Data {
 			name = StringName.decode(GeneralNameType.DNS_NAME, taggedObject.getObject());
 			break;
 		case GeneralNameType.X400_ADDRESS_TAG:
-			name = null;
+			name = GenericName.decode(GeneralNameType.X400_ADDRESS, taggedObject.getObject());
 			break;
 		case GeneralNameType.DIRECTORY_NAME_TAG:
 			name = DirectoryName.decode(taggedObject.getObject());
 			break;
 		case GeneralNameType.EDI_PARTY_NAME_TAG:
-			name = null;
+			name = GenericName.decode(GeneralNameType.EDI_PARTY_NAME, taggedObject.getObject());
 			break;
 		case GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER_TAG:
 			name = StringName.decode(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, taggedObject.getObject());
 			break;
 		case GeneralNameType.IP_ADDRESS_TAG:
-			name = StringName.decode(GeneralNameType.IP_ADDRESS, taggedObject.getObject());
+			name = IPAddressName.decode(taggedObject.getObject());
 			break;
 		case GeneralNameType.REGISTERED_ID_TAG:
-			name = null;
+			name = RegisteredIDName.decode(taggedObject.getObject());
 			break;
 		default:
 			throw new IOException("Unsupported general name type: " + nameTypeTag);
@@ -92,6 +92,18 @@ public abstract class GeneralName extends ASN1Data {
 	 */
 	public GeneralNameType getType() {
 		return this.type;
+	}
+
+	/**
+	 * Get the name's value string representation.
+	 *
+	 * @return The name's value string representation.
+	 */
+	public abstract String toValueString();
+
+	@Override
+	public String toString() {
+		return this.type.name() + ":" + toValueString();
 	}
 
 }

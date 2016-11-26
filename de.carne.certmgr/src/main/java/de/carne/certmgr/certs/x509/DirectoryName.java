@@ -25,7 +25,7 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import de.carne.certmgr.certs.x500.X500Names;
 
 /**
- * Class for directory names.
+ * General name of type Directory.
  */
 public class DirectoryName extends GeneralName {
 
@@ -44,11 +44,6 @@ public class DirectoryName extends GeneralName {
 		this.name = name;
 	}
 
-	@Override
-	public String toString() {
-		return getType().name() + ":" + X500Names.toString(this.name);
-	}
-
 	/**
 	 * Decode {@code DirectoryName} from an ASN.1 data object.
 	 *
@@ -58,6 +53,11 @@ public class DirectoryName extends GeneralName {
 	 */
 	public static DirectoryName decode(ASN1Primitive primitive) throws IOException {
 		return new DirectoryName(new X500Principal(primitive.getEncoded()));
+	}
+
+	@Override
+	public String toValueString() {
+		return X500Names.toString(this.name);
 	}
 
 }
