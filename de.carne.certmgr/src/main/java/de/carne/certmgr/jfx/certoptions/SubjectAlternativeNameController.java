@@ -20,15 +20,16 @@ import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
 import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
+import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.scene.control.Tooltips;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.ValidationException;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -36,8 +37,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
-import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.util.Callback;
 
 /**
@@ -209,14 +208,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 		try {
 			name = GeneralNameFactory.toGeneralName(this.ctlNameTypeOption.getValue(), this.ctlNameInput.getText());
 		} catch (IllegalArgumentException e) {
-			Tooltip tooltip = new Tooltip(e.getLocalizedMessage());
-
-			tooltip.setAnchorLocation(AnchorLocation.WINDOW_TOP_LEFT);
-			tooltip.setAutoHide(true);
-
-			Point2D tooltipPos = this.ctlNameInput.localToScreen(0.0, this.ctlNameInput.getHeight());
-
-			tooltip.show(getWindow(), tooltipPos.getX(), tooltipPos.getY());
+			Tooltips.show(this.ctlNameInput, e.getLocalizedMessage(), Images.WARNING16);
 		}
 		return name;
 	}
