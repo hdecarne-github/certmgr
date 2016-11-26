@@ -24,6 +24,7 @@ import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.StringName;
 import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.Strings;
 
 final class GeneralNameFactory {
 
@@ -38,7 +39,6 @@ final class GeneralNameFactory {
 		FACTORY_FUNCTIONS.put(GeneralNameType.DNS_NAME, (s) -> dnsName(s));
 		FACTORY_FUNCTIONS.put(GeneralNameType.DIRECTORY_NAME, (s) -> directoryName(s));
 		FACTORY_FUNCTIONS.put(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, (s) -> uriName(s));
-		FACTORY_FUNCTIONS.put(GeneralNameType.IP_ADDRESS, (s) -> ipAddressName(s));
 	}
 
 	public static DefaultSet<GeneralNameType> types() {
@@ -58,16 +58,20 @@ final class GeneralNameFactory {
 	}
 
 	private static GeneralName rfc822Name(String name) throws IllegalArgumentException {
-		String rfc822Name;
+		String rfc822Name = Strings.safe(name).trim();
 
-		rfc822Name = name;
+		if (Strings.isEmpty(rfc822Name)) {
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_RFC822_NAME());
+		}
 		return new StringName(GeneralNameType.RFC822_NAME, rfc822Name);
 	}
 
 	private static GeneralName dnsName(String name) throws IllegalArgumentException {
-		String dnsName;
+		String dnsName = Strings.safe(name).trim();
 
-		dnsName = name;
+		if (Strings.isEmpty(dnsName)) {
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_DNS_NAME());
+		}
 		return new StringName(GeneralNameType.DNS_NAME, dnsName);
 	}
 
@@ -76,11 +80,12 @@ final class GeneralNameFactory {
 	}
 
 	private static GeneralName uriName(String name) throws IllegalArgumentException {
-		return null;
-	}
+		String uriName = Strings.safe(name).trim();
 
-	private static GeneralName ipAddressName(String name) throws IllegalArgumentException {
-		return null;
+		if (Strings.isEmpty(uriName)) {
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_URI_NAME());
+		}
+		return new StringName(GeneralNameType.DNS_NAME, uriName);
 	}
 
 }

@@ -23,9 +23,12 @@ import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.ValidationException;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -33,6 +36,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.util.Callback;
 
 /**
@@ -69,36 +74,62 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 
 	@FXML
 	void onAddName(ActionEvent evt) {
-		try {
-			GeneralName name = GeneralNameFactory.toGeneralName(this.ctlNameTypeOption.getValue(),
-					this.ctlNameInput.getText());
+		GeneralName name = getGeneralNameInput();
 
+		if (name != null) {
 			this.ctlNames.getItems().add(name);
 			this.ctlNames.getSelectionModel().select(name);
-		} catch (IllegalArgumentException e) {
-
 		}
-
 	}
 
 	@FXML
 	void onApplyName(ActionEvent evt) {
+		int nameIndex = this.ctlNames.getSelectionModel().getSelectedIndex();
 
+		if (nameIndex >= 0) {
+			GeneralName name = getGeneralNameInput();
+
+			if (name != null) {
+				this.ctlNames.getItems().remove(nameIndex);
+				this.ctlNames.getItems().add(nameIndex, name);
+				this.ctlNames.getSelectionModel().select(name);
+			}
+		}
 	}
 
 	@FXML
 	void onDeleteName(ActionEvent evt) {
+		int nameIndex = this.ctlNames.getSelectionModel().getSelectedIndex();
 
+		if (nameIndex >= 0) {
+			this.ctlNames.getItems().remove(nameIndex);
+		}
 	}
 
 	@FXML
 	void onMoveNameUp(ActionEvent evt) {
+		int nameIndex = this.ctlNames.getSelectionModel().getSelectedIndex();
 
+		if (nameIndex > 0) {
+			ObservableList<GeneralName> nameItems = this.ctlNames.getItems();
+			GeneralName name = nameItems.remove(nameIndex);
+
+			nameItems.add(nameIndex - 1, name);
+			this.ctlNames.getSelectionModel().select(name);
+		}
 	}
 
 	@FXML
 	void onMoveNameDown(ActionEvent evt) {
+		int nameIndex = this.ctlNames.getSelectionModel().getSelectedIndex();
+		ObservableList<GeneralName> nameItems = this.ctlNames.getItems();
 
+		if (nameIndex >= 0 && nameIndex + 1 < nameItems.size()) {
+			GeneralName name = nameItems.remove(nameIndex);
+
+			nameItems.add(nameIndex + 1, name);
+			this.ctlNames.getSelectionModel().select(name);
+		}
 	}
 
 	private void onNameSelectionChanged(GeneralName name) {
@@ -111,9 +142,9 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	private void onApply(ActionEvent evt) {
 		try {
 			boolean critical = this.ctlCritical.isSelected();
-			GeneralNames generalNames = validateAndGetGeneralNames();
+			GeneralNames names = validateAndGetNames();
 
-			this.extensionDataResult = new SubjectAlternativeNameExtensionData(critical, generalNames);
+			this.extensionDataResult = new SubjectAlternativeNameExtensionData(critical, names);
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
 			evt.consume();
@@ -155,6 +186,12 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	public SubjectAlternativeNameController init(SubjectAlternativeNameExtensionData data, boolean expertMode) {
 		init(expertMode);
 		this.ctlCritical.setSelected(data.getCritical());
+
+		ObservableList<GeneralName> nameItems = this.ctlNames.getItems();
+
+		for (GeneralName name : data.getGeneralNames()) {
+			nameItems.add(name);
+		}
 		return this;
 	}
 
@@ -166,8 +203,34 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 		this.ctlNameTypeOption.setValue(types.getDefault());
 	}
 
-	private GeneralNames validateAndGetGeneralNames() throws ValidationException {
-		return null;
+	private GeneralName getGeneralNameInput() {
+		GeneralName name = null;
+
+		try {
+			name = GeneralNameFactory.toGeneralName(this.ctlNameTypeOption.getValue(), this.ctlNameInput.getText());
+		} catch (IllegalArgumentException e) {
+			Tooltip tooltip = new Tooltip(e.getLocalizedMessage());
+
+			tooltip.setAnchorLocation(AnchorLocation.WINDOW_TOP_LEFT);
+			tooltip.setAutoHide(true);
+
+			Point2D tooltipPos = this.ctlNameInput.localToScreen(0.0, this.ctlNameInput.getHeight());
+
+			tooltip.show(getWindow(), tooltipPos.getX(), tooltipPos.getY());
+		}
+		return name;
+	}
+
+	private GeneralNames validateAndGetNames() throws ValidationException {
+		GeneralNames names = new GeneralNames();
+		int nameCount = 0;
+
+		for (GeneralName name : this.ctlNames.getItems()) {
+			names.addName(name);
+			nameCount++;
+		}
+		InputValidator.isTrue(nameCount > 0, (a) -> SubjectAlternativeNameI18N.formatSTR_MESSAGE_NO_NAMES());
+		return names;
 	}
 
 	@Override
