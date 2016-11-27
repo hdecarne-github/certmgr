@@ -50,7 +50,7 @@ import de.carne.certmgr.certs.x500.X500Names;
  * In the current implementation this class is wrapper around BouncyCastle's
  * {@link PKCS10CertificationRequest} class.
  */
-public class PKCS10CertificateRequest extends ASN1Data implements X509Extension {
+public class PKCS10CertificateRequest extends ASN1Data implements X509Extension, AttributesProvider {
 
 	private final JcaPKCS10CertificationRequest csr;
 	private final X500Principal subject;
@@ -167,11 +167,13 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension 
 		return this.publicKey;
 	}
 
-	/**
-	 * Get this CSR object's {@code Attributes}.
-	 *
-	 * @return This CSR object's attributes.
-	 */
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public Attributes toAttributes() {
 		Attributes csrAttributes = new Attributes(AttributesI18N.formatSTR_CSR());
 

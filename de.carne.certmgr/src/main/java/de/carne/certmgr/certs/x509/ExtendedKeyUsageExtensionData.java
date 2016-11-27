@@ -21,8 +21,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DERSequence;
 
 import de.carne.util.Strings;
 
@@ -103,6 +106,16 @@ public class ExtendedKeyUsageExtensionData extends X509ExtensionData implements 
 	 */
 	public boolean hasUsage(ExtendedKeyUsage usage) {
 		return this.usages.contains(usage);
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		ASN1EncodableVector sequence = new ASN1EncodableVector();
+
+		for (ExtendedKeyUsage usage : this.usages) {
+			sequence.add(new ASN1ObjectIdentifier(usage.value()));
+		}
+		return new DERSequence(sequence);
 	}
 
 	@Override

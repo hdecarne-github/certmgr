@@ -18,6 +18,7 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 
@@ -61,6 +62,12 @@ public class OtherName extends GeneralName {
 		byte[] nameBytes = sequence[1].getEncoded();
 
 		return new OtherName(oid, nameBytes);
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

@@ -84,4 +84,12 @@ public abstract class ASN1Data {
 		return primitiveType.cast(primitive);
 	}
 
+	/**
+	 * Encode the object into it's corresponding ASN.1 structure.
+	 * 
+	 * @return The ASN.1 encoded object data.
+	 * @throws IOException if an I/O error occurs during encoding.
+	 */
+	public abstract ASN1Encodable encode() throws IOException;
+
 }

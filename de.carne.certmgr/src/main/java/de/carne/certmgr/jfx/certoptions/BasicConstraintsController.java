@@ -16,6 +16,8 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.math.BigInteger;
+
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.util.validation.ValidationAlerts;
@@ -51,7 +53,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 		try {
 			boolean critical = this.ctlCritical.isSelected();
 			boolean ca = this.ctlCA.isSelected();
-			Integer pathLenConstraint = null;
+			BigInteger pathLenConstraint = null;
 
 			if (ca) {
 				pathLenConstraint = valdiateAndGetPathLenConstraint();
@@ -111,12 +113,12 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 		this.ctlPathLenConstraint.setValue(BasicConstraintsPathLen.DEFAULT_SET.getDefault());
 	}
 
-	private Integer valdiateAndGetPathLenConstraint() throws ValidationException {
+	private BigInteger valdiateAndGetPathLenConstraint() throws ValidationException {
 		BasicConstraintsPathLen pathLenConstraint = InputValidator.notNull(this.ctlPathLenConstraint.getValue(),
 				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_NO_PATH_LEN_CONSTRAINT());
-		Integer pathLenConstraintValue = pathLenConstraint.value();
+		BigInteger pathLenConstraintValue = pathLenConstraint.value();
 
-		InputValidator.isTrue(pathLenConstraintValue == null || pathLenConstraintValue.intValue() >= 0,
+		InputValidator.isTrue(pathLenConstraintValue == null || pathLenConstraintValue.compareTo(BigInteger.ZERO) >= 0,
 				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT());
 		return pathLenConstraintValue;
 	}

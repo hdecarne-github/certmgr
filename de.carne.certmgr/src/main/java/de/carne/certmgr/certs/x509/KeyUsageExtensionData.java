@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.bouncycastle.asn1.ASN1BitString;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 import de.carne.util.Strings;
@@ -122,6 +123,12 @@ public class KeyUsageExtensionData extends X509ExtensionData implements Iterable
 	 */
 	public boolean hasUsage(KeyUsage usage) {
 		return this.usages.contains(usage);
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

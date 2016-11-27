@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DERSequence;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 
@@ -58,6 +61,16 @@ public class GeneralNames extends ASN1Data implements Iterable<GeneralName>, Att
 		assert name != null;
 
 		this.names.add(name);
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		ASN1EncodableVector sequence = new ASN1EncodableVector();
+
+		for (GeneralName name : this.names) {
+			sequence.add(name.encode());
+		}
+		return new DERSequence(sequence);
 	}
 
 	@Override

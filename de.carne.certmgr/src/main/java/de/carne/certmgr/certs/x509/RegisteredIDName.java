@@ -18,6 +18,7 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 
@@ -54,6 +55,12 @@ public class RegisteredIDName extends GeneralName {
 		String oid = decodePrimitive(primitive, ASN1ObjectIdentifier.class).getId();
 
 		return new RegisteredIDName(oid);
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

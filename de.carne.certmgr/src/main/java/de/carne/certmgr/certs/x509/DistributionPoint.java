@@ -18,8 +18,12 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERTaggedObject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
@@ -65,18 +69,12 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 
 			switch (taggedObjectTag) {
 			case 0:
-				assert name == null;
-
 				name = DistributionPointName.decode(taggedObject.getObject());
 				break;
 			case 1:
-				assert reasons == null;
-
 				reasons = ReasonFlags.decode(taggedObject.getObject());
 				break;
 			case 2:
-				assert crlIssuer == null;
-
 				crlIssuer = GeneralNames.decode(taggedObject.getObject());
 				break;
 			default:
@@ -114,6 +112,22 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 */
 	public @Nullable GeneralNames getCRLIssuer() {
 		return this.crlIssuer;
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		ASN1EncodableVector sequence = new ASN1EncodableVector();
+
+		if (this.name != null) {
+			sequence.add(new DERTaggedObject(true, 0, this.name.encode()));
+		}
+		if (this.reasons != null) {
+			sequence.add(new DERTaggedObject(false, 1, this.reasons.encode()));
+		}
+		if (this.crlIssuer != null) {
+			sequence.add(new DERTaggedObject(false, 2, this.crlIssuer.encode()));
+		}
+		return new DERSequence(sequence);
 	}
 
 	@Override

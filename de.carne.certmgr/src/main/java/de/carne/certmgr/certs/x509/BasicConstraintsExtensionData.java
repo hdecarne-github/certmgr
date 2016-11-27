@@ -17,10 +17,14 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import org.bouncycastle.asn1.ASN1Boolean;
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DERSequence;
 
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.9">Basic
@@ -40,7 +44,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 
 	private boolean ca = false;
 
-	private Integer pathLenConstraint = null;
+	private BigInteger pathLenConstraint = null;
 
 	/**
 	 * Construct {@code BasicConstraintsExtensionData}.
@@ -48,7 +52,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 * @param critical The extension's critical flag.
 	 */
 	public BasicConstraintsExtensionData(boolean critical) {
-		this(critical, false, -1);
+		this(critical, false, null);
 	}
 
 	/**
@@ -59,7 +63,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 * @param pathLenConstraint The extension's path length constraint value or
 	 *        {@code null} if there is none.
 	 */
-	public BasicConstraintsExtensionData(boolean critical, boolean ca, Integer pathLenConstraint) {
+	public BasicConstraintsExtensionData(boolean critical, boolean ca, BigInteger pathLenConstraint) {
 		super(OID, critical);
 		this.ca = ca;
 		this.pathLenConstraint = pathLenConstraint;
@@ -76,13 +80,13 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	public static BasicConstraintsExtensionData decode(ASN1Primitive primitive, boolean critical) throws IOException {
 		ASN1Primitive[] sequence = decodeSequence(primitive, 0, 2);
 		boolean decodedCA = false;
-		Integer decodedPathLenConstraint = null;
+		BigInteger decodedPathLenConstraint = null;
 
 		if (sequence.length > 0) {
 			decodedCA = decodePrimitive(sequence[0], ASN1Boolean.class).isTrue();
 		}
 		if (sequence.length > 1) {
-			decodedPathLenConstraint = decodePrimitive(sequence[1], ASN1Integer.class).getValue().intValue();
+			decodedPathLenConstraint = decodePrimitive(sequence[1], ASN1Integer.class).getValue();
 		}
 		return new BasicConstraintsExtensionData(critical, decodedCA, decodedPathLenConstraint);
 	}
@@ -111,7 +115,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 * @return This extension's path length constraint, or {@code null} if none
 	 *         has been defined.
 	 */
-	public Integer getPathLenConstraint() {
+	public BigInteger getPathLenConstraint() {
 		return this.pathLenConstraint;
 	}
 
@@ -120,8 +124,19 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 *
 	 * @param pathLenConstraint The value to set.
 	 */
-	public void setPathLenConstraint(Integer pathLenConstraint) {
+	public void setPathLenConstraint(BigInteger pathLenConstraint) {
 		this.pathLenConstraint = pathLenConstraint;
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		ASN1EncodableVector sequence = new ASN1EncodableVector();
+
+		sequence.add(ASN1Boolean.getInstance(this.ca));
+		if (this.pathLenConstraint != null) {
+			sequence.add(new ASN1Integer(this.pathLenConstraint));
+		}
+		return new DERSequence(sequence);
 	}
 
 	@Override

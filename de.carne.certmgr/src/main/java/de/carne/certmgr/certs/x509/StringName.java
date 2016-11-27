@@ -18,6 +18,7 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.util.Strings;
@@ -54,6 +55,12 @@ public class StringName extends GeneralName {
 	public static StringName decode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
 		return new StringName(type,
 				Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override

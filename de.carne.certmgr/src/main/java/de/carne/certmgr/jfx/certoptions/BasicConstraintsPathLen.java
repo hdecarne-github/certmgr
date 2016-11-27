@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.math.BigInteger;
 import java.util.Objects;
 
 import de.carne.certmgr.util.DefaultSet;
@@ -49,22 +50,26 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 		public BasicConstraintsPathLen fromString(String string) {
 			String trimmedString = Strings.safeTrim(string);
 
-			return BasicConstraintsPathLen.valueOf(trimmedString != null ? Integer.valueOf(trimmedString) : null);
+			return BasicConstraintsPathLen.valueOf(trimmedString != null ? new BigInteger(trimmedString) : null);
 		}
 
 	};
 
-	private final Integer pathLenConstraint;
+	private final BigInteger pathLenConstraint;
 
-	private BasicConstraintsPathLen(Integer pathLenConstraint) {
+	private BasicConstraintsPathLen(BigInteger pathLenConstraint) {
 		this.pathLenConstraint = pathLenConstraint;
 	}
 
-	public static BasicConstraintsPathLen valueOf(Integer pathLenConstraint) {
+	public static BasicConstraintsPathLen valueOf(long pathLenConstraint) {
+		return new BasicConstraintsPathLen(BigInteger.valueOf(pathLenConstraint));
+	}
+
+	public static BasicConstraintsPathLen valueOf(BigInteger pathLenConstraint) {
 		return (pathLenConstraint != null ? new BasicConstraintsPathLen(pathLenConstraint) : NO_CONSTRAINT);
 	}
 
-	public Integer value() {
+	public BigInteger value() {
 		return this.pathLenConstraint;
 	}
 

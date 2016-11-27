@@ -20,13 +20,18 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -84,13 +89,14 @@ public final class X509CertificateHelper {
 	 * @throws IOException if an error occurs during generation.
 	 */
 	public static X509Certificate generateCRT(X500Principal dn, KeyPair key, BigInteger serial, Date notBefore,
-			Date notAfter, X500Principal issuerDN, KeyPair issuerKey, SignatureAlgorithm signatureAlgorithm)
-			throws IOException {
+			Date notAfter, List<X509ExtensionData> extensions, X500Principal issuerDN, KeyPair issuerKey,
+			SignatureAlgorithm signatureAlgorithm) throws IOException {
 		assert dn != null;
 		assert key != null;
 		assert serial != null;
 		assert notBefore != null;
 		assert notAfter != null;
+		assert extensions != null;
 		assert issuerDN != null;
 		assert signatureAlgorithm != null;
 
@@ -101,6 +107,10 @@ public final class X509CertificateHelper {
 
 			X509v3CertificateBuilder crtBuilder = new JcaX509v3CertificateBuilder(issuerDN, serial, notBefore, notAfter,
 					dn, key.getPublic());
+
+			addExtensions(crtBuilder, extensions);
+			addKeyIdentifierExtensions(crtBuilder, key.getPublic(), issuerKey.getPublic());
+
 			ContentSigner crtSigner = new JcaContentSignerBuilder(signatureAlgorithm.algorithm())
 					.build(issuerKey.getPrivate());
 
@@ -110,6 +120,31 @@ public final class X509CertificateHelper {
 			throw new CertProviderException(e);
 		}
 		return crt;
+	}
+
+	private static void addExtensions(X509v3CertificateBuilder crtBuilder, List<X509ExtensionData> extensions)
+			throws IOException {
+		for (X509ExtensionData extensionData : extensions) {
+			String oid = extensionData.oid();
+
+			if (!oid.equals(Extension.subjectKeyIdentifier) && !oid.equals(Extension.authorityKeyIdentifier)) {
+				boolean critical = extensionData.getCritical();
+
+				crtBuilder.addExtension(ASN1ObjectIdentifier.getInstance(oid), critical, extensionData.encode());
+			}
+		}
+	}
+
+	private static void addKeyIdentifierExtensions(X509v3CertificateBuilder crtBuilder, PublicKey publicKey,
+			PublicKey issuerPublicKey) throws GeneralSecurityException, IOException {
+		JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+
+		crtBuilder.addExtension(Extension.subjectKeyIdentifier, false,
+				extensionUtils.createSubjectKeyIdentifier(publicKey));
+		if (!publicKey.equals(issuerPublicKey)) {
+			crtBuilder.addExtension(Extension.authorityKeyIdentifier, false,
+					extensionUtils.createAuthorityKeyIdentifier(issuerPublicKey));
+		}
 	}
 
 }

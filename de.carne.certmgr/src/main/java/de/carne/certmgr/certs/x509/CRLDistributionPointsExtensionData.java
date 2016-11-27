@@ -20,7 +20,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DERSequence;
 
 import de.carne.util.Strings;
 
@@ -69,6 +72,16 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData {
 			distributionPoints.distributionPoints.add(DistributionPoint.decode(sequenceEntry));
 		}
 		return distributionPoints;
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		ASN1EncodableVector sequence = new ASN1EncodableVector();
+
+		for (DistributionPoint distributionPoint : this.distributionPoints) {
+			sequence.add(distributionPoint.encode());
+		}
+		return new DERSequence(sequence);
 	}
 
 	@Override

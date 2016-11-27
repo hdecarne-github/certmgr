@@ -16,6 +16,11 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import java.io.IOException;
+
+import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.DEROctetString;
+
 import de.carne.certmgr.util.Bytes;
 
 /**
@@ -60,6 +65,11 @@ public class CustomExtensionData extends X509ExtensionData {
 		assert encoded != null;
 
 		this.encoded = encoded;
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		return new DEROctetString(this.encoded);
 	}
 
 	@Override

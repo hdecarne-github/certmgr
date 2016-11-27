@@ -19,6 +19,7 @@ package de.carne.certmgr.certs.x509;
 import java.io.IOException;
 import java.math.BigInteger;
 
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 
@@ -68,6 +69,11 @@ public class CRLNumberExtensionData extends X509ExtensionData {
 	 */
 	public BigInteger getCRLNumber() {
 		return this.crlNumber;
+	}
+
+	@Override
+	public ASN1Encodable encode() throws IOException {
+		return new ASN1Integer(this.crlNumber);
 	}
 
 	@Override

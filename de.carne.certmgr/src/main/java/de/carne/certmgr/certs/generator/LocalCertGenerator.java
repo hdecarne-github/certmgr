@@ -131,8 +131,8 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 		Date notAfter = requiredParameter(request.getNotAfter(), "NotAfter");
 		SignatureAlgorithm signatureAlgorithm = requiredParameter(request.getSignatureAlgorithm(),
 				"SignatureAlgorithm");
-		X509Certificate crt = X509CertificateHelper.generateCRT(dn, key, serial, notBefore, notAfter, issuerDN,
-				issuerKey, signatureAlgorithm);
+		X509Certificate crt = X509CertificateHelper.generateCRT(dn, key, serial, notBefore, notAfter,
+				request.getExtensions(), issuerDN, issuerKey, signatureAlgorithm);
 
 		return Arrays.asList((Object) key, (Object) crt);
 	}
