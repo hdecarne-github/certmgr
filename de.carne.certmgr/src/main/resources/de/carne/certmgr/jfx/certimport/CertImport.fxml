@@ -22,7 +22,7 @@
 
 <StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
    <children>
-      <GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
+      <GridPane fx:id="ctlControlPane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

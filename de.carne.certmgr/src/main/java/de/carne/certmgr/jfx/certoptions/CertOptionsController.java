@@ -70,6 +70,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
@@ -102,6 +103,9 @@ public class CertOptionsController extends StageController {
 
 	private final ObjectProperty<CRLDistributionPointsExtensionData> crlDistributionPointsExtension = new SimpleObjectProperty<>(
 			null);
+
+	@FXML
+	GridPane ctlControlPane;
 
 	@FXML
 	VBox ctlProgressOverlay;
@@ -500,9 +504,8 @@ public class CertOptionsController extends StageController {
 
 	@Override
 	protected void setBlocked(boolean blocked) {
+		this.ctlControlPane.setDisable(blocked);
 		this.ctlProgressOverlay.setVisible(blocked);
-		this.ctlProgressOverlay.getChildren().get(0).setDisable(!blocked);
-		super.setBlocked(blocked);
 	}
 
 	private void setExtensionData(X509ExtensionData extensionData) {
@@ -544,7 +547,9 @@ public class CertOptionsController extends StageController {
 			generateRequest.setNotAfter(notAfter);
 		}
 		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_EXTENSIONS)) {
-
+			for (ExtensionDataModel extensionItem : this.ctlExtensionData.getItems()) {
+				generateRequest.addExtension(extensionItem.getExtensionData());
+			}
 		}
 		return generateRequest;
 	}

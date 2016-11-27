@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
@@ -82,6 +81,7 @@ public final class X509CertificateHelper {
 	 * @param serial The CRT's serial.
 	 * @param notBefore The CRT's validity start.
 	 * @param notAfter The CRT's validity end.
+	 * @param extensions The CRT's extension objects.
 	 * @param issuerDN The issuer's Distinguished Name (DN).
 	 * @param issuerKey The issuer's key pair.
 	 * @param signatureAlgorithm The signature algorithm to use.
@@ -105,12 +105,34 @@ public final class X509CertificateHelper {
 		try {
 			LOG.info("CRT generation ''{0}'' started...", dn);
 
+			// Initialize CRT builder
 			X509v3CertificateBuilder crtBuilder = new JcaX509v3CertificateBuilder(issuerDN, serial, notBefore, notAfter,
 					dn, key.getPublic());
 
+			// Add extension objects
 			addExtensions(crtBuilder, extensions);
-			addKeyIdentifierExtensions(crtBuilder, key.getPublic(), issuerKey.getPublic());
 
+			// Add standard extensions based upon the CRT's purpose
+			JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+
+			for (X509ExtensionData extension : extensions) {
+				if (extension instanceof BasicConstraintsExtensionData) {
+					BasicConstraintsExtensionData basicConstraintsExtension = (BasicConstraintsExtensionData) extension;
+
+					if (basicConstraintsExtension.getCA()) {
+						// CRT is CA --> record it's key's identifier
+						crtBuilder.addExtension(Extension.subjectKeyIdentifier, false,
+								extensionUtils.createSubjectKeyIdentifier(key.getPublic()));
+					}
+				}
+			}
+			if (!key.equals(issuerKey)) {
+				// CRT is not self-signed --> record issuer key's identifier
+				crtBuilder.addExtension(Extension.authorityKeyIdentifier, false,
+						extensionUtils.createAuthorityKeyIdentifier(issuerKey.getPublic()));
+			}
+
+			// Sign CRT
 			ContentSigner crtSigner = new JcaContentSignerBuilder(signatureAlgorithm.algorithm())
 					.build(issuerKey.getPrivate());
 
@@ -130,20 +152,10 @@ public final class X509CertificateHelper {
 			if (!oid.equals(Extension.subjectKeyIdentifier) && !oid.equals(Extension.authorityKeyIdentifier)) {
 				boolean critical = extensionData.getCritical();
 
-				crtBuilder.addExtension(ASN1ObjectIdentifier.getInstance(oid), critical, extensionData.encode());
+				crtBuilder.addExtension(new ASN1ObjectIdentifier(oid), critical, extensionData.encode());
+			} else {
+				LOG.warning("Ignoring key identifier extension");
 			}
-		}
-	}
-
-	private static void addKeyIdentifierExtensions(X509v3CertificateBuilder crtBuilder, PublicKey publicKey,
-			PublicKey issuerPublicKey) throws GeneralSecurityException, IOException {
-		JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
-
-		crtBuilder.addExtension(Extension.subjectKeyIdentifier, false,
-				extensionUtils.createSubjectKeyIdentifier(publicKey));
-		if (!publicKey.equals(issuerPublicKey)) {
-			crtBuilder.addExtension(Extension.authorityKeyIdentifier, false,
-					extensionUtils.createAuthorityKeyIdentifier(issuerPublicKey));
 		}
 	}
 

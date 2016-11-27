@@ -71,6 +71,7 @@ import javafx.scene.control.cell.CheckBoxTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -94,6 +95,9 @@ public class CertImportController extends StageController {
 	private UserCertStore importStore = null;
 
 	private UserCertStore sourceStore = null;
+
+	@FXML
+	GridPane ctlControlPane;
 
 	@FXML
 	VBox ctlProgressOverlay;
@@ -339,9 +343,8 @@ public class CertImportController extends StageController {
 
 	@Override
 	protected void setBlocked(boolean blocked) {
+		this.ctlControlPane.setDisable(blocked);
 		this.ctlProgressOverlay.setVisible(blocked);
-		this.ctlProgressOverlay.getChildren().get(0).setDisable(!blocked);
-		super.setBlocked(blocked);
 	}
 
 	private void validateAndReloadFileSource() {

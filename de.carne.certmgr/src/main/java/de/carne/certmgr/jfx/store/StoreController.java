@@ -248,7 +248,8 @@ public class StoreController extends StageController {
 			CertOptionsController certOptions = loadStage(CertOptionsController.class).init(this.storeProperty.get(),
 					getSelectedStoreEntry(), this.userPreferences.expertMode.getBoolean(false));
 
-			certOptions.show();
+			certOptions.showAndWait();
+			updateStoreEntryView();
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
 		}
