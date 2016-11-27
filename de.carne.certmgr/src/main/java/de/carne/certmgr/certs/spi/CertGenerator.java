@@ -24,6 +24,7 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.generator.GenerateCertRequest;
 import de.carne.certmgr.certs.generator.Issuer;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.util.DefaultSet;
 
@@ -98,12 +99,12 @@ public interface CertGenerator extends NamedProvider {
 	 *        platform ({@code true}).
 	 * @return The available signature algorithms
 	 */
-	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, String keyPairAlgorithm, String defaultHint,
-			boolean expertMode);
+	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, KeyPairAlgorithm keyPairAlgorithm,
+			String defaultHint, boolean expertMode);
 
 	/**
 	 * Generate certificate objects.
-	 * 
+	 *
 	 * @param request The parameters to use for generation.
 	 * @param password The password callback to use for password querying.
 	 * @return The generated certificate objects.

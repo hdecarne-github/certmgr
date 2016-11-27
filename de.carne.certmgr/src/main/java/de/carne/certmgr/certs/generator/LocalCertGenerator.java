@@ -29,6 +29,7 @@ import javax.security.auth.x500.X500Principal;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x509.KeyHelper;
@@ -84,7 +85,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 	}
 
 	@Override
-	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, String keyPairAlgorithm,
+	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, KeyPairAlgorithm keyPairAlgorithm,
 			String defaultHint, boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 
@@ -92,7 +93,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 			String keyPairAlgorithmName;
 
 			if (this.selfSignedIssuer.equals(issuer)) {
-				keyPairAlgorithmName = keyPairAlgorithm;
+				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
 			} else {
 				keyPairAlgorithmName = issuer.storeEntry().getKeyAlgorithm();
 			}

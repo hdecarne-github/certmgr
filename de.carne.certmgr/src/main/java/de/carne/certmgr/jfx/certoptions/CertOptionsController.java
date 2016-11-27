@@ -463,16 +463,14 @@ public class CertOptionsController extends StageController {
 		DefaultSet<SignatureAlgorithm> sigAlgs = null;
 
 		if (generator != null) {
-			String keyPairAlgorithmName = null;
 			String defaultHint = null;
 
 			if (keyPairAlgorithm != null) {
-				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
-				if (keyPairAlgorithmName.equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
+				if (keyPairAlgorithm.algorithm().equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
 					defaultHint = this.storePreferences.defaultSignatureAlgorithm.get();
 				}
 			}
-			sigAlgs = generator.getSignatureAlgorithms(issuer, keyPairAlgorithmName, defaultHint, this.expertMode);
+			sigAlgs = generator.getSignatureAlgorithms(issuer, keyPairAlgorithm, defaultHint, this.expertMode);
 		}
 		resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs, (o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}

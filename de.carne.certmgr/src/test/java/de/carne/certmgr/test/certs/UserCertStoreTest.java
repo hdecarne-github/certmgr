@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.security.Security;
 import java.security.cert.X509Extension;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
@@ -38,8 +39,13 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStoreEntryId;
 import de.carne.certmgr.certs.UserCertStorePreferences;
+import de.carne.certmgr.certs.generator.CertGenerators;
+import de.carne.certmgr.certs.generator.GenerateCertRequest;
 import de.carne.certmgr.certs.net.SSLPeer.Protocol;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
+import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
@@ -98,8 +104,11 @@ public class UserCertStoreTest {
 
 		try {
 			UserCertStore createdStore = UserCertStore.createStore(storeHome);
+			GenerateCertRequest request1 = generateRequest(createdStore, CertGenerators.DEFAULT);
 
-			Assert.assertEquals(0, createdStore.size());
+			createdStore.generateEntry(CertGenerators.DEFAULT, request1, TestCerts.password(), TestCerts.password(),
+					"TestCert");
+			Assert.assertEquals(1, createdStore.size());
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -114,10 +123,36 @@ public class UserCertStoreTest {
 		try {
 			UserCertStore openendStore = UserCertStore.openStore(storeHome);
 
-			Assert.assertEquals(0, openendStore.size());
+			Assert.assertEquals(1, openendStore.size());
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}
+	}
+
+	private GenerateCertRequest basicRequest() {
+		KeyPairAlgorithm keyPairAlgorithm = KeyPairAlgorithm.getDefaultSet(null, false).getDefault();
+		GenerateCertRequest request = new GenerateCertRequest(X500Names.fromString("CN=TestCert"), keyPairAlgorithm,
+				keyPairAlgorithm.getStandardKeySizes(null).getDefault());
+
+		Date notBefore = new Date();
+		Date notAfter = new Date(notBefore.getTime() + 1000 * 60 * 24);
+
+		request.setNotBefore(notBefore);
+		request.setNotAfter(notAfter);
+		return request;
+	}
+
+	private GenerateCertRequest generateRequest(UserCertStore store, CertGenerator generator) {
+		GenerateCertRequest request = basicRequest();
+
+		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_ISSUER)) {
+			request.setIssuer(generator.getIssuers(store, null).getDefault());
+		}
+		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_SIGNATURE_ALGORITHM)) {
+			request.setSignatureAlgorithm(generator
+					.getSignatureAlgorithms(request.getIssuer(), request.keyPairAlgorithm(), null, false).getDefault());
+		}
+		return request;
 	}
 
 	/**

@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import de.carne.certmgr.certs.io.PEMCertReaderWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.nio.FileAttributes;
 import de.carne.util.logging.Log;
 
 /**
@@ -115,6 +116,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	public CRTEntry createCRTEntry(UserCertStoreEntryId id, X509Certificate crt) throws IOException {
 		Path entryPath = entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT);
 
+		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
 		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
 			PEM_IO.write(output, crt, id.getAlias());
 		}
@@ -125,6 +127,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	public KeyEntry createKeyEntry(UserCertStoreEntryId id, KeyPair key, PasswordCallback password) throws IOException {
 		Path entryPath = entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY);
 
+		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
 		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
 			PEM_IO.write(output, key, id.getAlias(), password);
 		}
@@ -135,6 +138,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	public CSREntry createCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr) throws IOException {
 		Path entryPath = entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR);
 
+		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
 		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
 			PEM_IO.write(output, csr, id.getAlias());
 		}
@@ -145,6 +149,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	public CRLEntry createCRLEntry(UserCertStoreEntryId id, X509CRL crl) throws IOException {
 		Path entryPath = entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL);
 
+		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
 		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
 			PEM_IO.write(output, crl, id.getAlias());
 		}

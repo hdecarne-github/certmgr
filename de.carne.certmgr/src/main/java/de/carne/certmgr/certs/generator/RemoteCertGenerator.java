@@ -22,6 +22,7 @@ import java.util.List;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.util.DefaultSet;
 
@@ -58,12 +59,13 @@ public class RemoteCertGenerator extends AbstractCertGenerator {
 	}
 
 	@Override
-	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, String keyPairAlgorithm,
+	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, KeyPairAlgorithm keyPairAlgorithm,
 			String defaultHint, boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 
 		if (keyPairAlgorithm != null) {
-			signatureAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithm, defaultHint, expertMode);
+			signatureAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithm.algorithm(), defaultHint,
+					expertMode);
 		}
 		return signatureAlgorithms;
 	}

@@ -320,23 +320,6 @@ public final class UserCertStore {
 	}
 
 	/**
-	 * Delete a store entry.
-	 *
-	 * @param entryId The entry id to delete.
-	 * @throws IOException if an I/O error occurs during deletion.
-	 */
-	public synchronized void deleteEntry(UserCertStoreEntryId entryId) throws IOException {
-		assert entryId != null;
-
-		if (!this.storeEntries.containsKey(entryId)) {
-			throw new IllegalArgumentException("Invalid entry: " + entryId);
-		}
-		this.storeEntries.remove(entryId);
-		this.storeHandler.deleteEntry(entryId);
-		resetIssuers();
-	}
-
-	/**
 	 * Generate a new store entry.
 	 *
 	 * @param generator The {@link CertGenerator} to use for generation.
@@ -370,7 +353,8 @@ public final class UserCertStore {
 	 * @param newPassword The password callback to use for new password
 	 *        querying.
 	 * @param aliasHint The preferred alias for entry id generation.
-	 * @return The id of the generated or merged entry.
+	 * @return The id of the generated or merged entry or {@code null} if
+	 *         nothing has been imported.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
 	public UserCertStoreEntryId importEntry(UserCertStoreEntry entry, PasswordCallback newPassword, String aliasHint)
@@ -395,9 +379,26 @@ public final class UserCertStore {
 
 		Set<UserCertStoreEntryId> mergedIds = mergeCertObjects(certObjects, newPassword, aliasHint);
 
-		assert mergedIds.size() == 1;
+		assert mergedIds.size() <= 1;
 
-		return mergedIds.iterator().next();
+		return (!mergedIds.isEmpty() ? mergedIds.iterator().next() : null);
+	}
+
+	/**
+	 * Delete a store entry.
+	 *
+	 * @param entryId The entry id to delete.
+	 * @throws IOException if an I/O error occurs during deletion.
+	 */
+	public synchronized void deleteEntry(UserCertStoreEntryId entryId) throws IOException {
+		assert entryId != null;
+
+		if (!this.storeEntries.containsKey(entryId)) {
+			throw new IllegalArgumentException("Invalid entry: " + entryId);
+		}
+		this.storeEntries.remove(entryId);
+		this.storeHandler.deleteEntry(entryId);
+		resetIssuers();
 	}
 
 	/**
@@ -498,17 +499,27 @@ public final class UserCertStore {
 
 		// First merge CRT and CSR objects as they provide the entry's DN
 		for (Object certObject : certObjects) {
+			UserCertStoreEntry mergedEntry = null;
+
 			if (certObject instanceof X509Certificate) {
-				mergedIds.add(mergeX509Certificate((X509Certificate) certObject, aliasHint).id());
+				mergedEntry = mergeX509Certificate((X509Certificate) certObject, aliasHint);
 			} else if (certObject instanceof PKCS10CertificateRequest) {
-				mergedIds.add(mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject, aliasHint).id());
+				mergedEntry = mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject, aliasHint);
+			}
+			if (mergedEntry != null) {
+				mergedIds.add(mergedEntry.id());
 			}
 		}
 		for (Object certObject : certObjects) {
+			UserCertStoreEntry mergedEntry = null;
+
 			if (certObject instanceof KeyPair) {
-				mergedIds.add(mergeKey((KeyPair) certObject, newPassword).id());
+				mergedEntry = mergeKey((KeyPair) certObject, newPassword);
 			} else if (certObject instanceof X509CRL) {
-				mergedIds.add(mergeX509CRL((X509CRL) certObject, aliasHint).id());
+				mergedEntry = mergeX509CRL((X509CRL) certObject, aliasHint);
+			}
+			if (mergedEntry != null) {
+				mergedIds.add(mergedEntry.id());
 			}
 		}
 		resetIssuers();
