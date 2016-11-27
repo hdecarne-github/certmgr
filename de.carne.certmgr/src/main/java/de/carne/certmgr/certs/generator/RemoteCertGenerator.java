@@ -14,23 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.signer;
+package de.carne.certmgr.certs.generator;
 
+import java.io.IOException;
+import java.util.List;
+
+import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.certmgr.certs.spi.CertSigner;
 import de.carne.certmgr.util.DefaultSet;
 
 /**
  * Signing service for CSR generation.
  */
-public class RemoteCertSigner implements CertSigner {
+public class RemoteCertGenerator extends AbstractCertGenerator {
 
 	/**
 	 * Provider name.
 	 */
 	public static final String PROVIDER_NAME = "REMOTE";
+
+	/**
+	 * Construct {@code RemoteCertGenerator}.
+	 */
+	public RemoteCertGenerator() {
+		super(Feature.CUSTOM_SIGNATURE_ALGORITHM, Feature.CUSTOM_EXTENSIONS);
+	}
 
 	@Override
 	public String providerName() {
@@ -39,12 +49,7 @@ public class RemoteCertSigner implements CertSigner {
 
 	@Override
 	public String getDescription() {
-		return CertSignerI18N.formatSTR_REMOTE_DESCRIPTION();
-	}
-
-	@Override
-	public boolean hasFeature(Feature feature) {
-		return feature == Feature.CUSTOM_SIGNATURE_ALGORITHM || feature == Feature.CUSTOM_EXTENSIONS;
+		return CertGeneratorI18N.formatSTR_REMOTE_DESCRIPTION();
 	}
 
 	@Override
@@ -64,8 +69,9 @@ public class RemoteCertSigner implements CertSigner {
 	}
 
 	@Override
-	public String toString() {
-		return getDescription();
+	public List<Object> generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

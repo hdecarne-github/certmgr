@@ -35,7 +35,6 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
-import de.carne.certmgr.jfx.certimport.CertImportRequest;
 import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.preferences.PreferencesController;
 import de.carne.certmgr.jfx.preferences.PreferencesDialog;
@@ -274,9 +273,10 @@ public class StoreController extends StageController {
 	void onCmdImportCerts(ActionEvent evt) {
 		try {
 			CertImportController importController = loadStage(CertImportController.class)
-					.init((r) -> onImportRequest(r));
+					.init(this.storeProperty.get());
 
-			importController.show();
+			importController.showAndWait();
+			updateStoreEntryView();
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
 		}
@@ -332,22 +332,6 @@ public class StoreController extends StageController {
 
 		this.ctlHeapStatusLabel.setText(
 				StoreI18N.formatSTR_TEXT_HEAP_STATUS(usedFormat.format(usedMemory), usageFormat.format(usageRatio)));
-	}
-
-	private IOException onImportRequest(CertImportRequest importRequest) {
-		IOException importException = null;
-
-		try {
-			this.storeProperty.get().importEntry(importRequest.entry(), importRequest.newPassword(),
-					importRequest.aliasHint());
-		} catch (IOException e) {
-			importException = e;
-		}
-		PlatformHelper.runLater(() -> {
-			updateStoreEntryView();
-			return null;
-		});
-		return importException;
 	}
 
 	@Override

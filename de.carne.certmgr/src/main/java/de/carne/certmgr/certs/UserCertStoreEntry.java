@@ -56,7 +56,7 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's display name.
 	 * <p>
-	 * The name is either the entry's distinguished name or if the latter is not
+	 * The name is either the entry's Distinguished Name or if the latter is not
 	 * available, the id's string representation.
 	 *
 	 * @return This entry's display name.
@@ -82,9 +82,9 @@ public abstract class UserCertStoreEntry {
 	}
 
 	/**
-	 * Get this entry's distinguished name (DN).
+	 * Get this entry's Distinguished Name (DN).
 	 *
-	 * @return This entry's distinguished name (DN).
+	 * @return This entry's Distinguished Name (DN).
 	 */
 	public final X500Principal dn() {
 		return this.dn;

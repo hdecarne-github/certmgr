@@ -35,7 +35,7 @@ public class IPAddressName extends GeneralName {
 	 * Construct {@code IPAddressName}.
 	 *
 	 * @param address The name's address.
-	 * @param netmask The name's network mask. May be {@code null}.
+	 * @param netmask The name's network mask (may be {@code null}).
 	 */
 	public IPAddressName(InetAddress address, InetAddress netmask) {
 		super(GeneralNameType.IP_ADDRESS);

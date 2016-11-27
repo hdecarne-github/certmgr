@@ -16,16 +16,21 @@
  */
 package de.carne.certmgr.certs.spi;
 
+import java.io.IOException;
+import java.util.List;
+
+import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.generator.GenerateCertRequest;
+import de.carne.certmgr.certs.generator.Issuer;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.certmgr.certs.signer.Issuer;
 import de.carne.certmgr.util.DefaultSet;
 
 /**
  * Service provider interface for certificate signing.
  */
-public interface CertSigner extends NamedProvider {
+public interface CertGenerator extends NamedProvider {
 
 	/**
 	 * Service features.
@@ -81,8 +86,10 @@ public interface CertSigner extends NamedProvider {
 	DefaultSet<Issuer> getIssuers(UserCertStore store, UserCertStoreEntry defaultHint);
 
 	/**
-	 * @param issuer
-	 * @param keyPairAlgorithm
+	 * Get the available signature algorithms.
+	 *
+	 * @param issuer The selected issuer.
+	 * @param keyPairAlgorithm The selected key pair algorithm.
 	 * @param defaultHint The default to return (may be {@code null}). If this
 	 *        algorithm is contained in the default set, it is also set as the
 	 *        default.
@@ -93,5 +100,15 @@ public interface CertSigner extends NamedProvider {
 	 */
 	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, String keyPairAlgorithm, String defaultHint,
 			boolean expertMode);
+
+	/**
+	 * Generate certificate objects.
+	 * 
+	 * @param request The parameters to use for generation.
+	 * @param password The password callback to use for password querying.
+	 * @return The generated certificate objects.
+	 * @throws IOException if an error occurs during generation.
+	 */
+	List<Object> generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException;
 
 }

@@ -14,24 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.signer;
+package de.carne.certmgr.certs.generator;
 
 import de.carne.certmgr.certs.ProviderMap;
-import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.certs.spi.CertGenerator;
 
 /**
- * Utility class providing {@link CertSigner} related functions.
+ * Utility class providing {@link CertGenerator} related functions.
  */
-public final class CertSigners {
+public final class CertGenerators {
 
 	/**
-	 * The registered {@link CertSigner}s.
+	 * The registered {@link CertGenerator}s.
 	 */
-	public static final ProviderMap<CertSigner> REGISTERED = new ProviderMap<>(CertSigner.class);
+	public static final ProviderMap<CertGenerator> REGISTERED = new ProviderMap<>(CertGenerator.class);
 
 	/**
-	 * The default {@link CertSigner}.
+	 * The default {@link CertGenerator}.
 	 */
-	public static final CertSigner DEFAULT = REGISTERED.get(LocalCertSigner.PROVIDER_NAME);
+	public static final CertGenerator DEFAULT = REGISTERED.get(LocalCertGenerator.PROVIDER_NAME);
 
 }

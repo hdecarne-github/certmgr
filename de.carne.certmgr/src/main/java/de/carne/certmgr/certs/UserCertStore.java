@@ -42,6 +42,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import de.carne.certmgr.certs.generator.GenerateCertRequest;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.FileCertReaderInput;
 import de.carne.certmgr.certs.io.JKSCertReaderWriter;
@@ -49,8 +50,9 @@ import de.carne.certmgr.certs.io.StringCertReaderInput;
 import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
+import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.certmgr.util.Keys;
 import de.carne.nio.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
@@ -335,17 +337,46 @@ public final class UserCertStore {
 	}
 
 	/**
+	 * Generate a new store entry.
+	 *
+	 * @param generator The {@link CertGenerator} to use for generation.
+	 * @param request The generation parameters.
+	 * @param password The password to use for password querying.
+	 * @param newPassword The password callback to use for new password
+	 *        querying.
+	 * @param aliasHint The preferred alias for the generated entry's id.
+	 * @return The id of the generated or entry.
+	 * @throws IOException if an I/O error occurs during import.
+	 */
+	public UserCertStoreEntryId generateEntry(CertGenerator generator, GenerateCertRequest request,
+			PasswordCallback password, PasswordCallback newPassword, String aliasHint) throws IOException {
+		assert generator != null;
+		assert request != null;
+		assert password != null;
+
+		List<Object> certObjects = generator.generateCert(request, password);
+		Set<UserCertStoreEntryId> mergedIds = mergeCertObjects(certObjects, newPassword, aliasHint);
+
+		assert mergedIds.size() == 1;
+
+		return mergedIds.iterator().next();
+	}
+
+	/**
 	 * Import an store entry from another store by merging the entry's
 	 * certificate objects.
 	 *
 	 * @param entry The store entry to merge.
-	 * @param password The password callback to use for new password querying.
-	 * @param aliasHint The preferred alias for the generated entry's id.
+	 * @param newPassword The password callback to use for new password
+	 *        querying.
+	 * @param aliasHint The preferred alias for entry id generation.
+	 * @return The id of the generated or merged entry.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
-	public void importEntry(UserCertStoreEntry entry, PasswordCallback password, String aliasHint) throws IOException {
+	public UserCertStoreEntryId importEntry(UserCertStoreEntry entry, PasswordCallback newPassword, String aliasHint)
+			throws IOException {
 		assert entry != null;
-		assert password != null;
+		assert newPassword != null;
 
 		List<Object> certObjects = new ArrayList<>();
 
@@ -361,7 +392,12 @@ public final class UserCertStore {
 		if (entry.hasCRL()) {
 			certObjects.add(entry.getCRL());
 		}
-		mergeCertObjects(certObjects, password, aliasHint);
+
+		Set<UserCertStoreEntryId> mergedIds = mergeCertObjects(certObjects, newPassword, aliasHint);
+
+		assert mergedIds.size() == 1;
+
+		return mergedIds.iterator().next();
 	}
 
 	/**
@@ -456,24 +492,27 @@ public final class UserCertStore {
 		return store;
 	}
 
-	private synchronized void mergeCertObjects(List<Object> certObjects, PasswordCallback password, String aliasHint)
-			throws IOException {
+	private synchronized Set<UserCertStoreEntryId> mergeCertObjects(List<Object> certObjects,
+			PasswordCallback newPassword, String aliasHint) throws IOException {
+		Set<UserCertStoreEntryId> mergedIds = new HashSet<>();
+
 		// First merge CRT and CSR objects as they provide the entry's DN
 		for (Object certObject : certObjects) {
 			if (certObject instanceof X509Certificate) {
-				mergeX509Certificate((X509Certificate) certObject, aliasHint);
+				mergedIds.add(mergeX509Certificate((X509Certificate) certObject, aliasHint).id());
 			} else if (certObject instanceof PKCS10CertificateRequest) {
-				mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject, aliasHint);
+				mergedIds.add(mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject, aliasHint).id());
 			}
 		}
 		for (Object certObject : certObjects) {
 			if (certObject instanceof KeyPair) {
-				mergeKey((KeyPair) certObject, password);
+				mergedIds.add(mergeKey((KeyPair) certObject, newPassword).id());
 			} else if (certObject instanceof X509CRL) {
-				mergeX509CRL((X509CRL) certObject, aliasHint);
+				mergedIds.add(mergeX509CRL((X509CRL) certObject, aliasHint).id());
 			}
 		}
 		resetIssuers();
+		return mergedIds;
 	}
 
 	private Entry mergeX509Certificate(X509Certificate crt, String aliasHint) throws IOException {
@@ -497,19 +536,19 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
-	private Entry mergeKey(KeyPair key, PasswordCallback password) throws IOException {
+	private Entry mergeKey(KeyPair key, PasswordCallback newPassword) throws IOException {
 		Entry matchingEntry = matchKey(key);
 
 		if (matchingEntry != null) {
 			if (!matchingEntry.hasKey()) {
-				KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, password);
+				KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, newPassword);
 
 				matchingEntry.setKey(keyEntry);
 			} else {
 				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_KEY_ALREADY_SET(matchingEntry));
 			}
 		} else {
-			LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_DANGLING_KEY(Keys.toString(key.getPublic())));
+			LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_DANGLING_KEY(KeyHelper.toString(key.getPublic())));
 		}
 		return matchingEntry;
 	}

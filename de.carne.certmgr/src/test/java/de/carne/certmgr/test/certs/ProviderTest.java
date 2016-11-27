@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import de.carne.certmgr.certs.ProviderMap;
 import de.carne.certmgr.certs.spi.CertReader;
-import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.spi.NamedProvider;
 
@@ -50,11 +50,11 @@ public class ProviderTest {
 	}
 
 	/**
-	 * Test {@link CertSigner} provider.
+	 * Test {@link CertGenerator} provider.
 	 */
 	@Test
 	public void testCertSignerProviders() {
-		testProvider(CertSigner.class);
+		testProvider(CertGenerator.class);
 	}
 
 	private <T extends NamedProvider> void testProvider(Class<T> cls) {

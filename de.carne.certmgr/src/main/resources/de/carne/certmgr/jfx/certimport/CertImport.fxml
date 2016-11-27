@@ -131,7 +131,7 @@
             <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
          </padding>
       </GridPane>
-      <VBox fx:id="ctlProgressOverlay" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" visible="false">
+      <VBox fx:id="ctlProgressOverlay" alignment="CENTER" visible="false">
          <children>
             <ProgressIndicator />
          </children>

@@ -18,31 +18,42 @@ package de.carne.certmgr.jfx.certoptions;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Optional;
 import java.util.prefs.Preferences;
+
+import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStoreEntryId;
 import de.carne.certmgr.certs.UserCertStorePreferences;
+import de.carne.certmgr.certs.generator.CertGenerators;
+import de.carne.certmgr.certs.generator.GenerateCertRequest;
+import de.carne.certmgr.certs.generator.Issuer;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.certmgr.certs.signer.CertSigners;
-import de.carne.certmgr.certs.signer.Issuer;
-import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
 import de.carne.certmgr.certs.x509.ExtendedKeyUsageExtensionData;
 import de.carne.certmgr.certs.x509.KeyUsageExtensionData;
 import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
+import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
+import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.Strings;
+import de.carne.util.validation.InputValidator;
+import de.carne.util.validation.ValidationException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -59,6 +70,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
@@ -92,6 +104,9 @@ public class CertOptionsController extends StageController {
 			null);
 
 	@FXML
+	VBox ctlProgressOverlay;
+
+	@FXML
 	Menu ctlStorePresetsMenu;
 
 	@FXML
@@ -110,7 +125,7 @@ public class CertOptionsController extends StageController {
 	ComboBox<Integer> ctlKeySizeOption;
 
 	@FXML
-	ChoiceBox<CertSigner> ctlSignerOption;
+	ChoiceBox<CertGenerator> ctlGeneratorOption;
 
 	@FXML
 	ComboBox<SignatureAlgorithm> ctlSigAlgOption;
@@ -306,8 +321,16 @@ public class CertOptionsController extends StageController {
 	}
 
 	@FXML
-	void onCmdSubmit(ActionEvent evt) {
+	void onCmdGenerate(ActionEvent evt) {
+		try {
+			String alias = validateAndGetAlias();
+			CertGenerator generator = validateAndGetGenerator();
+			GenerateCertRequest generateRequest = validateAndGetGenerateRequest(generator);
 
+			getExecutorService().submit(new GenerateEntryTask(generator, generateRequest, alias));
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		}
 	}
 
 	@FXML
@@ -330,12 +353,13 @@ public class CertOptionsController extends StageController {
 		resetSigAlgOptions(keyAlg);
 	}
 
-	private void onSignerChanged(CertSigner newSigner) {
-		DefaultSet<Issuer> issuers = (newSigner != null ? newSigner.getIssuers(this.store, this.storeEntry) : null);
+	private void onGeneratorChanged(CertGenerator newGenerator) {
+		DefaultSet<Issuer> issuers = (newGenerator != null ? newGenerator.getIssuers(this.store, this.storeEntry)
+				: null);
 
 		resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
-		resetSigAlgOptions(newSigner);
-		resetValidityInput(newSigner);
+		resetSigAlgOptions(newGenerator);
+		resetValidityInput(newGenerator);
 	}
 
 	private void onIssuerChanged(Issuer newIssuer) {
@@ -348,7 +372,7 @@ public class CertOptionsController extends StageController {
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
 		this.ctlKeyAlgOption.valueProperty().addListener((p, o, n) -> onKeyAlgChanged(n));
 		this.ctlKeySizeOption.setConverter(new IntegerStringConverter());
-		this.ctlSignerOption.valueProperty().addListener((p, o, n) -> onSignerChanged(n));
+		this.ctlGeneratorOption.valueProperty().addListener((p, o, n) -> onGeneratorChanged(n));
 		this.ctlIssuerInput.valueProperty().addListener((p, o, n) -> onIssuerChanged(n));
 		this.cmdAddBasicConstraints.disableProperty().bind(this.basicConstraintsExtension.isNotNull());
 		this.cmdAddKeyUsage.disableProperty().bind(this.keyUsageExtension.isNotNull());
@@ -384,7 +408,7 @@ public class CertOptionsController extends StageController {
 		initExpertMode();
 		initCertificateNames();
 		initKeyAlgOptions();
-		initSignerOptions();
+		initGeneratorOptions();
 		return this;
 	}
 
@@ -405,40 +429,40 @@ public class CertOptionsController extends StageController {
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
-	private void initSignerOptions() {
-		ObservableList<CertSigner> signerOptions = this.ctlSignerOption.getItems();
+	private void initGeneratorOptions() {
+		ObservableList<CertGenerator> generatorOptions = this.ctlGeneratorOption.getItems();
 
-		signerOptions.clear();
-		signerOptions.addAll(CertSigners.REGISTERED.providers());
-		signerOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
-		this.ctlSignerOption.setValue(CertSigners.DEFAULT);
+		generatorOptions.clear();
+		generatorOptions.addAll(CertGenerators.REGISTERED.providers());
+		generatorOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
+		this.ctlGeneratorOption.setValue(CertGenerators.DEFAULT);
 	}
 
-	private void resetSigAlgOptions(CertSigner signer) {
+	private void resetSigAlgOptions(CertGenerator generator) {
 		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getValue();
 		Issuer issuer = this.ctlIssuerInput.getValue();
 
-		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
+		resetSigAlgOptions(generator, keyPairAlgorithm, issuer);
 	}
 
 	private void resetSigAlgOptions(KeyPairAlgorithm keyPairAlgorithm) {
-		CertSigner signer = this.ctlSignerOption.getValue();
+		CertGenerator generator = this.ctlGeneratorOption.getValue();
 		Issuer issuer = this.ctlIssuerInput.getValue();
 
-		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
+		resetSigAlgOptions(generator, keyPairAlgorithm, issuer);
 	}
 
 	private void resetSigAlgOptions(Issuer issuer) {
-		CertSigner signer = this.ctlSignerOption.getValue();
+		CertGenerator generator = this.ctlGeneratorOption.getValue();
 		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getValue();
 
-		resetSigAlgOptions(signer, keyPairAlgorithm, issuer);
+		resetSigAlgOptions(generator, keyPairAlgorithm, issuer);
 	}
 
-	private void resetSigAlgOptions(CertSigner signer, KeyPairAlgorithm keyPairAlgorithm, Issuer issuer) {
+	private void resetSigAlgOptions(CertGenerator generator, KeyPairAlgorithm keyPairAlgorithm, Issuer issuer) {
 		DefaultSet<SignatureAlgorithm> sigAlgs = null;
 
-		if (signer != null) {
+		if (generator != null) {
 			String keyPairAlgorithmName = null;
 			String defaultHint = null;
 
@@ -448,13 +472,13 @@ public class CertOptionsController extends StageController {
 					defaultHint = this.storePreferences.defaultSignatureAlgorithm.get();
 				}
 			}
-			sigAlgs = signer.getSignatureAlgorithms(issuer, keyPairAlgorithmName, defaultHint, this.expertMode);
+			sigAlgs = generator.getSignatureAlgorithms(issuer, keyPairAlgorithmName, defaultHint, this.expertMode);
 		}
 		resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs, (o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
-	private void resetValidityInput(CertSigner signer) {
-		if (signer != null && signer.hasFeature(CertSigner.Feature.CUSTOM_VALIDITY)) {
+	private void resetValidityInput(CertGenerator generator) {
+		if (generator != null && generator.hasFeature(CertGenerator.Feature.CUSTOM_VALIDITY)) {
 			LocalDate notBeforeValue = LocalDate.now();
 			LocalDate notAfterValue = notBeforeValue.plus(this.storePreferences.defaultCRTValidityPeriod.get(),
 					ChronoUnit.DAYS);
@@ -476,6 +500,13 @@ public class CertOptionsController extends StageController {
 		return this.preferences;
 	}
 
+	@Override
+	protected void setBlocked(boolean blocked) {
+		this.ctlProgressOverlay.setVisible(blocked);
+		this.ctlProgressOverlay.getChildren().get(0).setDisable(!blocked);
+		super.setBlocked(blocked);
+	}
+
 	private void setExtensionData(X509ExtensionData extensionData) {
 		ObservableList<ExtensionDataModel> extensionDataItems = this.ctlExtensionData.getItems();
 		ExtensionDataModel extensionDataModel = null;
@@ -495,6 +526,89 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	private GenerateCertRequest validateAndGetGenerateRequest(CertGenerator generator) throws ValidationException {
+		X500Principal dn = validateAndGetDN();
+		KeyPairAlgorithm keyAlg = validateAndGetKeyAlg();
+		int keySize = validateAndGetKeySize();
+		GenerateCertRequest generateRequest = new GenerateCertRequest(dn, keyAlg, keySize);
+
+		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_ISSUER)) {
+			generateRequest.setIssuer(validateAndGetIssuer());
+		}
+		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_SIGNATURE_ALGORITHM)) {
+			generateRequest.setSignatureAlgorithm(validateAndGetSigAlg());
+		}
+		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_VALIDITY)) {
+			Date notBefore = validateAndGetNotBefore();
+			Date notAfter = validateAndGetNotAfter();
+
+			generateRequest.setNotBefore(notBefore);
+			generateRequest.setNotAfter(notAfter);
+		}
+		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_EXTENSIONS)) {
+
+		}
+		return generateRequest;
+	}
+
+	private String validateAndGetAlias() throws ValidationException {
+		return InputValidator.notEmpty(Strings.safeTrim(this.ctlAliasInput.getText()),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_ALIAS(a));
+	}
+
+	private X500Principal validateAndGetDN() throws ValidationException {
+		String dnInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDNInput.getText()),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_DN(a));
+		X500Principal dn;
+
+		try {
+			dn = X500Names.fromString(dnInput);
+		} catch (IllegalArgumentException e) {
+			throw new ValidationException(CertOptionsI18N.formatSTR_MESSAGE_INVALID_DN(dnInput), e);
+		}
+		return dn;
+	}
+
+	private KeyPairAlgorithm validateAndGetKeyAlg() throws ValidationException {
+		return InputValidator.notNull(this.ctlKeyAlgOption.getValue(),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYALG());
+	}
+
+	private int validateAndGetKeySize() throws ValidationException {
+		return InputValidator
+				.notNull(this.ctlKeySizeOption.getValue(), (a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYSIZE())
+				.intValue();
+	}
+
+	private CertGenerator validateAndGetGenerator() throws ValidationException {
+		return InputValidator.notNull(this.ctlGeneratorOption.getValue(),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_GENERATOR());
+	}
+
+	private Issuer validateAndGetIssuer() throws ValidationException {
+		return InputValidator.notNull(this.ctlIssuerInput.getValue(),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_ISSUER());
+	}
+
+	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
+		return InputValidator.notNull(this.ctlSigAlgOption.getValue(),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_SIGALG());
+	}
+
+	private Date validateAndGetNotBefore() throws ValidationException {
+		LocalDate localNotBefore = InputValidator.notNull(this.ctlNotBeforeInput.getValue(),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTBEFORE());
+
+		return Date.from(localNotBefore.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	private Date validateAndGetNotAfter() throws ValidationException {
+		LocalDate localNotAfter = InputValidator.notNull(this.ctlNotAfterInput.getValue(),
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTAFTER());
+
+		return Date.from(localNotAfter.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+	}
+
 	private static <T> void resetComboBoxOptions(ComboBox<T> control, DefaultSet<T> defaultSet,
 			Comparator<T> comparator) {
 		ObservableList<T> options = control.getItems();
@@ -508,6 +622,41 @@ public class CertOptionsController extends StageController {
 		} else {
 			control.setDisable(!control.isEditable());
 		}
+	}
+
+	void generateEntry(CertGenerator generator, GenerateCertRequest generateRequest, String alias) throws IOException {
+		this.store.generateEntry(generator, generateRequest, PasswordDialog.enterPassword(this),
+				PasswordDialog.enterNewPassword(this), alias);
+	}
+
+	private class GenerateEntryTask extends BackgroundTask<Void> {
+
+		private final CertGenerator generator;
+		private final GenerateCertRequest generateRequest;
+		private final String alias;
+
+		GenerateEntryTask(CertGenerator generator, GenerateCertRequest generateRequest, String alias) {
+			this.generator = generator;
+			this.generateRequest = generateRequest;
+			this.alias = alias;
+		}
+
+		@Override
+		protected Void call() throws Exception {
+			generateEntry(this.generator, this.generateRequest, this.alias);
+			return null;
+		}
+
+		@Override
+		protected void succeeded() {
+			close(true);
+		}
+
+		@Override
+		protected void failed() {
+			Alerts.unexpected(getException());
+		}
+
 	}
 
 }

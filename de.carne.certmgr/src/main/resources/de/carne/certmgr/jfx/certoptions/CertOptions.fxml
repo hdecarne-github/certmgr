@@ -10,6 +10,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -21,127 +22,139 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
-  </columnConstraints>
-  <rowConstraints>
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-    <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-    <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="NEVER" />
-      <RowConstraints vgrow="ALWAYS" />
-      <RowConstraints vgrow="NEVER" />
-  </rowConstraints>
+
+<StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
    <children>
-      <MenuButton maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%_STR_MENU_PRESET" GridPane.columnSpan="2147483647">
-        <items>
-            <CheckMenuItem mnemonicParsing="false" text="%_STR_MENU_PRESET_EMPTY" />
-            <Menu fx:id="ctlStorePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESET_TEMPLATE" />
-            <Menu fx:id="ctlTemplatePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESET_STORE" />
-        </items>
-      </MenuButton>
-      <Label layoutX="14.0" layoutY="77.0" text="%_STR_LABEL_ALIAS" GridPane.rowIndex="1" />
-      <TextField fx:id="ctlAliasInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label layoutX="14.0" layoutY="14.0" text="%_STR_LABEL_DN" GridPane.rowIndex="2" />
-      <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <GridPane fx:id="ctlSelectSourcePane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+          <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+          <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints vgrow="ALWAYS" />
+            <RowConstraints vgrow="NEVER" />
+        </rowConstraints>
          <children>
-            <TextField fx:id="ctlDNInput" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" HBox.hgrow="NEVER">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../resources/imageEdit16.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-         </children>
-      </HBox>
-      <Separator layoutX="14.0" layoutY="232.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
-      <Label layoutX="14.0" layoutY="303.0" text="%_STR_LABEL_KEYALG" GridPane.rowIndex="4" />
-      <ComboBox fx:id="ctlKeyAlgOption" layoutX="161.0" layoutY="202.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-      <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_KEYSIZE" GridPane.rowIndex="5" />
-      <ComboBox fx:id="ctlKeySizeOption" editable="true" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="6" />
-      <Label text="%_STR_LABEL_SIGNER" GridPane.rowIndex="7" />
-      <ChoiceBox fx:id="ctlSignerOption" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-      <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_ISSUER" GridPane.rowIndex="8" />
-      <ComboBox fx:id="ctlIssuerInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-      <Label layoutX="14.0" layoutY="105.0" text="%_STR_LABEL_SIGALG" GridPane.rowIndex="9" />
-      <ComboBox fx:id="ctlSigAlgOption" layoutX="161.0" layoutY="289.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-      <Label layoutX="14.0" layoutY="76.0" text="%_STR_LABEL_NOTBEFORE" GridPane.rowIndex="10" />
-      <DatePicker fx:id="ctlNotBeforeInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-      <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_NOTAFTER" GridPane.rowIndex="11" />
-      <DatePicker fx:id="ctlNotAfterInput" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="11" />
-      <Separator layoutX="14.0" layoutY="130.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="12" />
-      <ToolBar GridPane.columnSpan="2147483647" GridPane.rowIndex="13">
-        <items>
-            <Label text="%_STR_LABEL_EXTENSIONS" />
-            <MenuButton mnemonicParsing="false">
+            <MenuButton maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%_STR_MENU_PRESET" GridPane.columnSpan="2147483647">
               <items>
-                <MenuItem fx:id="cmdAddBasicConstraints" mnemonicParsing="false" onAction="#onCmdEditBasicConstraints" text="%_STR_MENU_ADD_BASICCONTSTRAINTS" />
-                <MenuItem fx:id="cmdAddKeyUsage" mnemonicParsing="false" onAction="#onCmdEditKeyUsage" text="%_STR_MENU_ADD_KEYUSSAGE" />
-                  <MenuItem fx:id="cmdAddExtendedKeyUsage" mnemonicParsing="false" onAction="#onCmdEditExtendedKeyUsage" text="%_STR_MENU_ADD_EXTENDEDKEYUSSAGE" />
-                  <MenuItem fx:id="cmdAddSubjectAlternativeName" mnemonicParsing="false" onAction="#onCmdEditSubjectAlternativeName" text="%_STR_MENU_ADD_SUBJECTALTERNATIVENAME" />
-                  <MenuItem fx:id="cmdAddCRLDistributionPoints" mnemonicParsing="false" onAction="#onCmdEditCRLDistributionPoints" text="%_STR_MENU_ADD_CRLDISTRIBUTIONPOINTS" />
-                  <MenuItem fx:id="cmdAddCustomExtension" mnemonicParsing="false" onAction="#onCmdAddCustomExtension" text="%_STR_MENU_ADD_CUSTOMEXTENSION" />
+                  <CheckMenuItem mnemonicParsing="false" text="%_STR_MENU_PRESET_EMPTY" />
+                  <Menu fx:id="ctlStorePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESET_TEMPLATE" />
+                  <Menu fx:id="ctlTemplatePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESET_STORE" />
               </items>
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../resources/imageAddEntry16.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
             </MenuButton>
-          <Button fx:id="cmdEditExtension" mnemonicParsing="false" onAction="#onCmdEditExtension">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../resources/imageEdit16.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-            <Button fx:id="cmdDeleteExtension" layoutX="10.0" layoutY="39.0" mnemonicParsing="false" onAction="#onCmdDeleteExtension">
-               <graphic>
-                  <ImageView pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../resources/imageDelete16.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
-        </items>
-      </ToolBar>
-      <TableView fx:id="ctlExtensionData" editable="true" prefHeight="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="14">
-        <columns>
-          <TableColumn fx:id="ctlExtensionDataCritical" maxWidth="1.7976931348623157E308" prefWidth="50.0" text="%_STR_COL_CRITICAL" />
-          <TableColumn fx:id="ctlExtensionDataName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="%_STR_COL_NAME" />
-            <TableColumn fx:id="ctlExtensionDataValue" editable="false" maxWidth="1.7976931348623157E308" prefWidth="480.0" text="%_STR_COL_VALUE" />
-        </columns>
-      </TableView>
-      <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="15">
-         <children>
-            <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdSubmit" text="%_STR_BUTTON_SUBMIT" />
-            <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />
+            <Label layoutX="14.0" layoutY="77.0" text="%_STR_LABEL_ALIAS" GridPane.rowIndex="1" />
+            <TextField fx:id="ctlAliasInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label layoutX="14.0" layoutY="14.0" text="%_STR_LABEL_DN" GridPane.rowIndex="2" />
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <children>
+                  <TextField fx:id="ctlDNInput" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                  <Button mnemonicParsing="false" HBox.hgrow="NEVER">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageEdit16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
+            <Separator layoutX="14.0" layoutY="232.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
+            <Label layoutX="14.0" layoutY="303.0" text="%_STR_LABEL_KEYALG" GridPane.rowIndex="4" />
+            <ComboBox fx:id="ctlKeyAlgOption" layoutX="161.0" layoutY="202.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_KEYSIZE" GridPane.rowIndex="5" />
+            <ComboBox fx:id="ctlKeySizeOption" editable="true" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="6" />
+            <Label text="%_STR_LABEL_GENERATOR" GridPane.rowIndex="7" />
+            <ChoiceBox fx:id="ctlGeneratorOption" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_ISSUER" GridPane.rowIndex="8" />
+            <ComboBox fx:id="ctlIssuerInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <Label layoutX="14.0" layoutY="105.0" text="%_STR_LABEL_SIGALG" GridPane.rowIndex="9" />
+            <ComboBox fx:id="ctlSigAlgOption" layoutX="161.0" layoutY="289.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <Label layoutX="14.0" layoutY="76.0" text="%_STR_LABEL_NOTBEFORE" GridPane.rowIndex="10" />
+            <DatePicker fx:id="ctlNotBeforeInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_NOTAFTER" GridPane.rowIndex="11" />
+            <DatePicker fx:id="ctlNotAfterInput" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+            <Separator layoutX="14.0" layoutY="130.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="12" />
+            <ToolBar GridPane.columnSpan="2147483647" GridPane.rowIndex="13">
+              <items>
+                  <Label text="%_STR_LABEL_EXTENSIONS" />
+                  <MenuButton mnemonicParsing="false">
+                    <items>
+                      <MenuItem fx:id="cmdAddBasicConstraints" mnemonicParsing="false" onAction="#onCmdEditBasicConstraints" text="%_STR_MENU_ADD_BASICCONTSTRAINTS" />
+                      <MenuItem fx:id="cmdAddKeyUsage" mnemonicParsing="false" onAction="#onCmdEditKeyUsage" text="%_STR_MENU_ADD_KEYUSSAGE" />
+                        <MenuItem fx:id="cmdAddExtendedKeyUsage" mnemonicParsing="false" onAction="#onCmdEditExtendedKeyUsage" text="%_STR_MENU_ADD_EXTENDEDKEYUSSAGE" />
+                        <MenuItem fx:id="cmdAddSubjectAlternativeName" mnemonicParsing="false" onAction="#onCmdEditSubjectAlternativeName" text="%_STR_MENU_ADD_SUBJECTALTERNATIVENAME" />
+                        <MenuItem fx:id="cmdAddCRLDistributionPoints" mnemonicParsing="false" onAction="#onCmdEditCRLDistributionPoints" text="%_STR_MENU_ADD_CRLDISTRIBUTIONPOINTS" />
+                        <MenuItem fx:id="cmdAddCustomExtension" mnemonicParsing="false" onAction="#onCmdAddCustomExtension" text="%_STR_MENU_ADD_CUSTOMEXTENSION" />
+                    </items>
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageAddEntry16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuButton>
+                <Button fx:id="cmdEditExtension" mnemonicParsing="false" onAction="#onCmdEditExtension">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageEdit16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="cmdDeleteExtension" layoutX="10.0" layoutY="39.0" mnemonicParsing="false" onAction="#onCmdDeleteExtension">
+                     <graphic>
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../resources/imageDelete16.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+              </items>
+            </ToolBar>
+            <TableView fx:id="ctlExtensionData" editable="true" prefHeight="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="14">
+              <columns>
+                <TableColumn fx:id="ctlExtensionDataCritical" maxWidth="1.7976931348623157E308" prefWidth="50.0" text="%_STR_COL_CRITICAL" />
+                <TableColumn fx:id="ctlExtensionDataName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="%_STR_COL_NAME" />
+                  <TableColumn fx:id="ctlExtensionDataValue" editable="false" maxWidth="1.7976931348623157E308" prefWidth="480.0" text="%_STR_COL_VALUE" />
+              </columns>
+            </TableView>
+            <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="15">
+               <children>
+                  <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdGenerate" text="%_STR_BUTTON_GENERATE" />
+                  <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />
+               </children>
+            </HBox>
          </children>
-      </HBox>
+         <padding>
+            <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+         </padding>
+      </GridPane>
+      <VBox fx:id="ctlProgressOverlay" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" visible="false">
+         <children>
+            <ProgressIndicator />
+         </children>
+      </VBox>
    </children>
-   <padding>
-      <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-   </padding>
-</GridPane>
+</StackPane>

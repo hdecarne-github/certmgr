@@ -37,9 +37,9 @@ public class EnterPasswordController extends PasswordController {
 	@Override
 	protected void setupDialog(Dialog<PasswordResult> dialog) {
 		super.setupDialog(dialog);
-		((Button) lookupButton(ButtonType.YES)).setText(EnterPasswordI18N.formatSTR_LABEL_OK());
-		((Button) lookupButton(ButtonType.NO)).setText(EnterPasswordI18N.formatSTR_LABEL_CANCEL());
-		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterPasswordI18N.formatSTR_LABEL_CANCELALL());
+		((Button) lookupButton(ButtonType.YES)).setText(EnterPasswordI18N.formatSTR_TEXT_OK());
+		((Button) lookupButton(ButtonType.NO)).setText(EnterPasswordI18N.formatSTR_TEXT_CANCEL());
+		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterPasswordI18N.formatSTR_TEXT_CANCELALL());
 	}
 
 	@Override

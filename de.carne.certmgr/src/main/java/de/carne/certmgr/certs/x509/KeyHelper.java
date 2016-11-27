@@ -14,20 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.util;
+package de.carne.certmgr.certs.x509;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 
+import de.carne.certmgr.certs.CertProviderException;
+import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.util.logging.Log;
+
 /**
  * Utility class providing security key related functions.
  */
-public final class Keys {
+public final class KeyHelper {
 
-	private Keys() {
+	private KeyHelper() {
 		// Make sure this class is not instantiated from outside
 	}
+
+	private static Log LOG = new Log();
 
 	/**
 	 * Get the public key's string representation.
@@ -49,6 +59,32 @@ public final class Keys {
 			buffer.append("/").append(ecPublicKey.getParams().getCurve().getField().getFieldSize());
 		}
 		return buffer.toString();
+	}
+
+	/**
+	 * Generate a Key object.
+	 *
+	 * @param algorithm The key pair algorithm to use.
+	 * @param keySize The key size to use.
+	 * @return The generated Key object.
+	 * @throws IOException if an error occurs during generation.
+	 */
+	public static KeyPair generateKey(KeyPairAlgorithm algorithm, int keySize) throws IOException {
+		KeyPair keyPair;
+
+		try {
+			LOG.info("Key pair generation {0}/{1} started...", algorithm, Integer.toString(keySize));
+
+			KeyPairGenerator keyGenerator = algorithm.getInstance();
+
+			keyGenerator.initialize(keySize);
+			keyPair = keyGenerator.generateKeyPair();
+
+			LOG.info("Key pair generation {0} done...", KeyHelper.toString(keyPair.getPublic()));
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
+		return keyPair;
 	}
 
 }

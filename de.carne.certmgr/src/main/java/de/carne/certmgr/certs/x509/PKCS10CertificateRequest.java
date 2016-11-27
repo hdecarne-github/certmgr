@@ -40,7 +40,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.certmgr.util.Keys;
 
 /**
  * This class represents a PKCS#10 Certificate Signing Request (CSR) object.
@@ -178,7 +177,7 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension 
 
 		csrAttributes.add(AttributesI18N.formatSTR_CSR_SIGALG(), getSigAlgName());
 		csrAttributes.add(AttributesI18N.formatSTR_CSR_SUBJECTDN(), X500Names.toString(getSubjectX500Principal()));
-		csrAttributes.add(AttributesI18N.formatSTR_CSR_PUBLICKEY(), Keys.toString(getPublicKey()));
+		csrAttributes.add(AttributesI18N.formatSTR_CSR_PUBLICKEY(), KeyHelper.toString(getPublicKey()));
 		X509ExtensionHelper.addAttributes(csrAttributes, this);
 		return csrAttributes;
 	}

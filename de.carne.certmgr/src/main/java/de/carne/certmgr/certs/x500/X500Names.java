@@ -89,7 +89,22 @@ public final class X500Names {
 	 * @return The principal's string representation.
 	 */
 	public static String toString(X500Principal principal) {
+		assert principal != null;
+
 		return principal.getName(X500Principal.RFC2253, OIDS);
+	}
+
+	/**
+	 * Create a {@link X500Principal} from it's string representation.
+	 * 
+	 * @param name The principal name to parse.
+	 * @return The parsed principal.
+	 * @throws IllegalArgumentException if the parse operation fails.
+	 */
+	public static X500Principal fromString(String name) throws IllegalArgumentException {
+		assert name != null;
+
+		return new X500Principal(name, NAMES);
 	}
 
 }

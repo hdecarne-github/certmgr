@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.signer;
+package de.carne.certmgr.certs.generator;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x500.X500Names;
 
 /**
@@ -39,7 +39,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 		assert storeEntry != null;
 
 		this.storeEntry = storeEntry;
-		this.name = CertSignerI18N.formatSTR_STOREENTRY_NAME(this.storeEntry.id().getAlias(),
+		this.name = CertGeneratorI18N.formatSTR_STOREENTRY_NAME(this.storeEntry.id().getAlias(),
 				X500Names.toString(this.storeEntry.dn()));
 	}
 
@@ -57,11 +57,11 @@ public abstract class Issuer implements Comparable<Issuer> {
 	}
 
 	/**
-	 * Get the {@link CertSigner} instance this issuer is associated with.
+	 * Get the {@link CertGenerator} instance this issuer is associated with.
 	 *
-	 * @return This issuer's signer instance.
+	 * @return This issuer's generator instance.
 	 */
-	public abstract CertSigner signer();
+	public abstract CertGenerator generator();
 
 	/**
 	 * Get the {@link UserCertStoreEntry} represented by this issuer.
@@ -76,7 +76,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 
 	@Override
 	public int compareTo(Issuer o) {
-		if (!this.signer().equals(o.signer())) {
+		if (!this.generator().equals(o.generator())) {
 			throw new IllegalArgumentException();
 		}
 

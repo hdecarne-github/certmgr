@@ -18,6 +18,7 @@ package de.carne.certmgr.jfx.password;
 
 import java.util.Objects;
 
+import de.carne.jfx.scene.control.Tooltips;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -41,6 +42,7 @@ public class EnterNewPasswordController extends PasswordController {
 		String passwordInput2 = this.ctlPasswordInput2.getText();
 
 		if (!Objects.equals(passwordInput1, passwordInput2)) {
+			Tooltips.show(this.ctlPasswordInput2, EnterNewPasswordI18N.formatSTR_MESSAGE_PASSWORD_MISMATCH());
 			evt.consume();
 		}
 	}
@@ -48,9 +50,9 @@ public class EnterNewPasswordController extends PasswordController {
 	@Override
 	protected void setupDialog(Dialog<PasswordResult> dialog) {
 		super.setupDialog(dialog);
-		((Button) lookupButton(ButtonType.YES)).setText(EnterNewPasswordI18N.formatSTR_LABEL_OK());
-		((Button) lookupButton(ButtonType.NO)).setText(EnterNewPasswordI18N.formatSTR_LABEL_CANCEL());
-		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterNewPasswordI18N.formatSTR_LABEL_CANCELALL());
+		((Button) lookupButton(ButtonType.YES)).setText(EnterNewPasswordI18N.formatSTR_TEXT_OK());
+		((Button) lookupButton(ButtonType.NO)).setText(EnterNewPasswordI18N.formatSTR_TEXT_CANCEL());
+		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterNewPasswordI18N.formatSTR_TEXT_CANCELALL());
 		addButtonEventFilter(ButtonType.YES, (evt) -> onOk(evt));
 	}
 

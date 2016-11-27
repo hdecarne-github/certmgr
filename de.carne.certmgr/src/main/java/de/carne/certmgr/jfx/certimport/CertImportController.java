@@ -76,7 +76,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 /**
  * Certificate import dialog.
@@ -92,7 +91,7 @@ public class CertImportController extends StageController {
 
 	private UserCertStoreTreeTableViewHelper<ImportEntryModel> importEntryViewHelper = null;
 
-	private Callback<CertImportRequest, IOException> importer = null;
+	private UserCertStore importStore = null;
 
 	private UserCertStore sourceStore = null;
 
@@ -323,13 +322,13 @@ public class CertImportController extends StageController {
 	/**
 	 * Initialize the dialog for certificate import.
 	 *
-	 * @param importerParam The callback to invoke for import.
+	 * @param importStoreParam The callback to invoke for import.
 	 * @return This controller.
 	 */
-	public CertImportController init(Callback<CertImportRequest, IOException> importerParam) {
-		assert importerParam != null;
+	public CertImportController init(UserCertStore importStoreParam) {
+		assert importStoreParam != null;
 
-		this.importer = importerParam;
+		this.importStore = importStoreParam;
 		return this;
 	}
 
@@ -622,8 +621,12 @@ public class CertImportController extends StageController {
 
 	}
 
-	IOException callImporter(CertImportRequest importRequest) {
-		return this.importer.call(importRequest);
+	void importSelection(Set<UserCertStoreEntry> importSelection) throws IOException {
+		PasswordCallback newPassword = PasswordDialog.enterNewPassword(this);
+
+		for (UserCertStoreEntry importEntry : importSelection) {
+			this.importStore.importEntry(importEntry, newPassword, CertImportI18N.formatSTR_TEXT_ALIASHINT());
+		}
 	}
 
 	private class ImportSelectionTask extends BackgroundTask<Void> {
@@ -636,17 +639,7 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected Void call() throws Exception {
-			PasswordCallback newPassword = PasswordDialog.enterNewPassword(CertImportController.this);
-
-			for (UserCertStoreEntry importEntry : this.importSelection) {
-				CertImportRequest importRequest = new CertImportRequest(importEntry, newPassword,
-						CertImportI18N.formatSTR_TEXT_ALIASHINT());
-				IOException importException = callImporter(importRequest);
-
-				if (importException != null) {
-					throw importException;
-				}
-			}
+			importSelection(this.importSelection);
 			return null;
 		}
 

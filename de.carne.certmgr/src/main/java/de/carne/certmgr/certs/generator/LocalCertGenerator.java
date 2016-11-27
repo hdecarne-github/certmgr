@@ -14,25 +14,45 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.signer;
+package de.carne.certmgr.certs.generator;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import javax.security.auth.x500.X500Principal;
+
+import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.certmgr.certs.spi.CertSigner;
+import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.certmgr.certs.x509.KeyHelper;
+import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.util.DefaultSet;
 
 /**
  * Signing servicer for local certificate generation and signing.
  */
-public class LocalCertSigner implements CertSigner {
+public class LocalCertGenerator extends AbstractCertGenerator {
 
 	/**
 	 * Provider name.
 	 */
 	public static final String PROVIDER_NAME = "LOCAL";
 
-	private final Issuer selfSignedIssuer = new DefaultIssuer(CertSignerI18N.formatSTR_SELFSIGNED_NAME());
+	private final Issuer selfSignedIssuer = new LocalIssuer(CertGeneratorI18N.formatSTR_SELFSIGNED_NAME());
+
+	/**
+	 * Construct {@code LocalCertGenerator}.
+	 */
+	public LocalCertGenerator() {
+		super();
+	}
 
 	@Override
 	public String providerName() {
@@ -41,12 +61,7 @@ public class LocalCertSigner implements CertSigner {
 
 	@Override
 	public String getDescription() {
-		return CertSignerI18N.formatSTR_LOCAL_DESCRIPTION();
-	}
-
-	@Override
-	public boolean hasFeature(Feature feature) {
-		return true;
+		return CertGeneratorI18N.formatSTR_LOCAL_DESCRIPTION();
 	}
 
 	@Override
@@ -58,9 +73,9 @@ public class LocalCertSigner implements CertSigner {
 			for (UserCertStoreEntry storeEntry : store.getEntries()) {
 				if (storeEntry.canIssue()) {
 					if (storeEntry.equals(defaultHint)) {
-						issuers.addDefault(new DefaultIssuer(storeEntry));
+						issuers.addDefault(new LocalIssuer(storeEntry));
 					} else {
-						issuers.add(new DefaultIssuer(storeEntry));
+						issuers.add(new LocalIssuer(storeEntry));
 					}
 				}
 			}
@@ -89,23 +104,51 @@ public class LocalCertSigner implements CertSigner {
 	}
 
 	@Override
-	public String toString() {
-		return getDescription();
+	public List<Object> generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException {
+		Issuer issuer = requiredParameter(request.getIssuer(), "Issuer");
+		BigInteger serial = BigInteger.ONE;
+		X500Principal issuerDN = null;
+		KeyPair issuerKey = null;
+
+		if (!this.selfSignedIssuer.equals(issuer)) {
+			UserCertStoreEntry issuerEntry = issuer.storeEntry();
+
+			serial = getNextSerial(issuerEntry);
+			issuerDN = issuerEntry.dn();
+			issuerKey = issuerEntry.getKey(password);
+		}
+
+		X500Principal dn = request.dn();
+		KeyPair key = KeyHelper.generateKey(request.keyPairAlgorithm(), request.keySize());
+
+		if (issuerKey == null) {
+			issuerKey = key;
+			issuerDN = dn;
+		}
+
+		Date notBefore = requiredParameter(request.getNotBefore(), "NotBefore");
+		Date notAfter = requiredParameter(request.getNotAfter(), "NotAfter");
+		SignatureAlgorithm signatureAlgorithm = requiredParameter(request.getSignatureAlgorithm(),
+				"SignatureAlgorithm");
+		X509Certificate crt = X509CertificateHelper.generateCRT(dn, key, serial, notBefore, notAfter, issuerDN,
+				issuerKey, signatureAlgorithm);
+
+		return Arrays.asList((Object) key, (Object) crt);
 	}
 
-	private class DefaultIssuer extends Issuer {
+	private class LocalIssuer extends Issuer {
 
-		DefaultIssuer(UserCertStoreEntry storeEntry) {
+		LocalIssuer(UserCertStoreEntry storeEntry) {
 			super(storeEntry);
 		}
 
-		DefaultIssuer(String name) {
+		LocalIssuer(String name) {
 			super(name);
 		}
 
 		@Override
-		public CertSigner signer() {
-			return LocalCertSigner.this;
+		public CertGenerator generator() {
+			return LocalCertGenerator.this;
 		}
 
 	}
