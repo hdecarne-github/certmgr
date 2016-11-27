@@ -328,21 +328,21 @@ public final class UserCertStore {
 	 * @param newPassword The password callback to use for new password
 	 *        querying.
 	 * @param aliasHint The preferred alias for the generated entry's id.
-	 * @return The id of the generated or entry.
+	 * @return The generated entry.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
-	public UserCertStoreEntryId generateEntry(CertGenerator generator, GenerateCertRequest request,
+	public UserCertStoreEntry generateEntry(CertGenerator generator, GenerateCertRequest request,
 			PasswordCallback password, PasswordCallback newPassword, String aliasHint) throws IOException {
 		assert generator != null;
 		assert request != null;
 		assert password != null;
 
 		List<Object> certObjects = generator.generateCert(request, password);
-		Set<UserCertStoreEntryId> mergedIds = mergeCertObjects(certObjects, newPassword, aliasHint);
+		Set<UserCertStoreEntry> mergedEntries = mergeCertObjects(certObjects, newPassword, aliasHint);
 
-		assert mergedIds.size() == 1;
+		assert mergedEntries.size() == 1;
 
-		return mergedIds.iterator().next();
+		return mergedEntries.iterator().next();
 	}
 
 	/**
@@ -353,11 +353,11 @@ public final class UserCertStore {
 	 * @param newPassword The password callback to use for new password
 	 *        querying.
 	 * @param aliasHint The preferred alias for entry id generation.
-	 * @return The id of the generated or merged entry or {@code null} if
-	 *         nothing has been imported.
+	 * @return The generated or merged entry or {@code null} if nothing has been
+	 *         imported.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
-	public UserCertStoreEntryId importEntry(UserCertStoreEntry entry, PasswordCallback newPassword, String aliasHint)
+	public UserCertStoreEntry importEntry(UserCertStoreEntry entry, PasswordCallback newPassword, String aliasHint)
 			throws IOException {
 		assert entry != null;
 		assert newPassword != null;
@@ -377,11 +377,11 @@ public final class UserCertStore {
 			certObjects.add(entry.getCRL());
 		}
 
-		Set<UserCertStoreEntryId> mergedIds = mergeCertObjects(certObjects, newPassword, aliasHint);
+		Set<UserCertStoreEntry> mergedEntries = mergeCertObjects(certObjects, newPassword, aliasHint);
 
-		assert mergedIds.size() <= 1;
+		assert mergedEntries.size() <= 1;
 
-		return (!mergedIds.isEmpty() ? mergedIds.iterator().next() : null);
+		return (!mergedEntries.isEmpty() ? mergedEntries.iterator().next() : null);
 	}
 
 	/**
@@ -493,9 +493,9 @@ public final class UserCertStore {
 		return store;
 	}
 
-	private synchronized Set<UserCertStoreEntryId> mergeCertObjects(List<Object> certObjects,
+	private synchronized Set<UserCertStoreEntry> mergeCertObjects(List<Object> certObjects,
 			PasswordCallback newPassword, String aliasHint) throws IOException {
-		Set<UserCertStoreEntryId> mergedIds = new HashSet<>();
+		Set<UserCertStoreEntry> mergedEntries = new HashSet<>();
 
 		// First merge CRT and CSR objects as they provide the entry's DN
 		for (Object certObject : certObjects) {
@@ -507,7 +507,7 @@ public final class UserCertStore {
 				mergedEntry = mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject, aliasHint);
 			}
 			if (mergedEntry != null) {
-				mergedIds.add(mergedEntry.id());
+				mergedEntries.add(mergedEntry);
 			}
 		}
 		for (Object certObject : certObjects) {
@@ -519,11 +519,11 @@ public final class UserCertStore {
 				mergedEntry = mergeX509CRL((X509CRL) certObject, aliasHint);
 			}
 			if (mergedEntry != null) {
-				mergedIds.add(mergedEntry.id());
+				mergedEntries.add(mergedEntry);
 			}
 		}
 		resetIssuers();
-		return mergedIds;
+		return mergedEntries;
 	}
 
 	private Entry mergeX509Certificate(X509Certificate crt, String aliasHint) throws IOException {

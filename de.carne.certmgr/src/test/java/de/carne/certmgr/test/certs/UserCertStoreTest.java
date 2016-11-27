@@ -41,12 +41,14 @@ import de.carne.certmgr.certs.UserCertStoreEntryId;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.generator.CertGenerators;
 import de.carne.certmgr.certs.generator.GenerateCertRequest;
+import de.carne.certmgr.certs.generator.Issuer;
 import de.carne.certmgr.certs.net.SSLPeer.Protocol;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.Attributes;
+import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
@@ -104,11 +106,17 @@ public class UserCertStoreTest {
 
 		try {
 			UserCertStore createdStore = UserCertStore.createStore(storeHome);
-			GenerateCertRequest request1 = generateRequest(createdStore, CertGenerators.DEFAULT);
+			GenerateCertRequest request1 = generateRequest(createdStore, CertGenerators.DEFAULT, true);
+			UserCertStoreEntry generated1 = createdStore.generateEntry(CertGenerators.DEFAULT, request1,
+					TestCerts.password(), TestCerts.password(), "TestCert");
+			DefaultSet<Issuer> issuers1 = CertGenerators.DEFAULT.getIssuers(createdStore, generated1);
+			GenerateCertRequest request2 = generateRequest(createdStore, CertGenerators.DEFAULT, false);
 
+			request2.setIssuer(issuers1.getDefault());
 			createdStore.generateEntry(CertGenerators.DEFAULT, request1, TestCerts.password(), TestCerts.password(),
 					"TestCert");
-			Assert.assertEquals(1, createdStore.size());
+
+			Assert.assertEquals(2, createdStore.size());
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -123,7 +131,7 @@ public class UserCertStoreTest {
 		try {
 			UserCertStore openendStore = UserCertStore.openStore(storeHome);
 
-			Assert.assertEquals(1, openendStore.size());
+			Assert.assertEquals(2, openendStore.size());
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -142,7 +150,7 @@ public class UserCertStoreTest {
 		return request;
 	}
 
-	private GenerateCertRequest generateRequest(UserCertStore store, CertGenerator generator) {
+	private GenerateCertRequest generateRequest(UserCertStore store, CertGenerator generator, boolean ca) {
 		GenerateCertRequest request = basicRequest();
 
 		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_ISSUER)) {
@@ -152,6 +160,7 @@ public class UserCertStoreTest {
 			request.setSignatureAlgorithm(generator
 					.getSignatureAlgorithms(request.getIssuer(), request.keyPairAlgorithm(), null, false).getDefault());
 		}
+		request.addExtension(new BasicConstraintsExtensionData(false, ca, null));
 		return request;
 	}
 
