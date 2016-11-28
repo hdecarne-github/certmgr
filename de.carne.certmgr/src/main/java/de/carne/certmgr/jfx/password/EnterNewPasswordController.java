@@ -18,6 +18,7 @@ package de.carne.certmgr.jfx.password;
 
 import java.util.Objects;
 
+import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.scene.control.Tooltips;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,7 +43,8 @@ public class EnterNewPasswordController extends PasswordController {
 		String passwordInput2 = this.ctlPasswordInput2.getText();
 
 		if (!Objects.equals(passwordInput1, passwordInput2)) {
-			Tooltips.show(this.ctlPasswordInput2, EnterNewPasswordI18N.formatSTR_MESSAGE_PASSWORD_MISMATCH());
+			Tooltips.show(this.ctlPasswordInput2, EnterNewPasswordI18N.formatSTR_MESSAGE_PASSWORD_MISMATCH(),
+					Images.WARNING16);
 			evt.consume();
 		}
 	}

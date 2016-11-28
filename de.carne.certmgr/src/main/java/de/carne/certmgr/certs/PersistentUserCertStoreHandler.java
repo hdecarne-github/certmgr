@@ -270,7 +270,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 		@Override
 		public X509Certificate getCRT() throws IOException {
-			return getEntry(NoPassword.getInstance());
+			return getEntry();
 		}
 
 		@Override
@@ -327,7 +327,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 		@Override
 		public PKCS10CertificateRequest getCSR() throws IOException {
-			return getEntry(NoPassword.getInstance());
+			return getEntry();
 		}
 
 		@Override
@@ -354,7 +354,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 		@Override
 		public X509CRL getCRL() throws IOException {
-			return getEntry(NoPassword.getInstance());
+			return getEntry();
 		}
 
 		@Override

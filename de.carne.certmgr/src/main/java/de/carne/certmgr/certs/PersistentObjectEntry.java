@@ -41,16 +41,27 @@ abstract class PersistentObjectEntry<T> {
 		this.cachedEntryFileTime = entryFileTime;
 	}
 
-	protected synchronized T getEntry(PasswordCallback password) throws IOException {
+	protected synchronized T getEntry() throws IOException {
 		T entry = this.cachedEntry.get();
 		FileTime entryFileTime = Files.getLastModifiedTime(this.entryPath);
 
 		if (entry == null || !entryFileTime.equals(this.cachedEntryFileTime)) {
 			try (InputStream entryInput = Files.newInputStream(this.entryPath)) {
-				entry = decodeEntryInput(entryInput, password);
+				entry = decodeEntryInput(entryInput, NoPassword.getInstance());
 				this.cachedEntry = new SoftReference<>(entry);
 				this.cachedEntryFileTime = entryFileTime;
 			}
+		}
+		return entry;
+	}
+
+	protected synchronized T getEntry(PasswordCallback password) throws IOException {
+		T entry;
+
+		try (InputStream entryInput = Files.newInputStream(this.entryPath)) {
+			entry = decodeEntryInput(entryInput, password);
+			this.cachedEntry = null;
+			this.cachedEntryFileTime = null;
 		}
 		return entry;
 	}
