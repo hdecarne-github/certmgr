@@ -58,8 +58,7 @@ public class GenericName extends GeneralName {
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return ASN1Primitive.fromByteArray(this.nameBytes);
 	}
 
 	@Override

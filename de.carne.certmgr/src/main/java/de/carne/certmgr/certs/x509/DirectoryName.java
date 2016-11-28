@@ -22,7 +22,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x500.X500Name;
 
 import de.carne.certmgr.certs.x500.X500Names;
 
@@ -59,7 +59,7 @@ public class DirectoryName extends GeneralName {
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		return new DEROctetString(this.name.getEncoded());
+		return new X500Name(this.name.getName());
 	}
 
 	@Override

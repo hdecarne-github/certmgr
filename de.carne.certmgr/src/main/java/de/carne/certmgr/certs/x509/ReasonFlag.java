@@ -34,54 +34,54 @@ public class ReasonFlag extends Enumeration<Integer> {
 	public static final ReasonFlag UNSPECIFIED = new ReasonFlag("UNSPECIFIED", 0);
 
 	/**
-	 * KEY_COMPROMISE
+	 * PRIVILEGE_WITHDRAWN
 	 */
-	public static final ReasonFlag KEY_COMPROMISE = new ReasonFlag("KEY_COMPROMISE", 1);
-
-	/**
-	 * CA_COMPROMISE
-	 */
-	public static final ReasonFlag CA_COMPROMISE = new ReasonFlag("CA_COMPROMISE", 2);
-
-	/**
-	 * AFFILIATION_CHANGED
-	 */
-	public static final ReasonFlag AFFILIATION_CHANGED = new ReasonFlag("AFFILIATION_CHANGED", 3);
-
-	/**
-	 * SUPERSEDED
-	 */
-	public static final ReasonFlag SUPERSEDED = new ReasonFlag("SUPERSEDED", 4);
-
-	/**
-	 * CESSATION_OF_OPERATION
-	 */
-	public static final ReasonFlag CESSATION_OF_OPERATION = new ReasonFlag("CESSATION_OF_OPERATION", 5);
+	public static final ReasonFlag PRIVILEGE_WITHDRAWN = new ReasonFlag("PRIVILEGE_WITHDRAWN", 1 << 0);
 
 	/**
 	 * CERTIFICATE_HOLD
 	 */
-	public static final ReasonFlag CERTIFICATE_HOLD = new ReasonFlag("CERTIFICATE_HOLD", 6);
+	public static final ReasonFlag CERTIFICATE_HOLD = new ReasonFlag("CERTIFICATE_HOLD", 1 << 1);
+
+	/**
+	 * CESSATION_OF_OPERATION
+	 */
+	public static final ReasonFlag CESSATION_OF_OPERATION = new ReasonFlag("CESSATION_OF_OPERATION", 1 << 2);
+
+	/**
+	 * SUPERSEDED
+	 */
+	public static final ReasonFlag SUPERSEDED = new ReasonFlag("SUPERSEDED", 1 << 3);
+
+	/**
+	 * AFFILIATION_CHANGED
+	 */
+	public static final ReasonFlag AFFILIATION_CHANGED = new ReasonFlag("AFFILIATION_CHANGED", 1 << 4);
+
+	/**
+	 * CA_COMPROMISE
+	 */
+	public static final ReasonFlag CA_COMPROMISE = new ReasonFlag("CA_COMPROMISE", 1 << 5);
+
+	/**
+	 * KEY_COMPROMISE
+	 */
+	public static final ReasonFlag KEY_COMPROMISE = new ReasonFlag("KEY_COMPROMISE", 1 << 6);
 
 	/**
 	 * UNUSED
 	 */
-	public static final ReasonFlag UNUSED = new ReasonFlag("UNUSED", 7);
+	public static final ReasonFlag UNUSED = new ReasonFlag("UNUSED", 1 << 7);
 
 	/**
 	 * REMOVE_FROM_CRL
 	 */
-	public static final ReasonFlag REMOVE_FROM_CRL = new ReasonFlag("REMOVE_FROM_CRL", 8);
-
-	/**
-	 * PRIVILEGE_WITHDRAWN
-	 */
-	public static final ReasonFlag PRIVILEGE_WITHDRAWN = new ReasonFlag("PRIVILEGE_WITHDRAWN", 9);
+	public static final ReasonFlag REMOVE_FROM_CRL = new ReasonFlag("REMOVE_FROM_CRL", 1 << 8);
 
 	/**
 	 * AA_COMPROMISE
 	 */
-	public static final ReasonFlag AA_COMPROMISE = new ReasonFlag("AA_COMPROMISE", 10);
+	public static final ReasonFlag AA_COMPROMISE = new ReasonFlag("AA_COMPROMISE", 1 << 15);
 
 	private ReasonFlag(String name, Integer value) {
 		super(name, value);

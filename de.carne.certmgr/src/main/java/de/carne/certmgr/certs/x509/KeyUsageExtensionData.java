@@ -94,7 +94,6 @@ public class KeyUsageExtensionData extends X509ExtensionData implements Iterable
 				int usageValue = 1;
 
 				for (byte bitByte : bitBytes) {
-					anyUsage = anyUsage && bitByte == -1;
 					for (int bit = 1; bit < 256; bit <<= 1) {
 						if ((bitByte & bit) == bit) {
 							usages.add(KeyUsage.fromValue(usageValue));
