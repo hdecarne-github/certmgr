@@ -87,8 +87,7 @@ public class SubjectAlternativeNameExtensionData extends X509ExtensionData {
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.generalNames.encode();
 	}
 
 	@Override

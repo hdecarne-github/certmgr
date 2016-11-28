@@ -24,6 +24,7 @@ import java.util.Set;
 import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DERBitString;
 
 import de.carne.util.Strings;
 
@@ -127,8 +128,12 @@ public class KeyUsageExtensionData extends X509ExtensionData implements Iterable
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		int bits = 0;
+
+		for (KeyUsage usage : this.usages) {
+			bits |= usage.value();
+		}
+		return new DERBitString(bits);
 	}
 
 	@Override

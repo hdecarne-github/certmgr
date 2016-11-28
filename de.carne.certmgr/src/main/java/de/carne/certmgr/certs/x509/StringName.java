@@ -21,6 +21,8 @@ import java.io.IOException;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.util.Strings;
 
 /**
@@ -59,8 +61,7 @@ public class StringName extends GeneralName {
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return new DERTaggedObject(false, getType().value(), new DEROctetString(Strings.toByteArray(this.name)));
 	}
 
 	@Override
