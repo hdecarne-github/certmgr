@@ -652,12 +652,14 @@ public class CertOptionsController extends StageController {
 
 		@Override
 		protected void succeeded() {
+			super.succeeded();
 			close(true);
 		}
 
 		@Override
 		protected void failed() {
-			Alerts.unexpected(getException());
+			super.failed();
+			Alerts.unexpected(getException()).showAndWait();
 		}
 
 	}

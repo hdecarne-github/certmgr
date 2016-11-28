@@ -610,16 +610,16 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected void succeeded() {
+			super.succeeded();
 			onReloadTaskSucceeded(this, getValue());
 			this.logMonitor.close();
-			super.succeeded();
 		}
 
 		@Override
 		protected void failed() {
+			super.failed();
 			onReloadTaskFailed(this, getException());
 			this.logMonitor.close();
-			super.failed();
 		}
 
 	}
@@ -648,11 +648,13 @@ public class CertImportController extends StageController {
 
 		@Override
 		protected void succeeded() {
+			super.succeeded();
 			close(true);
 		}
 
 		@Override
 		protected void failed() {
+			super.failed();
 			Alerts.unexpected(getException());
 		}
 
