@@ -40,7 +40,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	/**
 	 * The default to use for this extension's critical flag.
 	 */
-	public static final boolean CRITICAL_DEFAULT = false;
+	public static final boolean CRITICAL_DEFAULT = true;
 
 	private boolean ca = false;
 

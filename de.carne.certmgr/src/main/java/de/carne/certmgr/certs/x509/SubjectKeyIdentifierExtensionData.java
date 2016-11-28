@@ -35,6 +35,11 @@ public class SubjectKeyIdentifierExtensionData extends X509ExtensionData {
 	 */
 	public static final String OID = "2.5.29.14";
 
+	/**
+	 * The default to use for this extension's critical flag.
+	 */
+	public static final boolean CRITICAL_DEFAULT = false;
+
 	private final byte[] keyIdentifier;
 
 	/**

@@ -37,6 +37,11 @@ public class CRLNumberExtensionData extends X509ExtensionData {
 	private final BigInteger crlNumber;
 
 	/**
+	 * The default to use for this extension's critical flag.
+	 */
+	public static final boolean CRITICAL_DEFAULT = false;
+
+	/**
 	 * Construct {@code CRLNumberExtensionData}.
 	 *
 	 * @param critical The extension's critical flag.
