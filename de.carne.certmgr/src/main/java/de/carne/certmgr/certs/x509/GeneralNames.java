@@ -29,7 +29,7 @@ import org.bouncycastle.asn1.DERSequence;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 
 /**
- * Sequence of general name object.
+ * Sequence of general name objects.
  */
 public class GeneralNames extends ASN1Data implements Iterable<GeneralName>, AttributesContent {
 

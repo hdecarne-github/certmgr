@@ -45,6 +45,8 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @param crlIssuer The (optional) distribution point's CRL issuer.
 	 */
 	public DistributionPoint(DistributionPointName name, ReasonFlags reasons, GeneralNames crlIssuer) {
+		assert name != null || crlIssuer != null;
+
 		this.name = name;
 		this.reasons = reasons;
 		this.crlIssuer = crlIssuer;
@@ -133,7 +135,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	@Override
 	public void addToAttributes(Attributes attributes) {
 		if (this.name != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_NAME()).add(this.name);
+			attributes.add(this.name);
 		}
 		if (this.reasons != null) {
 			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_REASONS()).add(this.reasons);

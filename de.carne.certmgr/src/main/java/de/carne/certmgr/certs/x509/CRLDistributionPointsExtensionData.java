@@ -18,6 +18,7 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -31,7 +32,7 @@ import de.carne.util.Strings;
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.13">CRL
  * Distribution Points Extension</a> data.
  */
-public class CRLDistributionPointsExtensionData extends X509ExtensionData {
+public class CRLDistributionPointsExtensionData extends X509ExtensionData implements Iterable<DistributionPoint> {
 
 	/**
 	 * Extension OID.
@@ -74,6 +75,15 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData {
 		return distributionPoints;
 	}
 
+	/**
+	 * Add a distribution point definition to the extension.
+	 *
+	 * @param distributionPoint The distribution point definition to add.
+	 */
+	public void addDistributionPoints(DistributionPoint distributionPoint) {
+		this.distributionPoints.add(distributionPoint);
+	}
+
 	@Override
 	public ASN1Encodable encode() throws IOException {
 		ASN1EncodableVector sequence = new ASN1EncodableVector();
@@ -82,6 +92,11 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData {
 			sequence.add(distributionPoint.encode());
 		}
 		return new DERSequence(sequence);
+	}
+
+	@Override
+	public Iterator<DistributionPoint> iterator() {
+		return this.distributionPoints.iterator();
 	}
 
 	@Override

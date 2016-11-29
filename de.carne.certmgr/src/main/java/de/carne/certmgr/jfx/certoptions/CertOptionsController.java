@@ -277,7 +277,26 @@ public class CertOptionsController extends StageController {
 
 	@FXML
 	void onCmdEditCRLDistributionPoints(ActionEvent evt) {
+		try {
+			CRLDistributionPointsController extensionDialog = CRLDistributionPointsDialog.load(this);
+			CRLDistributionPointsExtensionData extensionData = this.crlDistributionPointsExtension.get();
 
+			if (extensionData != null) {
+				extensionDialog.init(extensionData, this.expertMode);
+			} else {
+				extensionDialog.init(this.expertMode);
+			}
+
+			Optional<CRLDistributionPointsExtensionData> dialogResult = extensionDialog.showAndWait();
+
+			if (dialogResult.isPresent()) {
+				extensionData = dialogResult.get();
+				setExtensionData(extensionData);
+				this.crlDistributionPointsExtension.set(extensionData);
+			}
+		} catch (IOException e) {
+			Alerts.unexpected(e).showAndWait();
+		}
 	}
 
 	@FXML
@@ -300,6 +319,8 @@ public class CertOptionsController extends StageController {
 				onCmdEditExtendedKeyUsage(evt);
 			} else if (extensionData instanceof SubjectAlternativeNameExtensionData) {
 				onCmdEditSubjectAlternativeName(evt);
+			} else if (extensionData instanceof CRLDistributionPointsExtensionData) {
+				onCmdEditCRLDistributionPoints(evt);
 			}
 		}
 	}
@@ -319,6 +340,8 @@ public class CertOptionsController extends StageController {
 				this.extendedKeyUsageExtension.set(null);
 			} else if (extensionData instanceof SubjectAlternativeNameExtensionData) {
 				this.subjectAlternativeExtension.set(null);
+			} else if (extensionData instanceof CRLDistributionPointsExtensionData) {
+				this.crlDistributionPointsExtension.set(null);
 			}
 			this.ctlExtensionData.getItems().remove(extensionDataItem);
 		}
