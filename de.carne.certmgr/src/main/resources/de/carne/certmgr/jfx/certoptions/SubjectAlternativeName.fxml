@@ -36,7 +36,7 @@
                   <HBox alignment="CENTER_LEFT" spacing="4.0" GridPane.rowIndex="2">
                      <children>
                         <ChoiceBox fx:id="ctlNameTypeOption" />
-                        <TextField fx:id="ctlNameInput" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="ctlNameInput" maxWidth="1.7976931348623157E308" onAction="#onAddName" HBox.hgrow="ALWAYS" />
                         <Button mnemonicParsing="false" onAction="#onAddName">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
