@@ -16,10 +16,16 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import javax.security.auth.x500.X500Principal;
+
+import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.certmgr.certs.x509.DirectoryName;
 import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.StringName;
@@ -83,7 +89,21 @@ final class GeneralNameFactory {
 	}
 
 	private static GeneralName directoryName(String name) throws IllegalArgumentException {
-		return null;
+		String directoryNameString = Strings.safe(name).trim();
+
+		if (Strings.isEmpty(directoryNameString)) {
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_DIRECTORY_NAME());
+		}
+
+		X500Principal directoryNameX500;
+
+		try {
+			directoryNameX500 = X500Names.fromString(directoryNameString);
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException(GeneralNameFactoryI18N
+					.formatSTR_MESSAGE_INVALID_DIRECTORY_NAME(directoryNameString, e.getLocalizedMessage()), e);
+		}
+		return new DirectoryName(directoryNameX500);
 	}
 
 	private static GeneralName uriName(String name) throws IllegalArgumentException {
@@ -91,6 +111,12 @@ final class GeneralNameFactory {
 
 		if (Strings.isEmpty(uriName)) {
 			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_URI_NAME());
+		}
+		try {
+			new URI(uriName);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException(
+					GeneralNameFactoryI18N.formatSTR_MESSAGE_INVALID_URI_NAME(uriName, e.getLocalizedMessage()), e);
 		}
 		return new StringName(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, uriName);
 	}
