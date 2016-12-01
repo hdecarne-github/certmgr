@@ -92,7 +92,7 @@ final class GeneralNameFactory {
 		if (Strings.isEmpty(uriName)) {
 			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_URI_NAME());
 		}
-		return new StringName(GeneralNameType.DNS_NAME, uriName);
+		return new StringName(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, uriName);
 	}
 
 }

@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.security.auth.x500.X500Principal;
+
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -106,8 +108,19 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 
 	private String toValueString(DistributionPoint distributionPoint) {
 		String valueString = "";
+		DistributionPointName name = distributionPoint.getName();
 		GeneralNames crlIssuer = distributionPoint.getCRLIssuer();
 
+		if (name != null) {
+			GeneralNames fullName = name.getFullName();
+			X500Principal relativeName = name.getRelativeName();
+
+			if (fullName != null) {
+				valueString = Strings.join(fullName, ", ", Attributes.FORMAT_LIMIT_LONG);
+			} else {
+				valueString = relativeName.toString();
+			}
+		}
 		if (crlIssuer != null) {
 			valueString = Strings.join(crlIssuer, ", ", Attributes.FORMAT_LIMIT_LONG);
 		}
