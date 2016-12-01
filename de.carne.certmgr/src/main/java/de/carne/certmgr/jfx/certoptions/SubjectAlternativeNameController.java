@@ -195,7 +195,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	}
 
 	private void initNameTypeOptions() {
-		DefaultSet<GeneralNameType> types = GeneralNameFactory.types();
+		DefaultSet<GeneralNameType> types = GeneralNameFactory.alternateNameTypes();
 
 		this.ctlNameTypeOption.getItems().addAll(types);
 		this.ctlNameTypeOption.getItems().sort((o1, o2) -> o1.name().compareTo(o2.name()));

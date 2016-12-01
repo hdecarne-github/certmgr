@@ -80,7 +80,7 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 	 *
 	 * @param distributionPoint The distribution point definition to add.
 	 */
-	public void addDistributionPoints(DistributionPoint distributionPoint) {
+	public void addDistributionPoint(DistributionPoint distributionPoint) {
 		this.distributionPoints.add(distributionPoint);
 	}
 

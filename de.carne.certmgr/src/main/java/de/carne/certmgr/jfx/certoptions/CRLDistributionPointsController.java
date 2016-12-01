@@ -17,6 +17,8 @@
 package de.carne.certmgr.jfx.certoptions;
 
 import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
+import de.carne.certmgr.certs.x509.DistributionPoint;
+import de.carne.certmgr.certs.x509.DistributionPointName;
 import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
@@ -141,11 +143,10 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 	private void onApply(ActionEvent evt) {
 		try {
 			boolean critical = this.ctlCritical.isSelected();
-			GeneralNames names = validateAndGetNames();
+			DistributionPoint distributionPoint = validateAndGetDistributionPoint();
 
-			this.extensionDataResult = null; // new
-												// CRLDistributionPointsExtensionData(critical,
-												// names);
+			this.extensionDataResult = new CRLDistributionPointsExtensionData(critical);
+			this.extensionDataResult.addDistributionPoint(distributionPoint);
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
 			evt.consume();
@@ -190,14 +191,21 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 
 		ObservableList<GeneralName> nameItems = this.ctlNames.getItems();
 
-		// for (GeneralName name : data.getGeneralNames()) {
-		// nameItems.add(name);
-		// }
+		for (DistributionPoint distributionPoint : data) {
+			DistributionPointName distributionPointName = distributionPoint.getName();
+
+			if (distributionPointName != null) {
+				for (GeneralName name : distributionPointName.getFullName()) {
+					nameItems.add(name);
+				}
+				break;
+			}
+		}
 		return this;
 	}
 
 	private void initNameTypeOptions() {
-		DefaultSet<GeneralNameType> types = GeneralNameFactory.types();
+		DefaultSet<GeneralNameType> types = GeneralNameFactory.locationTypes();
 
 		this.ctlNameTypeOption.getItems().addAll(types);
 		this.ctlNameTypeOption.getItems().sort((o1, o2) -> o1.name().compareTo(o2.name()));
@@ -215,7 +223,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 		return name;
 	}
 
-	private GeneralNames validateAndGetNames() throws ValidationException {
+	private DistributionPoint validateAndGetDistributionPoint() throws ValidationException {
 		GeneralNames names = new GeneralNames();
 		int nameCount = 0;
 
@@ -224,7 +232,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 			nameCount++;
 		}
 		InputValidator.isTrue(nameCount > 0, (a) -> CRLDistributionPointsI18N.formatSTR_MESSAGE_NO_NAMES());
-		return names;
+		return new DistributionPoint(new DistributionPointName(names));
 	}
 
 	@Override

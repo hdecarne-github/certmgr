@@ -34,21 +34,31 @@ import de.carne.certmgr.certs.asn1.ASN1Data;
 public class DistributionPoint extends ASN1Data implements AttributesContent {
 
 	private final DistributionPointName name;
-	private final ReasonFlags reasons;
 	private final GeneralNames crlIssuer;
+	private ReasonFlags reasons = null;
 
 	/**
 	 * Construct {@code DistributionPoint}.
 	 *
-	 * @param name The (optional) distribution point's name data.
-	 * @param reasons The (optional) distribution point's reason flags.
-	 * @param crlIssuer The (optional) distribution point's CRL issuer.
+	 * @param name The distribution point's name data.
 	 */
-	public DistributionPoint(DistributionPointName name, ReasonFlags reasons, GeneralNames crlIssuer) {
+	public DistributionPoint(DistributionPointName name) {
+		this(name, null);
+	}
+
+	/**
+	 * Construct {@code DistributionPoint}.
+	 *
+	 * @param crlIssuer The distribution point's CRL issuer.
+	 */
+	public DistributionPoint(GeneralNames crlIssuer) {
+		this(null, crlIssuer);
+	}
+
+	private DistributionPoint(DistributionPointName name, GeneralNames crlIssuer) {
 		assert name != null || crlIssuer != null;
 
 		this.name = name;
-		this.reasons = reasons;
 		this.crlIssuer = crlIssuer;
 	}
 
@@ -83,7 +93,11 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 				throw new IOException("Unsupported tag: " + taggedObjectTag);
 			}
 		}
-		return new DistributionPoint(name, reasons, crlIssuer);
+
+		DistributionPoint distributionPoint = new DistributionPoint(name, crlIssuer);
+
+		distributionPoint.setReasons(reasons);
+		return distributionPoint;
 	}
 
 	/**
@@ -97,16 +111,6 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	}
 
 	/**
-	 * Get the defined distribution point reasons.
-	 *
-	 * @return The defined distribution point reasons or {@code null} if none
-	 *         have been defined.
-	 */
-	public @Nullable ReasonFlags getReasons() {
-		return this.reasons;
-	}
-
-	/**
 	 * Get the defined CRL issuer's names.
 	 *
 	 * @return The defined CRL issuer's names or {@code null} if none have been
@@ -114,6 +118,27 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 */
 	public @Nullable GeneralNames getCRLIssuer() {
 		return this.crlIssuer;
+	}
+
+	/**
+	 * Set the reasons this distribution point is authoritative for.
+	 *
+	 * @param reasons The reasons this distribution point is authoritative for.
+	 *        May be {@code null} to use this distribution point for all
+	 *        reasons.
+	 */
+	public void setReasons(@Nullable ReasonFlags reasons) {
+		this.reasons = reasons;
+	}
+
+	/**
+	 * Get the reasons this distribution point is authoritative for.
+	 *
+	 * @return The reasons this distribution point is authoritative for or
+	 *         {@code null} if this distribution point is used for all reasons.
+	 */
+	public @Nullable ReasonFlags getReasons() {
+		return this.reasons;
 	}
 
 	@Override

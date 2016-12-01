@@ -41,10 +41,17 @@ final class GeneralNameFactory {
 		FACTORY_FUNCTIONS.put(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, (s) -> uriName(s));
 	}
 
-	public static DefaultSet<GeneralNameType> types() {
+	public static DefaultSet<GeneralNameType> alternateNameTypes() {
 		DefaultSet<GeneralNameType> types = new DefaultSet<>(FACTORY_FUNCTIONS.keySet());
 
 		types.addDefault(GeneralNameType.DNS_NAME);
+		return types;
+	}
+
+	public static DefaultSet<GeneralNameType> locationTypes() {
+		DefaultSet<GeneralNameType> types = new DefaultSet<>(FACTORY_FUNCTIONS.keySet());
+
+		types.addDefault(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER);
 		return types;
 	}
 

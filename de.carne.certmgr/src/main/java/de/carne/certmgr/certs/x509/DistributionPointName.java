@@ -23,6 +23,8 @@ import javax.security.auth.x500.X500Principal;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
+import org.bouncycastle.asn1.DERTaggedObject;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.x500.X500Names;
@@ -39,9 +41,21 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	 * Construct {@code DistributionPointName}.
 	 *
 	 * @param fullName The full name.
+	 */
+	public DistributionPointName(GeneralNames fullName) {
+		this(fullName, null);
+	}
+
+	/**
+	 * Construct {@code DistributionPointName}.
+	 *
 	 * @param nameRelativeToCRLIssuer The relative name.
 	 */
-	public DistributionPointName(GeneralNames fullName, X500Principal nameRelativeToCRLIssuer) {
+	public DistributionPointName(X500Principal nameRelativeToCRLIssuer) {
+		this(null, nameRelativeToCRLIssuer);
+	}
+
+	private DistributionPointName(GeneralNames fullName, X500Principal nameRelativeToCRLIssuer) {
 		assert fullName != null || nameRelativeToCRLIssuer != null;
 
 		this.fullName = fullName;
@@ -74,10 +88,35 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 		return new DistributionPointName(fullName, nameRelativeToCRLIssuer);
 	}
 
+	/**
+	 * Get the full name.
+	 *
+	 * @return The full name or {@code null} if the relative name is set.
+	 */
+	public @Nullable GeneralNames getFullName() {
+		return this.fullName;
+	}
+
+	/**
+	 * Get the relative name.
+	 *
+	 * @return The relative name or {@code null} if the full name is set.
+	 */
+	public @Nullable X500Principal getRelativeName() {
+		return this.nameRelativeToCRLIssuer;
+	}
+
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		DERTaggedObject encoded;
+
+		if (this.fullName != null) {
+			encoded = new DERTaggedObject(false, 0, this.fullName.encode());
+		} else {
+			encoded = new DERTaggedObject(false, 1,
+					ASN1Primitive.fromByteArray(this.nameRelativeToCRLIssuer.getEncoded()));
+		}
+		return encoded;
 	}
 
 	@Override
