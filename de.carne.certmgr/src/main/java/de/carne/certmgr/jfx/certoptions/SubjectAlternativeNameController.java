@@ -159,6 +159,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 		this.cmdMoveNameDown.disableProperty().bind(this.ctlNames.getSelectionModel().selectedItemProperty().isNull());
 		this.ctlNames.getSelectionModel().selectedItemProperty().addListener((p, o, n) -> onNameSelectionChanged(n));
 		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
+		this.ctlNameInput.requestFocus();
 	}
 
 	/**

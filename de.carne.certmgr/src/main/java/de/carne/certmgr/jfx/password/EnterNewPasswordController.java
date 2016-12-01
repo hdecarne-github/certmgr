@@ -56,6 +56,7 @@ public class EnterNewPasswordController extends PasswordController {
 		((Button) lookupButton(ButtonType.NO)).setText(EnterNewPasswordI18N.formatSTR_TEXT_CANCEL());
 		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterNewPasswordI18N.formatSTR_TEXT_CANCELALL());
 		addButtonEventFilter(ButtonType.YES, (evt) -> onOk(evt));
+		this.ctlPasswordInput1.requestFocus();
 	}
 
 	@Override
