@@ -36,6 +36,7 @@ import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
 import de.carne.certmgr.jfx.certoptions.CertOptionsController;
+import de.carne.certmgr.jfx.crloptions.CRLOptionsController;
 import de.carne.certmgr.jfx.preferences.PreferencesController;
 import de.carne.certmgr.jfx.preferences.PreferencesDialog;
 import de.carne.certmgr.jfx.resources.Images;
@@ -105,7 +106,7 @@ public class StoreController extends StageController {
 	MenuItem cmdRevokeCert;
 
 	@FXML
-	MenuItem cmdEditCRL;
+	MenuItem cmdManageCRL;
 
 	@FXML
 	MenuItem cmdExportCert;
@@ -132,7 +133,7 @@ public class StoreController extends StageController {
 	Button cmdRevokeCertButton;
 
 	@FXML
-	Button cmdEditCRLButton;
+	Button cmdManageCRLButton;
 
 	@FXML
 	Button cmdExportCertButton;
@@ -244,14 +245,18 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdNewCert(ActionEvent evt) {
-		try {
-			CertOptionsController certOptions = loadStage(CertOptionsController.class).init(this.storeProperty.get(),
-					getSelectedStoreEntry(), this.userPreferences.expertMode.getBoolean(false));
+		UserCertStore store = this.storeProperty.get();
 
-			certOptions.showAndWait();
-			updateStoreEntryView();
-		} catch (IOException e) {
-			Alerts.unexpected(e).showAndWait();
+		if (store != null) {
+			try {
+				CertOptionsController certOptions = loadStage(CertOptionsController.class).init(store,
+						getSelectedStoreEntry(), this.userPreferences.expertMode.getBoolean(false));
+
+				certOptions.showAndWait();
+				updateStoreEntryView();
+			} catch (IOException e) {
+				Alerts.unexpected(e).showAndWait();
+			}
 		}
 	}
 
@@ -261,8 +266,26 @@ public class StoreController extends StageController {
 	}
 
 	@FXML
-	void onCmdEditCRL(ActionEvent evt) {
+	void onCmdManageCRL(ActionEvent evt) {
+		UserCertStore store = this.storeProperty.get();
+		UserCertStoreEntry issuerEntry = getSelectedStoreEntry();
 
+		if (store != null && issuerEntry != null) {
+			if (issuerEntry.hasKey()) {
+				try {
+					CRLOptionsController crlOptionsController = loadStage(CRLOptionsController.class).init(store,
+							issuerEntry);
+
+					crlOptionsController.showAndWait();
+					updateStoreEntryView();
+				} catch (IOException e) {
+					Alerts.unexpected(e).showAndWait();
+				}
+			} else {
+				Alerts.message(AlertType.WARNING, StoreI18N.formatSTR_MESSAGE_NO_KEY_FOR_CRL(issuerEntry),
+						ButtonType.OK).showAndWait();
+			}
+		}
 	}
 
 	@FXML
@@ -347,7 +370,7 @@ public class StoreController extends StageController {
 		this.cmdNewCert.disableProperty().bind(this.storeProperty.isNull());
 		this.cmdRevokeCert.disableProperty()
 				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
-		this.cmdEditCRL.disableProperty()
+		this.cmdManageCRL.disableProperty()
 				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
 		this.cmdExportCert.disableProperty()
 				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
@@ -357,7 +380,7 @@ public class StoreController extends StageController {
 		this.cmdDeleteEntryButton.disableProperty().bind(this.cmdDeleteEntry.disableProperty());
 		this.cmdNewCertButton.disableProperty().bind(this.cmdNewCert.disableProperty());
 		this.cmdRevokeCertButton.disableProperty().bind(this.cmdRevokeCert.disableProperty());
-		this.cmdEditCRLButton.disableProperty().bind(this.cmdEditCRL.disableProperty());
+		this.cmdManageCRLButton.disableProperty().bind(this.cmdManageCRL.disableProperty());
 		this.cmdExportCertButton.disableProperty().bind(this.cmdExportCert.disableProperty());
 		this.cmdImportCertsButton.disableProperty().bind(this.cmdImportCerts.disableProperty());
 		this.ctlStoreEntryViewId.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));

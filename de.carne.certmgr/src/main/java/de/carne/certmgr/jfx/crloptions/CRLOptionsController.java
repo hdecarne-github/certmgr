@@ -16,7 +16,18 @@
  */
 package de.carne.certmgr.jfx.crloptions;
 
+import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
+import de.carne.certmgr.certs.x509.ReasonFlag;
 import de.carne.jfx.stage.StageController;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
@@ -24,9 +35,47 @@ import javafx.stage.Stage;
  */
 public class CRLOptionsController extends StageController {
 
+	@FXML
+	TextField ctlIssuerField;
+
+	@FXML
+	ComboBox<SignatureAlgorithm> ctlSigAlgOption;
+
+	@FXML
+	DatePicker ctlLastUpdateInput;
+
+	@FXML
+	DatePicker ctlNextUpdateInput;
+
+	@FXML
+	TableView<EntryModel> ctlEntryOptions;
+
+	@FXML
+	TableColumn<EntryModel, Boolean> ctlEntryOptionRevoked;
+
+	@FXML
+	TableColumn<EntryModel, String> ctlEntryOptionDN;
+
+	@FXML
+	TableColumn<EntryModel, ReasonFlag> ctlEntryOptionReason;
+
+	@FXML
+	void onCmdGenerate(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdCancel(ActionEvent evt) {
+		close(false);
+	}
+
 	@Override
 	protected void setupStage(Stage stage) {
+		stage.setTitle(CRLOptionsI18N.formatSTR_STAGE_TITLE());
+	}
 
+	public CRLOptionsController init(UserCertStore store, UserCertStoreEntry entry) {
+		return this;
 	}
 
 }

@@ -97,11 +97,11 @@
                         </ImageView>
                      </graphic>
                   </MenuItem>
-                  <MenuItem fx:id="cmdEditCRL" mnemonicParsing="false" onAction="#onCmdEditCRL" text="%_STR_MENU_EDIT_CRL">
+                  <MenuItem fx:id="cmdManageCRL" mnemonicParsing="false" onAction="#onCmdManageCRL" text="%_STR_MENU_EDIT_CRL">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../resources/imageEditCRL16.png" />
+                              <Image url="@../resources/imageManageCRL16.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -204,11 +204,11 @@
                   </ImageView>
                </graphic>
             </Button>
-            <Button fx:id="cmdEditCRLButton" layoutX="200.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdEditCRL">
+            <Button fx:id="cmdManageCRLButton" layoutX="200.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdManageCRL">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../resources/imageEditCRL16.png" />
+                        <Image url="@../resources/imageManageCRL16.png" />
                      </image>
                   </ImageView>
                </graphic>

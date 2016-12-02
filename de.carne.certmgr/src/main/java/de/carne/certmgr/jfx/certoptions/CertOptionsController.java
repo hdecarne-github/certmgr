@@ -420,17 +420,17 @@ public class CertOptionsController extends StageController {
 	 * Initialize dialog for certificate generation.
 	 *
 	 * @param storeParam The store to add the generated certificate to.
-	 * @param storeEntryParam The (optional) store entry to use for certificate
-	 *        signing.
+	 * @param issuerEntryParam The (optional) store entry to use for certificate
+	 *        issuing.
 	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
 	 *        not ({@code false}).
 	 * @return This controller.
 	 */
-	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry storeEntryParam,
+	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry issuerEntryParam,
 			boolean expertModeParam) {
 		this.store = storeParam;
 		this.storePreferences = this.store.storePreferences();
-		this.storeEntry = storeEntryParam;
+		this.storeEntry = issuerEntryParam;
 		this.expertMode = expertModeParam;
 		initExpertMode();
 		initCertificateNames();
