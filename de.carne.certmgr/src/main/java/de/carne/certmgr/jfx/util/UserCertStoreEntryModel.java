@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -270,19 +271,32 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 
 	private static Node getEntryGraphic(UserCertStoreEntry entry) {
 		Image entryImage;
+		Image overlayImage;
 
 		if (entry.isExternal()) {
 			entryImage = Images.EXTERNAL_CRT16;
+			overlayImage = null;
 		} else if (entry.hasCRT()) {
 			entryImage = (entry.hasKey() ? Images.PRIVATE_CRT16 : Images.PUBLIC_CRT16);
+			if (entry.isRevoked()) {
+				overlayImage = Images.REVOKED_OVERLAY16;
+			} else if (!entry.isValid()) {
+				overlayImage = Images.INVALID_OVERLAY16;
+			} else {
+				overlayImage = null;
+			}
 		} else if (entry.hasCSR()) {
 			entryImage = Images.CSR16;
+			overlayImage = null;
 		} else if (entry.hasCRL()) {
 			entryImage = Images.CRL16;
+			overlayImage = null;
 		} else {
 			entryImage = Images.KEY16;
+			overlayImage = null;
 		}
-		return new ImageView(entryImage);
+		return (overlayImage != null ? new Group(new ImageView(entryImage), new ImageView(overlayImage))
+				: new ImageView(entryImage));
 	}
 
 }

@@ -91,6 +91,16 @@ public final class Images {
 	public static final Image CRL16 = getImage("imageCRL16.png");
 
 	/**
+	 * Invalid CRT overlay image (16x16).
+	 */
+	public static final Image INVALID_OVERLAY16 = getImage("imageInvalidOverlay16.png");
+
+	/**
+	 * Revoked CRT overlay image (16x16).
+	 */
+	public static final Image REVOKED_OVERLAY16 = getImage("imageRevokedOverlay16.png");
+
+	/**
 	 * Trace image (16x16).
 	 */
 	public static final Image TRACE16 = getImage("imageTrace16.png");

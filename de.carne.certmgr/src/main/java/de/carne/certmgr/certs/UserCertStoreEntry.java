@@ -21,6 +21,7 @@ import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
@@ -283,6 +284,50 @@ public abstract class UserCertStoreEntry {
 	 */
 	public final boolean isExternal() {
 		return !hasCRT() && !hasKey() && !hasCSR() && !hasCRL();
+	}
+
+	/**
+	 * Check whether this entry is valid (and the current point in time lies
+	 * within this validity range).
+	 *
+	 * @return {@code true} if this entry is valid.
+	 */
+	public final boolean isValid() {
+		boolean isValid = true;
+
+		if (hasCRT()) {
+			try {
+				X509Certificate crt = getCRT();
+				Date now = new Date();
+
+				isValid = crt.getNotBefore().before(now) && crt.getNotAfter().after(now);
+			} catch (IOException e) {
+				Exceptions.warn(e);
+			}
+		}
+		return isValid;
+	}
+
+	/**
+	 * Check whether this entry has been revoked.
+	 *
+	 * @return {@code true} if this entry has been revoked.
+	 */
+	public final boolean isRevoked() {
+		boolean isRevoked = false;
+
+		if (!isSelfSigned() && hasCRT()) {
+			UserCertStoreEntry issuer = issuer();
+
+			if (issuer.hasCRL()) {
+				try {
+					isRevoked = issuer.getCRL().isRevoked(getCRT());
+				} catch (IOException e) {
+					Exceptions.warn(e);
+				}
+			}
+		}
+		return isRevoked;
 	}
 
 	/**
