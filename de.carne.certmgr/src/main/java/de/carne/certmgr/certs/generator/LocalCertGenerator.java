@@ -35,6 +35,7 @@ import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.util.DefaultSet;
+import de.carne.util.Exceptions;
 
 /**
  * Signing servicer for local certificate generation and signing.
@@ -90,12 +91,16 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 
 		if (issuer != null && keyPairAlgorithm != null) {
-			String keyPairAlgorithmName;
+			String keyPairAlgorithmName = null;
 
 			if (this.selfSignedIssuer.equals(issuer)) {
 				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
 			} else {
-				keyPairAlgorithmName = issuer.storeEntry().getKeyAlgorithm();
+				try {
+					keyPairAlgorithmName = issuer.storeEntry().getPublicKey().getAlgorithm();
+				} catch (IOException e) {
+					Exceptions.warn(e);
+				}
 			}
 			if (keyPairAlgorithmName != null) {
 				signatureAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithmName, defaultHint, expertMode);

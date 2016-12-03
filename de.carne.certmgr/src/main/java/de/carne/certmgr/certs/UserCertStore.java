@@ -887,23 +887,6 @@ public final class UserCertStore {
 			this.crlEntry = crlEntry;
 		}
 
-		public boolean hasPublicKey() {
-			return hasCRT() || hasDecryptedKey() || hasCSR();
-		}
-
-		public PublicKey getPublicKey() throws IOException {
-			PublicKey publicKey = null;
-
-			if (hasCRT()) {
-				publicKey = getCRT().getPublicKey();
-			} else if (hasDecryptedKey()) {
-				publicKey = getKey().getPublic();
-			} else if (hasCSR()) {
-				publicKey = getCSR().getPublicKey();
-			}
-			return publicKey;
-		}
-
 	}
 
 }

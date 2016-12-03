@@ -18,6 +18,7 @@ package de.carne.certmgr.certs;
 
 import java.io.IOException;
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Set;
@@ -223,6 +224,41 @@ public abstract class UserCertStoreEntry {
 	public abstract X509CRL getCRL() throws IOException;
 
 	/**
+	 * Check whether this entry contains a direct accessible public key object.
+	 * <p>
+	 * This is the case if the entry contains a decrypted key pair, a CRT or a
+	 * CSR object.
+	 *
+	 * @return {@code true} if this entry contains a direct accessible public
+	 *         key object.
+	 * @see #getPublicKey()
+	 */
+	public boolean hasPublicKey() {
+		return hasCRT() || hasDecryptedKey() || hasCSR();
+	}
+
+	/**
+	 * Get this entry's public key object.
+	 * 
+	 * @return This entry's public key object (may be {@code null}).
+	 * @throws IOException if an I/O error occurs while accessing the public key
+	 *         object.
+	 * @see #hasPublicKey()
+	 */
+	public PublicKey getPublicKey() throws IOException {
+		PublicKey publicKey = null;
+
+		if (hasCRT()) {
+			publicKey = getCRT().getPublicKey();
+		} else if (hasDecryptedKey()) {
+			publicKey = getKey().getPublic();
+		} else if (hasCSR()) {
+			publicKey = getCSR().getPublicKey();
+		}
+		return publicKey;
+	}
+
+	/**
 	 * Check whether this entry represents an external certificate (means
 	 * contains no actual certificate objects).
 	 * <p>
@@ -253,25 +289,6 @@ public abstract class UserCertStoreEntry {
 			}
 		}
 		return canIssue;
-	}
-
-	/**
-	 * Get this entry's key algorithm.
-	 *
-	 * @return This entry's key algorithm or {@code null} if the key algorithm
-	 *         could not be determined.
-	 */
-	public final String getKeyAlgorithm() {
-		String keyAlgorithm = null;
-
-		if (hasKey() && hasCRT()) {
-			try {
-				keyAlgorithm = getCRT().getPublicKey().getAlgorithm();
-			} catch (IOException e) {
-				Exceptions.warn(e);
-			}
-		}
-		return keyAlgorithm;
 	}
 
 	@Override

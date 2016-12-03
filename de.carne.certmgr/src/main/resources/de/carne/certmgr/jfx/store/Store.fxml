@@ -242,7 +242,7 @@
                     <columns>
                       <TreeTableColumn fx:id="ctlStoreEntryViewId" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_ID" />
                       <TreeTableColumn fx:id="ctlStoreEntryViewName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_NAME" />
-                        <TreeTableColumn fx:id="ctlStoreEntryViewSerial" editable="false" maxWidth="1.7976931348623157E308" text="%_STR_COL_SERIAL" />
+                        <TreeTableColumn fx:id="ctlStoreEntryViewSerial" editable="false" maxWidth="1.7976931348623157E308" style="-fx-alignment: CENTER_RIGHT;" text="%_STR_COL_SERIAL" />
                         <TreeTableColumn fx:id="ctlStoreEntryViewExpires" editable="false" maxWidth="1.7976931348623157E308" prefWidth="120.0" text="%_STR_COL_EXPIRES" />
                     </columns>
                   </TreeTableView>

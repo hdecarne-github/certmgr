@@ -102,6 +102,7 @@ public class CRLOptionsController extends StageController {
 
 		ObservableList<ReasonFlag> reasons = FXCollections.observableArrayList(ReasonFlag.instances());
 
+		reasons.removeIf((reason) -> ReasonFlag.UNUSED.equals(reason));
 		reasons.sort((o1, o2) -> o1.name().compareTo(o2.name()));
 		this.ctlEntryOptionReason.setCellFactory(ChoiceBoxTableCell.forTableColumn(reasons));
 		this.ctlEntryOptionReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
@@ -131,8 +132,23 @@ public class CRLOptionsController extends StageController {
 		return this;
 	}
 
+	/**
+	 * Mark a store entry as revoked.
+	 *
+	 * @param storeEntry The store entry to mark.
+	 * @param reason The revoke reason to set.
+	 */
+	public void revokeStoreEntry(UserCertStoreEntry storeEntry, ReasonFlag reason) {
+		for (CRLEntryModel entryItem : this.ctlEntryOptions.getItems()) {
+			if (entryItem.getStoreEntry().equals(storeEntry)) {
+				entryItem.setRevoked(true);
+				entryItem.setReason(reason);
+			}
+		}
+	}
+
 	private void initSigAlgOptions(UserCertStorePreferences preferences, boolean expertMode) throws IOException {
-		String keyAlgName = this.issuerEntry.getCRT().getPublicKey().getAlgorithm();
+		String keyAlgName = this.issuerEntry.getPublicKey().getAlgorithm();
 		DefaultSet<SignatureAlgorithm> keyAlgs = SignatureAlgorithm.getDefaultSet(keyAlgName,
 				preferences.defaultSignatureAlgorithm.get(), expertMode);
 
@@ -159,7 +175,7 @@ public class CRLOptionsController extends StageController {
 		for (UserCertStoreEntry issuedEntry : this.issuerEntry.issuedEntries()) {
 			BigInteger issuedSerial = issuedEntry.getCRT().getSerialNumber();
 			boolean revoked = false;
-			ReasonFlag reason = ReasonFlag.UNUSED;
+			ReasonFlag reason = ReasonFlag.UNSPECIFIED;
 			Date date = null;
 
 			if (crl != null) {

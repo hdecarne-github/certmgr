@@ -34,6 +34,7 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.certmgr.certs.x509.ReasonFlag;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.jfx.certimport.CertImportController;
@@ -266,7 +267,27 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdRevokeCert(ActionEvent evt) {
+		UserCertStoreEntry entry = getSelectedStoreEntry();
 
+		if (entry != null) {
+			UserCertStoreEntry issuerEntry = entry.issuer();
+
+			if (!entry.isSelfSigned() && issuerEntry.hasPublicKey() && issuerEntry.hasKey()) {
+				try {
+					CRLOptionsController crlOptionsController = loadStage(CRLOptionsController.class).init(issuerEntry,
+							this.userPreferences.expertMode.getBoolean(false));
+
+					crlOptionsController.revokeStoreEntry(entry, ReasonFlag.UNSPECIFIED);
+					crlOptionsController.showAndWait();
+					updateStoreEntryView();
+				} catch (IOException e) {
+					Alerts.unexpected(e).showAndWait();
+				}
+			} else {
+				Alerts.message(AlertType.WARNING, StoreI18N.formatSTR_MESSAGE_CANNOT_REVOKE_CRT(issuerEntry),
+						ButtonType.OK).showAndWait();
+			}
+		}
 	}
 
 	@FXML
@@ -274,7 +295,7 @@ public class StoreController extends StageController {
 		UserCertStoreEntry issuerEntry = getSelectedStoreEntry();
 
 		if (issuerEntry != null) {
-			if (issuerEntry.hasCRT() && issuerEntry.hasKey()) {
+			if (issuerEntry.hasPublicKey() && issuerEntry.hasKey()) {
 				try {
 					CRLOptionsController crlOptionsController = loadStage(CRLOptionsController.class).init(issuerEntry,
 							this.userPreferences.expertMode.getBoolean(false));
@@ -285,7 +306,7 @@ public class StoreController extends StageController {
 					Alerts.unexpected(e).showAndWait();
 				}
 			} else {
-				Alerts.message(AlertType.WARNING, StoreI18N.formatSTR_MESSAGE_NO_KEY_FOR_CRL(issuerEntry),
+				Alerts.message(AlertType.WARNING, StoreI18N.formatSTR_MESSAGE_CANNOT_MANAGE_CRL(issuerEntry),
 						ButtonType.OK).showAndWait();
 			}
 		}
