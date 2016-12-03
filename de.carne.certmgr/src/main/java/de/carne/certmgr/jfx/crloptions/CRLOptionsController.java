@@ -18,6 +18,7 @@ package de.carne.certmgr.jfx.crloptions;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.cert.CRLReason;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
 import java.time.LocalDate;
@@ -50,6 +51,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -58,6 +61,12 @@ import javafx.stage.Stage;
 public class CRLOptionsController extends StageController {
 
 	private UserCertStoreEntry issuerEntry = null;
+
+	@FXML
+	GridPane ctlControlPane;
+
+	@FXML
+	VBox ctlProgressOverlay;
 
 	@FXML
 	TextField ctlIssuerField;
@@ -94,11 +103,9 @@ public class CRLOptionsController extends StageController {
 		try {
 			UpdateCRLRequest updateRequest = validateAndGetUpdateRequest();
 
-			this.issuerEntry.updateCRL(updateRequest, PasswordDialog.enterPassword(this));
+			getExecutorService().submit(new UpdateCRLTask(updateRequest));
 		} catch (ValidationException e) {
 			ValidationAlerts.error(e).showAndWait();
-		} catch (IOException e) {
-			Alerts.unexpected(e);
 		}
 	}
 
@@ -197,13 +204,24 @@ public class CRLOptionsController extends StageController {
 
 				if (crlEntry != null) {
 					revoked = true;
-					reason = ReasonFlag.fromCRLReason(crlEntry.getRevocationReason());
+
+					CRLReason crlEntryReason = crlEntry.getRevocationReason();
+
+					if (crlEntryReason != null) {
+						reason = ReasonFlag.fromCRLReason(crlEntryReason);
+					}
 					date = crlEntry.getRevocationDate();
 				}
 			}
 			entryItems.add(new CRLEntryModel(issuedEntry, revoked, issuedSerial, reason, date));
 		}
 		entryItems.sort((o1, o2) -> o1.compareTo(o2));
+	}
+
+	@Override
+	protected void setBlocked(boolean blocked) {
+		this.ctlControlPane.setDisable(blocked);
+		this.ctlProgressOverlay.setVisible(blocked);
 	}
 
 	private UpdateCRLRequest validateAndGetUpdateRequest() throws ValidationException {
@@ -213,7 +231,7 @@ public class CRLOptionsController extends StageController {
 		UpdateCRLRequest updateRequest = new UpdateCRLRequest(lastUpdate, nextUpdate, sigAlg);
 
 		for (CRLEntryModel entryItem : this.ctlEntryOptions.getItems()) {
-			if (!entryItem.getRevoked()) {
+			if (entryItem.getRevoked()) {
 				updateRequest.addRevokeEntry(entryItem.getSerial(), entryItem.getReason());
 			}
 		}
@@ -242,6 +260,38 @@ public class CRLOptionsController extends StageController {
 	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
 		return InputValidator.notNull(this.ctlSigAlgOption.getValue(),
 				(a) -> CRLOptionsI18N.formatSTR_MESSAGE_NO_SIGALG());
+	}
+
+	void updateCRL(UpdateCRLRequest updateRequest) throws IOException {
+		this.issuerEntry.updateCRL(updateRequest, PasswordDialog.enterPassword(this));
+	}
+
+	private class UpdateCRLTask extends BackgroundTask<Void> {
+
+		private final UpdateCRLRequest updateRequest;
+
+		UpdateCRLTask(UpdateCRLRequest updateRequest) {
+			this.updateRequest = updateRequest;
+		}
+
+		@Override
+		protected Void call() throws Exception {
+			updateCRL(this.updateRequest);
+			return null;
+		}
+
+		@Override
+		protected void succeeded() {
+			super.succeeded();
+			close(true);
+		}
+
+		@Override
+		protected void failed() {
+			super.failed();
+			Alerts.unexpected(getException()).showAndWait();
+		}
+
 	}
 
 }

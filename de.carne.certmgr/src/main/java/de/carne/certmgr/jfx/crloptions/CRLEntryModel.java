@@ -48,7 +48,7 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 
 	CRLEntryModel(UserCertStoreEntry storeEntry, boolean revoked, BigInteger serial, ReasonFlag reason, Date date) {
 		this.storeEntry = storeEntry;
-		this.revokedProperty = new SimpleBooleanProperty(false);
+		this.revokedProperty = new SimpleBooleanProperty(revoked);
 		this.nameProperty = new SimpleStringProperty(storeEntry.getName());
 		this.serialProperty = new SimpleObjectProperty<>(serial);
 		this.reasonProperty = new SimpleObjectProperty<>(reason);
@@ -187,7 +187,7 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 
 	/**
 	 * Get the revocation date property.
-	 * 
+	 *
 	 * @return The revocation date property.
 	 */
 	public ObjectProperty<Date> dateProperty() {

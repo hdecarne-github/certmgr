@@ -355,8 +355,8 @@ public final class UserCertStore {
 	 * @param password The password callback to use for password querying.
 	 * @throws IOException if an I/O error occurs during the update.
 	 */
-	public void updateEntryCRL(UserCertStoreEntry issuerEntry, UpdateCRLRequest request, PasswordCallback password)
-			throws IOException {
+	public synchronized void updateEntryCRL(UserCertStoreEntry issuerEntry, UpdateCRLRequest request,
+			PasswordCallback password) throws IOException {
 		assert issuerEntry != null;
 		assert request != null;
 		assert password != null;
