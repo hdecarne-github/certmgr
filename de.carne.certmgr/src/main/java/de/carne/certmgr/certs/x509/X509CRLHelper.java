@@ -16,16 +16,32 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
 import java.security.cert.CRLReason;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.bouncycastle.asn1.x509.CRLNumber;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
+import org.bouncycastle.cert.jcajce.JcaX509v2CRLBuilder;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+
+import de.carne.certmgr.certs.CertProviderException;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.util.logging.Log;
 
 /**
  * Utility class providing {@link X509CRL} related functions.
@@ -35,6 +51,8 @@ public final class X509CRLHelper {
 	private X509CRLHelper() {
 		// Make sure this class is not instantiated from outside
 	}
+
+	private static final Log LOG = new Log();
 
 	/**
 	 * Get a CRL object's {@code Attributes}.
@@ -83,6 +101,84 @@ public final class X509CRLHelper {
 			}
 		}
 		return crlAttributes;
+	}
+
+	/**
+	 * Generate a CRL object.
+	 *
+	 * @param currentCRL The current CRL object in case of an update (may be
+	 *        {@code null}).
+	 * @param lastUpdate The last update timestamp to set.
+	 * @param nextUpdate The next update timestamp to set (may be {@code null}).
+	 * @param revokeEntries The revoked entries.
+	 * @param issuerDN The CRL issuer's DN.
+	 * @param issuerKey The CRL issuer's key pair.
+	 * @param signatureAlgorithm The signature algorithm to use for signing.
+	 * @return The generated CRL object.
+	 * @throws IOException if an error occurs during generation.
+	 */
+	public static X509CRL generateCRL(X509CRL currentCRL, Date lastUpdate, Date nextUpdate,
+			Map<BigInteger, ReasonFlag> revokeEntries, X500Principal issuerDN, KeyPair issuerKey,
+			SignatureAlgorithm signatureAlgorithm) throws IOException {
+		assert lastUpdate != null;
+		assert issuerDN != null;
+		assert issuerKey != null;
+		assert signatureAlgorithm != null;
+
+		LOG.info("CRL generation ''{0}'' started...", issuerDN);
+
+		// Initialize CRL builder
+		JcaX509v2CRLBuilder crlBuilder = new JcaX509v2CRLBuilder(issuerDN, lastUpdate);
+
+		if (nextUpdate != null) {
+			crlBuilder.setNextUpdate(nextUpdate);
+		}
+
+		for (Map.Entry<BigInteger, ReasonFlag> revokeEntry : revokeEntries.entrySet()) {
+			crlBuilder.addCRLEntry(revokeEntry.getKey(), lastUpdate, revokeEntry.getValue().value());
+		}
+
+		X509CRL crl;
+
+		try {
+			// Add extensions
+			JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+
+			crlBuilder.addExtension(Extension.authorityKeyIdentifier, false,
+					extensionUtils.createAuthorityKeyIdentifier(issuerKey.getPublic()));
+
+			BigInteger nextCRLNumber = getNextCRLNumber(currentCRL);
+
+			crlBuilder.addExtension(Extension.cRLNumber, false, new CRLNumber(nextCRLNumber));
+
+			// Sign and create CRL object
+			ContentSigner crlSigner = new JcaContentSignerBuilder(signatureAlgorithm.algorithm())
+					.build(issuerKey.getPrivate());
+
+			crl = new JcaX509CRLConverter().getCRL(crlBuilder.build(crlSigner));
+		} catch (GeneralSecurityException | OperatorCreationException e) {
+			throw new CertProviderException(e);
+		}
+
+		LOG.info("CRT generation ''{0}'' done", issuerDN);
+
+		return crl;
+	}
+
+	private static BigInteger getNextCRLNumber(X509CRL crl) throws IOException {
+		BigInteger nextCRLNumber = BigInteger.ONE;
+
+		if (crl != null) {
+			byte[] encoded = crl.getExtensionValue(CRLNumberExtensionData.OID);
+
+			if (encoded != null) {
+				CRLNumberExtensionData crlNumberExtensionData = (CRLNumberExtensionData) X509ExtensionData
+						.decode(CRLNumberExtensionData.OID, CRLNumberExtensionData.CRITICAL_DEFAULT, encoded);
+
+				nextCRLNumber = nextCRLNumber.add(crlNumberExtensionData.getCRLNumber());
+			}
+		}
+		return nextCRLNumber;
 	}
 
 }

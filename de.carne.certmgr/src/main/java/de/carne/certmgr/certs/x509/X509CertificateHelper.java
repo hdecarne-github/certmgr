@@ -100,18 +100,18 @@ public final class X509CertificateHelper {
 		assert issuerDN != null;
 		assert signatureAlgorithm != null;
 
+		LOG.info("CRT generation ''{0}'' started...", dn);
+
 		X509Certificate crt;
 
+		// Initialize CRT builder
+		X509v3CertificateBuilder crtBuilder = new JcaX509v3CertificateBuilder(issuerDN, serial, notBefore, notAfter, dn,
+				key.getPublic());
+
+		// Add custom extension objects
+		addExtensions(crtBuilder, extensions);
+
 		try {
-			LOG.info("CRT generation ''{0}'' started...", dn);
-
-			// Initialize CRT builder
-			X509v3CertificateBuilder crtBuilder = new JcaX509v3CertificateBuilder(issuerDN, serial, notBefore, notAfter,
-					dn, key.getPublic());
-
-			// Add extension objects
-			addExtensions(crtBuilder, extensions);
-
 			// Add standard extensions based upon the CRT's purpose
 			JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
 
@@ -137,10 +137,12 @@ public final class X509CertificateHelper {
 					.build(issuerKey.getPrivate());
 
 			crt = new JcaX509CertificateConverter().getCertificate(crtBuilder.build(crtSigner));
-			LOG.info("CRT generation ''{0}'' done", dn);
 		} catch (OperatorCreationException | GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
+
+		LOG.info("CRT generation ''{0}'' done", dn);
+
 		return crt;
 	}
 

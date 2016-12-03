@@ -22,10 +22,10 @@ import java.util.List;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.certmgr.certs.generator.GenerateCertRequest;
-import de.carne.certmgr.certs.generator.Issuer;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
+import de.carne.certmgr.certs.x509.GenerateCertRequest;
+import de.carne.certmgr.certs.x509.generator.Issuer;
 import de.carne.util.DefaultSet;
 
 /**

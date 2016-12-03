@@ -1,2 +1,2 @@
-de.carne.certmgr.certs.generator.LocalCertGenerator
-de.carne.certmgr.certs.generator.RemoteCertGenerator
+de.carne.certmgr.certs.x509.generator.LocalCertGenerator
+de.carne.certmgr.certs.x509.generator.RemoteCertGenerator

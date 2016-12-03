@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -28,9 +29,15 @@ import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.CRLUpdatePeriod;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.ReasonFlag;
+import de.carne.certmgr.certs.x509.UpdateCRLRequest;
+import de.carne.certmgr.jfx.password.PasswordDialog;
+import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.Controls;
+import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
+import de.carne.util.validation.InputValidator;
+import de.carne.util.validation.ValidationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -84,7 +91,15 @@ public class CRLOptionsController extends StageController {
 
 	@FXML
 	void onCmdUpdate(ActionEvent evt) {
+		try {
+			UpdateCRLRequest updateRequest = validateAndGetUpdateRequest();
 
+			this.issuerEntry.updateCRL(updateRequest, PasswordDialog.enterPassword(this));
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		} catch (IOException e) {
+			Alerts.unexpected(e);
+		}
 	}
 
 	@FXML
@@ -102,7 +117,6 @@ public class CRLOptionsController extends StageController {
 
 		ObservableList<ReasonFlag> reasons = FXCollections.observableArrayList(ReasonFlag.instances());
 
-		reasons.removeIf((reason) -> ReasonFlag.UNUSED.equals(reason));
 		reasons.sort((o1, o2) -> o1.name().compareTo(o2.name()));
 		this.ctlEntryOptionReason.setCellFactory(ChoiceBoxTableCell.forTableColumn(reasons));
 		this.ctlEntryOptionReason.setCellValueFactory(new PropertyValueFactory<>("reason"));
@@ -190,6 +204,44 @@ public class CRLOptionsController extends StageController {
 			entryItems.add(new CRLEntryModel(issuedEntry, revoked, issuedSerial, reason, date));
 		}
 		entryItems.sort((o1, o2) -> o1.compareTo(o2));
+	}
+
+	private UpdateCRLRequest validateAndGetUpdateRequest() throws ValidationException {
+		Date lastUpdate = validateAndGetLastUpdate();
+		Date nextUpdate = validateAndGetNextUpdate(lastUpdate);
+		SignatureAlgorithm sigAlg = validateAndGetSigAlg();
+		UpdateCRLRequest updateRequest = new UpdateCRLRequest(lastUpdate, nextUpdate, sigAlg);
+
+		for (CRLEntryModel entryItem : this.ctlEntryOptions.getItems()) {
+			if (!entryItem.getRevoked()) {
+				updateRequest.addRevokeEntry(entryItem.getSerial(), entryItem.getReason());
+			}
+		}
+		return updateRequest;
+	}
+
+	private Date validateAndGetLastUpdate() throws ValidationException {
+		LocalDate localLastUpdate = InputValidator.notNull(this.ctlLastUpdateInput.getValue(),
+				(a) -> CRLOptionsI18N.formatSTR_MESSAGE_NO_LASTUPDATE());
+
+		return Date.from(localLastUpdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	private Date validateAndGetNextUpdate(Date lastUpdate) throws ValidationException {
+		LocalDate localNextUpdate = this.ctlNextUpdateInput.getValue();
+		Date nextUpdate = (localNextUpdate != null
+				? Date.from(localNextUpdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()) : null);
+
+		if (nextUpdate != null) {
+			InputValidator.isTrue(nextUpdate.compareTo(lastUpdate) > 0,
+					(a) -> CRLOptionsI18N.formatSTR_MESSAGE_INVALID_UPDATEDATES(lastUpdate, nextUpdate));
+		}
+		return nextUpdate;
+	}
+
+	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
+		return InputValidator.notNull(this.ctlSigAlgOption.getValue(),
+				(a) -> CRLOptionsI18N.formatSTR_MESSAGE_NO_SIGALG());
 	}
 
 }

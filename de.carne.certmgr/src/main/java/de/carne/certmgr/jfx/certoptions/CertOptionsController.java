@@ -30,9 +30,6 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStoreEntryId;
 import de.carne.certmgr.certs.UserCertStorePreferences;
-import de.carne.certmgr.certs.generator.CertGenerators;
-import de.carne.certmgr.certs.generator.GenerateCertRequest;
-import de.carne.certmgr.certs.generator.Issuer;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertGenerator;
@@ -40,9 +37,12 @@ import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
 import de.carne.certmgr.certs.x509.ExtendedKeyUsageExtensionData;
+import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyUsageExtensionData;
 import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
+import de.carne.certmgr.certs.x509.generator.CertGenerators;
+import de.carne.certmgr.certs.x509.generator.Issuer;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
@@ -565,7 +565,7 @@ public class CertOptionsController extends StageController {
 		}
 		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_VALIDITY)) {
 			Date notBefore = validateAndGetNotBefore();
-			Date notAfter = validateAndGetNotAfter();
+			Date notAfter = validateAndGetNotAfter(notBefore);
 
 			generateRequest.setNotBefore(notBefore);
 			generateRequest.setNotAfter(notAfter);
@@ -629,11 +629,14 @@ public class CertOptionsController extends StageController {
 		return Date.from(localNotBefore.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
-	private Date validateAndGetNotAfter() throws ValidationException {
+	private Date validateAndGetNotAfter(Date notBefore) throws ValidationException {
 		LocalDate localNotAfter = InputValidator.notNull(this.ctlNotAfterInput.getValue(),
 				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTAFTER());
+		Date notAfter = Date.from(localNotAfter.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
-		return Date.from(localNotAfter.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+		InputValidator.isTrue(notAfter.compareTo(notBefore) > 0,
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_INVALID_VALIDITY(notBefore, notAfter));
+		return notAfter;
 	}
 
 	void generateEntry(CertGenerator generator, GenerateCertRequest generateRequest, String alias) throws IOException {

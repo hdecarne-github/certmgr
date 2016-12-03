@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.generator;
+package de.carne.certmgr.certs.x509.generator;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -32,6 +32,7 @@ import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.util.DefaultSet;

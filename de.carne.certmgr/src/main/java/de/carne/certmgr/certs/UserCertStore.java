@@ -42,7 +42,6 @@ import javax.security.auth.x500.X500Principal;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import de.carne.certmgr.certs.generator.GenerateCertRequest;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.FileCertReaderInput;
 import de.carne.certmgr.certs.io.JKSCertReaderWriter;
@@ -51,8 +50,11 @@ import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.certmgr.certs.x509.UpdateCRLRequest;
+import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.nio.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
@@ -343,6 +345,28 @@ public final class UserCertStore {
 		assert mergedEntries.size() == 1;
 
 		return mergedEntries.iterator().next();
+	}
+
+	/**
+	 * Update an entry's CRL object.
+	 *
+	 * @param issuerEntry The entry to update the CRL for.
+	 * @param request The update request information.
+	 * @param password The password callback to use for password querying.
+	 * @throws IOException if an I/O error occurs during the update.
+	 */
+	public void updateEntryCRL(UserCertStoreEntry issuerEntry, UpdateCRLRequest request, PasswordCallback password)
+			throws IOException {
+		assert issuerEntry != null;
+		assert request != null;
+		assert password != null;
+
+		Entry storeEntry = this.storeEntries.get(issuerEntry.id());
+		X509CRL crl = X509CRLHelper.generateCRL(storeEntry.getCRL(), request.lastUpdate(), request.nextUpdate(),
+				request.getRevokeEntries(), storeEntry.dn(), storeEntry.getKey(password), request.signatureAlgorithm());
+		CRLEntry crlEntry = this.storeHandler.createCRLEntry(storeEntry.id(), crl);
+
+		storeEntry.setCRL(crlEntry);
 	}
 
 	/**

@@ -29,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.util.Exceptions;
 
 /**
@@ -224,6 +225,19 @@ public abstract class UserCertStoreEntry {
 	public abstract X509CRL getCRL() throws IOException;
 
 	/**
+	 * Update this entry's CRL object.
+	 *
+	 * @param request The update request information.
+	 * @param password The password callback to use for password querying.
+	 * @throws IOException if an I/O error occurs during the update.
+	 * @see UserCertStore#updateEntryCRL(UserCertStoreEntry, UpdateCRLRequest,
+	 *      PasswordCallback)
+	 */
+	public void updateCRL(UpdateCRLRequest request, PasswordCallback password) throws IOException {
+		store().updateEntryCRL(this, request, password);
+	}
+
+	/**
 	 * Check whether this entry contains a direct accessible public key object.
 	 * <p>
 	 * This is the case if the entry contains a decrypted key pair, a CRT or a
@@ -239,7 +253,7 @@ public abstract class UserCertStoreEntry {
 
 	/**
 	 * Get this entry's public key object.
-	 * 
+	 *
 	 * @return This entry's public key object (may be {@code null}).
 	 * @throws IOException if an I/O error occurs while accessing the public key
 	 *         object.

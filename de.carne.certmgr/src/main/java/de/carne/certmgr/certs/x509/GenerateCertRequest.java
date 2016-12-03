@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs.generator;
+package de.carne.certmgr.certs.x509;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.certmgr.certs.x509.X509ExtensionData;
+import de.carne.certmgr.certs.x509.generator.Issuer;
 
 /**
  * Parameter container for certificate generation.

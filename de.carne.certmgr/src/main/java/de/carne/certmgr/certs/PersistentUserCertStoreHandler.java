@@ -117,7 +117,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		Path entryPath = entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT);
 
 		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEM_IO.write(output, crt, id.getAlias());
 		}
 		return new PersistentCRTEntry(id, crt, Files.getLastModifiedTime(entryPath));
@@ -128,7 +129,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		Path entryPath = entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY);
 
 		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEM_IO.write(output, key, id.getAlias(), password);
 		}
 		return new PersistentKeyEntry(id, key, Files.getLastModifiedTime(entryPath));
@@ -139,7 +141,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		Path entryPath = entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR);
 
 		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEM_IO.write(output, csr, id.getAlias());
 		}
 		return new PersistentCSREntry(id, csr, Files.getLastModifiedTime(entryPath));
@@ -150,7 +153,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		Path entryPath = entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL);
 
 		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEM_IO.write(output, crl, id.getAlias());
 		}
 		return new PersistentCRLEntry(id, crl, Files.getLastModifiedTime(entryPath));
