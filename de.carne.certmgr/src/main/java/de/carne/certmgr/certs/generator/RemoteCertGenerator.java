@@ -24,7 +24,7 @@ import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 
 /**
  * Signing service for CSR generation.

@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import java.security.cert.CRLReason;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -93,22 +94,22 @@ public class ReasonFlag extends Enumeration<Integer> {
 	}
 
 	/**
-	 * Get the known key usage instances.
+	 * Get the known reason flag instances.
 	 * <p>
 	 * This includes the statically defined ones in this class as well as any
 	 * new ones encountered in a call to {@linkplain #fromValue(int)}.
 	 *
-	 * @return The known key usage instances.
+	 * @return The known reason flag instances.
 	 */
 	public static synchronized Set<ReasonFlag> instances() {
 		return new HashSet<>(instanceMap.values());
 	}
 
 	/**
-	 * Get the key usage instance for a specific value.
+	 * Get the reason flag instance for a specific value.
 	 *
 	 * @param value The value to get the instance for.
-	 * @return The key usage instance corresponding to the submitted value.
+	 * @return The reason flag instance corresponding to the submitted value.
 	 */
 	public static synchronized ReasonFlag fromValue(int value) {
 		ReasonFlag usage = instanceMap.get(value);
@@ -117,6 +118,30 @@ public class ReasonFlag extends Enumeration<Integer> {
 			usage = new ReasonFlag(String.format("0x%08x", value), value);
 		}
 		return usage;
+	}
+
+	/**
+	 * Get the reason flag instance for a specific {@link CRLReason}.
+	 * 
+	 * @param reason The {@link CRLReason} to get the instance for.
+	 * @return The reason flag instance corresponding to the submitted
+	 *         {@link CRLReason}.
+	 */
+	public static synchronized ReasonFlag fromCRLReason(CRLReason reason) {
+		assert reason != null;
+
+		ReasonFlag reasonFlag = null;
+
+		for (ReasonFlag instance : instanceMap.values()) {
+			if (instance.name().equals(reason.name())) {
+				reasonFlag = instance;
+				break;
+			}
+		}
+		if (reasonFlag == null) {
+			throw new IllegalArgumentException("Unexpected CRL reason: " + reason);
+		}
+		return reasonFlag;
 	}
 
 }

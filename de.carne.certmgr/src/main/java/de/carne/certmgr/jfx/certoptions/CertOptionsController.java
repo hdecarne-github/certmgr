@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
 import java.util.prefs.Preferences;
@@ -46,11 +45,12 @@ import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
+import de.carne.jfx.util.Controls;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.DefaultSet;
 import de.carne.util.Strings;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.ValidationException;
@@ -376,7 +376,7 @@ public class CertOptionsController extends StageController {
 			}
 			keySizes = keyAlg.getStandardKeySizes(defaultHint);
 		}
-		resetComboBoxOptions(this.ctlKeySizeOption, keySizes, (o1, o2) -> o1.compareTo(o2));
+		Controls.resetComboBoxOptions(this.ctlKeySizeOption, keySizes, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(keyAlg);
 	}
 
@@ -384,7 +384,7 @@ public class CertOptionsController extends StageController {
 		DefaultSet<Issuer> issuers = (newGenerator != null ? newGenerator.getIssuers(this.store, this.storeEntry)
 				: null);
 
-		resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
+		Controls.resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(newGenerator);
 		resetValidityInput(newGenerator);
 	}
@@ -451,7 +451,7 @@ public class CertOptionsController extends StageController {
 	}
 
 	private void initKeyAlgOptions() {
-		resetComboBoxOptions(this.ctlKeyAlgOption,
+		Controls.resetComboBoxOptions(this.ctlKeyAlgOption,
 				KeyPairAlgorithm.getDefaultSet(this.storePreferences.defaultKeyPairAlgorithm.get(), this.expertMode),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
@@ -499,7 +499,8 @@ public class CertOptionsController extends StageController {
 			}
 			sigAlgs = generator.getSignatureAlgorithms(issuer, keyPairAlgorithm, defaultHint, this.expertMode);
 		}
-		resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs, (o1, o2) -> o1.toString().compareTo(o2.toString()));
+		Controls.resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs,
+				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
 	private void resetValidityInput(CertGenerator generator) {
@@ -633,21 +634,6 @@ public class CertOptionsController extends StageController {
 				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTAFTER());
 
 		return Date.from(localNotAfter.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-	}
-
-	private static <T> void resetComboBoxOptions(ComboBox<T> control, DefaultSet<T> defaultSet,
-			Comparator<T> comparator) {
-		ObservableList<T> options = control.getItems();
-
-		options.clear();
-		if (defaultSet != null && !defaultSet.isEmpty()) {
-			options.addAll(defaultSet);
-			options.sort(comparator);
-			control.setValue(defaultSet.getDefault());
-			control.setDisable(false);
-		} else {
-			control.setDisable(!control.isEditable());
-		}
 	}
 
 	void generateEntry(CertGenerator generator, GenerateCertRequest generateRequest, String alias) throws IOException {

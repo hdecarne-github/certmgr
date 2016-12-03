@@ -17,6 +17,8 @@
 package de.carne.certmgr.jfx.store;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.cert.X509Certificate;
 import java.util.Date;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -31,7 +33,8 @@ import javafx.beans.property.SimpleObjectProperty;
  */
 public class StoreEntryModel extends UserCertStoreEntryModel {
 
-	private final ObjectProperty<ShortDate> expiresProperty;
+	private final ObjectProperty<Date> expiresProperty;
+	private final ObjectProperty<BigInteger> serialProperty;
 
 	/**
 	 * Construct {@code ManagedEntryModel}.
@@ -40,47 +43,76 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 */
 	public StoreEntryModel(UserCertStoreEntry entry) {
 		super(entry);
-		this.expiresProperty = new SimpleObjectProperty<>(getExpires(entry));
+
+		Date expires = null;
+		BigInteger serial = null;
+
+		if (entry.hasCRT()) {
+			try {
+				X509Certificate crt = entry.getCRT();
+
+				expires = crt.getNotAfter();
+				serial = crt.getSerialNumber();
+			} catch (IOException e) {
+				Exceptions.warn(e);
+			}
+		}
+		this.expiresProperty = new SimpleObjectProperty<>(expires != null ? new ShortDate(expires.getTime()) : null);
+		this.serialProperty = new SimpleObjectProperty<>(serial);
 	}
 
 	/**
-	 * Get the Expires property value.
+	 * Get the Expires value.
 	 *
-	 * @return The Expires property value.
+	 * @return The Expires value.
 	 */
-	public final ShortDate getExpires() {
+	public final Date getExpires() {
 		return this.expiresProperty.getValue();
 	}
 
 	/**
-	 * Set the Expires property value.
+	 * Set the Expires value.
 	 *
-	 * @param expires The value to set.
+	 * @param expires The Expires value to set.
 	 */
-	public final void setExpired(ShortDate expires) {
-		this.expiresProperty.setValue(expires);
+	public final void setExpired(Date expires) {
+		this.expiresProperty.setValue(expires != null ? new ShortDate(expires.getTime()) : null);
 	}
 
 	/**
-	 * Get the Expired property.
+	 * Get the Expires property.
 	 *
 	 * @return The Expires property.
 	 */
-	public final ObjectProperty<ShortDate> expiresProperty() {
+	public final ObjectProperty<Date> expiresProperty() {
 		return this.expiresProperty;
 	}
 
-	private static ShortDate getExpires(UserCertStoreEntry entry) {
-		Date expires = null;
+	/**
+	 * Get the Serial value.
+	 *
+	 * @return The Serial value.
+	 */
+	public BigInteger getSerial() {
+		return this.serialProperty.get();
+	}
 
-		try {
-			if (entry.hasCRT()) {
-				expires = entry.getCRT().getNotAfter();
-			}
-		} catch (IOException e) {
-			Exceptions.warn(e);
-		}
-		return (expires != null ? new ShortDate(expires.getTime()) : null);
+	/**
+	 * Set the Serial value.
+	 *
+	 * @param serial The Serial value to set.
+	 */
+	public void setSerial(BigInteger serial) {
+		this.serialProperty.set(serial);
+	}
+
+	/**
+	 * Get the Serial property.
+	 * 
+	 * @return The Serial property.
+	 */
+	public ObjectProperty<BigInteger> serialProperty() {
+		return this.serialProperty;
 	}
 
 }

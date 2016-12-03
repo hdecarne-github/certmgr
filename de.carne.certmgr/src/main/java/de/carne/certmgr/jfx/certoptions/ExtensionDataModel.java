@@ -20,8 +20,9 @@ import de.carne.certmgr.certs.asn1.OIDs;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 /**
  * Model class for display and editing of {@link X509ExtensionData} objects.
@@ -32,40 +33,25 @@ public final class ExtensionDataModel {
 
 	private BooleanProperty criticalProperty;
 
-	private ReadOnlyStringWrapper nameProperty;
+	private StringProperty nameProperty;
 
-	private ReadOnlyStringWrapper valueProperty;
+	private StringProperty valueProperty;
 
-	/**
-	 * Construct {@code X509ExtensionDataModel}.
-	 *
-	 * @param extensionData The extension data represented by this model.
-	 */
-	public ExtensionDataModel(X509ExtensionData extensionData) {
+	ExtensionDataModel(X509ExtensionData extensionData) {
 		this.extensionData = extensionData;
 		this.criticalProperty = new SimpleBooleanProperty(extensionData.getCritical());
-		this.nameProperty = new ReadOnlyStringWrapper(OIDs.toString(this.extensionData.oid()));
-		this.valueProperty = new ReadOnlyStringWrapper(this.extensionData.toValueString());
+		this.nameProperty = new SimpleStringProperty(OIDs.toString(this.extensionData.oid()));
+		this.valueProperty = new SimpleStringProperty(this.extensionData.toValueString());
 	}
 
-	/**
-	 * Set this model's extension data.
-	 *
-	 * @param extensionData The extension data to set.
-	 */
-	public void setExtensionData(X509ExtensionData extensionData) {
+	void setExtensionData(X509ExtensionData extensionData) {
 		this.extensionData = extensionData;
 		this.criticalProperty.set(this.extensionData.getCritical());
 		this.nameProperty.set(OIDs.toString(this.extensionData.oid()));
 		this.valueProperty.set(this.extensionData.toValueString());
 	}
 
-	/**
-	 * Get this model's extension data.
-	 *
-	 * @return This model's extension data.
-	 */
-	public X509ExtensionData getExtensionData() {
+	X509ExtensionData getExtensionData() {
 		this.extensionData.setCritical(this.criticalProperty.get());
 		return this.extensionData;
 	}
@@ -90,7 +76,7 @@ public final class ExtensionDataModel {
 
 	/**
 	 * Get the critical flag property.
-	 * 
+	 *
 	 * @return The critical flag property.
 	 */
 	public BooleanProperty criticalProperty() {
@@ -99,7 +85,7 @@ public final class ExtensionDataModel {
 
 	/**
 	 * Get the extension name.
-	 * 
+	 *
 	 * @return The extension name.
 	 */
 	public String getName() {
@@ -107,17 +93,26 @@ public final class ExtensionDataModel {
 	}
 
 	/**
+	 * Set the extension name.
+	 *
+	 * @param name The extension name to set.
+	 */
+	public void setName(String name) {
+		this.nameProperty.set(name);
+	}
+
+	/**
 	 * Get the extension name property.
-	 * 
+	 *
 	 * @return The extension name property.
 	 */
-	public ReadOnlyStringProperty nameProperty() {
-		return this.nameProperty.getReadOnlyProperty();
+	public StringProperty nameProperty() {
+		return this.nameProperty;
 	}
 
 	/**
 	 * Get the extension value string.
-	 * 
+	 *
 	 * @return The extension value string.
 	 */
 	public String getValue() {
@@ -125,12 +120,21 @@ public final class ExtensionDataModel {
 	}
 
 	/**
+	 * Set the extension value string.
+	 *
+	 * @param value The extension value string to set.
+	 */
+	public void setValue(String value) {
+		this.valueProperty.set(value);
+	}
+
+	/**
 	 * Get the extension value string property.
-	 * 
+	 *
 	 * @return The extension value string property.
 	 */
 	public ReadOnlyStringProperty valueProperty() {
-		return this.valueProperty.getReadOnlyProperty();
+		return this.valueProperty;
 	}
 
 }

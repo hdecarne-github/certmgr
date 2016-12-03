@@ -19,7 +19,6 @@ package de.carne.certmgr.jfx.storepreferences;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStorePreferences;
@@ -30,15 +29,14 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.jfx.util.converter.CRLUpdatePeriodStringConverter;
 import de.carne.certmgr.jfx.util.converter.CRTValidityPeriodStringConverter;
 import de.carne.certmgr.util.Days;
-import de.carne.certmgr.util.DefaultSet;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.util.Controls;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.Strings;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.PathValidator;
 import de.carne.util.validation.ValidationException;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -105,9 +103,9 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 			keySizeDefaultHint = this.storePreferences.defaultKeySize.get();
 			sigAlgDefaultHint = this.storePreferences.defaultSignatureAlgorithm.get();
 		}
-		resetComboBoxOptions(this.ctlDefKeySizeOption, keyAlg.getStandardKeySizes(keySizeDefaultHint),
+		Controls.resetComboBoxOptions(this.ctlDefKeySizeOption, keyAlg.getStandardKeySizes(keySizeDefaultHint),
 				(o1, o2) -> o1.compareTo(o2));
-		resetComboBoxOptions(this.ctlDefSigAlgOption,
+		Controls.resetComboBoxOptions(this.ctlDefSigAlgOption,
 				SignatureAlgorithm.getDefaultSet(keyAlg.algorithm(), sigAlgDefaultHint, this.expertMode),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
@@ -220,7 +218,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		if (this.storePreferences != null) {
 			defaultHint = new Days(this.storePreferences.defaultCRTValidityPeriod.getInt(0));
 		}
-		resetComboBoxOptions(this.ctlDefCRTValidityInput, CRTValidityPeriod.getDefaultSet(defaultHint),
+		Controls.resetComboBoxOptions(this.ctlDefCRTValidityInput, CRTValidityPeriod.getDefaultSet(defaultHint),
 				(o1, o2) -> o1.days().compareTo(o2.days()));
 	}
 
@@ -230,7 +228,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		if (this.storePreferences != null) {
 			defaultHint = new Days(this.storePreferences.defaultCRLUpdatePeriod.getInt(0));
 		}
-		resetComboBoxOptions(this.ctlDefCRLUpdateInput, CRLUpdatePeriod.getDefaultSet(defaultHint),
+		Controls.resetComboBoxOptions(this.ctlDefCRLUpdateInput, CRLUpdatePeriod.getDefaultSet(defaultHint),
 				(o1, o2) -> o1.days().compareTo(o2.days()));
 	}
 
@@ -240,7 +238,8 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		if (this.storePreferences != null) {
 			defaultHint = this.storePreferences.defaultKeyPairAlgorithm.get();
 		}
-		resetComboBoxOptions(this.ctlDefKeyAlgOption, KeyPairAlgorithm.getDefaultSet(defaultHint, this.expertMode),
+		Controls.resetComboBoxOptions(this.ctlDefKeyAlgOption,
+				KeyPairAlgorithm.getDefaultSet(defaultHint, this.expertMode),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
@@ -287,21 +286,6 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private SignatureAlgorithm validateDefSigAlgInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlDefSigAlgOption.getValue(),
 				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_DEFSIGALG());
-	}
-
-	private static <T> void resetComboBoxOptions(ComboBox<T> control, DefaultSet<T> defaultSet,
-			Comparator<T> comparator) {
-		ObservableList<T> options = control.getItems();
-
-		options.clear();
-		if (defaultSet != null && !defaultSet.isEmpty()) {
-			options.addAll(defaultSet);
-			options.sort(comparator);
-			control.getSelectionModel().select(defaultSet.getDefault());
-			control.setDisable(false);
-		} else {
-			control.setDisable(!control.isEditable());
-		}
 	}
 
 }

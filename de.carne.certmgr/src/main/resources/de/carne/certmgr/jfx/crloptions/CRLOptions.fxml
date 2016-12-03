@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.crloptions.CRLOptionsController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.crloptions.CRLOptionsController">
    <children>
       <GridPane fx:id="ctlControlPane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
         <columnConstraints>
@@ -44,14 +44,16 @@
             <Label layoutX="14.0" layoutY="143.0" text="%_STR_LABEL_ENTRIES" GridPane.columnSpan="2147483647" GridPane.rowIndex="4" />
             <TableView fx:id="ctlEntryOptions" editable="true" prefHeight="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
               <columns>
-                <TableColumn fx:id="ctlEntryOptionRevoked" maxWidth="1.7976931348623157E308" prefWidth="40.0" style="-fx-alignment: CENTER;" text="%_STR_COL_REVOKED" />
-                <TableColumn fx:id="ctlEntryOptionDN" editable="false" maxWidth="1.7976931348623157E308" prefWidth="450.0" text="%_STR_COL_DN" />
-                  <TableColumn fx:id="ctlEntryOptionReason" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="%_STR_COL_REASON" />
+                <TableColumn fx:id="ctlEntryOptionRevoked" maxWidth="1.7976931348623157E308" style="-fx-alignment: CENTER;" text="%_STR_COL_REVOKED" />
+                <TableColumn fx:id="ctlEntryOptionName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="340.0" text="%_STR_COL_NAME" />
+                  <TableColumn fx:id="ctlEntryOptionSerial" editable="false" maxWidth="1.7976931348623157E308" prefWidth="100.0" text="%_STR_COL_SERIAL" />
+                  <TableColumn fx:id="ctlEntryOptionReason" maxWidth="1.7976931348623157E308" prefWidth="100.0" text="%_STR_COL_REASON" />
+                  <TableColumn fx:id="ctlEntryOptionDate" editable="false" maxWidth="1.7976931348623157E308" prefWidth="100.0" text="%_STR_COL_DATE" />
               </columns>
             </TableView>
             <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
                <children>
-                  <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdGenerate" text="%_STR_BUTTON_GENERATE" />
+                  <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdUpdate" text="%_STR_BUTTON_UPDATE" />
                   <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />
                </children>
             </HBox>

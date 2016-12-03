@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import de.carne.certmgr.certs.security.CRTValidityPeriod;
 import de.carne.certmgr.util.Days;
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 
 /**
  * Test {@link CRTValidityPeriod} class functionality.

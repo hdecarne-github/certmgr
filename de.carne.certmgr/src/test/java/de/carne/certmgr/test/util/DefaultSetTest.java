@@ -19,7 +19,7 @@ package de.carne.certmgr.test.util;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 
 /**
  * Test {@link DefaultSet} class functionality.

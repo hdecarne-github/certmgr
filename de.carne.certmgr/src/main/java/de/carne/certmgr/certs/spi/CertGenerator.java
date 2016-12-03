@@ -26,7 +26,7 @@ import de.carne.certmgr.certs.generator.GenerateCertRequest;
 import de.carne.certmgr.certs.generator.Issuer;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 
 /**
  * Service provider interface for certificate signing.

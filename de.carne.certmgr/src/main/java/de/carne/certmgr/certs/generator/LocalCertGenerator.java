@@ -34,7 +34,7 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 
 /**
  * Signing servicer for local certificate generation and signing.

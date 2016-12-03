@@ -21,7 +21,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 import de.carne.certmgr.util.Days;
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 import de.carne.util.PropertiesHelper;
 
 class SecurityDefaults {

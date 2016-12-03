@@ -19,7 +19,7 @@ package de.carne.certmgr.jfx.certoptions;
 import java.math.BigInteger;
 import java.util.Objects;
 
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 import de.carne.util.Strings;
 import javafx.util.StringConverter;
 

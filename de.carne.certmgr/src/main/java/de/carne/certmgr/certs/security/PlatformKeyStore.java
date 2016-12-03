@@ -18,9 +18,10 @@ package de.carne.certmgr.certs.security;
 
 import java.security.Provider;
 import java.security.Provider.Service;
-import java.security.Security;
 
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
+
+import java.security.Security;
 
 /**
  * Platform key store provisioning.

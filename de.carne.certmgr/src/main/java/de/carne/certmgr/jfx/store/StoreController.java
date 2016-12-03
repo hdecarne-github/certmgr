@@ -18,10 +18,12 @@ package de.carne.certmgr.jfx.store;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
@@ -50,7 +52,6 @@ import de.carne.jfx.scene.control.aboutinfo.AboutInfoDialog;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
-import de.carne.jfx.util.ShortDate;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.Exceptions;
 import de.carne.util.prefs.DirectoryPreference;
@@ -148,10 +149,13 @@ public class StoreController extends StageController {
 	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewId;
 
 	@FXML
-	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewDN;
+	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewName;
 
 	@FXML
-	TreeTableColumn<StoreEntryModel, ShortDate> ctlStoreEntryViewExpires;
+	TreeTableColumn<StoreEntryModel, BigInteger> ctlStoreEntryViewSerial;
+
+	@FXML
+	TreeTableColumn<StoreEntryModel, Date> ctlStoreEntryViewExpires;
 
 	@FXML
 	TreeTableView<AttributeModel> ctlDetailsView;
@@ -267,14 +271,13 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdManageCRL(ActionEvent evt) {
-		UserCertStore store = this.storeProperty.get();
 		UserCertStoreEntry issuerEntry = getSelectedStoreEntry();
 
-		if (store != null && issuerEntry != null) {
-			if (issuerEntry.hasKey()) {
+		if (issuerEntry != null) {
+			if (issuerEntry.hasCRT() && issuerEntry.hasKey()) {
 				try {
-					CRLOptionsController crlOptionsController = loadStage(CRLOptionsController.class).init(store,
-							issuerEntry);
+					CRLOptionsController crlOptionsController = loadStage(CRLOptionsController.class).init(issuerEntry,
+							this.userPreferences.expertMode.getBoolean(false));
 
 					crlOptionsController.showAndWait();
 					updateStoreEntryView();
@@ -384,7 +387,8 @@ public class StoreController extends StageController {
 		this.cmdExportCertButton.disableProperty().bind(this.cmdExportCert.disableProperty());
 		this.cmdImportCertsButton.disableProperty().bind(this.cmdImportCerts.disableProperty());
 		this.ctlStoreEntryViewId.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
-		this.ctlStoreEntryViewDN.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+		this.ctlStoreEntryViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
+		this.ctlStoreEntryViewSerial.setCellValueFactory(new TreeItemPropertyValueFactory<>("serial"));
 		this.ctlStoreEntryViewExpires.setCellValueFactory(new TreeItemPropertyValueFactory<>("expires"));
 		this.ctlDetailsViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlDetailsViewValue.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));

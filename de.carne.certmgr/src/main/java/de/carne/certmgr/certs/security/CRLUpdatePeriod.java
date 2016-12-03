@@ -17,7 +17,7 @@
 package de.carne.certmgr.certs.security;
 
 import de.carne.certmgr.util.Days;
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 
 /**
  * CRL Update Period provisioning.

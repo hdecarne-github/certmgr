@@ -20,6 +20,7 @@ import java.math.BigInteger;
 
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.util.Controls;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.ValidationException;
@@ -108,9 +109,8 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	}
 
 	private void initPathLenConstraint() {
-		this.ctlPathLenConstraint.getItems().addAll(BasicConstraintsPathLen.DEFAULT_SET);
-		this.ctlPathLenConstraint.getItems().sort((o1, o2) -> o1.compareTo(o2));
-		this.ctlPathLenConstraint.setValue(BasicConstraintsPathLen.DEFAULT_SET.getDefault());
+		Controls.resetComboBoxOptions(this.ctlPathLenConstraint, BasicConstraintsPathLen.DEFAULT_SET,
+				(o1, o2) -> o1.compareTo(o2));
 	}
 
 	private BigInteger valdiateAndGetPathLenConstraint() throws ValidationException {

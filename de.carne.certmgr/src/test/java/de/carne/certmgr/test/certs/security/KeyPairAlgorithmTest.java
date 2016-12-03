@@ -28,7 +28,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
-import de.carne.certmgr.util.DefaultSet;
+import de.carne.util.DefaultSet;
 
 /**
  * Test {@link KeyPairAlgorithm} class functionality.

@@ -52,8 +52,8 @@ import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
-import de.carne.certmgr.util.DefaultSet;
 import de.carne.io.IOHelper;
+import de.carne.util.DefaultSet;
 
 /**
  * Test {@link UserCertStore} class functionality.

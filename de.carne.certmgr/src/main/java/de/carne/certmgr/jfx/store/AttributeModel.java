@@ -17,6 +17,7 @@
 package de.carne.certmgr.jfx.store;
 
 import de.carne.certmgr.certs.x509.Attributes;
+import de.carne.util.Strings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -45,7 +46,7 @@ public class AttributeModel {
 	 */
 	public AttributeModel(String name, String value) {
 		this.nameProperty = new SimpleStringProperty(name);
-		this.valueProperty = new SimpleStringProperty(value);
+		this.valueProperty = new SimpleStringProperty(Strings.safe(value));
 	}
 
 	/**
@@ -72,7 +73,7 @@ public class AttributeModel {
 	 * @param name The value to set.
 	 */
 	public final void setName(String name) {
-		this.nameProperty.setValue(name);
+		this.nameProperty.setValue(Strings.safe(name));
 	}
 
 	/**
@@ -99,7 +100,7 @@ public class AttributeModel {
 	 * @param value The value to set.
 	 */
 	public final void setValue(String value) {
-		this.valueProperty.setValue(value);
+		this.valueProperty.setValue(Strings.safe(value));
 	}
 
 	/**
