@@ -83,7 +83,8 @@ public final class X500Names {
 	/**
 	 * Convert {@link X500Principal} to it's string representation.
 	 * <p>
-	 * This function includes any
+	 * This function uses the configured OID informations to resolve any known
+	 * OID to a human readable string.
 	 *
 	 * @param principal The principal to convert.
 	 * @return The principal's string representation.
@@ -96,7 +97,7 @@ public final class X500Names {
 
 	/**
 	 * Create a {@link X500Principal} from it's string representation.
-	 * 
+	 *
 	 * @param name The principal name to parse.
 	 * @return The parsed principal.
 	 * @throws IllegalArgumentException if the parse operation fails.
@@ -105,6 +106,22 @@ public final class X500Names {
 		assert name != null;
 
 		return new X500Principal(name, NAMES);
+	}
+
+	/**
+	 * Decode a DN into it's individual RDNs.
+	 *
+	 * @param name The DN to encode.
+	 * @param strict Whether to throw an exception on invalid DN part
+	 *        ({@code true}) or ignore them {@code false}).
+	 * @return The decoded RDNs.
+	 * @throws IllegalArgumentException if strict mode is enabled and an invalid
+	 *         name part has been encountered.
+	 */
+	public static RDN[] decodeDN(String name, boolean strict) throws IllegalArgumentException {
+		assert name != null;
+
+		return new RDN[0];
 	}
 
 }

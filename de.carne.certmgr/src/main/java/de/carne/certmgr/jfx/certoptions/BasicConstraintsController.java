@@ -19,8 +19,8 @@ package de.carne.certmgr.jfx.certoptions;
 import java.math.BigInteger;
 
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
+import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
-import de.carne.jfx.util.Controls;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.ValidationException;

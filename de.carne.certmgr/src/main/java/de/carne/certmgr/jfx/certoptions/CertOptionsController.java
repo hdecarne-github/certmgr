@@ -43,12 +43,14 @@ import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.certs.x509.generator.CertGenerators;
 import de.carne.certmgr.certs.x509.generator.Issuer;
+import de.carne.certmgr.jfx.dneditor.DNEditorController;
+import de.carne.certmgr.jfx.dneditor.DNEditorDialog;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
+import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;
-import de.carne.jfx.util.Controls;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
 import de.carne.util.Strings;
@@ -178,6 +180,20 @@ public class CertOptionsController extends StageController {
 
 	@FXML
 	TableColumn<ExtensionDataModel, String> ctlExtensionDataValue;
+
+	@FXML
+	void onCmdEditDN(ActionEvent evt) {
+		try {
+			DNEditorController dnEditor = DNEditorDialog.load(this).init(this.ctlDNInput.getText());
+			Optional<X500Principal> editResult = dnEditor.showAndWait();
+
+			if (editResult.isPresent()) {
+				this.ctlDNInput.setText(X500Names.toString(editResult.get()));
+			}
+		} catch (IOException e) {
+			Alerts.unexpected(e).showAndWait();
+		}
+	}
 
 	@FXML
 	void onCmdEditBasicConstraints(ActionEvent evt) {

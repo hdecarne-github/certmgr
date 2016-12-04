@@ -64,7 +64,7 @@
             <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
                   <TextField fx:id="ctlDNInput" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                  <Button mnemonicParsing="false" HBox.hgrow="NEVER">
+                  <Button mnemonicParsing="false" onAction="#onCmdEditDN" HBox.hgrow="NEVER">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>

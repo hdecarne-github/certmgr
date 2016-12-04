@@ -17,7 +17,7 @@
 package de.carne.certmgr.jfx.password;
 
 import de.carne.jfx.scene.control.DialogController;
-import de.carne.jfx.util.DialogHelper;
+import de.carne.jfx.scene.control.DialogHelper;
 
 /**
  * Base class for all password controllers.
