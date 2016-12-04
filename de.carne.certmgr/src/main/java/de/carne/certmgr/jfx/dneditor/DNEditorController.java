@@ -55,6 +55,8 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 
 	};
 
+	private X500Principal dnResult = null;
+
 	@FXML
 	ComboBox<String> ctlTypeInput;
 
@@ -106,6 +108,10 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 		}
 	}
 
+	private void onApply(ActionEvent evt) {
+
+	}
+
 	@Override
 	protected void setupDialog(Dialog<X500Principal> dialog) {
 		dialog.setTitle(DNEditorI18N.formatSTR_STAGE_TITLE());
@@ -113,6 +119,7 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 				.setDeleteCommand(this.cmdDeleteRDN).setMoveUpCommand(this.cmdMoveRDNUp)
 				.setMoveDownCommand(this.cmdMoveRDNDown);
 		this.ctlTypeInput.requestFocus();
+		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}
 
 	/**
@@ -134,9 +141,7 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 
 	@Override
 	public X500Principal call(ButtonType param) {
-		X500Principal dn = null;
-
-		return dn;
+		return this.dnResult;
 	}
 
 }

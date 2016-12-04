@@ -124,4 +124,28 @@ public final class X500Names {
 		return new RDN[0];
 	}
 
+	/**
+	 * Encode individual RDNs into a DN.
+	 * 
+	 * @param rdns The RDNs to encode.
+	 * @return The resulting DN.
+	 * @throws IllegalArgumentException if an I/O error occurs during encoding.
+	 */
+	public static X500Principal encodeDN(RDN[] rdns) throws IllegalArgumentException {
+		assert rdns != null;
+		assert rdns.length > 0;
+
+		StringBuilder buffer = new StringBuilder();
+
+		for (RDN rdn : rdns) {
+			if (buffer.length() > 0) {
+				buffer.append(',');
+			}
+			buffer.append(rdn.getType());
+			buffer.append('=');
+			buffer.append(rdn.getValue());
+		}
+		return fromString(buffer.toString());
+	}
+
 }
