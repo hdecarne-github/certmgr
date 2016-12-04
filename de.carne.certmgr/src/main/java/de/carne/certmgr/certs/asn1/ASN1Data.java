@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.bouncycastle.asn1.ASN1Encodable;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 
@@ -77,16 +79,22 @@ public abstract class ASN1Data {
 	 */
 	protected static <T extends ASN1Primitive> T decodePrimitive(ASN1Primitive primitive, Class<T> primitiveType)
 			throws IOException {
-		if (!primitiveType.isInstance(primitive)) {
+		T decoded;
+
+		if (primitiveType.isInstance(primitive)) {
+			decoded = primitiveType.cast(primitive);
+		} else if (primitiveType.equals(ASN1Integer.class) && primitive instanceof ASN1OctetString) {
+			decoded = primitiveType.cast(new ASN1Integer(((ASN1OctetString) primitive).getOctets()));
+		} else {
 			throw new IOException("Unexpected ASN.1 object type '" + primitive.getClass().getName() + "' (expected '"
 					+ primitiveType.getName() + "'");
 		}
-		return primitiveType.cast(primitive);
+		return decoded;
 	}
 
 	/**
 	 * Encode the object into it's corresponding ASN.1 structure.
-	 * 
+	 *
 	 * @return The ASN.1 encoded object data.
 	 * @throws IOException if an I/O error occurs during encoding.
 	 */
