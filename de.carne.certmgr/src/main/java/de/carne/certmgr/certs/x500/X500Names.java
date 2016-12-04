@@ -19,9 +19,11 @@ package de.carne.certmgr.certs.x500;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -109,6 +111,15 @@ public final class X500Names {
 	}
 
 	/**
+	 * Get the collection of known RDN types.
+	 * 
+	 * @return The collection of known RDN types.
+	 */
+	public static Set<String> rdnTypes() {
+		return Collections.unmodifiableSet(NAMES.keySet());
+	}
+
+	/**
 	 * Decode a DN into it's individual RDNs.
 	 *
 	 * @param name The DN to encode.
@@ -126,14 +137,13 @@ public final class X500Names {
 
 	/**
 	 * Encode individual RDNs into a DN.
-	 * 
+	 *
 	 * @param rdns The RDNs to encode.
 	 * @return The resulting DN.
 	 * @throws IllegalArgumentException if an I/O error occurs during encoding.
 	 */
 	public static X500Principal encodeDN(RDN[] rdns) throws IllegalArgumentException {
 		assert rdns != null;
-		assert rdns.length > 0;
 
 		StringBuilder buffer = new StringBuilder();
 

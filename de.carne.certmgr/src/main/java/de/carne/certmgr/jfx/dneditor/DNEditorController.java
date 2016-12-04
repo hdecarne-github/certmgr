@@ -24,7 +24,9 @@ import de.carne.certmgr.certs.x500.RDN;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
+import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.Strings;
+import de.carne.util.validation.ValidationException;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -109,7 +111,12 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	}
 
 	private void onApply(ActionEvent evt) {
-
+		try {
+			this.dnResult = validateAndGetDN();
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+			evt.consume();
+		}
 	}
 
 	@Override
@@ -118,6 +125,8 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 		this.rdnEntriesEditor.init(this.ctlRDNEntries).setAddCommand(this.cmdAddRDN).setApplyCommand(this.cmdApplyRDN)
 				.setDeleteCommand(this.cmdDeleteRDN).setMoveUpCommand(this.cmdMoveRDNUp)
 				.setMoveDownCommand(this.cmdMoveRDNDown);
+		this.ctlTypeInput.getItems().addAll(X500Names.rdnTypes());
+		this.ctlTypeInput.getItems().sort((o1, o2) -> o1.compareTo(o2));
 		this.ctlTypeInput.requestFocus();
 		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
 	}
@@ -137,6 +146,19 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 			rdnItems.add(rdn);
 		}
 		return this;
+	}
+
+	private X500Principal validateAndGetDN() throws ValidationException {
+		ObservableList<RDN> rdnItems = this.ctlRDNEntries.getItems();
+		RDN[] rdns = rdnItems.toArray(new RDN[rdnItems.size()]);
+		X500Principal dn;
+
+		try {
+			dn = X500Names.encodeDN(rdns);
+		} catch (IllegalArgumentException e) {
+			throw new ValidationException(DNEditorI18N.formatSTR_MESSAGE_INVALIDDN(e.getLocalizedMessage()), e);
+		}
+		return dn;
 	}
 
 	@Override
