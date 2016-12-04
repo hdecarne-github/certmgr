@@ -251,6 +251,9 @@ public class UserCertStoreTest {
 					X509CRLHelper.toAttributes(entry.getCRL());
 					accessExtensionValues(entry.getCRL());
 				}
+				entry.canIssue();
+				entry.isValid();
+				entry.isRevoked();
 				entryCount = traverseStore(entry.issuedEntries());
 			}
 		} catch (IOException e) {
