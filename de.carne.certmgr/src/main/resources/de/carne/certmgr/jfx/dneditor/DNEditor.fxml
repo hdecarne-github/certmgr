@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<DialogPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.dneditor.DNEditorController">
+<DialogPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.dneditor.DNEditorController">
    <content>
       <AnchorPane prefHeight="250.0" prefWidth="450.0">
          <children>
@@ -29,7 +29,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" spacing="4.0">
                      <children>
-                        <ComboBox fx:id="ctlTypeInput" editable="true" onAction="#onAddRDN" HBox.hgrow="ALWAYS" />
+                        <ComboBox fx:id="ctlTypeInput" editable="true" HBox.hgrow="ALWAYS" />
                         <TextField fx:id="ctlValueInput" maxWidth="1.7976931348623157E308" onAction="#onAddRDN" HBox.hgrow="ALWAYS" />
                         <Button fx:id="cmdAddRDN" mnemonicParsing="false" HBox.hgrow="NEVER">
                            <graphic>
