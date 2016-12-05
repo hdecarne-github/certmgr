@@ -30,8 +30,8 @@
                   <HBox alignment="CENTER_LEFT" spacing="4.0">
                      <children>
                         <ComboBox fx:id="ctlTypeInput" editable="true" HBox.hgrow="ALWAYS" />
-                        <TextField fx:id="ctlValueInput" maxWidth="1.7976931348623157E308" onAction="#onAddRDN" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="cmdAddRDN" mnemonicParsing="false" HBox.hgrow="NEVER">
+                        <TextField fx:id="ctlValueInput" maxWidth="1.7976931348623157E308" onAction="#onAddRdn" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="cmdAddRdn" mnemonicParsing="false" HBox.hgrow="NEVER">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -40,7 +40,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="cmdApplyRDN" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                        <Button fx:id="cmdApplyRdn" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -49,7 +49,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="cmdDeleteRDN" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                        <Button fx:id="cmdDeleteRdn" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -58,7 +58,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="cmdMoveRDNUp" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                        <Button fx:id="cmdMoveRdnUp" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -67,7 +67,7 @@
                               </ImageView>
                            </graphic>
                         </Button>
-                        <Button fx:id="cmdMoveRDNDown" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                        <Button fx:id="cmdMoveRdnDown" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
                            <graphic>
                               <ImageView pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -78,7 +78,7 @@
                         </Button>
                      </children>
                   </HBox>
-                  <ListView fx:id="ctlRDNEntries" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                  <ListView fx:id="ctlRdnEntries" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
                </children>
             </GridPane>
          </children>

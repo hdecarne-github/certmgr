@@ -16,18 +16,22 @@
  */
 package de.carne.certmgr.jfx.dneditor;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import de.carne.certmgr.certs.x500.RDN;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
+import de.carne.jfx.scene.control.Tooltips;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.validation.ValidationException;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -43,16 +47,16 @@ import javafx.util.Callback;
  */
 public class DNEditorController extends DialogController<X500Principal> implements Callback<ButtonType, X500Principal> {
 
-	private final ListViewEditor<RDN> rdnEntriesEditor = new ListViewEditor<RDN>() {
+	private final ListViewEditor<Rdn> rdnEntriesEditor = new ListViewEditor<Rdn>() {
 
 		@Override
-		protected @Nullable RDN getInput() {
-			return getRDNInput();
+		protected @Nullable Rdn getInput() {
+			return getRdnInput();
 		}
 
 		@Override
-		protected void setInput(@Nullable RDN input) {
-			setRDNInput(input);
+		protected void setInput(@Nullable Rdn input) {
+			setRdnInput(input);
 		}
 
 	};
@@ -66,47 +70,52 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	TextField ctlValueInput;
 
 	@FXML
-	Button cmdAddRDN;
+	Button cmdAddRdn;
 
 	@FXML
-	Button cmdApplyRDN;
+	Button cmdApplyRdn;
 
 	@FXML
-	Button cmdDeleteRDN;
+	Button cmdDeleteRdn;
 
 	@FXML
-	Button cmdMoveRDNUp;
+	Button cmdMoveRdnUp;
 
 	@FXML
-	Button cmdMoveRDNDown;
+	Button cmdMoveRdnDown;
 
 	@FXML
-	ListView<RDN> ctlRDNEntries;
+	ListView<Rdn> ctlRdnEntries;
 
 	@FXML
-	void onAddRDN(ActionEvent evt) {
+	void onAddRdn(ActionEvent evt) {
 		this.rdnEntriesEditor.onAddAction(evt);
 	}
 
-	RDN getRDNInput() {
+	Rdn getRdnInput() {
 		String typeInput = Strings.safeTrim(Strings.safe(this.ctlTypeInput.getValue()));
 		String valueInput = Strings.safeTrim(Strings.safe(this.ctlValueInput.getText()));
-		RDN rdn;
+		Rdn rdn = null;
 
 		if (Strings.isEmpty(typeInput)) {
-			rdn = null;
+			Tooltips.show(this.ctlTypeInput, DNEditorI18N.formatSTR_MESSAGE_NO_TYPE(), Images.WARNING16);
 		} else if (Strings.isEmpty(valueInput)) {
-			rdn = null;
+			Tooltips.show(this.ctlValueInput, DNEditorI18N.formatSTR_MESSAGE_NO_VALUE(), Images.WARNING16);
 		} else {
-			rdn = new RDN(typeInput, valueInput);
+			try {
+				rdn = new Rdn(typeInput, valueInput);
+			} catch (InvalidNameException e) {
+				Tooltips.show(this.ctlValueInput, DNEditorI18N.formatSTR_MESSAGE_INVALID_RDN(e.getLocalizedMessage()),
+						Images.WARNING16);
+			}
 		}
 		return rdn;
 	}
 
-	void setRDNInput(RDN rdn) {
+	void setRdnInput(Rdn rdn) {
 		if (rdn != null) {
 			this.ctlTypeInput.setValue(rdn.getType());
-			this.ctlValueInput.setText(rdn.getValue());
+			this.ctlValueInput.setText(rdn.getValue().toString());
 		}
 	}
 
@@ -122,9 +131,9 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	@Override
 	protected void setupDialog(Dialog<X500Principal> dialog) {
 		dialog.setTitle(DNEditorI18N.formatSTR_STAGE_TITLE());
-		this.rdnEntriesEditor.init(this.ctlRDNEntries).setAddCommand(this.cmdAddRDN).setApplyCommand(this.cmdApplyRDN)
-				.setDeleteCommand(this.cmdDeleteRDN).setMoveUpCommand(this.cmdMoveRDNUp)
-				.setMoveDownCommand(this.cmdMoveRDNDown);
+		this.rdnEntriesEditor.init(this.ctlRdnEntries).setAddCommand(this.cmdAddRdn).setApplyCommand(this.cmdApplyRdn)
+				.setDeleteCommand(this.cmdDeleteRdn).setMoveUpCommand(this.cmdMoveRdnUp)
+				.setMoveDownCommand(this.cmdMoveRdnDown);
 		this.ctlTypeInput.getItems().addAll(X500Names.rdnTypes());
 		this.ctlTypeInput.getItems().sort((o1, o2) -> o1.compareTo(o2));
 		this.ctlTypeInput.requestFocus();
@@ -140,25 +149,26 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	public DNEditorController init(String dnInput) {
 		assert dnInput != null;
 
-		ObservableList<RDN> rdnItems = this.ctlRDNEntries.getItems();
+		try {
+			LdapName dn = new LdapName(dnInput);
 
-		for (RDN rdn : X500Names.decodeDN(dnInput, false)) {
-			rdnItems.add(rdn);
+			this.ctlRdnEntries.getItems().addAll(dn.getRdns());
+		} catch (InvalidNameException e) {
+			Exceptions.ignore(e);
 		}
 		return this;
 	}
 
 	private X500Principal validateAndGetDN() throws ValidationException {
-		ObservableList<RDN> rdnItems = this.ctlRDNEntries.getItems();
-		RDN[] rdns = rdnItems.toArray(new RDN[rdnItems.size()]);
-		X500Principal dn;
+		LdapName ldapDN = new LdapName(this.ctlRdnEntries.getItems());
+		X500Principal x500DN;
 
 		try {
-			dn = X500Names.encodeDN(rdns);
+			x500DN = X500Names.fromString(ldapDN.toString());
 		} catch (IllegalArgumentException e) {
-			throw new ValidationException(DNEditorI18N.formatSTR_MESSAGE_INVALIDDN(e.getLocalizedMessage()), e);
+			throw new ValidationException(DNEditorI18N.formatSTR_MESSAGE_INVALID_DN(e.getLocalizedMessage()), e);
 		}
-		return dn;
+		return x500DN;
 	}
 
 	@Override

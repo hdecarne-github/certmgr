@@ -112,50 +112,11 @@ public final class X500Names {
 
 	/**
 	 * Get the collection of known RDN types.
-	 * 
+	 *
 	 * @return The collection of known RDN types.
 	 */
 	public static Set<String> rdnTypes() {
 		return Collections.unmodifiableSet(NAMES.keySet());
-	}
-
-	/**
-	 * Decode a DN into it's individual RDNs.
-	 *
-	 * @param name The DN to encode.
-	 * @param strict Whether to throw an exception on invalid DN part
-	 *        ({@code true}) or ignore them {@code false}).
-	 * @return The decoded RDNs.
-	 * @throws IllegalArgumentException if strict mode is enabled and an invalid
-	 *         name part has been encountered.
-	 */
-	public static RDN[] decodeDN(String name, boolean strict) throws IllegalArgumentException {
-		assert name != null;
-
-		return new RDN[0];
-	}
-
-	/**
-	 * Encode individual RDNs into a DN.
-	 *
-	 * @param rdns The RDNs to encode.
-	 * @return The resulting DN.
-	 * @throws IllegalArgumentException if an I/O error occurs during encoding.
-	 */
-	public static X500Principal encodeDN(RDN[] rdns) throws IllegalArgumentException {
-		assert rdns != null;
-
-		StringBuilder buffer = new StringBuilder();
-
-		for (RDN rdn : rdns) {
-			if (buffer.length() > 0) {
-				buffer.append(',');
-			}
-			buffer.append(rdn.getType());
-			buffer.append('=');
-			buffer.append(rdn.getValue());
-		}
-		return fromString(buffer.toString());
 	}
 
 }
