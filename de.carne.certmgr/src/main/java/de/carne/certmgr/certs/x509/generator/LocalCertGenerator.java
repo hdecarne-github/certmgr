@@ -39,7 +39,7 @@ import de.carne.util.DefaultSet;
 import de.carne.util.Exceptions;
 
 /**
- * Signing servicer for local certificate generation and signing.
+ * Generator service for self-sustaining CA management.
  */
 public class LocalCertGenerator extends AbstractCertGenerator {
 

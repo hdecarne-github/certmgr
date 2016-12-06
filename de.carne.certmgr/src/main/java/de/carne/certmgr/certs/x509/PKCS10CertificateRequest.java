@@ -18,10 +18,14 @@ package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.Provider;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.X509Extension;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,13 +37,21 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.ExtensionsGenerator;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.asn1.ASN1Data;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.util.logging.Log;
 
 /**
  * This class represents a PKCS#10 Certificate Signing Request (CSR) object.
@@ -51,6 +63,8 @@ import de.carne.certmgr.certs.x500.X500Names;
  * {@link PKCS10CertificationRequest} class.
  */
 public class PKCS10CertificateRequest extends ASN1Data implements X509Extension, AttributesProvider {
+
+	private static final Log LOG = new Log();
 
 	private final JcaPKCS10CertificationRequest csr;
 	private final X500Principal subject;
@@ -65,6 +79,50 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 		this.publicKey = publicKey;
 		this.criticalExtensions = criticalExtensions;
 		this.nonCriticalExtensions = nonCriticalExtensions;
+	}
+
+	/**
+	 * Generate a CSR object.
+	 *
+	 * @param dn The CSR's Distinguished Name (DN).
+	 * @param key The CSR's key pair
+	 * @param extensions The CRT's extension objects.
+	 * @param signatureAlgorithm The signature algorithm to use.
+	 * @return The generated CSR object.
+	 * @throws IOException if an error occurs during generation.
+	 */
+	public static PKCS10CertificateRequest generateCSR(X500Principal dn, KeyPair key,
+			List<X509ExtensionData> extensions, SignatureAlgorithm signatureAlgorithm) throws IOException {
+
+		LOG.info("CSR generation ''{0}'' started...", dn);
+
+		// Initialize CSR builder
+		PKCS10CertificationRequestBuilder csrBuilder = new JcaPKCS10CertificationRequestBuilder(dn, key.getPublic());
+
+		// Add custom extension objects
+		ExtensionsGenerator extensionGenerator = new ExtensionsGenerator();
+
+		for (X509ExtensionData extensionData : extensions) {
+			extensionGenerator.addExtension(new ASN1ObjectIdentifier(extensionData.oid()), extensionData.getCritical(),
+					extensionData.encode());
+		}
+		csrBuilder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensionGenerator.generate());
+
+		PKCS10CertificateRequest csr;
+
+		try {
+			// Sign CSR
+			ContentSigner csrSigner;
+
+			csrSigner = new JcaContentSignerBuilder(signatureAlgorithm.algorithm()).build(key.getPrivate());
+			csr = fromPKCS10(csrBuilder.build(csrSigner));
+		} catch (OperatorCreationException e) {
+			throw new CertProviderException(e);
+		}
+
+		LOG.info("CSR generation ''{0}'' done", dn);
+
+		return csr;
 	}
 
 	/**
@@ -146,7 +204,17 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 	 * @return The name of the signature algorithm used to sign the CSR.
 	 */
 	public String getSigAlgName() {
-		return this.csr.getSignatureAlgorithm().toString();
+		String sigAlgOID = this.csr.getSignatureAlgorithm().getAlgorithm().toString();
+		String sigAlgPropertyKey = "Alg.Alias.Signature." + sigAlgOID;
+		String sigAlgName = null;
+
+		for (Provider provider : Security.getProviders()) {
+			sigAlgName = provider.getProperty(sigAlgPropertyKey);
+			if (sigAlgName != null) {
+				break;
+			}
+		}
+		return (sigAlgName != null ? sigAlgName : sigAlgOID);
 	}
 
 	/**

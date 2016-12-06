@@ -102,22 +102,32 @@ public final class X509CertificateHelper {
 
 		LOG.info("CRT generation ''{0}'' started...", dn);
 
-		X509Certificate crt;
-
 		// Initialize CRT builder
 		X509v3CertificateBuilder crtBuilder = new JcaX509v3CertificateBuilder(issuerDN, serial, notBefore, notAfter, dn,
 				key.getPublic());
 
 		// Add custom extension objects
-		addExtensions(crtBuilder, extensions);
+		for (X509ExtensionData extensionData : extensions) {
+			String oid = extensionData.oid();
+
+			if (!oid.equals(Extension.subjectKeyIdentifier) && !oid.equals(Extension.authorityKeyIdentifier)) {
+				boolean critical = extensionData.getCritical();
+
+				crtBuilder.addExtension(new ASN1ObjectIdentifier(oid), critical, extensionData.encode());
+			} else {
+				LOG.warning("Ignoring key identifier extension");
+			}
+		}
+
+		X509Certificate crt;
 
 		try {
 			// Add standard extensions based upon the CRT's purpose
 			JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
 
-			for (X509ExtensionData extension : extensions) {
-				if (extension instanceof BasicConstraintsExtensionData) {
-					BasicConstraintsExtensionData basicConstraintsExtension = (BasicConstraintsExtensionData) extension;
+			for (X509ExtensionData extensionData : extensions) {
+				if (extensionData instanceof BasicConstraintsExtensionData) {
+					BasicConstraintsExtensionData basicConstraintsExtension = (BasicConstraintsExtensionData) extensionData;
 
 					if (basicConstraintsExtension.getCA()) {
 						// CRT is CA --> record it's key's identifier
@@ -144,21 +154,6 @@ public final class X509CertificateHelper {
 		LOG.info("CRT generation ''{0}'' done", dn);
 
 		return crt;
-	}
-
-	private static void addExtensions(X509v3CertificateBuilder crtBuilder, List<X509ExtensionData> extensions)
-			throws IOException {
-		for (X509ExtensionData extensionData : extensions) {
-			String oid = extensionData.oid();
-
-			if (!oid.equals(Extension.subjectKeyIdentifier) && !oid.equals(Extension.authorityKeyIdentifier)) {
-				boolean critical = extensionData.getCritical();
-
-				crtBuilder.addExtension(new ASN1ObjectIdentifier(oid), critical, extensionData.encode());
-			} else {
-				LOG.warning("Ignoring key identifier extension");
-			}
-		}
 	}
 
 }

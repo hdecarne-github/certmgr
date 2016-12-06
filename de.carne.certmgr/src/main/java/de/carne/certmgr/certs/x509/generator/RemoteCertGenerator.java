@@ -17,6 +17,8 @@
 package de.carne.certmgr.certs.x509.generator;
 
 import java.io.IOException;
+import java.security.KeyPair;
+import java.util.Arrays;
 import java.util.List;
 
 import de.carne.certmgr.certs.PasswordCallback;
@@ -25,10 +27,12 @@ import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
+import de.carne.certmgr.certs.x509.KeyHelper;
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.util.DefaultSet;
 
 /**
- * Signing service for CSR generation.
+ * Generator service for CSR generation (for remote signing).
  */
 public class RemoteCertGenerator extends AbstractCertGenerator {
 
@@ -73,8 +77,13 @@ public class RemoteCertGenerator extends AbstractCertGenerator {
 
 	@Override
 	public List<Object> generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		KeyPair key = KeyHelper.generateKey(request.keyPairAlgorithm(), request.keySize());
+		SignatureAlgorithm signatureAlgorithm = requiredParameter(request.getSignatureAlgorithm(),
+				"SignatureAlgorithm");
+		PKCS10CertificateRequest csr = PKCS10CertificateRequest.generateCSR(request.dn(), key, request.getExtensions(),
+				signatureAlgorithm);
+
+		return Arrays.asList((Object) key, (Object) csr);
 	}
 
 }
