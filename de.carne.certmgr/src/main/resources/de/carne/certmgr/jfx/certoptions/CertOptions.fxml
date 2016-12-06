@@ -25,7 +25,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
    <children>
       <GridPane fx:id="ctlControlPane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
         <columnConstraints>
@@ -102,7 +102,6 @@
                       <MenuItem fx:id="cmdAddBasicConstraints" mnemonicParsing="false" onAction="#onCmdEditBasicConstraints" text="%_STR_MENU_ADD_BASICCONTSTRAINTS" />
                         <MenuItem fx:id="cmdAddCRLDistributionPoints" mnemonicParsing="false" onAction="#onCmdEditCRLDistributionPoints" text="%_STR_MENU_ADD_CRLDISTRIBUTIONPOINTS" />
                         <MenuItem fx:id="cmdAddExtendedKeyUsage" mnemonicParsing="false" onAction="#onCmdEditExtendedKeyUsage" text="%_STR_MENU_ADD_EXTENDEDKEYUSSAGE" />
-                        <MenuItem fx:id="cmdAddCustomExtension" mnemonicParsing="false" onAction="#onCmdAddCustomExtension" text="%_STR_MENU_ADD_CUSTOMEXTENSION" />
                     </items>
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">

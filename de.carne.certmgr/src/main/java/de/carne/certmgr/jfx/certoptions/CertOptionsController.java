@@ -161,9 +161,6 @@ public class CertOptionsController extends StageController {
 	MenuItem cmdAddCRLDistributionPoints;
 
 	@FXML
-	MenuItem cmdAddCustomExtension;
-
-	@FXML
 	Button cmdEditExtension;
 
 	@FXML
@@ -313,11 +310,6 @@ public class CertOptionsController extends StageController {
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
 		}
-	}
-
-	@FXML
-	void onCmdAddCustomExtension(ActionEvent evt) {
-
 	}
 
 	@FXML
