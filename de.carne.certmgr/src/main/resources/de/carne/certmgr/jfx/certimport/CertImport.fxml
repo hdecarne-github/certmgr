@@ -49,7 +49,7 @@
             <HBox spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
                <children>
                   <TextField fx:id="ctlFileSourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_FILE" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="ctlChooseFileSourceButton" mnemonicParsing="false" onAction="#onCmdChooseFileSource" HBox.hgrow="NEVER">
+                  <Button fx:id="cmdChooseFileSourceButton" mnemonicParsing="false" onAction="#onCmdChooseFileSource" HBox.hgrow="NEVER">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -64,7 +64,7 @@
             <HBox layoutX="168.0" layoutY="33.0" spacing="2.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
                <children>
                   <TextField fx:id="ctlDirectorySourceInput" onAction="#onCmdReload" promptText="%_STR_PROMPT_DIRECTORY" HBox.hgrow="ALWAYS" />
-                  <Button fx:id="ctlChooseDirectorySourceButton" mnemonicParsing="false" onAction="#onCmdChooseDirectorySource" HBox.hgrow="NEVER">
+                  <Button fx:id="cmdChooseDirectorySourceButton" mnemonicParsing="false" onAction="#onCmdChooseDirectorySource" HBox.hgrow="NEVER">
                      <graphic>
                         <ImageView pickOnBounds="true" preserveRatio="true">
                            <image>

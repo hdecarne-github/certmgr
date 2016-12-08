@@ -29,8 +29,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import de.carne.certmgr.certs.spi.CertReader;
 
 /**
- * This class is used to provide data access for all kind of {@link CertReader}
- * implementations.
+ * This class is used to provide read data access for all kind of
+ * {@link CertReader} implementations.
  */
 public abstract class CertReaderInput implements Closeable {
 
@@ -63,8 +63,7 @@ public abstract class CertReaderInput implements Closeable {
 	 * @return {@link InputStream} access to the input data.
 	 * @throws IOException if an I/O error occurs while accessing the data.
 	 */
-	@Nullable
-	public InputStream stream() throws IOException {
+	public @Nullable InputStream stream() throws IOException {
 		return null;
 	}
 

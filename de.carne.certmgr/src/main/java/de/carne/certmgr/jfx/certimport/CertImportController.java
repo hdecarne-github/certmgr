@@ -109,7 +109,7 @@ public class CertImportController extends StageController {
 	TextField ctlFileSourceInput;
 
 	@FXML
-	Button ctlChooseFileSourceButton;
+	Button cmdChooseFileSourceButton;
 
 	@FXML
 	RadioButton ctlDirectorySourceOption;
@@ -118,7 +118,7 @@ public class CertImportController extends StageController {
 	TextField ctlDirectorySourceInput;
 
 	@FXML
-	Button ctlChooseDirectorySourceButton;
+	Button cmdChooseDirectorySourceButton;
 
 	@FXML
 	RadioButton ctlURLSourceOption;
@@ -281,11 +281,11 @@ public class CertImportController extends StageController {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.IMPORT32, Images.IMPORT16));
 		stage.setTitle(CertImportI18N.formatSTR_STAGE_TITLE());
 		this.ctlFileSourceInput.disableProperty().bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
-		this.ctlChooseFileSourceButton.disableProperty()
+		this.cmdChooseFileSourceButton.disableProperty()
 				.bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
 		this.ctlDirectorySourceInput.disableProperty()
 				.bind(Bindings.not(this.ctlDirectorySourceOption.selectedProperty()));
-		this.ctlChooseDirectorySourceButton.disableProperty()
+		this.cmdChooseDirectorySourceButton.disableProperty()
 				.bind(Bindings.not(this.ctlDirectorySourceOption.selectedProperty()));
 		this.ctlURLSourceInput.disableProperty().bind(Bindings.not(this.ctlURLSourceOption.selectedProperty()));
 		this.ctlServerSourceInput.disableProperty().bind(Bindings.not(this.ctlServerSourceOption.selectedProperty()));

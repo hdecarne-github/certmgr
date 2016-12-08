@@ -105,6 +105,48 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		return read(input.reader(StandardCharsets.US_ASCII), input.toString(), password);
 	}
 
+	@Override
+	public boolean isCharWriter() {
+		return true;
+	}
+
+	@Override
+	public boolean isContainerWriter() {
+		return true;
+	}
+
+	@Override
+	public boolean isEncryptionRequired() {
+		return false;
+	}
+
+	@Override
+	public void writeBinary(OutputStream out, List<Object> certObjects)
+			throws IOException, UnsupportedOperationException {
+		try (Writer outWriter = new OutputStreamWriter(out, StandardCharsets.US_ASCII)) {
+			writeString(outWriter, certObjects);
+		}
+	}
+
+	@Override
+	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
+		try (Writer outWriter = new OutputStreamWriter(out, StandardCharsets.US_ASCII)) {
+			writeEncryptedString(outWriter, certObjects, newPassword);
+		}
+	}
+
+	@Override
+	public void writeString(Writer out, List<Object> certObjects) throws IOException, UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeEncryptedString(Writer out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
+
 	/**
 	 * Read all available certificate objects from a PEM encoded
 	 * {@link InputStream}.
@@ -120,7 +162,12 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public List<Object> read(InputStream input, String resource, PasswordCallback password) throws IOException {
 		assert input != null;
 
-		return read(new InputStreamReader(input, StandardCharsets.US_ASCII), resource, password);
+		List<Object> certObjects;
+
+		try (InputStreamReader reader = new InputStreamReader(input, StandardCharsets.US_ASCII)) {
+			certObjects = read(reader, resource, password);
+		}
+		return certObjects;
 	}
 
 	/**
@@ -189,7 +236,9 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public void write(OutputStream output, X509Certificate crt, String resource) throws IOException {
 		assert output != null;
 
-		write(new OutputStreamWriter(output, StandardCharsets.US_ASCII), crt, resource);
+		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
+			write(writer, crt, resource);
+		}
 	}
 
 	/**
@@ -205,7 +254,9 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		assert crt != null;
 		assert resource != null;
 
-		writeObject(writer, crt, resource);
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
+			writeObject(pemWriter, crt, resource);
+		}
 	}
 
 	/**
@@ -220,7 +271,9 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public void write(OutputStream output, KeyPair key, String resource, PasswordCallback password) throws IOException {
 		assert output != null;
 
-		write(new OutputStreamWriter(output, StandardCharsets.US_ASCII), key, resource, password);
+		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
+			write(writer, key, resource, password);
+		}
 	}
 
 	/**
@@ -238,7 +291,9 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		assert resource != null;
 		assert password != null;
 
-		writeObject(writer, key, resource, password);
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
+			writeObject(pemWriter, key, resource, password);
+		}
 	}
 
 	/**
@@ -252,7 +307,9 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public void write(OutputStream output, PKCS10CertificateRequest csr, String resource) throws IOException {
 		assert output != null;
 
-		write(new OutputStreamWriter(output, StandardCharsets.US_ASCII), csr, resource);
+		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
+			write(writer, csr, resource);
+		}
 	}
 
 	/**
@@ -268,7 +325,9 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		assert csr != null;
 		assert resource != null;
 
-		writeObject(writer, csr.toPKCS10(), resource);
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
+			writeObject(pemWriter, csr.toPKCS10(), resource);
+		}
 	}
 
 	/**
@@ -282,7 +341,9 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public void write(OutputStream output, X509CRL crl, String resource) throws IOException {
 		assert output != null;
 
-		write(new OutputStreamWriter(output, StandardCharsets.US_ASCII), crl, resource);
+		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
+			write(writer, crl, resource);
+		}
 	}
 
 	/**
@@ -298,18 +359,18 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		assert crl != null;
 		assert resource != null;
 
-		writeObject(writer, crl, resource);
-	}
-
-	private void writeObject(Writer writer, Object object, String resource) throws IOException {
-		LOG.debug("Writing PEM object ''{0}'' to: ''{1}''...", object.getClass().getName(), resource);
-
 		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
-			pemWriter.writeObject(object);
+			writeObject(pemWriter, crl, resource);
 		}
 	}
 
-	private void writeObject(Writer writer, Object object, String resource, PasswordCallback password)
+	private void writeObject(JcaPEMWriter writer, Object object, String resource) throws IOException {
+		LOG.debug("Writing PEM object ''{0}'' to: ''{1}''...", object.getClass().getName(), resource);
+
+		writer.writeObject(object);
+	}
+
+	private void writeObject(JcaPEMWriter writer, Object object, String resource, PasswordCallback password)
 			throws IOException {
 		LOG.debug("Writing encrypted PEM object ''{0}'' to: ''{1}''...", object.getClass().getName(), resource);
 
@@ -318,9 +379,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		if (passwordChars == null) {
 			throw new PasswordRequiredException(resource);
 		}
-		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
-			pemWriter.writeObject(object, this.pemEncryptorBuilder.build(passwordChars));
-		}
+		writer.writeObject(object, this.pemEncryptorBuilder.build(passwordChars));
 	}
 
 	private X509Certificate getCRT(X509CertificateHolder pemObject) throws IOException {
@@ -376,6 +435,11 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 			throw new CertProviderException(e);
 		}
 		return crl;
+	}
+
+	@Override
+	public String toString() {
+		return fileType();
 	}
 
 }

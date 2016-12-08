@@ -37,6 +37,7 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.ReasonFlag;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
+import de.carne.certmgr.jfx.certexport.CertExportController;
 import de.carne.certmgr.jfx.certimport.CertImportController;
 import de.carne.certmgr.jfx.certoptions.CertOptionsController;
 import de.carne.certmgr.jfx.crloptions.CRLOptionsController;
@@ -314,7 +315,18 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdExportCert(ActionEvent evt) {
+		UserCertStoreEntry exportEntry = getSelectedStoreEntry();
 
+		if (exportEntry != null) {
+			try {
+				CertExportController exportController = loadStage(CertExportController.class).init(exportEntry);
+
+				exportController.showAndWait();
+				updateStoreEntryView();
+			} catch (IOException e) {
+				Alerts.unexpected(e).showAndWait();
+			}
+		}
 	}
 
 	@FXML

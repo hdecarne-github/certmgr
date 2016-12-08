@@ -18,6 +18,8 @@ package de.carne.certmgr.certs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
@@ -86,6 +88,46 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			}
 		}
 		return keyStoreObjects;
+	}
+
+	@Override
+	public boolean isCharWriter() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainerWriter() {
+		return true;
+	}
+
+	@Override
+	public boolean isEncryptionRequired() {
+		return true;
+	}
+
+	@Override
+	public void writeBinary(OutputStream out, List<Object> certObjects)
+			throws IOException, UnsupportedOperationException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void writeString(Writer out, List<Object> certObjects) throws IOException, UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void writeEncryptedString(Writer out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -233,6 +275,11 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			}
 		}
 		return crt;
+	}
+
+	@Override
+	public String toString() {
+		return fileType();
 	}
 
 }
