@@ -185,7 +185,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 			names.addName(name);
 			nameCount++;
 		}
-		InputValidator.isTrue(nameCount > 0, (a) -> SubjectAlternativeNameI18N.formatSTR_MESSAGE_NO_NAMES());
+		InputValidator.isTrue(nameCount > 0, (a) -> SubjectAlternativeNameI18N.formatSTR_MESSAGE_NO_NAMES(a));
 		return names;
 	}
 

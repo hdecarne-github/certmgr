@@ -115,11 +115,11 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 
 	private BigInteger valdiateAndGetPathLenConstraint() throws ValidationException {
 		BasicConstraintsPathLen pathLenConstraint = InputValidator.notNull(this.ctlPathLenConstraint.getValue(),
-				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_NO_PATH_LEN_CONSTRAINT());
+				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_NO_PATH_LEN_CONSTRAINT(a));
 		BigInteger pathLenConstraintValue = pathLenConstraint.value();
 
 		InputValidator.isTrue(pathLenConstraintValue == null || pathLenConstraintValue.compareTo(BigInteger.ZERO) >= 0,
-				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT());
+				(a) -> BasicConstraintsI18N.formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT(a));
 		return pathLenConstraintValue;
 	}
 

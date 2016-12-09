@@ -195,7 +195,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 			names.addName(name);
 			nameCount++;
 		}
-		InputValidator.isTrue(nameCount > 0, (a) -> CRLDistributionPointsI18N.formatSTR_MESSAGE_NO_NAMES());
+		InputValidator.isTrue(nameCount > 0, (a) -> CRLDistributionPointsI18N.formatSTR_MESSAGE_NO_NAMES(a));
 		return new DistributionPoint(new DistributionPointName(names));
 	}
 

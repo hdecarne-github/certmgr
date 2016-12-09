@@ -606,40 +606,40 @@ public class CertOptionsController extends StageController {
 
 	private KeyPairAlgorithm validateAndGetKeyAlg() throws ValidationException {
 		return InputValidator.notNull(this.ctlKeyAlgOption.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYALG());
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYALG(a));
 	}
 
 	private int validateAndGetKeySize() throws ValidationException {
 		return InputValidator
-				.notNull(this.ctlKeySizeOption.getValue(), (a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYSIZE())
+				.notNull(this.ctlKeySizeOption.getValue(), (a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYSIZE(a))
 				.intValue();
 	}
 
 	private CertGenerator validateAndGetGenerator() throws ValidationException {
 		return InputValidator.notNull(this.ctlGeneratorOption.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_GENERATOR());
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_GENERATOR(a));
 	}
 
 	private Issuer validateAndGetIssuer() throws ValidationException {
 		return InputValidator.notNull(this.ctlIssuerInput.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_ISSUER());
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_ISSUER(a));
 	}
 
 	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
 		return InputValidator.notNull(this.ctlSigAlgOption.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_SIGALG());
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_SIGALG(a));
 	}
 
 	private Date validateAndGetNotBefore() throws ValidationException {
 		LocalDate localNotBefore = InputValidator.notNull(this.ctlNotBeforeInput.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTBEFORE());
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTBEFORE(a));
 
 		return Date.from(localNotBefore.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	private Date validateAndGetNotAfter(Date notBefore) throws ValidationException {
 		LocalDate localNotAfter = InputValidator.notNull(this.ctlNotAfterInput.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTAFTER());
+				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTAFTER(a));
 		Date notAfter = Date.from(localNotAfter.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
 		InputValidator.isTrue(notAfter.compareTo(notBefore) > 0,

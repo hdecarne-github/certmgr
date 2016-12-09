@@ -16,10 +16,26 @@
  */
 package de.carne.certmgr.jfx.certexport;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
+
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertWriters;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.certmgr.jfx.password.PasswordDialog;
+import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
+import de.carne.jfx.util.FileChooserHelper;
+import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.Strings;
+import de.carne.util.prefs.DirectoryPreference;
+import de.carne.util.validation.InputValidator;
+import de.carne.util.validation.PathValidator;
+import de.carne.util.validation.ValidationException;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -30,12 +46,20 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 /**
  * Certificate export dialog.
  */
 public class CertExportController extends StageController {
+
+	private final Preferences preferences = Preferences.systemNodeForPackage(CertExportController.class);
+
+	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
+			"initialDirectory", true);
 
 	private UserCertStoreEntry exportEntry;
 
@@ -95,17 +119,94 @@ public class CertExportController extends StageController {
 
 	@FXML
 	void onCmdChooseFileDestination(ActionEvent evt) {
+		FileChooser chooser = new FileChooser();
+		List<ExtensionFilter> extensionFilters = new ArrayList<>();
+		CertWriter writer = this.ctlFormatOption.getValue();
 
+		if (writer != null) {
+			extensionFilters.add(new ExtensionFilter(writer.fileType(), writer.fileExtensions()));
+		}
+		extensionFilters.add(FileChooserHelper.filterFromString(CertExportI18N.formatSTR_FILTER_ALLFILES()));
+		chooser.getExtensionFilters().addAll(extensionFilters);
+		chooser.setSelectedExtensionFilter(extensionFilters.get(0));
+		chooser.setInitialDirectory(this.preferenceInitalDirectory.getValueAsFile());
+
+		File fileSource = chooser.showSaveDialog(getUI());
+
+		if (fileSource != null) {
+			this.ctlFileDestinationInput.setText(fileSource.getAbsolutePath());
+			this.preferenceInitalDirectory.putValueFromFile(fileSource.getParentFile());
+			syncPreferences();
+		}
 	}
 
 	@FXML
 	void onCmdChooseDirectoryDestination(ActionEvent evt) {
+		DirectoryChooser chooser = new DirectoryChooser();
 
+		chooser.setInitialDirectory(this.preferenceInitalDirectory.getValueAsFile());
+
+		File directorySource = chooser.showDialog(getUI());
+
+		if (directorySource != null) {
+			this.ctlDirectoryDestinationInput.setText(directorySource.getAbsolutePath());
+			this.preferenceInitalDirectory.putValueFromFile(directorySource);
+			syncPreferences();
+		}
 	}
 
 	@FXML
 	void onCmdExport(ActionEvent evt) {
+		try {
+			CertWriter exportFormat = validateAndGetFormat();
+			boolean exportCert = this.ctlExportCertOption.isSelected();
+			boolean exportChain = this.ctlExportChainOption.isSelected();
+			boolean exportChainRoot = this.ctlExportChainRootOption.isSelected();
+			boolean exportKey = this.ctlExportKeyOption.isSelected();
+			boolean exportCSR = this.ctlExportCSROption.isSelected();
+			boolean exportCRL = this.ctlExportCRLOption.isSelected();
 
+			if (this.ctlFileDestinationOption.isSelected()) {
+				Path exportFile = validateFileDestinationInput();
+
+				getExecutorService().submit(new ExportTask<Path>(exportCert, exportChain, exportChainRoot, exportKey,
+						exportCSR, exportCRL, exportFormat, exportFile) {
+
+					@Override
+					protected void export(CertWriter format, Path param, List<Object> exportObjects)
+							throws IOException {
+						exportToFile(format, param, exportObjects);
+					}
+
+				});
+			} else if (this.ctlDirectoryDestinationOption.isSelected()) {
+				Path exportDirectory = validateDirectoryDestinationInput();
+
+				getExecutorService().submit(new ExportTask<Path>(exportCert, exportChain, exportChainRoot, exportKey,
+						exportCSR, exportCRL, exportFormat, exportDirectory) {
+
+					@Override
+					protected void export(CertWriter format, Path param, List<Object> exportObjects)
+							throws IOException {
+						exportToDirectory(format, param, exportObjects);
+					}
+
+				});
+			} else if (this.ctlClipboardDestinationOption.isSelected()) {
+				getExecutorService().submit(new ExportTask<Void>(exportCert, exportChain, exportChainRoot, exportKey,
+						exportCSR, exportCRL, exportFormat, null) {
+
+					@Override
+					protected void export(CertWriter format, Void param, List<Object> exportObjects)
+							throws IOException {
+						exportToClipboard(format, exportObjects);
+					}
+
+				});
+			}
+		} catch (ValidationException e) {
+			ValidationAlerts.error(e).showAndWait();
+		}
 	}
 
 	@FXML
@@ -154,6 +255,162 @@ public class CertExportController extends StageController {
 		this.ctlExportCSROption.setDisable(!this.exportEntry.hasCSR());
 		this.ctlExportCRLOption.setDisable(!this.exportEntry.hasCRL());
 		return this;
+	}
+
+	@Override
+	protected Preferences getPreferences() {
+		return this.preferences;
+	}
+
+	@Override
+	protected void setBlocked(boolean blocked) {
+		this.ctlControlPane.setDisable(blocked);
+		this.ctlProgressOverlay.setVisible(blocked);
+	}
+
+	private CertWriter validateAndGetFormat() throws ValidationException {
+		CertWriter writer = InputValidator.notNull(this.ctlFormatOption.getValue(),
+				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_FORMAT(a));
+
+		InputValidator.isTrue(this.ctlEncryptOption.isSelected() || !writer.isEncryptionRequired(),
+				(a) -> CertExportI18N.formatSTR_MESSAGE_ENCRYPTION_REQUIRED(writer.providerName()));
+		InputValidator.isTrue(!this.ctlClipboardDestinationOption.isSelected() || writer.isCharWriter(),
+				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_CHARACTER_FORMAT(writer.providerName()));
+
+		int exportObjectCount = 0;
+
+		if (this.ctlExportCertOption.isSelected()) {
+			exportObjectCount++;
+		}
+		if (this.ctlExportChainOption.isSelected()) {
+			// This is not exact as the chain may be of length 0..n; however for
+			// simplicity (regarding code and usability) we assume 1
+			exportObjectCount++;
+		}
+		if (this.ctlExportKeyOption.isSelected()) {
+			exportObjectCount++;
+		}
+		if (this.ctlExportCSROption.isSelected()) {
+			exportObjectCount++;
+		}
+		if (this.ctlExportCRLOption.isSelected()) {
+			exportObjectCount++;
+		}
+		InputValidator.isTrue(exportObjectCount > 0,
+				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_EXPORT(writer.providerName()));
+		InputValidator.isTrue(
+				exportObjectCount == 1 || this.ctlDirectoryDestinationOption.isSelected() || writer.isContainerWriter(),
+				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_CONTAINER_FORMAT(writer.providerName()));
+		return writer;
+	}
+
+	private Path validateFileDestinationInput() throws ValidationException {
+		String fileDestinationInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileDestinationInput.getText()),
+				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_FILE(a));
+
+		return PathValidator.isReadableFile(fileDestinationInput,
+				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
+	}
+
+	private Path validateDirectoryDestinationInput() throws ValidationException {
+		String directoryDestinationInput = InputValidator.notEmpty(
+				Strings.safeTrim(this.ctlDirectoryDestinationInput.getText()),
+				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_DIRECTORY(a));
+
+		return PathValidator.isReadableDirectory(directoryDestinationInput,
+				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
+	}
+
+	private void exportToFile(CertWriter format, Path file, List<Object> exportObjects) throws IOException {
+
+	}
+
+	private void exportToDirectory(CertWriter format, Path file, List<Object> exportObjects) throws IOException {
+
+	}
+
+	private void exportToClipboard(CertWriter format, List<Object> exportObjects) throws IOException {
+
+	}
+
+	List<Object> getExportObjects(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
+			boolean exportCSR, boolean exportCRL) throws IOException {
+		List<Object> exportObjects = new ArrayList<>();
+
+		if (exportCert) {
+			exportObjects.add(this.exportEntry.getCRT());
+			if (exportChain && !this.exportEntry.isSelfSigned()) {
+				UserCertStoreEntry issuer = this.exportEntry.issuer();
+
+				while (!issuer.isSelfSigned()) {
+					if (issuer.hasCRT()) {
+						exportObjects.add(issuer.getCRT());
+					}
+					issuer = issuer.issuer();
+				}
+				if (exportChainRoot && issuer.hasCRT()) {
+					exportObjects.add(issuer.getCRT());
+				}
+			}
+		}
+		if (exportKey) {
+			exportObjects.add(this.exportEntry.getKey(PasswordDialog.enterPassword(this)));
+		}
+		if (exportCSR) {
+			exportObjects.add(this.exportEntry.getCSR());
+		}
+		if (exportCRL) {
+			exportObjects.add(this.exportEntry.getCRL());
+		}
+		return exportObjects;
+	}
+
+	private abstract class ExportTask<P> extends BackgroundTask<Void> {
+
+		private final boolean exportCert;
+		private final boolean exportChain;
+		private final boolean exportChainRoot;
+		private final boolean exportKey;
+		private final boolean exportCSR;
+		private final boolean exportCRL;
+		private final CertWriter exportFormat;
+		private final P exportParam;
+
+		ExportTask(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
+				boolean exportCSR, boolean exportCRL, CertWriter exportFormat, P exportParam) {
+			this.exportCert = exportCert;
+			this.exportChain = exportChain;
+			this.exportChainRoot = exportChainRoot;
+			this.exportKey = exportKey;
+			this.exportCSR = exportCSR;
+			this.exportCRL = exportCRL;
+			this.exportFormat = exportFormat;
+			this.exportParam = exportParam;
+		}
+
+		protected abstract void export(CertWriter format, P param, List<Object> exportObjects) throws IOException;
+
+		@Override
+		protected Void call() throws Exception {
+			List<Object> exportObjects = getExportObjects(this.exportCert, this.exportChain, this.exportChainRoot,
+					this.exportKey, this.exportCSR, this.exportCRL);
+
+			export(this.exportFormat, this.exportParam, exportObjects);
+			return null;
+		}
+
+		@Override
+		protected void succeeded() {
+			super.succeeded();
+			close(true);
+		}
+
+		@Override
+		protected void failed() {
+			super.failed();
+			Alerts.unexpected(getException());
+		}
+
 	}
 
 }
