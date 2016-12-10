@@ -19,7 +19,10 @@ package de.carne.certmgr.certs.x509;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +42,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
 /**
@@ -71,6 +75,32 @@ public final class X509CertificateHelper {
 		crtAttributes.add(AttributesI18N.formatSTR_CRT_PUBLICKEY(), KeyHelper.toString(crt.getPublicKey()));
 		X509ExtensionHelper.addAttributes(crtAttributes, crt);
 		return crtAttributes;
+	}
+
+	/**
+	 * Check whether a certificate has been signed by specific key pair.
+	 *
+	 * @param crt The certificate to check.
+	 * @param publicKey The public key of the key pair to check.
+	 * @return {@code true} if the certificate has been signed by the public
+	 *         key's key pair.
+	 * @throws IOException if a general security error occurs during the check.
+	 */
+	public static boolean isCRTSignedBy(X509Certificate crt, PublicKey publicKey) throws IOException {
+		assert crt != null;
+		assert publicKey != null;
+
+		boolean isSignedBy = false;
+
+		try {
+			crt.verify(publicKey);
+			isSignedBy = true;
+		} catch (SignatureException | InvalidKeyException e) {
+			Exceptions.ignore(e);
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
+		return isSignedBy;
 	}
 
 	/**

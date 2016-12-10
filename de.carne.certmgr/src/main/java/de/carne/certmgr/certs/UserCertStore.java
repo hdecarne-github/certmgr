@@ -16,16 +16,14 @@
  */
 package de.carne.certmgr.certs;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PublicKey;
-import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
@@ -55,8 +53,8 @@ import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
+import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.nio.FileAttributes;
-import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
 /**
@@ -660,7 +658,7 @@ public final class UserCertStore {
 
 					for (Entry issuerEntry : this.storeEntries.values()) {
 						if (issuerDN.equals(issuerEntry.dn()) && issuerEntry.hasPublicKey()
-								&& isX509CertificateIssuedBy(entryCRT, issuerEntry.getPublicKey())) {
+								&& X509CertificateHelper.isCRTSignedBy(entryCRT, issuerEntry.getPublicKey())) {
 							foundIssuerEntry = issuerEntry;
 							break;
 						}
@@ -697,34 +695,6 @@ public final class UserCertStore {
 		}
 	}
 
-	private static boolean isX509CertificateIssuedBy(X509Certificate crt, PublicKey publicKey) throws IOException {
-		boolean isIssuedBy = false;
-
-		try {
-			crt.verify(publicKey);
-			isIssuedBy = true;
-		} catch (SignatureException | InvalidKeyException e) {
-			Exceptions.ignore(e);
-		} catch (GeneralSecurityException e) {
-			throw new CertProviderException(e);
-		}
-		return isIssuedBy;
-	}
-
-	private static boolean isX509CRLIssuedBy(X509CRL crl, PublicKey issuerKey) throws IOException {
-		boolean isIssuedBy = false;
-
-		try {
-			crl.verify(issuerKey);
-			isIssuedBy = true;
-		} catch (SignatureException | InvalidKeyException e) {
-			Exceptions.ignore(e);
-		} catch (GeneralSecurityException e) {
-			throw new CertProviderException(e);
-		}
-		return isIssuedBy;
-	}
-
 	private Entry matchX509Certificate(X509Certificate crt) throws IOException {
 		X500Principal crtDN = crt.getSubjectX500Principal();
 		PublicKey crtPublicKey = crt.getPublicKey();
@@ -736,7 +706,7 @@ public final class UserCertStore {
 					matchingEntry = entry;
 					break;
 				}
-				if (entry.hasCRL() && isX509CRLIssuedBy(entry.getCRL(), crtPublicKey)) {
+				if (entry.hasCRL() && X509CRLHelper.isCRLSignedBy(entry.getCRL(), crtPublicKey)) {
 					matchingEntry = entry;
 					break;
 				}
@@ -754,7 +724,7 @@ public final class UserCertStore {
 				matchingEntry = entry;
 				break;
 			}
-			if (entry.hasCRL() && isX509CRLIssuedBy(entry.getCRL(), publicKey)) {
+			if (entry.hasCRL() && X509CRLHelper.isCRLSignedBy(entry.getCRL(), publicKey)) {
 				matchingEntry = entry;
 				break;
 			}
@@ -772,7 +742,7 @@ public final class UserCertStore {
 				matchingEntry = entry;
 				break;
 			}
-			if (entry.hasCRL() && isX509CRLIssuedBy(entry.getCRL(), csrPublicKey)) {
+			if (entry.hasCRL() && X509CRLHelper.isCRLSignedBy(entry.getCRL(), csrPublicKey)) {
 				matchingEntry = entry;
 				break;
 			}
@@ -786,7 +756,7 @@ public final class UserCertStore {
 
 		for (Entry entry : this.storeEntries.values()) {
 			if (crlDN.equals(entry.dn())) {
-				if (entry.hasPublicKey() && isX509CRLIssuedBy(crl, entry.getPublicKey())) {
+				if (entry.hasPublicKey() && X509CRLHelper.isCRLSignedBy(crl, entry.getPublicKey())) {
 					matchingEntry = entry;
 					break;
 				}
@@ -909,6 +879,13 @@ public final class UserCertStore {
 
 		void setCRL(CRLEntry crlEntry) {
 			this.crlEntry = crlEntry;
+		}
+
+		@Override
+		public List<File> getFiles() {
+			List<File> files = new ArrayList<>();
+
+			return files;
 		}
 
 	}

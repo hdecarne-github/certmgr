@@ -34,8 +34,8 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 *
 	 * @return {@code true} if the writer produces string based output (e.g.
 	 *         PEM).
-	 * @see #writeString(Writer, List)
-	 * @see #writeEncryptedString(Writer, List, PasswordCallback)
+	 * @see #writeString(Writer, List, String)
+	 * @see #writeEncryptedString(Writer, List, String, PasswordCallback)
 	 */
 	boolean isCharWriter();
 
@@ -62,12 +62,14 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * @param out The stream to write to.
 	 * @param certObjects The certificate objects to write. This is an unary
 	 *        list if this instance is not a container writer.
+	 * @param resource The resource name of the objects to write.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
 	 * @see #isContainerWriter()
 	 * @see #isEncryptionRequired()
 	 */
-	void writeBinary(OutputStream out, List<Object> certObjects) throws IOException, UnsupportedOperationException;
+	void writeBinary(OutputStream out, List<Object> certObjects, String resource)
+			throws IOException, UnsupportedOperationException;
 
 	/**
 	 * Write certificate objects to an encrypted binary stream.
@@ -75,13 +77,14 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * @param out The stream to write to.
 	 * @param certObjects The certificate objects to write. This is an unary
 	 *        list if this instance is not a container writer.
+	 * @param resource The resource name of the objects to write.
 	 * @param newPassword The callback to use for querying the encryption
 	 *        password.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
 	 * @see #isContainerWriter()
 	 */
-	void writeEncryptedBinary(OutputStream out, List<Object> certObjects, PasswordCallback newPassword)
+	void writeEncryptedBinary(OutputStream out, List<Object> certObjects, String resource, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException;
 
 	/**
@@ -90,13 +93,15 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * @param out The writer to write to.
 	 * @param certObjects The certificate objects to write. This is an unary
 	 *        list if this instance is not a container writer.
+	 * @param resource The resource name of the objects to write.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
 	 * @see #isCharWriter()
 	 * @see #isContainerWriter()
 	 * @see #isEncryptionRequired()
 	 */
-	void writeString(Writer out, List<Object> certObjects) throws IOException, UnsupportedOperationException;
+	void writeString(Writer out, List<Object> certObjects, String resource)
+			throws IOException, UnsupportedOperationException;
 
 	/**
 	 * Write certificate objects to a (not encrypted) string writer.
@@ -104,6 +109,7 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * @param out The writer to write to.
 	 * @param certObjects The certificate objects to write. This is an unary
 	 *        list if this instance is not a container writer.
+	 * @param resource The resource name of the objects to write.
 	 * @param newPassword The callback to use for querying the encryption
 	 *        password.
 	 * @throws IOException if an I/O error occurs while writing to the output.
@@ -111,7 +117,7 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * @see #isCharWriter()
 	 * @see #isContainerWriter()
 	 */
-	void writeEncryptedString(Writer out, List<Object> certObjects, PasswordCallback newPassword)
+	void writeEncryptedString(Writer out, List<Object> certObjects, String resource, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException;
 
 }

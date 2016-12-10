@@ -72,6 +72,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -227,7 +229,19 @@ public class StoreController extends StageController {
 
 	@FXML
 	void onCmdCopyEntry(ActionEvent evt) {
+		UserCertStoreEntry entry = getSelectedStoreEntry();
 
+		if (entry != null) {
+			List<File> entryFiles = entry.getFiles();
+
+			if (!entryFiles.isEmpty()) {
+				Clipboard clipboard = Clipboard.getSystemClipboard();
+				ClipboardContent content = new ClipboardContent();
+
+				content.putFiles(entryFiles);
+				clipboard.setContent(content);
+			}
+		}
 	}
 
 	@FXML

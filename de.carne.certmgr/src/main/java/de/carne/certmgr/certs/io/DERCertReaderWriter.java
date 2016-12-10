@@ -95,27 +95,28 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(OutputStream out, List<Object> certObjects)
+	public void writeBinary(OutputStream out, List<Object> certObjects, String resource)
 			throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, PasswordCallback newPassword)
-			throws IOException, UnsupportedOperationException {
+	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, String resource,
+			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeString(Writer out, List<Object> certObjects) throws IOException, UnsupportedOperationException {
+	public void writeString(Writer out, List<Object> certObjects, String resource)
+			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedString(Writer out, List<Object> certObjects, PasswordCallback newPassword)
-			throws IOException, UnsupportedOperationException {
+	public void writeEncryptedString(Writer out, List<Object> certObjects, String resource,
+			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 

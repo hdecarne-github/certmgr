@@ -18,7 +18,11 @@ package de.carne.certmgr.jfx.certexport;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -27,6 +31,7 @@ import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertWriters;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.jfx.password.PasswordDialog;
+import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
@@ -44,6 +49,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -159,6 +166,7 @@ public class CertExportController extends StageController {
 	void onCmdExport(ActionEvent evt) {
 		try {
 			CertWriter exportFormat = validateAndGetFormat();
+			boolean encrypt = this.ctlEncryptOption.isSelected();
 			boolean exportCert = this.ctlExportCertOption.isSelected();
 			boolean exportChain = this.ctlExportChainOption.isSelected();
 			boolean exportChainRoot = this.ctlExportChainRootOption.isSelected();
@@ -170,12 +178,12 @@ public class CertExportController extends StageController {
 				Path exportFile = validateFileDestinationInput();
 
 				getExecutorService().submit(new ExportTask<Path>(exportCert, exportChain, exportChainRoot, exportKey,
-						exportCSR, exportCRL, exportFormat, exportFile) {
+						exportCSR, exportCRL, exportFormat, exportFile, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Path param, List<Object> exportObjects)
-							throws IOException {
-						exportToFile(format, param, exportObjects);
+					protected void export(CertWriter format, Path param, List<Object> exportObjects,
+							boolean encryptExport) throws IOException {
+						exportToFile(format, param, exportObjects, encryptExport);
 					}
 
 				});
@@ -183,23 +191,23 @@ public class CertExportController extends StageController {
 				Path exportDirectory = validateDirectoryDestinationInput();
 
 				getExecutorService().submit(new ExportTask<Path>(exportCert, exportChain, exportChainRoot, exportKey,
-						exportCSR, exportCRL, exportFormat, exportDirectory) {
+						exportCSR, exportCRL, exportFormat, exportDirectory, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Path param, List<Object> exportObjects)
-							throws IOException {
-						exportToDirectory(format, param, exportObjects);
+					protected void export(CertWriter format, Path param, List<Object> exportObjects,
+							boolean encryptExport) throws IOException {
+						exportToDirectory(format, param, exportObjects, encryptExport);
 					}
 
 				});
 			} else if (this.ctlClipboardDestinationOption.isSelected()) {
 				getExecutorService().submit(new ExportTask<Void>(exportCert, exportChain, exportChainRoot, exportKey,
-						exportCSR, exportCRL, exportFormat, null) {
+						exportCSR, exportCRL, exportFormat, null, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Void param, List<Object> exportObjects)
-							throws IOException {
-						exportToClipboard(format, exportObjects);
+					protected void export(CertWriter format, Void param, List<Object> exportObjects,
+							boolean encryptExport) throws IOException {
+						exportToClipboard(format, exportObjects, encryptExport);
 					}
 
 				});
@@ -251,9 +259,14 @@ public class CertExportController extends StageController {
 		this.exportEntry = exportEntryParam;
 		this.ctlCertField.setText(this.exportEntry.getName());
 		this.ctlExportCertOption.setDisable(!this.exportEntry.hasCRT());
+		this.ctlExportCertOption.setSelected(this.exportEntry.hasCRT());
+		this.ctlExportChainOption.setSelected(!this.exportEntry.isSelfSigned());
 		this.ctlExportKeyOption.setDisable(!this.exportEntry.hasKey());
+		this.ctlExportKeyOption.setSelected(this.exportEntry.hasKey());
 		this.ctlExportCSROption.setDisable(!this.exportEntry.hasCSR());
+		this.ctlExportCSROption.setSelected(this.exportEntry.hasCSR());
 		this.ctlExportCRLOption.setDisable(!this.exportEntry.hasCRL());
+		this.ctlExportCRLOption.setSelected(this.exportEntry.hasCRL());
 		return this;
 	}
 
@@ -321,16 +334,44 @@ public class CertExportController extends StageController {
 				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
 	}
 
-	private void exportToFile(CertWriter format, Path file, List<Object> exportObjects) throws IOException {
+	void exportToFile(CertWriter format, Path file, List<Object> exportObjects, boolean encryptExport)
+			throws IOException {
 
 	}
 
-	private void exportToDirectory(CertWriter format, Path file, List<Object> exportObjects) throws IOException {
-
+	void exportToDirectory(CertWriter format, Path file, List<Object> exportObjects, boolean encryptExport)
+			throws IOException {
+		try (OutputStream out = Files.newOutputStream(file, StandardOpenOption.CREATE)) {
+			if (encryptExport) {
+				format.writeEncryptedBinary(out, exportObjects, file.toString(), PasswordDialog.enterNewPassword(this));
+			} else {
+				format.writeBinary(out, exportObjects, file.toString());
+			}
+		}
 	}
 
-	private void exportToClipboard(CertWriter format, List<Object> exportObjects) throws IOException {
+	void exportToClipboard(CertWriter format, List<Object> exportObjects, boolean encryptExport) throws IOException {
+		StringWriter out = new StringWriter();
 
+		if (encryptExport) {
+			format.writeEncryptedString(out, exportObjects, CertExportI18N.formatSTR_TEXT_CLIPBOARD(),
+					PasswordDialog.enterNewPassword(this));
+		} else {
+			format.writeString(out, exportObjects, CertExportI18N.formatSTR_TEXT_CLIPBOARD());
+		}
+		out.flush();
+
+		String clipboardData = out.toString();
+
+		PlatformHelper.runLater(() -> exportToClipboardHelper(clipboardData));
+	}
+
+	private void exportToClipboardHelper(String clipboardData) {
+		Clipboard clipboard = Clipboard.getSystemClipboard();
+		ClipboardContent content = new ClipboardContent();
+
+		content.putString(clipboardData);
+		clipboard.setContent(content);
 	}
 
 	List<Object> getExportObjects(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
@@ -375,9 +416,10 @@ public class CertExportController extends StageController {
 		private final boolean exportCRL;
 		private final CertWriter exportFormat;
 		private final P exportParam;
+		private final boolean encrypt;
 
 		ExportTask(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
-				boolean exportCSR, boolean exportCRL, CertWriter exportFormat, P exportParam) {
+				boolean exportCSR, boolean exportCRL, CertWriter exportFormat, P exportParam, boolean encrypt) {
 			this.exportCert = exportCert;
 			this.exportChain = exportChain;
 			this.exportChainRoot = exportChainRoot;
@@ -386,16 +428,18 @@ public class CertExportController extends StageController {
 			this.exportCRL = exportCRL;
 			this.exportFormat = exportFormat;
 			this.exportParam = exportParam;
+			this.encrypt = encrypt;
 		}
 
-		protected abstract void export(CertWriter format, P param, List<Object> exportObjects) throws IOException;
+		protected abstract void export(CertWriter format, P param, List<Object> exportObjects, boolean encryptExport)
+				throws IOException;
 
 		@Override
 		protected Void call() throws Exception {
 			List<Object> exportObjects = getExportObjects(this.exportCert, this.exportChain, this.exportChainRoot,
 					this.exportKey, this.exportCSR, this.exportCRL);
 
-			export(this.exportFormat, this.exportParam, exportObjects);
+			export(this.exportFormat, this.exportParam, exportObjects, this.encrypt);
 			return null;
 		}
 
@@ -408,7 +452,7 @@ public class CertExportController extends StageController {
 		@Override
 		protected void failed() {
 			super.failed();
-			Alerts.unexpected(getException());
+			Alerts.unexpected(getException()).showAndWait();
 		}
 
 	}

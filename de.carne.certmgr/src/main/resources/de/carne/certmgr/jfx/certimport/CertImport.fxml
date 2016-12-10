@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certimport.CertImportController">
    <children>
       <GridPane fx:id="ctlControlPane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
         <columnConstraints>
@@ -116,8 +116,8 @@
                 <TreeTableColumn fx:id="ctlImportEntryViewDN" editable="false" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="450.0" sortable="false" text="%_STR_COL_DN" />
                   <TreeTableColumn fx:id="ctlImportEntryViewCRT" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_CRT" />
                   <TreeTableColumn fx:id="ctlImportEntryViewKey" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_KEY" />
-                  <TreeTableColumn fx:id="ctlImportEntryViewCSR" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_CRL" />
-                  <TreeTableColumn fx:id="ctlImportEntryViewCRL" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_CSR" />
+                  <TreeTableColumn fx:id="ctlImportEntryViewCSR" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_CSR" />
+                  <TreeTableColumn fx:id="ctlImportEntryViewCRL" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" sortable="false" style="-fx-alignment: CENTER;" text="%_STR_COL_CRL" />
               </columns>
             </TreeTableView>
             <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="9">

@@ -655,7 +655,7 @@ public class CertImportController extends StageController {
 		@Override
 		protected void failed() {
 			super.failed();
-			Alerts.unexpected(getException());
+			Alerts.unexpected(getException()).showAndWait();
 		}
 
 	}

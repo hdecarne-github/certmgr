@@ -53,6 +53,7 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -121,30 +122,43 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(OutputStream out, List<Object> certObjects)
+	public void writeBinary(OutputStream out, List<Object> certObjects, String resource)
 			throws IOException, UnsupportedOperationException {
 		try (Writer outWriter = new OutputStreamWriter(out, StandardCharsets.US_ASCII)) {
-			writeString(outWriter, certObjects);
+			writeString(outWriter, certObjects, resource);
 		}
 	}
 
 	@Override
-	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, PasswordCallback newPassword)
-			throws IOException, UnsupportedOperationException {
+	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, String resource,
+			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		try (Writer outWriter = new OutputStreamWriter(out, StandardCharsets.US_ASCII)) {
-			writeEncryptedString(outWriter, certObjects, newPassword);
+			writeEncryptedString(outWriter, certObjects, resource, newPassword);
 		}
 	}
 
 	@Override
-	public void writeString(Writer out, List<Object> certObjects) throws IOException, UnsupportedOperationException {
-		throw new UnsupportedOperationException();
+	public void writeString(Writer out, List<Object> certObjects, String resource)
+			throws IOException, UnsupportedOperationException {
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out)) {
+			for (Object certObject : prepareWriteObjects(certObjects)) {
+				writeObject(pemWriter, certObject, resource);
+			}
+		}
 	}
 
 	@Override
-	public void writeEncryptedString(Writer out, List<Object> certObjects, PasswordCallback newPassword)
-			throws IOException, UnsupportedOperationException {
-		throw new UnsupportedOperationException();
+	public void writeEncryptedString(Writer out, List<Object> certObjects, String resource,
+			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out)) {
+			for (Object certObject : prepareWriteObjects(certObjects)) {
+				if (certObject instanceof KeyPair) {
+					writeObject(pemWriter, certObject, resource, newPassword);
+				} else {
+					writeObject(pemWriter, certObject, resource);
+				}
+			}
+		}
 	}
 
 	/**
@@ -380,6 +394,44 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 			throw new PasswordRequiredException(resource);
 		}
 		writer.writeObject(object, this.pemEncryptorBuilder.build(passwordChars));
+	}
+
+	private List<Object> prepareWriteObjects(List<Object> objects) throws IOException {
+		List<X509Certificate> crts = new ArrayList<>(objects.size());
+		List<KeyPair> keys = new ArrayList<>(objects.size());
+		List<PKCS10CertificationRequest> csrs = new ArrayList<>(objects.size());
+		List<X509CRL> crls = new ArrayList<>(objects.size());
+
+		for (Object object : objects) {
+			if (object instanceof X509Certificate) {
+				X509Certificate crt = (X509Certificate) object;
+				int crtIndex = crts.size();
+
+				while (crtIndex > 0) {
+					if (X509CertificateHelper.isCRTSignedBy(crt, crts.get(crtIndex - 1).getPublicKey())) {
+						break;
+					}
+					crtIndex--;
+				}
+				crts.add(crtIndex, crt);
+			} else if (object instanceof KeyPair) {
+				keys.add((KeyPair) object);
+			} else if (object instanceof PKCS10CertificateRequest) {
+				csrs.add(((PKCS10CertificateRequest) object).toPKCS10());
+			} else if (object instanceof X509CRL) {
+				crls.add((X509CRL) object);
+			} else {
+				throw new IOException("Unexpected certificate object type: " + object.getClass());
+			}
+		}
+
+		List<Object> preparedObjects = new ArrayList<>(objects.size());
+
+		preparedObjects.addAll(crts);
+		preparedObjects.addAll(keys);
+		preparedObjects.addAll(csrs);
+		preparedObjects.addAll(crls);
+		return preparedObjects;
 	}
 
 	private X509Certificate getCRT(X509CertificateHolder pemObject) throws IOException {

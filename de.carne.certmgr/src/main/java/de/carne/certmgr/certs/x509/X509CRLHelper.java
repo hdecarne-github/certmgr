@@ -19,7 +19,10 @@ package de.carne.certmgr.certs.x509;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.cert.CRLReason;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
@@ -41,6 +44,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
 /**
@@ -101,6 +105,29 @@ public final class X509CRLHelper {
 			}
 		}
 		return crlAttributes;
+	}
+
+	/**
+	 * Check whether a CRL object has been signed by specific key pair.
+	 *
+	 * @param crl The CRL object to check.
+	 * @param publicKey The public key of the key pair to check.
+	 * @return {@code true} if the CRL object has been signed by the public
+	 *         key's key pair.
+	 * @throws IOException if a general security error occurs during the check.
+	 */
+	public static boolean isCRLSignedBy(X509CRL crl, PublicKey publicKey) throws IOException {
+		boolean isSignedBy = false;
+
+		try {
+			crl.verify(publicKey);
+			isSignedBy = true;
+		} catch (SignatureException | InvalidKeyException e) {
+			Exceptions.ignore(e);
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
+		return isSignedBy;
 	}
 
 	/**

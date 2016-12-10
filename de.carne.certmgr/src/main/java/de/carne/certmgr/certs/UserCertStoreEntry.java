@@ -16,12 +16,14 @@
  */
 package de.carne.certmgr.certs;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
@@ -272,6 +274,13 @@ public abstract class UserCertStoreEntry {
 		}
 		return publicKey;
 	}
+
+	/**
+	 * Get this entry's certificate object files (if available).
+	 *
+	 * @return This entry's certificate object files. This list may be empty.
+	 */
+	public abstract List<File> getFiles();
 
 	/**
 	 * Check whether this entry represents an external certificate (means
