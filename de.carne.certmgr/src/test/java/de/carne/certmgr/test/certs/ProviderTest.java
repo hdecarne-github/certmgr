@@ -22,11 +22,11 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.carne.certmgr.certs.ProviderMap;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.spi.NamedProvider;
+import de.carne.certmgr.util.ProviderMap;
 
 /**
  * Test SPI class access via {@link ProviderMap} class.

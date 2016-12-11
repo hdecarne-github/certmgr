@@ -16,8 +16,8 @@
  */
 package de.carne.certmgr.certs.x509.generator;
 
-import de.carne.certmgr.certs.ProviderMap;
 import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.certmgr.util.ProviderMap;
 
 /**
  * Utility class providing {@link CertGenerator} related functions.

@@ -32,8 +32,8 @@ import java.util.Deque;
 import java.util.List;
 
 import de.carne.certmgr.certs.PasswordCallback;
-import de.carne.certmgr.certs.ProviderMap;
 import de.carne.certmgr.certs.spi.CertReader;
+import de.carne.certmgr.util.ProviderMap;
 
 /**
  * Utility class providing {@link CertReader} related functions.

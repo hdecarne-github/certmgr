@@ -16,8 +16,8 @@
  */
 package de.carne.certmgr.certs.io;
 
-import de.carne.certmgr.certs.ProviderMap;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.certmgr.util.ProviderMap;
 
 /**
  * Utility class providing {@link CertWriter} related functions.
