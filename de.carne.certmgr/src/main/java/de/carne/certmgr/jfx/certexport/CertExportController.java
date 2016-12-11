@@ -322,8 +322,7 @@ public class CertExportController extends StageController {
 		String fileDestinationInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileDestinationInput.getText()),
 				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_FILE(a));
 
-		return PathValidator.isReadableFile(fileDestinationInput,
-				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
+		return PathValidator.isPath(fileDestinationInput, (a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
 	}
 
 	private Path validateDirectoryDestinationInput() throws ValidationException {
@@ -331,7 +330,7 @@ public class CertExportController extends StageController {
 				Strings.safeTrim(this.ctlDirectoryDestinationInput.getText()),
 				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_DIRECTORY(a));
 
-		return PathValidator.isReadableDirectory(directoryDestinationInput,
+		return PathValidator.isWritableDirectory(directoryDestinationInput,
 				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
 	}
 

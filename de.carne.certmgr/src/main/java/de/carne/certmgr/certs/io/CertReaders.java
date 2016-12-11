@@ -143,7 +143,7 @@ public final class CertReaders {
 		boolean matches = false;
 
 		for (String filterExtension : reader.fileExtensions()) {
-			PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + filterExtension);
+			PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**/" + filterExtension);
 
 			if (matcher.matches(fileName)) {
 				matches = true;
