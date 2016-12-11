@@ -17,19 +17,9 @@
 package de.carne.certmgr.certs;
 
 import java.io.IOException;
-import java.security.cert.X509CRL;
 
-/**
- * Interface used to provide CRL access in a general manner.
- */
-interface CRLEntry {
+interface CertObjectHolder<T> extends CertObject {
 
-	/**
-	 * Get the CRL object.
-	 *
-	 * @return The CRL object.
-	 * @throws IOException if an I/O error occurs.
-	 */
-	X509CRL getCRL() throws IOException;
+	T get() throws IOException;
 
 }

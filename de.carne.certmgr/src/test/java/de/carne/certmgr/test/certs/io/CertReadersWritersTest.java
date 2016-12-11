@@ -26,7 +26,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.carne.certmgr.certs.io.CertReaders;
-import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.test.certs.TestCerts;
 
 /**
@@ -47,8 +46,8 @@ public class CertReadersWritersTest {
 	 */
 	@Test
 	public void testJKSReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.simpleJKSURL())) {
-			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
+		try {
+			List<Object> certObjects = CertReaders.readURL(TestCerts.simpleJKSURL(), TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
 		} catch (IOException e) {
@@ -61,8 +60,8 @@ public class CertReadersWritersTest {
 	 */
 	@Test
 	public void testPEMReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.simplePEMURL())) {
-			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
+		try {
+			List<Object> certObjects = CertReaders.readURL(TestCerts.simplePEMURL(), TestCerts.password());
 
 			Assert.assertEquals(2, certObjects.size());
 		} catch (IOException e) {
@@ -75,8 +74,8 @@ public class CertReadersWritersTest {
 	 */
 	@Test
 	public void testPKCS12ReaderWriter() {
-		try (URLCertReaderInput input = new URLCertReaderInput(TestCerts.simplePKCS12URL())) {
-			List<Object> certObjects = CertReaders.read(input, TestCerts.password());
+		try {
+			List<Object> certObjects = CertReaders.readURL(TestCerts.simplePKCS12URL(), TestCerts.password());
 
 			Assert.assertEquals(certObjects.size(), 2);
 		} catch (IOException e) {

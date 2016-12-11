@@ -17,6 +17,7 @@
 package de.carne.certmgr.certs;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
@@ -42,53 +43,26 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 	}
 
 	@Override
-	public CRTEntry createCRTEntry(UserCertStoreEntryId id, X509Certificate crt) throws IOException {
-		return new TransientCRTEntry(crt);
-	}
-
-	private static class TransientCRTEntry implements CRTEntry {
-
-		private final X509Certificate crt;
-
-		TransientCRTEntry(X509Certificate crt) {
-			this.crt = crt;
-		}
-
-		@Override
-		public X509Certificate getCRT() throws IOException {
-			return this.crt;
-		}
-
+	public CertObjectHolder<X509Certificate> createCRT(UserCertStoreEntryId id, X509Certificate crt)
+			throws IOException {
+		return new TransientCertObjectHolder<>(crt);
 	}
 
 	@Override
-	public KeyEntry createKeyEntry(UserCertStoreEntryId id, KeyPair key, PasswordCallback password) throws IOException {
-		return new TransientKeyEntry(key);
-	}
-
-	private static class TransientKeyEntry implements KeyEntry {
-
-		private final KeyPair key;
-
-		TransientKeyEntry(KeyPair key) {
-			this.key = key;
-		}
-
-		@Override
-		public boolean isDecrypted() {
-			return true;
-		}
-
-		@Override
-		public KeyPair getKey(PasswordCallback password) throws IOException {
-			return this.key;
-		}
-
+	public SecureCertObjectHolder<KeyPair> createKey(UserCertStoreEntryId id, KeyPair key, PasswordCallback password)
+			throws IOException {
+		return new TransientCertObjectHolder<>(key);
 	}
 
 	@Override
-	public CSREntry createCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr) throws IOException {
-		return new TransientCSREntry(csr);
+	public CertObjectHolder<PKCS10CertificateRequest> createCSR(UserCertStoreEntryId id, PKCS10CertificateRequest csr)
+			throws IOException {
+		return new TransientCertObjectHolder<>(csr);
+	}
+
+	@Override
+	public CertObjectHolder<X509CRL> createCRL(UserCertStoreEntryId id, X509CRL crl) throws IOException {
+		return new TransientCertObjectHolder<>(crl);
 	}
 
 	@Override
@@ -96,37 +70,32 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 		// Nothing to do here
 	}
 
-	private static class TransientCSREntry implements CSREntry {
+	private static class TransientCertObjectHolder<T> implements SecureCertObjectHolder<T> {
 
-		private final PKCS10CertificateRequest csr;
+		private final T object;
 
-		TransientCSREntry(PKCS10CertificateRequest csr) {
-			this.csr = csr;
+		TransientCertObjectHolder(T object) {
+			this.object = object;
 		}
 
 		@Override
-		public PKCS10CertificateRequest getCSR() throws IOException {
-			return this.csr;
-		}
-
-	}
-
-	@Override
-	public CRLEntry createCRLEntry(UserCertStoreEntryId id, X509CRL crl) throws IOException {
-		return new TransientCRLEntry(crl);
-	}
-
-	private static class TransientCRLEntry implements CRLEntry {
-
-		private final X509CRL crl;
-
-		TransientCRLEntry(X509CRL crl) {
-			this.crl = crl;
+		public Path path() {
+			return null;
 		}
 
 		@Override
-		public X509CRL getCRL() throws IOException {
-			return this.crl;
+		public T get() throws IOException {
+			return this.object;
+		}
+
+		@Override
+		public boolean isSecured() {
+			return false;
+		}
+
+		@Override
+		public T get(PasswordCallback password) throws IOException {
+			return get();
 		}
 
 	}

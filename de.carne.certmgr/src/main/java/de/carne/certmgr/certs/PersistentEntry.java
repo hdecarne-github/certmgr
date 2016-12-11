@@ -16,34 +16,42 @@
  */
 package de.carne.certmgr.certs;
 
+import java.security.KeyPair;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+
 final class PersistentEntry {
 
-	private final CRTEntry crtEntry;
-	private final KeyEntry keyEntry;
-	private final CSREntry csrEntry;
-	private final CRLEntry crlEntry;
+	private final CertObjectHolder<X509Certificate> crtHolder;
+	private final SecureCertObjectHolder<KeyPair> keyHolder;
+	private final CertObjectHolder<PKCS10CertificateRequest> csrHolder;
+	private final CertObjectHolder<X509CRL> crlHolder;
 
-	PersistentEntry(PersistentEntry base, CRTEntry crtEntry, KeyEntry keyEntry, CSREntry csrEntry, CRLEntry crlEntry) {
-		this.crtEntry = (crtEntry != null ? crtEntry : (base != null ? base.crtEntry : null));
-		this.keyEntry = (keyEntry != null ? keyEntry : (base != null ? base.keyEntry : null));
-		this.csrEntry = (csrEntry != null ? csrEntry : (base != null ? base.csrEntry : null));
-		this.crlEntry = (crlEntry != null ? crlEntry : (base != null ? base.crlEntry : null));
+	PersistentEntry(PersistentEntry base, CertObjectHolder<X509Certificate> crtHolder,
+			SecureCertObjectHolder<KeyPair> keyHolder, CertObjectHolder<PKCS10CertificateRequest> csrHolder,
+			CertObjectHolder<X509CRL> crlHolder) {
+		this.crtHolder = (crtHolder != null ? crtHolder : (base != null ? base.crtHolder : null));
+		this.keyHolder = (keyHolder != null ? keyHolder : (base != null ? base.keyHolder : null));
+		this.csrHolder = (csrHolder != null ? csrHolder : (base != null ? base.csrHolder : null));
+		this.crlHolder = (crlHolder != null ? crlHolder : (base != null ? base.crlHolder : null));
 	}
 
-	public CRTEntry crtEntry() {
-		return this.crtEntry;
+	public CertObjectHolder<X509Certificate> crt() {
+		return this.crtHolder;
 	}
 
-	public KeyEntry keyEntry() {
-		return this.keyEntry;
+	public SecureCertObjectHolder<KeyPair> key() {
+		return this.keyHolder;
 	}
 
-	public CSREntry csrEntry() {
-		return this.csrEntry;
+	public CertObjectHolder<PKCS10CertificateRequest> csr() {
+		return this.csrHolder;
 	}
 
-	public CRLEntry crlEntry() {
-		return this.crlEntry;
+	public CertObjectHolder<X509CRL> crl() {
+		return this.crlHolder;
 	}
 
 }

@@ -45,14 +45,16 @@ abstract class UserCertStoreHandler {
 
 	public abstract UserCertStoreEntryId nextEntryId(String aliasHint);
 
-	public abstract CRTEntry createCRTEntry(UserCertStoreEntryId id, X509Certificate crt) throws IOException;
-
-	public abstract KeyEntry createKeyEntry(UserCertStoreEntryId id, KeyPair key, PasswordCallback password)
+	public abstract CertObjectHolder<X509Certificate> createCRT(UserCertStoreEntryId id, X509Certificate crt)
 			throws IOException;
 
-	public abstract CSREntry createCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr) throws IOException;
+	public abstract SecureCertObjectHolder<KeyPair> createKey(UserCertStoreEntryId id, KeyPair key,
+			PasswordCallback newPassword) throws IOException;
 
-	public abstract CRLEntry createCRLEntry(UserCertStoreEntryId id, X509CRL crl) throws IOException;
+	public abstract CertObjectHolder<PKCS10CertificateRequest> createCSR(UserCertStoreEntryId id,
+			PKCS10CertificateRequest csr) throws IOException;
+
+	public abstract CertObjectHolder<X509CRL> createCRL(UserCertStoreEntryId id, X509CRL crl) throws IOException;
 
 	public abstract void deleteEntry(UserCertStoreEntryId id) throws IOException;
 

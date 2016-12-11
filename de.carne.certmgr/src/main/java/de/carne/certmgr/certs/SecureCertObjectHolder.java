@@ -17,28 +17,11 @@
 package de.carne.certmgr.certs;
 
 import java.io.IOException;
-import java.security.KeyPair;
 
-/**
- * Interface used to provide Key access in a general manner.
- */
-interface KeyEntry {
+interface SecureCertObjectHolder<T> extends CertObjectHolder<T> {
 
-	/**
-	 * Check whether the Key object is decrypted.
-	 *
-	 * @return {@code true} if the Key object is decrypted.
-	 */
-	boolean isDecrypted();
+	boolean isSecured();
 
-	/**
-	 * Get the Key object.
-	 *
-	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The Key object.
-	 * @throws PasswordRequiredException if no valid password was given.
-	 * @throws IOException if an I/O error occurs.
-	 */
-	KeyPair getKey(PasswordCallback password) throws IOException;
+	T get(PasswordCallback password) throws IOException;
 
 }

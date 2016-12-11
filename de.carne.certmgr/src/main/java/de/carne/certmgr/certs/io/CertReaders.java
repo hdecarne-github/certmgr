@@ -17,9 +17,16 @@
 package de.carne.certmgr.certs.io;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.net.URL;
 import java.nio.file.FileSystems;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -43,39 +50,86 @@ public final class CertReaders {
 	public static final ProviderMap<CertReader> REGISTERED = new ProviderMap<>(CertReader.class);
 
 	/**
-	 * Read all available certificate objects.
+	 * Read all available certificate objects from a file.
 	 * <p>
 	 * All registered {@link CertReader}s are considered for reading certificate
-	 * object until one recognizes the input.
+	 * object until one recognizes the file data.
 	 *
-	 * @param input The input to read from.
+	 * @param file The file to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if the
-	 *         input is not recognized.
-	 * @throws IOException if an I/O error occurs while reading.
+	 * @return The list of read certificate objects, or {@code null} if no
+	 *         certificate data was recognized.
+	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
-	public static List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
-		Path inputFileName = input.fileName();
-		Deque<CertReader> readers = new ArrayDeque<>();
+	public static List<Object> readFile(Path file, PasswordCallback password) throws IOException {
+		assert file != null;
+		assert password != null;
 
-		if (inputFileName != null) {
-			for (CertReader reader : REGISTERED.providers()) {
-				if (matchFileName(reader, inputFileName)) {
-					readers.addFirst(reader);
-				} else {
-					readers.addLast(reader);
-				}
+		Deque<CertReader> certReaders = new ArrayDeque<>();
+
+		for (CertReader reader : REGISTERED.providers()) {
+			if (matchFileName(reader, file)) {
+				certReaders.addFirst(reader);
+			} else {
+				certReaders.addLast(reader);
 			}
-		} else {
-			readers.addAll(REGISTERED.providers());
 		}
 
 		List<Object> certObjects = null;
 
-		for (CertReader reader : readers) {
-			certObjects = reader.read(input, password);
-			if (certObjects != null) {
-				break;
+		for (CertReader reader : certReaders) {
+			try (IOResource<InputStream> in = IOResource.newInputStream(file.toString(), file,
+					StandardOpenOption.READ)) {
+				certObjects = reader.readBinary(in, password);
+				if (certObjects != null) {
+					break;
+				}
+			}
+		}
+		return certObjects;
+	}
+
+	/**
+	 * Read all available certificate objects from an {@link URL}.
+	 * <p>
+	 * All registered {@link CertReader}s are considered for reading certificate
+	 * object until one recognizes the file data.
+	 *
+	 * @param url The URL to read from.
+	 * @param password The callback to use for querying passwords (if needed).
+	 * @return The list of read certificate objects, or {@code null} if no
+	 *         certificate data was recognized.
+	 * @throws IOException if an I/O error occurs during reading/decoding.
+	 */
+	public static List<Object> readURL(URL url, PasswordCallback password) throws IOException {
+		assert url != null;
+		assert password != null;
+
+		Deque<CertReader> certReaders = new ArrayDeque<>();
+		Path file;
+
+		try {
+			file = Paths.get(url.getPath());
+		} catch (InvalidPathException e) {
+			throw new IOException(e.getLocalizedMessage(), e);
+		}
+
+		for (CertReader reader : REGISTERED.providers()) {
+			if (matchFileName(reader, file)) {
+				certReaders.addFirst(reader);
+			} else {
+				certReaders.addLast(reader);
+			}
+		}
+
+		List<Object> certObjects = null;
+
+		for (CertReader reader : certReaders) {
+			try (IOResource<InputStream> in = new IOResource<>(url.openStream(), file.toString())) {
+				certObjects = reader.readBinary(in, password);
+				if (certObjects != null) {
+					break;
+				}
 			}
 		}
 		return certObjects;
@@ -93,6 +147,36 @@ public final class CertReaders {
 			}
 		}
 		return matches;
+	}
+
+	/**
+	 * Read all available certificate objects from string data.
+	 * <p>
+	 * All registered {@link CertReader}s are considered for reading certificate
+	 * object until one recognizes the input.
+	 *
+	 * @param data The string data to read from.
+	 * @param resource The name of the resource providing the data.
+	 * @param password The callback to use for querying passwords (if needed).
+	 * @return The list of read certificate objects, or {@code null} if no
+	 *         certificate data was recognized.
+	 * @throws IOException if an I/O error occurs during reading/decoding.
+	 */
+	public static List<Object> readString(String data, String resource, PasswordCallback password) throws IOException {
+		assert data != null;
+		assert password != null;
+
+		List<Object> certObjects = null;
+
+		for (CertReader reader : REGISTERED.providers()) {
+			try (IOResource<Reader> in = new IOResource<>(new StringReader(data), resource)) {
+				certObjects = reader.readString(in, password);
+				if (certObjects != null) {
+					break;
+				}
+			}
+		}
+		return certObjects;
 	}
 
 }

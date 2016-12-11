@@ -18,9 +18,7 @@ package de.carne.certmgr.certs.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +46,7 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
+import de.carne.certmgr.certs.NoPassword;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
@@ -73,15 +72,15 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	private static final String PEM_ENCRYPTION = PropertiesHelper.get(PEMCertReaderWriter.class, "encryption",
 			"AES-128-CBC");
 
-	private final JcaX509CertificateConverter crtConverter = new JcaX509CertificateConverter();
+	private static final JcePEMDecryptorProviderBuilder PEM_DECRYPTOR_BUILDER = new JcePEMDecryptorProviderBuilder();
 
-	private final JcaPEMKeyConverter keyConverter = new JcaPEMKeyConverter();
+	private static final JcePEMEncryptorBuilder PEM_ENCRYPTOR_BUILDER = new JcePEMEncryptorBuilder(PEM_ENCRYPTION);
 
-	private final JcePEMDecryptorProviderBuilder pemDecryptorBuilder = new JcePEMDecryptorProviderBuilder();
+	private static final JcaX509CertificateConverter CRT_CONVERTER = new JcaX509CertificateConverter();
 
-	private final JcePEMEncryptorBuilder pemEncryptorBuilder = new JcePEMEncryptorBuilder(PEM_ENCRYPTION);
+	private static final JcaPEMKeyConverter KEY_CONVERTER = new JcaPEMKeyConverter();
 
-	private final JcaX509CRLConverter crlConverter = new JcaX509CRLConverter();
+	private static final JcaX509CRLConverter CRL_CONVERTER = new JcaX509CRLConverter();
 
 	@Override
 	public String providerName() {
@@ -99,11 +98,17 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
-	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
-		assert input != null;
+	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+		assert in != null;
 
-		return read(input.reader(StandardCharsets.US_ASCII), input.toString(), password);
+		return readObjectsBinary(in, password);
+	}
+
+	@Override
+	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+		assert in != null;
+
+		return readObjectsString(in, password);
 	}
 
 	@Override
@@ -122,40 +127,40 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(OutputStream out, List<Object> certObjects, String resource)
+	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
-		try (Writer outWriter = new OutputStreamWriter(out, StandardCharsets.US_ASCII)) {
-			writeString(outWriter, certObjects, resource);
+		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
+			writeString(outWriter, certObjects);
 		}
 	}
 
 	@Override
-	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, String resource,
+	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
-		try (Writer outWriter = new OutputStreamWriter(out, StandardCharsets.US_ASCII)) {
-			writeEncryptedString(outWriter, certObjects, resource, newPassword);
+		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
+			writeEncryptedString(outWriter, certObjects, newPassword);
 		}
 	}
 
 	@Override
-	public void writeString(Writer out, List<Object> certObjects, String resource)
+	public void writeString(IOResource<Writer> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
-		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out)) {
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
 			for (Object certObject : prepareWriteObjects(certObjects)) {
-				writeObject(pemWriter, certObject, resource);
+				writeObject(pemWriter, out.resource(), certObject);
 			}
 		}
 	}
 
 	@Override
-	public void writeEncryptedString(Writer out, List<Object> certObjects, String resource,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
-		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out)) {
+	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
 			for (Object certObject : prepareWriteObjects(certObjects)) {
 				if (certObject instanceof KeyPair) {
-					writeObject(pemWriter, certObject, resource, newPassword);
+					writeEncryptedObject(pemWriter, out.resource(), certObject, newPassword);
 				} else {
-					writeObject(pemWriter, certObject, resource);
+					writeObject(pemWriter, out.resource(), certObject);
 				}
 			}
 		}
@@ -163,240 +168,381 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 
 	/**
 	 * Read all available certificate objects from a PEM encoded
-	 * {@link InputStream}.
+	 * {@link InputStream} resource.
 	 *
-	 * @param input The input stream to read from.
-	 * @param resource The resource name to use for querying passwords (if
-	 *        needed).
+	 * @param in The stream resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The list of read certificate objects, or {@code null} if the
 	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
-	public List<Object> read(InputStream input, String resource, PasswordCallback password) throws IOException {
-		assert input != null;
+	public static List<Object> readObjectsBinary(IOResource<InputStream> in, PasswordCallback password)
+			throws IOException {
+		assert in != null;
 
 		List<Object> certObjects;
 
-		try (InputStreamReader reader = new InputStreamReader(input, StandardCharsets.US_ASCII)) {
-			certObjects = read(reader, resource, password);
+		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
+			certObjects = readObjectsString(inReader, password);
 		}
 		return certObjects;
 	}
 
 	/**
-	 * Read all available certificate objects from a PEM encoded {@link Reader}.
+	 * Read all available certificate objects from a PEM encoded {@link Reader}
+	 * resource.
 	 *
-	 * @param reader The reader to use for accessing the data.
-	 * @param resource The resource name to use for querying passwords (if
-	 *        needed).
+	 * @param in The reader resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The list of read certificate objects, or {@code null} if the
 	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
-	public List<Object> read(Reader reader, String resource, PasswordCallback password) throws IOException {
-		assert reader != null;
-		assert resource != null;
+	public static List<Object> readObjectsString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+		assert in != null;
 		assert password != null;
 
-		LOG.debug("Trying to read PEM objects from: ''{0}''...", resource);
+		LOG.debug("Trying to read PEM objects from: ''{0}''...", in);
 
-		List<Object> pemObjects = null;
+		List<Object> certObjects = null;
 
-		try (PEMParser parser = new PEMParser(reader)) {
+		try (PEMParser parser = new PEMParser(in.io())) {
 			Object pemObject;
 
 			try {
 				pemObject = parser.readObject();
 			} catch (IOException e) {
-				LOG.info(e, "No PEM objects recognized in: ''{0}''", resource);
+				LOG.info(e, "No PEM objects recognized in: ''{0}''", in);
 				pemObject = null;
 			}
 			while (pemObject != null) {
-				if (pemObjects == null) {
-					pemObjects = new ArrayList<>();
+				if (certObjects == null) {
+					certObjects = new ArrayList<>();
 				}
 
 				LOG.info("Decoding PEM object of type {0}", pemObject.getClass().getName());
 
 				if (pemObject instanceof X509CertificateHolder) {
-					pemObjects.add(getCRT((X509CertificateHolder) pemObject));
+					certObjects.add(convertCRT((X509CertificateHolder) pemObject));
 				} else if (pemObject instanceof PEMKeyPair) {
-					pemObjects.add(getKey((PEMKeyPair) pemObject));
+					certObjects.add(convertKey((PEMKeyPair) pemObject));
 				} else if (pemObject instanceof PEMEncryptedKeyPair) {
-					pemObjects.add(getKey((PEMEncryptedKeyPair) pemObject, resource, password));
+					certObjects.add(convertKey((PEMEncryptedKeyPair) pemObject, in.resource(), password));
 				} else if (pemObject instanceof PKCS10CertificationRequest) {
-					pemObjects.add(getCSR((PKCS10CertificationRequest) pemObject));
+					certObjects.add(convertCSR((PKCS10CertificationRequest) pemObject));
 				} else if (pemObject instanceof X509CRLHolder) {
-					pemObjects.add(getCRL((X509CRLHolder) pemObject));
+					certObjects.add(convertCRL((X509CRLHolder) pemObject));
 				} else {
 					LOG.warning("Ignoring unrecognized PEM object of type {0}", pemObject.getClass().getName());
 				}
 				pemObject = parser.readObject();
 			}
 		}
-		return pemObjects;
+		return certObjects;
 	}
 
 	/**
-	 * Write CRT object.
+	 * Read a single CRT object from a PEM encoded {@link InputStream} resource.
 	 *
-	 * @param output The output stream to write to.
-	 * @param crt The CRT object to write.
-	 * @param resource The resource written to.
-	 * @throws IOException if an I/O error occurs during encoding/writing.
+	 * @param in The stream resource to read from.
+	 * @return The read CRT object.
+	 * @throws IOException if no CRT object can be read.
 	 */
-	public void write(OutputStream output, X509Certificate crt, String resource) throws IOException {
-		assert output != null;
+	public static X509Certificate readCRTBinary(IOResource<InputStream> in) throws IOException {
+		assert in != null;
 
-		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
-			write(writer, crt, resource);
+		X509Certificate crtObject;
+
+		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
+			crtObject = readCRTString(inReader);
 		}
+		return crtObject;
 	}
 
 	/**
-	 * Write CRT object.
+	 * Read a single CRT object from a PEM encoded {@link Reader} resource.
 	 *
-	 * @param writer The writer to use.
-	 * @param crt The CRT object to write.
-	 * @param resource The resource written to.
-	 * @throws IOException if an I/O error occurs during encoding/writing.
+	 * @param in The reader resource to read from.
+	 * @return The read CRT object.
+	 * @throws IOException if no CRT object can be read.
 	 */
-	public void write(Writer writer, X509Certificate crt, String resource) throws IOException {
-		assert writer != null;
-		assert crt != null;
-		assert resource != null;
+	public static X509Certificate readCRTString(IOResource<Reader> in) throws IOException {
+		assert in != null;
 
-		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
-			writeObject(pemWriter, crt, resource);
-		}
+		return readObjectString(X509Certificate.class, in, NoPassword.getInstance());
 	}
 
 	/**
-	 * Write Key object.
+	 * Read a single Key object from a PEM encoded {@link InputStream} resource.
 	 *
-	 * @param output The output stream to write to.
-	 * @param key The Key object to write.
-	 * @param resource The resource written to.
-	 * @param password The callback to use for querying the needed password.
-	 * @throws IOException if an I/O error occurs during encoding/writing.
+	 * @param in The stream resource to read from.
+	 * @param password The callback to use for querying the key password.
+	 * @return The read Key object.
+	 * @throws IOException if no Key object can be read.
 	 */
-	public void write(OutputStream output, KeyPair key, String resource, PasswordCallback password) throws IOException {
-		assert output != null;
-
-		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
-			write(writer, key, resource, password);
-		}
-	}
-
-	/**
-	 * Write Key object.
-	 *
-	 * @param writer The writer to use.
-	 * @param key The Key object to write.
-	 * @param resource The resource written to.
-	 * @param password The callback to use for querying the needed password.
-	 * @throws IOException if an I/O error occurs during encoding/writing.
-	 */
-	public void write(Writer writer, KeyPair key, String resource, PasswordCallback password) throws IOException {
-		assert writer != null;
-		assert key != null;
-		assert resource != null;
+	public static KeyPair readKeyBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+		assert in != null;
 		assert password != null;
 
-		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
-			writeObject(pemWriter, key, resource, password);
+		KeyPair keyObject;
+
+		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
+			keyObject = readKeyString(inReader, password);
+		}
+		return keyObject;
+	}
+
+	/**
+	 * Read a single Key object from a PEM encoded {@link Reader} resource.
+	 *
+	 * @param in The reader resource to read from.
+	 * @param password The callback to use for querying the key password.
+	 * @return The read Key object.
+	 * @throws IOException if no Key object can be read.
+	 */
+	public static KeyPair readKeyString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+		assert in != null;
+		assert password != null;
+
+		return readObjectString(KeyPair.class, in, password);
+	}
+
+	/**
+	 * Read a single CSR object from a PEM encoded {@link InputStream} resource.
+	 *
+	 * @param in The stream resource to read from.
+	 * @return The read CSR object.
+	 * @throws IOException if no CSR object can be read.
+	 */
+	public static PKCS10CertificateRequest readCSRBinary(IOResource<InputStream> in) throws IOException {
+		assert in != null;
+
+		PKCS10CertificateRequest csrObject;
+
+		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
+			csrObject = readCSRString(inReader);
+		}
+		return csrObject;
+	}
+
+	/**
+	 * Read a single CSR object from a PEM encoded {@link Reader} resource.
+	 *
+	 * @param in The reader resource to read from.
+	 * @return The read CSR object.
+	 * @throws IOException if no CSR object can be read.
+	 */
+	public static PKCS10CertificateRequest readCSRString(IOResource<Reader> in) throws IOException {
+		assert in != null;
+
+		return readObjectString(PKCS10CertificateRequest.class, in, NoPassword.getInstance());
+	}
+
+	/**
+	 * Read a single CRL object from a PEM encoded {@link InputStream} resource.
+	 *
+	 * @param in The stream resource to read from.
+	 * @return The read CRL object.
+	 * @throws IOException if no CRL object can be read.
+	 */
+	public static X509CRL readCRLBinary(IOResource<InputStream> in) throws IOException {
+		assert in != null;
+
+		X509CRL crlObject;
+
+		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
+			crlObject = readCRLString(inReader);
+		}
+		return crlObject;
+	}
+
+	/**
+	 * Read a single CRL object from a PEM encoded {@link Reader} resource.
+	 *
+	 * @param in The reader resource to read from.
+	 * @return The read CRL object.
+	 * @throws IOException if no CRL object can be read.
+	 */
+	public static X509CRL readCRLString(IOResource<Reader> in) throws IOException {
+		assert in != null;
+
+		return readObjectString(X509CRL.class, in, NoPassword.getInstance());
+	}
+
+	private static <T> T readObjectString(Class<T> type, IOResource<Reader> in, PasswordCallback password)
+			throws IOException {
+		List<Object> certObjects = readObjectsString(in, password);
+		int certObjectsCount = (certObjects != null ? certObjects.size() : 0);
+
+		if (certObjectsCount != 1) {
+			throw new IOException(certObjectsCount + " objects read from '" + in.resource() + "' (expected 1)");
+		}
+
+		assert certObjects != null;
+
+		Object certObject = certObjects.get(0);
+
+		if (!type.isInstance(certObject)) {
+			throw new IOException(certObject.getClass().getName() + " read (expected " + type.getName() + ")");
+		}
+		return type.cast(certObject);
+	}
+
+	/**
+	 * Write a single CRT object to a {@link OutputStream} resource.
+	 *
+	 * @param out The stream resource to to write to.
+	 * @param crt The CRT object to write.
+	 * @throws IOException if an I/O error occurs during encoding/writing.
+	 */
+	public static void writeCRTBinary(IOResource<OutputStream> out, X509Certificate crt) throws IOException {
+		assert out != null;
+		assert crt != null;
+
+		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
+			writeCRTString(outWriter, crt);
 		}
 	}
 
 	/**
-	 * Write CSR object.
+	 * Write a single CRT object to a {@link Writer} resource.
 	 *
-	 * @param output The output stream to write to.
-	 * @param csr The CSR object to write.
-	 * @param resource The resource written to.
+	 * @param out The writer resource to write to.
+	 * @param crt The CRT object to write.
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
-	public void write(OutputStream output, PKCS10CertificateRequest csr, String resource) throws IOException {
-		assert output != null;
+	public static void writeCRTString(IOResource<Writer> out, X509Certificate crt) throws IOException {
+		assert out != null;
+		assert crt != null;
 
-		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
-			write(writer, csr, resource);
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
+			writeObject(pemWriter, out.resource(), crt);
 		}
 	}
 
 	/**
-	 * Write CSR object.
+	 * Write a single Key object to a {@link OutputStream} resource.
 	 *
-	 * @param writer The writer to use.
-	 * @param csr The CSR object to write.
-	 * @param resource The resource written to.
+	 * @param out The stream resource to to write to.
+	 * @param key The Key object to write.
+	 * @param newPassword The callback to use for querying the encryption
+	 *        password.
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
-	public void write(Writer writer, PKCS10CertificateRequest csr, String resource) throws IOException {
-		assert writer != null;
+	public static void writeKeyBinary(IOResource<OutputStream> out, KeyPair key, PasswordCallback newPassword)
+			throws IOException {
+		assert out != null;
+		assert key != null;
+		assert newPassword != null;
+
+		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
+			writeKeyString(outWriter, key, newPassword);
+		}
+	}
+
+	/**
+	 * Write a single Key object to a {@link Writer} resource.
+	 *
+	 * @param out The writer resource to to write to.
+	 * @param key The Key object to write.
+	 * @param newPassword The callback to use for querying the encryption
+	 *        password.
+	 * @throws IOException if an I/O error occurs during encoding/writing.
+	 */
+	public static void writeKeyString(IOResource<Writer> out, KeyPair key, PasswordCallback newPassword)
+			throws IOException {
+		assert out != null;
+		assert key != null;
+		assert newPassword != null;
+
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
+			writeEncryptedObject(pemWriter, out.resource(), key, newPassword);
+		}
+	}
+
+	/**
+	 * Write a single CSR object to a {@link OutputStream} resource.
+	 *
+	 * @param out The stream resource to to write to.
+	 * @param csr The CSR object to write.
+	 * @throws IOException if an I/O error occurs during encoding/writing.
+	 */
+	public static void writeCSRBinary(IOResource<OutputStream> out, PKCS10CertificateRequest csr) throws IOException {
+		assert out != null;
 		assert csr != null;
-		assert resource != null;
 
-		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
-			writeObject(pemWriter, csr.toPKCS10(), resource);
+		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
+			writeCSRString(outWriter, csr);
 		}
 	}
 
 	/**
-	 * Write CRL object.
+	 * Write a single CSR object to a {@link Writer} resource.
 	 *
-	 * @param output The output stream to write to.
-	 * @param crl The CRL object to write.
-	 * @param resource The resource written to.
+	 * @param out The writer resource to write to.
+	 * @param csr The CSR object to write.
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
-	public void write(OutputStream output, X509CRL crl, String resource) throws IOException {
-		assert output != null;
+	public static void writeCSRString(IOResource<Writer> out, PKCS10CertificateRequest csr) throws IOException {
+		assert out != null;
+		assert csr != null;
 
-		try (OutputStreamWriter writer = new OutputStreamWriter(output, StandardCharsets.US_ASCII)) {
-			write(writer, crl, resource);
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
+			writeObject(pemWriter, out.resource(), csr.toPKCS10());
 		}
 	}
 
 	/**
-	 * Write CRL object.
+	 * Write a single CRL object to a {@link OutputStream} resource.
 	 *
-	 * @param writer The writer to use.
+	 * @param out The stream resource to to write to.
 	 * @param crl The CRL object to write.
-	 * @param resource The resource written to.
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
-	public void write(Writer writer, X509CRL crl, String resource) throws IOException {
-		assert writer != null;
+	public static void writeCRLBinary(IOResource<OutputStream> out, X509CRL crl) throws IOException {
+		assert out != null;
 		assert crl != null;
-		assert resource != null;
 
-		try (JcaPEMWriter pemWriter = new JcaPEMWriter(writer)) {
-			writeObject(pemWriter, crl, resource);
+		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
+			writeCRLString(outWriter, crl);
 		}
 	}
 
-	private void writeObject(JcaPEMWriter writer, Object object, String resource) throws IOException {
-		LOG.debug("Writing PEM object ''{0}'' to: ''{1}''...", object.getClass().getName(), resource);
+	/**
+	 * Write a single CRL object to a {@link Writer} resource.
+	 *
+	 * @param out The writer resource to write to.
+	 * @param crl The CRL object to write.
+	 * @throws IOException if an I/O error occurs during encoding/writing.
+	 */
+	public static void writeCRLString(IOResource<Writer> out, X509CRL crl) throws IOException {
+		assert out != null;
+		assert crl != null;
+
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
+			writeObject(pemWriter, out.resource(), crl);
+		}
+	}
+
+	private static void writeObject(JcaPEMWriter writer, String resource, Object object) throws IOException {
+		LOG.debug("Writing PEM object ''{0}'' to resource ''{1}''...", object.getClass().getName(), resource);
 
 		writer.writeObject(object);
 	}
 
-	private void writeObject(JcaPEMWriter writer, Object object, String resource, PasswordCallback password)
-			throws IOException {
-		LOG.debug("Writing encrypted PEM object ''{0}'' to: ''{1}''...", object.getClass().getName(), resource);
+	private static void writeEncryptedObject(JcaPEMWriter writer, String resource, Object object,
+			PasswordCallback password) throws IOException {
+		LOG.debug("Writing encrypted PEM object ''{0}'' to resource ''{1}''...", object.getClass().getName(), resource);
 
 		char[] passwordChars = password.queryPassword(resource);
 
 		if (passwordChars == null) {
 			throw new PasswordRequiredException(resource);
 		}
-		writer.writeObject(object, this.pemEncryptorBuilder.build(passwordChars));
+		writer.writeObject(object, PEM_ENCRYPTOR_BUILDER.build(passwordChars));
 	}
 
-	private List<Object> prepareWriteObjects(List<Object> objects) throws IOException {
+	private static List<Object> prepareWriteObjects(List<Object> objects) throws IOException {
 		List<X509Certificate> crts = new ArrayList<>(objects.size());
 		List<KeyPair> keys = new ArrayList<>(objects.size());
 		List<PKCS10CertificationRequest> csrs = new ArrayList<>(objects.size());
@@ -434,22 +580,22 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		return preparedObjects;
 	}
 
-	private X509Certificate getCRT(X509CertificateHolder pemObject) throws IOException {
+	private static X509Certificate convertCRT(X509CertificateHolder pemObject) throws IOException {
 		X509Certificate crt;
 
 		try {
-			crt = this.crtConverter.getCertificate(pemObject);
+			crt = CRT_CONVERTER.getCertificate(pemObject);
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
 		return crt;
 	}
 
-	private KeyPair getKey(PEMKeyPair pemObject) throws IOException {
-		return this.keyConverter.getKeyPair(pemObject);
+	private static KeyPair convertKey(PEMKeyPair pemObject) throws IOException {
+		return KEY_CONVERTER.getKeyPair(pemObject);
 	}
 
-	private KeyPair getKey(PEMEncryptedKeyPair pemObject, String resource, PasswordCallback password)
+	private static KeyPair convertKey(PEMEncryptedKeyPair pemObject, String resource, PasswordCallback password)
 			throws IOException {
 		PEMKeyPair pemKeyPair = null;
 		char[] passwordChars = password.queryPassword(resource);
@@ -460,7 +606,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 				throw new PasswordRequiredException(resource, passwordException);
 			}
 
-			PEMDecryptorProvider pemDecryptorProvider = this.pemDecryptorBuilder.build(passwordChars);
+			PEMDecryptorProvider pemDecryptorProvider = PEM_DECRYPTOR_BUILDER.build(passwordChars);
 
 			try {
 				pemKeyPair = pemObject.decryptKeyPair(pemDecryptorProvider);
@@ -471,18 +617,18 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 				passwordChars = password.requeryPassword(resource, passwordException);
 			}
 		}
-		return getKey(pemKeyPair);
+		return convertKey(pemKeyPair);
 	}
 
-	private PKCS10CertificateRequest getCSR(PKCS10CertificationRequest pemObject) throws IOException {
+	private static PKCS10CertificateRequest convertCSR(PKCS10CertificationRequest pemObject) throws IOException {
 		return PKCS10CertificateRequest.fromPKCS10(pemObject);
 	}
 
-	private X509CRL getCRL(X509CRLHolder pemObject) throws IOException {
+	private static X509CRL convertCRL(X509CRLHolder pemObject) throws IOException {
 		X509CRL crl;
 
 		try {
-			crl = this.crlConverter.getCRL(pemObject);
+			crl = CRL_CONVERTER.getCRL(pemObject);
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}

@@ -16,21 +16,10 @@
  */
 package de.carne.certmgr.certs;
 
-import java.io.IOException;
+import java.nio.file.Path;
 
-import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+interface CertObject {
 
-/**
- * Interface used to provide CSR access in a general manner.
- */
-interface CSREntry {
-
-	/**
-	 * Get the CSR object.
-	 *
-	 * @return The CSR object.
-	 * @throws IOException if an I/O error occurs.
-	 */
-	PKCS10CertificateRequest getCSR() throws IOException;
+	Path path();
 
 }

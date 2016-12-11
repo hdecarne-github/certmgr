@@ -19,6 +19,7 @@ package de.carne.certmgr.certs.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -67,16 +68,20 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
-	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
-		LOG.debug("Trying to read DER objects from: ''{0}''...", input);
+	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+		LOG.debug("Trying to read DER objects from: ''{0}''...", in);
 
-		List<Object> certObjects = parseObjects(input, "CRL", BouncyCastleProvider.PROVIDER_NAME);
+		List<Object> certObjects = parseObjects(in, "CRL", BouncyCastleProvider.PROVIDER_NAME);
 
 		if (certObjects == null) {
-			certObjects = parseObjects(input, "CERTIFICATE", BouncyCastleProvider.PROVIDER_NAME);
+			certObjects = parseObjects(in, "CERTIFICATE", BouncyCastleProvider.PROVIDER_NAME);
 		}
 		return certObjects;
+	}
+
+	@Override
+	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+		return null;
 	}
 
 	@Override
@@ -95,45 +100,44 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(OutputStream out, List<Object> certObjects, String resource)
+	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, String resource,
+	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeString(Writer out, List<Object> certObjects, String resource)
+	public void writeString(IOResource<Writer> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedString(Writer out, List<Object> certObjects, String resource,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
-	private List<Object> parseObjects(CertReaderInput input, String type, String provider) throws IOException {
+	private static List<Object> parseObjects(IOResource<InputStream> in, String type, String provider)
+			throws IOException {
 		List<Object> certObjects = null;
 
-		try (InputStream stream = input.stream()) {
-			if (stream != null) {
-				X509StreamParser parser = X509StreamParser.getInstance(type, provider);
+		try {
+			X509StreamParser parser = X509StreamParser.getInstance(type, provider);
 
-				parser.init(stream);
+			parser.init(in.io());
 
-				Collection<Object> parsedObjects = parser.readAll();
+			Collection<Object> parsedObjects = parser.readAll();
 
-				if (parsedObjects != null && !parsedObjects.isEmpty()) {
-					certObjects = new ArrayList<>(parsedObjects);
-				}
+			if (parsedObjects != null && !parsedObjects.isEmpty()) {
+				certObjects = new ArrayList<>(parsedObjects);
 			}
 		} catch (StreamParsingException e) {
 			Exceptions.ignore(e);

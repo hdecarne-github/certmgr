@@ -19,6 +19,7 @@ package de.carne.certmgr.certs.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.security.GeneralSecurityException;
 import java.security.Key;
@@ -73,21 +74,18 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
-	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
-		assert input != null;
+	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+		assert in != null;
 		assert password != null;
 
-		LOG.debug("Trying to read KeyStore objects from file: ''{0}''...", input);
+		LOG.debug("Trying to read KeyStore objects from file: ''{0}''...", in);
 
-		List<Object> keyStoreObjects = null;
+		return readKeyStore(INPUT_KEYSTORE_TYPE, in.io(), in.resource(), password);
+	}
 
-		try (InputStream inputStream = input.stream()) {
-			if (inputStream != null) {
-				keyStoreObjects = readKeyStore(INPUT_KEYSTORE_TYPE, inputStream, input.toString(), password);
-			}
-		}
-		return keyStoreObjects;
+	@Override
+	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+		return null;
 	}
 
 	@Override
@@ -106,28 +104,28 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(OutputStream out, List<Object> certObjects, String resource)
+	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, String resource,
+	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeString(Writer out, List<Object> certObjects, String resource)
+	public void writeString(IOResource<Writer> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedString(Writer out, List<Object> certObjects, String resource,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -148,12 +146,11 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 		LOG.debug("Trying to read KeyStore objects from platform store: ''{0}''...", platformKeyStore);
 
-		return readKeyStore(platformKeyStore.algorithm(), null, platformKeyStore.toString(), password);
+		return readKeyStore(platformKeyStore.algorithm(), null, platformKeyStore.algorithm(), password);
 	}
 
-	@Nullable
-	private static List<Object> readKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
-			PasswordCallback password) throws IOException {
+	private static @Nullable List<Object> readKeyStore(String keyStoreType, @Nullable InputStream inputStream,
+			String resource, PasswordCallback password) throws IOException {
 		List<Object> keyStoreObjects = null;
 		KeyStore keyStore = null;
 

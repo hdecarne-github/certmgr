@@ -19,6 +19,7 @@ package de.carne.certmgr.certs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.SoftReference;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,6 +36,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.io.PEMCertReaderWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.nio.FileAttributes;
@@ -72,8 +76,6 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	static final String EXTENSION_KEY = ".key";
 	static final String EXTENSION_CSR = ".csr";
 	static final String EXTENSION_CRL = ".crl";
-
-	final static PEMCertReaderWriter PEM_IO = new PEMCertReaderWriter();
 
 	private int nextId = 1;
 
@@ -113,51 +115,54 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	}
 
 	@Override
-	public CRTEntry createCRTEntry(UserCertStoreEntryId id, X509Certificate crt) throws IOException {
-		Path entryPath = entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT);
+	public CertObjectHolder<X509Certificate> createCRT(UserCertStoreEntryId id, X509Certificate crt)
+			throws IOException {
+		Path crtPath = entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT);
 
-		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
-				StandardOpenOption.TRUNCATE_EXISTING)) {
-			PEM_IO.write(output, crt, id.getAlias());
+		Files.createDirectories(crtPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), crtPath,
+				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+			PEMCertReaderWriter.writeCRTBinary(out, crt);
 		}
-		return new PersistentCRTEntry(id, crt, Files.getLastModifiedTime(entryPath));
+		return new PersistentCRTEntry(id, crt, Files.getLastModifiedTime(crtPath));
 	}
 
 	@Override
-	public KeyEntry createKeyEntry(UserCertStoreEntryId id, KeyPair key, PasswordCallback password) throws IOException {
-		Path entryPath = entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY);
+	public SecureCertObjectHolder<KeyPair> createKey(UserCertStoreEntryId id, KeyPair key, PasswordCallback newPassword)
+			throws IOException {
+		Path keyPath = entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY);
 
-		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
-				StandardOpenOption.TRUNCATE_EXISTING)) {
-			PEM_IO.write(output, key, id.getAlias(), password);
+		Files.createDirectories(keyPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), keyPath,
+				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+			PEMCertReaderWriter.writeKeyBinary(out, key, newPassword);
 		}
-		return new PersistentKeyEntry(id, key, Files.getLastModifiedTime(entryPath));
+		return new PersistentKeyEntry(id);
 	}
 
 	@Override
-	public CSREntry createCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr) throws IOException {
-		Path entryPath = entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR);
+	public CertObjectHolder<PKCS10CertificateRequest> createCSR(UserCertStoreEntryId id, PKCS10CertificateRequest csr)
+			throws IOException {
+		Path csrPath = entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR);
 
-		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
-				StandardOpenOption.TRUNCATE_EXISTING)) {
-			PEM_IO.write(output, csr, id.getAlias());
+		Files.createDirectories(csrPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), csrPath,
+				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+			PEMCertReaderWriter.writeCSRBinary(out, csr);
 		}
-		return new PersistentCSREntry(id, csr, Files.getLastModifiedTime(entryPath));
+		return new PersistentCSREntry(id, csr, Files.getLastModifiedTime(csrPath));
 	}
 
 	@Override
-	public CRLEntry createCRLEntry(UserCertStoreEntryId id, X509CRL crl) throws IOException {
-		Path entryPath = entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL);
+	public CertObjectHolder<X509CRL> createCRL(UserCertStoreEntryId id, X509CRL crl) throws IOException {
+		Path crlPath = entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL);
 
-		Files.createDirectories(entryPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (OutputStream output = Files.newOutputStream(entryPath, StandardOpenOption.CREATE,
-				StandardOpenOption.TRUNCATE_EXISTING)) {
-			PEM_IO.write(output, crl, id.getAlias());
+		Files.createDirectories(crlPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), crlPath,
+				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+			PEMCertReaderWriter.writeCRLBinary(out, crl);
 		}
-		return new PersistentCRLEntry(id, crl, Files.getLastModifiedTime(entryPath));
+		return new PersistentCRLEntry(id, crl, Files.getLastModifiedTime(crlPath));
 	}
 
 	@Override
@@ -194,19 +199,19 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		return new UserCertStoreEntryId(0, (extIndex > 0 ? fileName.substring(0, extIndex) : fileName));
 	}
 
-	CRTEntry toCRTEntry(UserCertStoreEntryId id, Path crtPath) {
+	CertObjectHolder<X509Certificate> toCRT(UserCertStoreEntryId id, Path crtPath) {
 		return (crtPath != null ? new PersistentCRTEntry(id) : null);
 	}
 
-	KeyEntry toKeyEntry(UserCertStoreEntryId id, Path keyPath) {
+	SecureCertObjectHolder<KeyPair> toKey(UserCertStoreEntryId id, Path keyPath) {
 		return (keyPath != null ? new PersistentKeyEntry(id) : null);
 	}
 
-	CSREntry toCSREntry(UserCertStoreEntryId id, Path csrPath) {
+	CertObjectHolder<PKCS10CertificateRequest> toCSR(UserCertStoreEntryId id, Path csrPath) {
 		return (csrPath != null ? new PersistentCSREntry(id) : null);
 	}
 
-	CRLEntry toCRLEntry(UserCertStoreEntryId id, Path crlPath) {
+	CertObjectHolder<X509CRL> toCRL(UserCertStoreEntryId id, Path crlPath) {
 		return (crlPath != null ? new PersistentCRLEntry(id) : null);
 	}
 
@@ -250,120 +255,161 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		}
 
 		private void updateResult(UserCertStoreEntryId id, Path crtPath, Path keyPath, Path csrPath, Path crlPath) {
-			PersistentEntry resultEntry = new PersistentEntry(this.result.get(id), toCRTEntry(id, crtPath),
-					toKeyEntry(id, keyPath), toCSREntry(id, csrPath), toCRLEntry(id, crlPath));
+			PersistentEntry resultEntry = new PersistentEntry(this.result.get(id), toCRT(id, crtPath),
+					toKey(id, keyPath), toCSR(id, csrPath), toCRL(id, crlPath));
 
 			this.result.put(id, resultEntry);
 		}
 
 	}
 
-	private class PersistentCRTEntry extends PersistentObjectEntry<X509Certificate> implements CRTEntry {
+	private abstract class PersistentCertObjectHolder<T> implements CertObjectHolder<T> {
 
 		private final UserCertStoreEntryId id;
 
-		PersistentCRTEntry(UserCertStoreEntryId id) {
-			super(entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT));
+		private final Path path;
+
+		private SoftReference<T> cached;
+		private FileTime cachedFileTime;
+
+		protected PersistentCertObjectHolder(UserCertStoreEntryId id, Path path) {
+			this(id, path, null, null);
+		}
+
+		protected PersistentCertObjectHolder(UserCertStoreEntryId id, Path path, @Nullable T object,
+				@Nullable FileTime fileTime) {
 			this.id = id;
+			this.path = path;
+			this.cached = new SoftReference<>(object);
+			this.cachedFileTime = (fileTime != null ? fileTime : FileTime.fromMillis(0));
+		}
+
+		@Override
+		public Path path() {
+			return this.path;
+		}
+
+		@Override
+		public T get() throws IOException {
+			T object = this.cached.get();
+			FileTime pathFileTime = Files.getLastModifiedTime(this.path);
+
+			if (object == null || !this.cachedFileTime.equals(pathFileTime)) {
+				try (IOResource<InputStream> in = IOResource.newInputStream(this.id.getAlias(), this.path,
+						StandardOpenOption.READ)) {
+					object = read(in);
+				}
+				this.cached = new SoftReference<>(object);
+				this.cachedFileTime = pathFileTime;
+			}
+			return object;
+		}
+
+		protected abstract T read(IOResource<InputStream> in) throws IOException;
+
+	}
+
+	private abstract class PersistentSecureCertObjectHolder<T> implements SecureCertObjectHolder<T> {
+
+		private final UserCertStoreEntryId id;
+
+		private final Path path;
+
+		protected PersistentSecureCertObjectHolder(UserCertStoreEntryId id, Path path) {
+			this.id = id;
+			this.path = path;
+		}
+
+		@Override
+		public Path path() {
+			return this.path;
+		}
+
+		@Override
+		public T get() throws IOException {
+			throw new PasswordRequiredException(this.id.getAlias());
+		}
+
+		@Override
+		public boolean isSecured() {
+			return true;
+		}
+
+		@Override
+		public T get(PasswordCallback password) throws IOException {
+			T object;
+
+			try (IOResource<InputStream> in = IOResource.newInputStream(this.id.getAlias(), this.path,
+					StandardOpenOption.READ)) {
+				object = read(in, password);
+			}
+			return object;
+		}
+
+		protected abstract T read(IOResource<InputStream> in, PasswordCallback password) throws IOException;
+
+	}
+
+	private class PersistentCRTEntry extends PersistentCertObjectHolder<X509Certificate> {
+
+		PersistentCRTEntry(UserCertStoreEntryId id) {
+			super(id, entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT));
 		}
 
 		PersistentCRTEntry(UserCertStoreEntryId id, X509Certificate crt, FileTime crtFileTime) {
-			super(entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT), crt, crtFileTime);
-			this.id = id;
+			super(id, entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT), crt, crtFileTime);
 		}
 
 		@Override
-		public X509Certificate getCRT() throws IOException {
-			return getEntry();
-		}
-
-		@Override
-		protected X509Certificate decodeEntryInput(InputStream input, PasswordCallback password) throws IOException {
-			return toEntryObject(X509Certificate.class, PEM_IO.read(input, this.id.getAlias(), password));
+		protected X509Certificate read(IOResource<InputStream> in) throws IOException {
+			return PEMCertReaderWriter.readCRTBinary(in);
 		}
 
 	}
 
-	private class PersistentKeyEntry extends PersistentObjectEntry<KeyPair> implements KeyEntry {
-
-		private final UserCertStoreEntryId id;
+	private class PersistentKeyEntry extends PersistentSecureCertObjectHolder<KeyPair> {
 
 		PersistentKeyEntry(UserCertStoreEntryId id) {
-			super(entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY));
-			this.id = id;
-		}
-
-		PersistentKeyEntry(UserCertStoreEntryId id, KeyPair key, FileTime keyFileTime) {
-			super(entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY), key, keyFileTime);
-			this.id = id;
+			super(id, entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY));
 		}
 
 		@Override
-		public boolean isDecrypted() {
-			return false;
-		}
-
-		@Override
-		public KeyPair getKey(PasswordCallback password) throws IOException {
-			return getEntry(password);
-		}
-
-		@Override
-		protected KeyPair decodeEntryInput(InputStream input, PasswordCallback password) throws IOException {
-			return toEntryObject(KeyPair.class, PEM_IO.read(input, this.id.getAlias(), password));
+		protected KeyPair read(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+			return PEMCertReaderWriter.readKeyBinary(in, password);
 		}
 
 	}
 
-	private class PersistentCSREntry extends PersistentObjectEntry<PKCS10CertificateRequest> implements CSREntry {
-
-		private final UserCertStoreEntryId id;
+	private class PersistentCSREntry extends PersistentCertObjectHolder<PKCS10CertificateRequest> {
 
 		PersistentCSREntry(UserCertStoreEntryId id) {
-			super(entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR));
-			this.id = id;
+			super(id, entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR));
 		}
 
 		PersistentCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr, FileTime csrFileTime) {
-			super(entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR), csr, csrFileTime);
-			this.id = id;
+			super(id, entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR), csr, csrFileTime);
 		}
 
 		@Override
-		public PKCS10CertificateRequest getCSR() throws IOException {
-			return getEntry();
-		}
-
-		@Override
-		protected PKCS10CertificateRequest decodeEntryInput(InputStream input, PasswordCallback password)
-				throws IOException {
-			return toEntryObject(PKCS10CertificateRequest.class, PEM_IO.read(input, this.id.getAlias(), password));
+		protected PKCS10CertificateRequest read(IOResource<InputStream> in) throws IOException {
+			return PEMCertReaderWriter.readCSRBinary(in);
 		}
 
 	}
 
-	private class PersistentCRLEntry extends PersistentObjectEntry<X509CRL> implements CRLEntry {
-
-		private final UserCertStoreEntryId id;
+	private class PersistentCRLEntry extends PersistentCertObjectHolder<X509CRL> {
 
 		PersistentCRLEntry(UserCertStoreEntryId id) {
-			super(entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL));
-			this.id = id;
+			super(id, entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL));
 		}
 
 		PersistentCRLEntry(UserCertStoreEntryId id, X509CRL crl, FileTime crlFileTime) {
-			super(entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL), crl, crlFileTime);
-			this.id = id;
+			super(id, entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL), crl, crlFileTime);
 		}
 
 		@Override
-		public X509CRL getCRL() throws IOException {
-			return getEntry();
-		}
-
-		@Override
-		protected X509CRL decodeEntryInput(InputStream input, PasswordCallback password) throws IOException {
-			return toEntryObject(X509CRL.class, PEM_IO.read(input, this.id.getAlias(), password));
+		protected X509CRL read(IOResource<InputStream> in) throws IOException {
+			return PEMCertReaderWriter.readCRLBinary(in);
 		}
 
 	}

@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.nio.file.Files;
+import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import java.util.prefs.Preferences;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertWriters;
+import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.jfx.application.PlatformHelper;
@@ -336,32 +337,33 @@ public class CertExportController extends StageController {
 
 	void exportToFile(CertWriter format, Path file, List<Object> exportObjects, boolean encryptExport)
 			throws IOException {
-
-	}
-
-	void exportToDirectory(CertWriter format, Path file, List<Object> exportObjects, boolean encryptExport)
-			throws IOException {
-		try (OutputStream out = Files.newOutputStream(file, StandardOpenOption.CREATE)) {
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(file.toString(), file, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			if (encryptExport) {
-				format.writeEncryptedBinary(out, exportObjects, file.toString(), PasswordDialog.enterNewPassword(this));
+				format.writeEncryptedBinary(out, exportObjects, PasswordDialog.enterNewPassword(this));
 			} else {
-				format.writeBinary(out, exportObjects, file.toString());
+				format.writeBinary(out, exportObjects);
 			}
 		}
 	}
 
+	void exportToDirectory(CertWriter format, Path directory, List<Object> exportObjects, boolean encryptExport)
+			throws IOException {
+
+	}
+
 	void exportToClipboard(CertWriter format, List<Object> exportObjects, boolean encryptExport) throws IOException {
-		StringWriter out = new StringWriter();
+		StringWriter text = new StringWriter();
 
-		if (encryptExport) {
-			format.writeEncryptedString(out, exportObjects, CertExportI18N.formatSTR_TEXT_CLIPBOARD(),
-					PasswordDialog.enterNewPassword(this));
-		} else {
-			format.writeString(out, exportObjects, CertExportI18N.formatSTR_TEXT_CLIPBOARD());
+		try (IOResource<Writer> out = new IOResource<>(text, CertExportI18N.formatSTR_TEXT_CLIPBOARD())) {
+			if (encryptExport) {
+				format.writeEncryptedString(out, exportObjects, PasswordDialog.enterNewPassword(this));
+			} else {
+				format.writeString(out, exportObjects);
+			}
 		}
-		out.flush();
 
-		String clipboardData = out.toString();
+		String clipboardData = text.toString();
 
 		PlatformHelper.runLater(() -> exportToClipboardHelper(clipboardData));
 	}

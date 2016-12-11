@@ -19,6 +19,7 @@ package de.carne.certmgr.jfx.store;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Path;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
@@ -29,6 +30,7 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -232,9 +234,10 @@ public class StoreController extends StageController {
 		UserCertStoreEntry entry = getSelectedStoreEntry();
 
 		if (entry != null) {
-			List<File> entryFiles = entry.getFiles();
+			List<Path> entryFilePaths = entry.getFilePaths();
 
-			if (!entryFiles.isEmpty()) {
+			if (!entryFilePaths.isEmpty()) {
+				List<File> entryFiles = entryFilePaths.stream().map((p) -> p.toFile()).collect(Collectors.toList());
 				Clipboard clipboard = Clipboard.getSystemClipboard();
 				ClipboardContent content = new ClipboardContent();
 

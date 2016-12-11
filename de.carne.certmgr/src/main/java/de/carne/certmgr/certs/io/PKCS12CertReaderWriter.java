@@ -19,6 +19,7 @@ package de.carne.certmgr.certs.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -66,9 +67,9 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	private static final Log LOG = new Log();
 
-	private JcePKCSPBEInputDecryptorProviderBuilder pkcsPBInputDecrypterProviderBuilder = new JcePKCSPBEInputDecryptorProviderBuilder();
+	private static final JcePKCSPBEInputDecryptorProviderBuilder PKCS_DECRYPTOR_PROVIDER_BUILDER = new JcePKCSPBEInputDecryptorProviderBuilder();
 
-	private final JcaX509CertificateConverter crtConverter = new JcaX509CertificateConverter();
+	private static final JcaX509CertificateConverter CRT_CONVERTER = new JcaX509CertificateConverter();
 
 	/**
 	 * Provider name.
@@ -91,15 +92,14 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
-	public List<Object> read(CertReaderInput input, PasswordCallback password) throws IOException {
-		assert input != null;
+	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+		assert in != null;
 		assert password != null;
 
-		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", input);
+		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", in);
 
 		List<Object> pkcs12Objects = null;
-		PKCS12PfxPdu pkcs12 = readPKCS12(input);
+		PKCS12PfxPdu pkcs12 = readPKCS12(in);
 
 		if (pkcs12 != null) {
 			pkcs12Objects = new ArrayList<>();
@@ -111,7 +111,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 				PKCS12SafeBagFactory safeBagFactory;
 
 				if (contentType.equals(PKCSObjectIdentifiers.encryptedData)) {
-					safeBagFactory = getSafeBagFactory(contentInfo, input.toString(), password);
+					safeBagFactory = getSafeBagFactory(contentInfo, in.resource(), password);
 				} else {
 					safeBagFactory = getSafeBagFactory(contentInfo);
 				}
@@ -119,17 +119,17 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 					Object safeBagValue = safeBag.getBagValue();
 
 					if (safeBagValue instanceof X509CertificateHolder) {
-						X509Certificate crt = getCRT((X509CertificateHolder) safeBagValue);
+						X509Certificate crt = convertCRT((X509CertificateHolder) safeBagValue);
 
 						resolveKey(keyPairs, safeBag.getAttributes(), crt.getPublicKey(), null);
 						pkcs12Objects.add(crt);
 					} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
-						PrivateKey privateKey = getPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
-								input.toString(), password);
+						PrivateKey privateKey = convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
+								in.resource(), password);
 
 						resolveKey(keyPairs, safeBag.getAttributes(), null, privateKey);
 					} else if (safeBagValue instanceof PrivateKeyInfo) {
-						PrivateKey privateKey = getPrivateKey((PrivateKeyInfo) safeBagValue);
+						PrivateKey privateKey = convertPrivateKey((PrivateKeyInfo) safeBagValue);
 
 						resolveKey(keyPairs, safeBag.getAttributes(), null, privateKey);
 					} else {
@@ -141,6 +141,11 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 			keyPairs.resolve(pkcs12Objects);
 		}
 		return pkcs12Objects;
+	}
+
+	@Override
+	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+		return null;
 	}
 
 	@Override
@@ -159,46 +164,49 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(OutputStream out, List<Object> certObjects, String resource)
+	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeEncryptedBinary(OutputStream out, List<Object> certObjects, String resource,
+	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeString(Writer out, List<Object> certObjects, String resource)
+	public void writeString(IOResource<Writer> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedString(Writer out, List<Object> certObjects, String resource,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
+			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Nullable
-	private PKCS12PfxPdu readPKCS12(CertReaderInput input) {
+	private static @Nullable PKCS12PfxPdu readPKCS12(IOResource<InputStream> in) {
 		PKCS12PfxPdu pkcs12 = null;
 
-		try (InputStream stream = input.stream()) {
-			if (stream != null) {
-				pkcs12 = new PKCS12PfxPdu(IOHelper.readBytes(stream, CertReader.READ_LIMIT));
+		try {
+			byte[] bytes = IOHelper.readBytes(in.io(), CertReader.READ_LIMIT);
+
+			if (bytes.length > 0) {
+				pkcs12 = new PKCS12PfxPdu(bytes);
+			} else {
+				LOG.info("Ignoring empty resource: ''{0}''", in);
 			}
 		} catch (IOException e) {
-			LOG.info(e, "No PKCS#12 objects recognized in: ''{0}''", input);
+			LOG.info(e, "No PKCS#12 objects recognized in: ''{0}''", in);
 		}
 		return pkcs12;
 	}
 
-	private InputDecryptorProvider buildInputDecryptorProvider(String resource, PasswordCallback password,
+	private static InputDecryptorProvider buildInputDecryptorProvider(String resource, PasswordCallback password,
 			@Nullable PKCSException decryptException) throws IOException {
 		char[] passwordChars = (decryptException != null ? password.requeryPassword(resource, decryptException)
 				: password.queryPassword(resource));
@@ -206,11 +214,11 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		if (passwordChars == null) {
 			throw new PasswordRequiredException(resource, decryptException);
 		}
-		return this.pkcsPBInputDecrypterProviderBuilder.build(passwordChars);
+		return PKCS_DECRYPTOR_PROVIDER_BUILDER.build(passwordChars);
 	}
 
-	private PKCS12SafeBagFactory getSafeBagFactory(ContentInfo contentInfo, String resource, PasswordCallback password)
-			throws IOException {
+	private static PKCS12SafeBagFactory getSafeBagFactory(ContentInfo contentInfo, String resource,
+			PasswordCallback password) throws IOException {
 		PKCS12SafeBagFactory safeBagFactory = null;
 		PKCSException decryptException = null;
 
@@ -225,22 +233,22 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		return safeBagFactory;
 	}
 
-	private PKCS12SafeBagFactory getSafeBagFactory(ContentInfo contentInfo) {
+	private static PKCS12SafeBagFactory getSafeBagFactory(ContentInfo contentInfo) {
 		return new PKCS12SafeBagFactory(contentInfo);
 	}
 
-	private X509Certificate getCRT(X509CertificateHolder safeBagValue) throws IOException {
+	private static X509Certificate convertCRT(X509CertificateHolder safeBagValue) throws IOException {
 		X509Certificate crt;
 
 		try {
-			crt = this.crtConverter.getCertificate(safeBagValue);
+			crt = CRT_CONVERTER.getCertificate(safeBagValue);
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
 		return crt;
 	}
 
-	private PrivateKey getPrivateKey(PKCS8EncryptedPrivateKeyInfo safeBagValue, String resource,
+	private static PrivateKey convertPrivateKey(PKCS8EncryptedPrivateKeyInfo safeBagValue, String resource,
 			PasswordCallback password) throws IOException {
 		PrivateKeyInfo decryptedSafeBagValue = null;
 		PKCSException decryptException = null;
@@ -253,10 +261,10 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 				decryptException = e;
 			}
 		}
-		return getPrivateKey(decryptedSafeBagValue);
+		return convertPrivateKey(decryptedSafeBagValue);
 	}
 
-	private PrivateKey getPrivateKey(PrivateKeyInfo safeBagValue) throws IOException {
+	private static PrivateKey convertPrivateKey(PrivateKeyInfo safeBagValue) throws IOException {
 		PrivateKey privateKey;
 
 		try {
@@ -270,7 +278,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		return privateKey;
 	}
 
-	private void resolveKey(KeyPairResolver<ASN1Encodable> keyPairs, Attribute[] safeBagAttributes,
+	private static void resolveKey(KeyPairResolver<ASN1Encodable> keyPairs, Attribute[] safeBagAttributes,
 			@Nullable PublicKey publicKey, @Nullable PrivateKey privateKey) {
 		for (Attribute safeBagAttribute : safeBagAttributes) {
 			if (safeBagAttribute.getAttrType().equals(PKCS12SafeBag.localKeyIdAttribute)) {

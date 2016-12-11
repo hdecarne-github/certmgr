@@ -16,7 +16,6 @@
  */
 package de.carne.certmgr.certs;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
@@ -41,10 +40,7 @@ import javax.security.auth.x500.X500Principal;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.io.CertReaders;
-import de.carne.certmgr.certs.io.FileCertReaderInput;
 import de.carne.certmgr.certs.io.JKSCertReaderWriter;
-import de.carne.certmgr.certs.io.StringCertReaderInput;
-import de.carne.certmgr.certs.io.URLCertReaderInput;
 import de.carne.certmgr.certs.net.SSLPeer;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertGenerator;
@@ -180,14 +176,16 @@ public final class UserCertStore {
 		List<Object> certObjects = new ArrayList<>();
 
 		for (Path file : files) {
-			try (FileCertReaderInput fileInput = new FileCertReaderInput(file)) {
-				List<Object> fileCertObjects = CertReaders.read(fileInput, password);
+			try {
+				List<Object> fileCertObjects = CertReaders.readFile(file, password);
 
 				if (fileCertObjects != null) {
 					certObjects.addAll(fileCertObjects);
 				} else {
 					LOG.warning("Ignoring file ''{0}'' due to unrecognized file format or missing password", file);
 				}
+			} catch (IOException e) {
+				LOG.warning(e, "Ignoring file ''{0}'' due to read error: {1}", file, e.getLocalizedMessage());
 			}
 		}
 		return createFromCertObjects(certObjects);
@@ -207,11 +205,8 @@ public final class UserCertStore {
 		assert url != null;
 		assert password != null;
 
-		List<Object> certObjects = new ArrayList<>();
+		List<Object> certObjects = CertReaders.readURL(url, password);
 
-		try (URLCertReaderInput urlInput = new URLCertReaderInput(url)) {
-			certObjects = CertReaders.read(urlInput, password);
-		}
 		return createFromCertObjects(certObjects);
 	}
 
@@ -241,27 +236,24 @@ public final class UserCertStore {
 	}
 
 	/**
-	 * Create a certificate store backed up by text data.
+	 * Create a certificate store backed up by string data.
 	 *
 	 * @param data The text containing the certificate data.
-	 * @param name The name to use when referring to the text data (e.g. during
-	 *        password queries).
+	 * @param resource The name of the resource providing the string data.
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The created certificate store.
 	 * @throws PasswordRequiredException if no valid password was given.
 	 * @throws IOException if an I/O error occurs while reading/decoding
 	 *         certificate data.
 	 */
-	public static UserCertStore createFromData(String data, String name, PasswordCallback password) throws IOException {
+	public static UserCertStore createFromData(String data, String resource, PasswordCallback password)
+			throws IOException {
 		assert data != null;
-		assert name != null;
+		assert resource != null;
 		assert password != null;
 
-		List<Object> certObjects = new ArrayList<>();
+		List<Object> certObjects = CertReaders.readString(data, resource, password);
 
-		try (StringCertReaderInput dataInput = new StringCertReaderInput(data, name)) {
-			certObjects = CertReaders.read(dataInput, password);
-		}
 		return createFromCertObjects(certObjects);
 	}
 
@@ -362,9 +354,9 @@ public final class UserCertStore {
 		Entry storeEntry = this.storeEntries.get(issuerEntry.id());
 		X509CRL crl = X509CRLHelper.generateCRL(storeEntry.getCRL(), request.lastUpdate(), request.nextUpdate(),
 				request.getRevokeEntries(), storeEntry.dn(), storeEntry.getKey(password), request.signatureAlgorithm());
-		CRLEntry crlEntry = this.storeHandler.createCRLEntry(storeEntry.id(), crl);
+		CertObjectHolder<X509CRL> crlHolder = this.storeHandler.createCRL(storeEntry.id(), crl);
 
-		storeEntry.setCRL(crlEntry);
+		storeEntry.setCRL(crlHolder);
 	}
 
 	/**
@@ -481,23 +473,23 @@ public final class UserCertStore {
 		for (Map.Entry<UserCertStoreEntryId, PersistentEntry> persistentEntryPathsEntry : entries.entrySet()) {
 			UserCertStoreEntryId entryId = persistentEntryPathsEntry.getKey();
 			PersistentEntry entry = persistentEntryPathsEntry.getValue();
-			CRTEntry crtEntry = entry.crtEntry();
-			KeyEntry keyEntry = entry.keyEntry();
-			CSREntry csrEntry = entry.csrEntry();
-			CRLEntry crlEntry = entry.crlEntry();
+			CertObjectHolder<X509Certificate> crtHolder = entry.crt();
+			SecureCertObjectHolder<KeyPair> keyHolder = entry.key();
+			CertObjectHolder<PKCS10CertificateRequest> csrHolder = entry.csr();
+			CertObjectHolder<X509CRL> crlHolder = entry.crl();
 			X500Principal entryDN = null;
 
-			if (crtEntry != null) {
-				entryDN = crtEntry.getCRT().getSubjectX500Principal();
-			} else if (csrEntry != null) {
-				entryDN = csrEntry.getCSR().getSubjectX500Principal();
-			} else if (crlEntry != null) {
-				entryDN = crlEntry.getCRL().getIssuerX500Principal();
+			if (crtHolder != null) {
+				entryDN = crtHolder.get().getSubjectX500Principal();
+			} else if (csrHolder != null) {
+				entryDN = csrHolder.get().getSubjectX500Principal();
+			} else if (crlHolder != null) {
+				entryDN = crlHolder.get().getIssuerX500Principal();
 			} else {
 				LOG.warning("Ignoring incompliete store entry ''{0}''", entryId);
 			}
 			if (entryDN != null) {
-				Entry storeEntry = new Entry(entryId, entryDN, crtEntry, keyEntry, csrEntry, crlEntry);
+				Entry storeEntry = new Entry(entryId, entryDN, crtHolder, keyHolder, csrHolder, crlHolder);
 
 				this.storeEntries.put(entryId, storeEntry);
 			}
@@ -553,17 +545,17 @@ public final class UserCertStore {
 
 		if (matchingEntry != null) {
 			if (!matchingEntry.hasCRT()) {
-				CRTEntry crtEntry = this.storeHandler.createCRTEntry(matchingEntry.id(), crt);
+				CertObjectHolder<X509Certificate> crtHolder = this.storeHandler.createCRT(matchingEntry.id(), crt);
 
-				matchingEntry.setCRT(crtEntry);
+				matchingEntry.setCRT(crtHolder);
 			} else {
 				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CRT_ALREADY_SET(matchingEntry));
 			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
-			CRTEntry crtEntry = this.storeHandler.createCRTEntry(entryId, crt);
+			CertObjectHolder<X509Certificate> crtHolder = this.storeHandler.createCRT(entryId, crt);
 
-			matchingEntry = new Entry(entryId, crt.getSubjectX500Principal(), crtEntry);
+			matchingEntry = new Entry(entryId, crt.getSubjectX500Principal(), crtHolder, null, null, null);
 			this.storeEntries.put(entryId, matchingEntry);
 		}
 		return matchingEntry;
@@ -574,9 +566,10 @@ public final class UserCertStore {
 
 		if (matchingEntry != null) {
 			if (!matchingEntry.hasKey()) {
-				KeyEntry keyEntry = this.storeHandler.createKeyEntry(matchingEntry.id(), key, newPassword);
+				SecureCertObjectHolder<KeyPair> keyHolder = this.storeHandler.createKey(matchingEntry.id(), key,
+						newPassword);
 
-				matchingEntry.setKey(keyEntry);
+				matchingEntry.setKey(keyHolder);
 			} else {
 				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_KEY_ALREADY_SET(matchingEntry));
 			}
@@ -591,17 +584,18 @@ public final class UserCertStore {
 
 		if (matchingEntry != null) {
 			if (!matchingEntry.hasCSR()) {
-				CSREntry csrEntry = this.storeHandler.createCSREntry(matchingEntry.id(), csr);
+				CertObjectHolder<PKCS10CertificateRequest> csrHolder = this.storeHandler.createCSR(matchingEntry.id(),
+						csr);
 
-				matchingEntry.setCSR(csrEntry);
+				matchingEntry.setCSR(csrHolder);
 			} else {
 				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CSR_ALREADY_SET(matchingEntry));
 			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
-			CSREntry csrEntry = this.storeHandler.createCSREntry(entryId, csr);
+			CertObjectHolder<PKCS10CertificateRequest> csrHolder = this.storeHandler.createCSR(entryId, csr);
 
-			matchingEntry = new Entry(entryId, csr.getSubjectX500Principal(), csrEntry);
+			matchingEntry = new Entry(entryId, csr.getSubjectX500Principal(), null, null, csrHolder, null);
 			this.storeEntries.put(entryId, matchingEntry);
 		}
 		return matchingEntry;
@@ -612,17 +606,17 @@ public final class UserCertStore {
 
 		if (matchingEntry != null) {
 			if (!matchingEntry.hasCRL()) {
-				CRLEntry crlEntry = this.storeHandler.createCRLEntry(matchingEntry.id(), crl);
+				CertObjectHolder<X509CRL> crlHolder = this.storeHandler.createCRL(matchingEntry.id(), crl);
 
-				matchingEntry.setCRL(crlEntry);
+				matchingEntry.setCRL(crlHolder);
 			} else {
 				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CRL_ALREADY_SET(matchingEntry));
 			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
-			CRLEntry crlEntry = this.storeHandler.createCRLEntry(entryId, crl);
+			CertObjectHolder<X509CRL> crlHolder = this.storeHandler.createCRL(entryId, crl);
 
-			matchingEntry = new Entry(entryId, crl.getIssuerX500Principal(), crlEntry);
+			matchingEntry = new Entry(entryId, crl.getIssuerX500Principal(), null, null, null, crlHolder);
 			this.storeEntries.put(entryId, matchingEntry);
 		}
 		return matchingEntry;
@@ -773,37 +767,26 @@ public final class UserCertStore {
 
 		private Entry issuer = null;
 
-		private CRTEntry crtEntry;
+		private CertObjectHolder<X509Certificate> crtHolder;
 
-		private KeyEntry keyEntry;
+		private SecureCertObjectHolder<KeyPair> keyHolder;
 
-		private CSREntry csrEntry;
+		private CertObjectHolder<PKCS10CertificateRequest> csrHolder;
 
-		private CRLEntry crlEntry;
+		private CertObjectHolder<X509CRL> crlHolder;
 
-		Entry(UserCertStoreEntryId id, X500Principal dn, CRTEntry crtEntry, KeyEntry keyEntry, CSREntry csrEntry,
-				CRLEntry crlEntry) {
+		Entry(UserCertStoreEntryId id, X500Principal dn, CertObjectHolder<X509Certificate> crtHolder,
+				SecureCertObjectHolder<KeyPair> keyHolder, CertObjectHolder<PKCS10CertificateRequest> csrHolder,
+				CertObjectHolder<X509CRL> crlHolder) {
 			super(id, dn);
-			this.crtEntry = crtEntry;
-			this.keyEntry = keyEntry;
-			this.csrEntry = csrEntry;
-			this.crlEntry = crlEntry;
+			this.crtHolder = crtHolder;
+			this.keyHolder = keyHolder;
+			this.csrHolder = csrHolder;
+			this.crlHolder = crlHolder;
 		}
 
 		Entry(UserCertStoreEntryId id, X500Principal dn) {
 			this(id, dn, null, null, null, null);
-		}
-
-		Entry(UserCertStoreEntryId id, X500Principal dn, CRTEntry crtEntry) {
-			this(id, dn, crtEntry, null, null, null);
-		}
-
-		Entry(UserCertStoreEntryId id, X500Principal dn, CSREntry csrEntry) {
-			this(id, dn, null, null, csrEntry, null);
-		}
-
-		Entry(UserCertStoreEntryId id, X500Principal dn, CRLEntry crlEntry) {
-			this(id, dn, null, null, null, crlEntry);
 		}
 
 		@Override
@@ -822,70 +805,98 @@ public final class UserCertStore {
 
 		@Override
 		public boolean hasCRT() {
-			return this.crtEntry != null;
+			return this.crtHolder != null;
 		}
 
 		@Override
 		public X509Certificate getCRT() throws IOException {
-			return (this.crtEntry != null ? this.crtEntry.getCRT() : null);
+			return (this.crtHolder != null ? this.crtHolder.get() : null);
 		}
 
-		void setCRT(CRTEntry crtEntry) {
-			this.crtEntry = crtEntry;
+		void setCRT(CertObjectHolder<X509Certificate> crtHolder) {
+			this.crtHolder = crtHolder;
 		}
 
 		@Override
 		public boolean hasDecryptedKey() {
-			return this.keyEntry != null && this.keyEntry.isDecrypted();
+			return this.keyHolder != null && !this.keyHolder.isSecured();
 		}
 
 		@Override
 		public boolean hasKey() {
-			return this.keyEntry != null;
+			return this.keyHolder != null;
 		}
 
 		@Override
 		public KeyPair getKey(PasswordCallback password) throws IOException {
-			return (this.keyEntry != null ? this.keyEntry.getKey(password) : null);
+			return (this.keyHolder != null ? this.keyHolder.get(password) : null);
 		}
 
-		void setKey(KeyEntry keyEntry) {
-			this.keyEntry = keyEntry;
+		void setKey(SecureCertObjectHolder<KeyPair> keyHolder) {
+			this.keyHolder = keyHolder;
 		}
 
 		@Override
 		public boolean hasCSR() {
-			return this.csrEntry != null;
+			return this.csrHolder != null;
 		}
 
 		@Override
 		public PKCS10CertificateRequest getCSR() throws IOException {
-			return (this.csrEntry != null ? this.csrEntry.getCSR() : null);
+			return (this.csrHolder != null ? this.csrHolder.get() : null);
 		}
 
-		void setCSR(CSREntry csrEntry) {
-			this.csrEntry = csrEntry;
+		void setCSR(CertObjectHolder<PKCS10CertificateRequest> csrHolder) {
+			this.csrHolder = csrHolder;
 		}
 
 		@Override
 		public boolean hasCRL() {
-			return this.crlEntry != null;
+			return this.crlHolder != null;
 		}
 
 		@Override
 		public X509CRL getCRL() throws IOException {
-			return (this.crlEntry != null ? this.crlEntry.getCRL() : null);
+			return (this.crlHolder != null ? this.crlHolder.get() : null);
 		}
 
-		void setCRL(CRLEntry crlEntry) {
-			this.crlEntry = crlEntry;
+		void setCRL(CertObjectHolder<X509CRL> crlHolder) {
+			this.crlHolder = crlHolder;
 		}
 
 		@Override
-		public List<File> getFiles() {
-			List<File> files = new ArrayList<>();
+		public List<Path> getFilePaths() {
+			List<Path> filePaths = new ArrayList<>();
 
-			return files;
+			if (this.crtHolder != null) {
+				Path crtPath = this.crtHolder.path();
+
+				if (crtPath != null) {
+					filePaths.add(crtPath);
+				}
+			}
+			if (this.keyHolder != null) {
+				Path keyPath = this.keyHolder.path();
+
+				if (keyPath != null) {
+					filePaths.add(keyPath);
+				}
+			}
+			if (this.csrHolder != null) {
+				Path csrPath = this.csrHolder.path();
+
+				if (csrPath != null) {
+					filePaths.add(csrPath);
+				}
+			}
+			if (this.crlHolder != null) {
+				Path crlPath = this.crlHolder.path();
+
+				if (crlPath != null) {
+					filePaths.add(crlPath);
+				}
+			}
+			return filePaths;
 		}
 
 	}
