@@ -109,7 +109,11 @@ public final class CertReaders {
 		Path file;
 
 		try {
-			file = Paths.get(url.getPath());
+			String urlPath = url.getPath();
+			int fileNameIndex = urlPath.lastIndexOf('/');
+			String fileName = (fileNameIndex >= 0 ? urlPath.substring(fileNameIndex + 1) : urlPath);
+
+			file = Paths.get(fileName);
 		} catch (InvalidPathException e) {
 			throw new IOException(e.getLocalizedMessage(), e);
 		}
