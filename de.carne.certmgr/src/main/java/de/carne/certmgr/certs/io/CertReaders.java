@@ -66,9 +66,10 @@ public final class CertReaders {
 		assert password != null;
 
 		Deque<CertReader> certReaders = new ArrayDeque<>();
+		Path fileName = file.getFileName();
 
 		for (CertReader reader : REGISTERED.providers()) {
-			if (matchFileName(reader, file)) {
+			if (matchFileName(reader, fileName)) {
 				certReaders.addFirst(reader);
 			} else {
 				certReaders.addLast(reader);
@@ -143,7 +144,7 @@ public final class CertReaders {
 		boolean matches = false;
 
 		for (String filterExtension : reader.fileExtensions()) {
-			PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**/" + filterExtension);
+			PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + filterExtension);
 
 			if (matcher.matches(fileName)) {
 				matches = true;
