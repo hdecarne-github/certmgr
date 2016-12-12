@@ -19,6 +19,7 @@ package de.carne.certmgr.certs.io;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,15 +76,17 @@ final class KeyPairResolver<T> {
 		}
 	}
 
-	public List<Object> resolve(List<Object> objects) {
+	public List<Object> resolve() {
+		List<Object> keyPairObjects = new ArrayList<>();
+
 		for (KeyPairHolder keyPairHolder : this.keyPairHolderMap.values()) {
 			KeyPair keyPair = keyPairHolder.resolve();
 
 			if (keyPair != null) {
-				objects.add(keyPair);
+				keyPairObjects.add(keyPair);
 			}
 		}
-		return objects;
+		return keyPairObjects;
 	}
 
 }

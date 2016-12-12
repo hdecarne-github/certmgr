@@ -98,11 +98,11 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", in);
 
-		List<Object> pkcs12Objects = null;
+		List<Object> certObjects = null;
 		PKCS12PfxPdu pkcs12 = readPKCS12(in);
 
 		if (pkcs12 != null) {
-			pkcs12Objects = new ArrayList<>();
+			certObjects = new ArrayList<>();
 
 			KeyPairResolver<ASN1Encodable> keyPairs = new KeyPairResolver<>();
 
@@ -122,7 +122,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 						X509Certificate crt = convertCRT((X509CertificateHolder) safeBagValue);
 
 						resolveKey(keyPairs, safeBag.getAttributes(), crt.getPublicKey(), null);
-						pkcs12Objects.add(crt);
+						certObjects.add(crt);
 					} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
 						PrivateKey privateKey = convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
 								in.resource(), password);
@@ -138,9 +138,9 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 					}
 				}
 			}
-			keyPairs.resolve(pkcs12Objects);
+			certObjects.addAll(keyPairs.resolve());
 		}
-		return pkcs12Objects;
+		return certObjects;
 	}
 
 	@Override
