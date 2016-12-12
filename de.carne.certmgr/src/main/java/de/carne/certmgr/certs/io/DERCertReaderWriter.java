@@ -22,20 +22,25 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.security.GeneralSecurityException;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.x509.NoSuchParserException;
-import org.bouncycastle.x509.X509StreamParser;
-import org.bouncycastle.x509.util.StreamParsingException;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.cert.X509CRLHolder;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -46,6 +51,10 @@ import de.carne.util.logging.Log;
 public class DERCertReaderWriter implements CertReader, CertWriter {
 
 	private static final Log LOG = new Log();
+
+	private static final JcaX509CertificateConverter CRT_CONVERTER = new JcaX509CertificateConverter();
+
+	private static final JcaX509CRLConverter CRL_CONVERTER = new JcaX509CRLConverter();
 
 	/**
 	 * Provider name.
@@ -69,12 +78,42 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+		assert in != null;
+		assert password != null;
+
 		LOG.debug("Trying to read DER objects from: ''{0}''...", in);
 
-		List<Object> certObjects = parseObjects(in, "CRL", BouncyCastleProvider.PROVIDER_NAME);
+		List<Object> certObjects = null;
 
-		if (certObjects == null) {
-			certObjects = parseObjects(in, "CERTIFICATE", BouncyCastleProvider.PROVIDER_NAME);
+		try (ASN1InputStream asn1Stream = new ASN1InputStream(in.io())) {
+			ASN1Primitive asn1Object;
+
+			while ((asn1Object = asn1Stream.readObject()) != null) {
+				if (certObjects == null) {
+					certObjects = new ArrayList<>();
+				}
+
+				X509Certificate crt = decodeCRT(asn1Object);
+
+				if (crt != null) {
+					certObjects.add(crt);
+					continue;
+				}
+
+				PKCS10CertificateRequest csr = decodeCSR(asn1Object);
+
+				if (csr != null) {
+					certObjects.add(csr);
+					continue;
+				}
+
+				X509CRL crl = decodeCRL(asn1Object);
+
+				if (crl != null) {
+					certObjects.add(crl);
+					continue;
+				}
+			}
 		}
 		return certObjects;
 	}
@@ -91,7 +130,7 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public boolean isContainerWriter() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -125,26 +164,63 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 		throw new UnsupportedOperationException();
 	}
 
-	private static List<Object> parseObjects(IOResource<InputStream> in, String type, String provider)
-			throws IOException {
-		List<Object> certObjects = null;
+	private static X509Certificate decodeCRT(ASN1Primitive asn1Object) throws IOException {
+		X509CertificateHolder crtObject = null;
 
 		try {
-			X509StreamParser parser = X509StreamParser.getInstance(type, provider);
-
-			parser.init(in.io());
-
-			Collection<Object> parsedObjects = parser.readAll();
-
-			if (parsedObjects != null && !parsedObjects.isEmpty()) {
-				certObjects = new ArrayList<>(parsedObjects);
-			}
-		} catch (StreamParsingException e) {
+			crtObject = new X509CertificateHolder(asn1Object.getEncoded());
+		} catch (Exception e) {
 			Exceptions.ignore(e);
-		} catch (GeneralSecurityException | NoSuchParserException e) {
+		}
+		return (crtObject != null ? convertCRT(crtObject) : null);
+	}
+
+	private static PKCS10CertificateRequest decodeCSR(ASN1Primitive asn1Object) throws IOException {
+		PKCS10CertificationRequest csrObject = null;
+
+		try {
+			csrObject = new PKCS10CertificationRequest(asn1Object.getEncoded());
+		} catch (Exception e) {
+			Exceptions.ignore(e);
+		}
+		return (csrObject != null ? convertCSR(csrObject) : null);
+	}
+
+	private static X509CRL decodeCRL(ASN1Primitive asn1Object) throws IOException {
+		X509CRLHolder crlObject = null;
+
+		try {
+			crlObject = new X509CRLHolder(asn1Object.getEncoded());
+		} catch (Exception e) {
+			Exceptions.ignore(e);
+		}
+		return (crlObject != null ? convertCRL(crlObject) : null);
+	}
+
+	private static X509Certificate convertCRT(X509CertificateHolder pemObject) throws IOException {
+		X509Certificate crt;
+
+		try {
+			crt = CRT_CONVERTER.getCertificate(pemObject);
+		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
-		return certObjects;
+		return crt;
+	}
+
+	private static PKCS10CertificateRequest convertCSR(PKCS10CertificationRequest pemObject) throws IOException {
+		return PKCS10CertificateRequest.fromPKCS10(pemObject);
+	}
+
+	private static X509CRL convertCRL(X509CRLHolder pemObject) throws IOException {
+		X509CRL crl;
+
+		try {
+			crl = CRL_CONVERTER.getCRL(pemObject);
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
+		return crl;
 	}
 
 	@Override
