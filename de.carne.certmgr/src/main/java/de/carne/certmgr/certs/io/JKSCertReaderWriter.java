@@ -151,7 +151,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	private static @Nullable List<Object> readKeyStore(String keyStoreType, @Nullable InputStream inputStream,
 			String resource, PasswordCallback password) throws IOException {
-		List<Object> keyStoreObjects = null;
+		List<Object> certObjects = null;
 		KeyStore keyStore = null;
 
 		try {
@@ -165,7 +165,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		}
 		if (keyStore != null) {
 			try {
-				keyStoreObjects = new ArrayList<>();
+				certObjects = new ArrayList<>();
 
 				Enumeration<String> aliases = keyStore.aliases();
 
@@ -180,13 +180,13 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 						KeyPair key = getKey(alias, aliasKey, aliasCertificate);
 
 						if (key != null) {
-							keyStoreObjects.add(key);
+							certObjects.add(key);
 						}
 
 						X509Certificate crt = getCRT(alias, aliasCertificate);
 
 						if (crt != null) {
-							keyStoreObjects.add(crt);
+							certObjects.add(crt);
 						}
 					}
 				}
@@ -194,7 +194,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 				throw new CertProviderException(e);
 			}
 		}
-		return keyStoreObjects;
+		return certObjects;
 	}
 
 	private static KeyStore loadKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
