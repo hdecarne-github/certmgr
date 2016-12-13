@@ -290,7 +290,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		}
 
 		@Override
-		public T get() throws IOException {
+		public synchronized T get() throws IOException {
 			T object = this.cached.get();
 			FileTime pathFileTime = Files.getLastModifiedTime(this.path);
 
