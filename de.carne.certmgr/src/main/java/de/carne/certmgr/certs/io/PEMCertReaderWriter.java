@@ -52,7 +52,6 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -146,7 +145,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public void writeString(IOResource<Writer> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
 		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
-			for (Object certObject : prepareWriteObjects(certObjects)) {
+			for (Object certObject : certObjects) {
 				writeObject(pemWriter, out.resource(), certObject);
 			}
 		}
@@ -156,7 +155,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException {
 		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
-			for (Object certObject : prepareWriteObjects(certObjects)) {
+			for (Object certObject : certObjects) {
 				if (certObject instanceof KeyPair) {
 					writeEncryptedObject(pemWriter, out.resource(), certObject, newPassword);
 				} else {
@@ -540,44 +539,6 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 			throw new PasswordRequiredException(resource);
 		}
 		writer.writeObject(object, PEM_ENCRYPTOR_BUILDER.build(passwordChars));
-	}
-
-	private static List<Object> prepareWriteObjects(List<Object> objects) throws IOException {
-		List<X509Certificate> crts = new ArrayList<>(objects.size());
-		List<KeyPair> keys = new ArrayList<>(objects.size());
-		List<PKCS10CertificationRequest> csrs = new ArrayList<>(objects.size());
-		List<X509CRL> crls = new ArrayList<>(objects.size());
-
-		for (Object object : objects) {
-			if (object instanceof X509Certificate) {
-				X509Certificate crt = (X509Certificate) object;
-				int crtIndex = crts.size();
-
-				while (crtIndex > 0) {
-					if (X509CertificateHelper.isCRTSignedBy(crt, crts.get(crtIndex - 1).getPublicKey())) {
-						break;
-					}
-					crtIndex--;
-				}
-				crts.add(crtIndex, crt);
-			} else if (object instanceof KeyPair) {
-				keys.add((KeyPair) object);
-			} else if (object instanceof PKCS10CertificateRequest) {
-				csrs.add(((PKCS10CertificateRequest) object).toPKCS10());
-			} else if (object instanceof X509CRL) {
-				crls.add((X509CRL) object);
-			} else {
-				throw new IOException("Unexpected certificate object type: " + object.getClass());
-			}
-		}
-
-		List<Object> preparedObjects = new ArrayList<>(objects.size());
-
-		preparedObjects.addAll(crts);
-		preparedObjects.addAll(keys);
-		preparedObjects.addAll(csrs);
-		preparedObjects.addAll(crls);
-		return preparedObjects;
 	}
 
 	private static X509Certificate convertCRT(X509CertificateHolder pemObject) throws IOException {

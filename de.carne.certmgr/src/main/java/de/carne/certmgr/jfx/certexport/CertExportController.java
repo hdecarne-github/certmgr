@@ -364,18 +364,16 @@ public class CertExportController extends StageController {
 
 		String clipboardData = text.toString();
 
-		PlatformHelper.runLater(() -> exportToClipboardHelper(clipboardData));
+		PlatformHelper.runLater(() -> {
+			Clipboard clipboard = Clipboard.getSystemClipboard();
+			ClipboardContent content = new ClipboardContent();
+
+			content.putString(clipboardData);
+			clipboard.setContent(content);
+		});
 	}
 
-	private void exportToClipboardHelper(String clipboardData) {
-		Clipboard clipboard = Clipboard.getSystemClipboard();
-		ClipboardContent content = new ClipboardContent();
-
-		content.putString(clipboardData);
-		clipboard.setContent(content);
-	}
-
-	List<Object> getExportObjects(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
+	List<Object> getExportObjectList(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
 			boolean exportCSR, boolean exportCRL) throws IOException {
 		List<Object> exportObjects = new ArrayList<>();
 
@@ -386,12 +384,12 @@ public class CertExportController extends StageController {
 
 				while (!issuer.isSelfSigned()) {
 					if (issuer.hasCRT()) {
-						exportObjects.add(issuer.getCRT());
+						exportObjects.add(0, issuer.getCRT());
 					}
 					issuer = issuer.issuer();
 				}
 				if (exportChainRoot && issuer.hasCRT()) {
-					exportObjects.add(issuer.getCRT());
+					exportObjects.add(0, issuer.getCRT());
 				}
 			}
 		}
@@ -437,7 +435,7 @@ public class CertExportController extends StageController {
 
 		@Override
 		protected Void call() throws Exception {
-			List<Object> exportObjects = getExportObjects(this.exportCert, this.exportChain, this.exportChainRoot,
+			List<Object> exportObjects = getExportObjectList(this.exportCert, this.exportChain, this.exportChainRoot,
 					this.exportKey, this.exportCSR, this.exportCRL);
 
 			export(this.exportFormat, this.exportParam, exportObjects, this.encrypt);
