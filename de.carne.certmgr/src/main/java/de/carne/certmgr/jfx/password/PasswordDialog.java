@@ -67,20 +67,20 @@ public final class PasswordDialog implements PasswordCallback {
 
 	@Override
 	public char[] queryPassword(String resource) {
-		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, null));
+		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, null), false);
 	}
 
 	@Override
 	public char[] requeryPassword(String resource, Throwable cause) {
-		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, cause));
+		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, cause), true);
 	}
 
-	private char[] queryPasswordHelper(Supplier<PasswordResult> query) {
+	private char[] queryPasswordHelper(Supplier<PasswordResult> query, boolean requery) {
 		PasswordResult passwordResult;
 
 		if (this.cancelAll) {
 			passwordResult = PasswordResult.CANCEL;
-		} else if (this.rememberedPassword != null) {
+		} else if (!requery && this.rememberedPassword != null) {
 			passwordResult = new PasswordResult(ButtonType.YES, this.rememberedPassword, true);
 		} else {
 			passwordResult = PlatformHelper.runLater(query);

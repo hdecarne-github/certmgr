@@ -26,16 +26,13 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.pkcs.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
@@ -56,6 +53,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.certmgr.util.KeyPairResolver;
 import de.carne.io.IOHelper;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -104,41 +102,45 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		if (pkcs12 != null) {
 			certObjects = new ArrayList<>();
 
-			KeyPairResolver<ASN1Encodable> keyPairs = new KeyPairResolver<>();
+			KeyPairResolver keyPairs = new KeyPairResolver();
 
-			for (ContentInfo contentInfo : pkcs12.getContentInfos()) {
-				ASN1ObjectIdentifier contentType = contentInfo.getContentType();
-				PKCS12SafeBagFactory safeBagFactory;
+			try {
+				for (ContentInfo contentInfo : pkcs12.getContentInfos()) {
+					ASN1ObjectIdentifier contentType = contentInfo.getContentType();
+					PKCS12SafeBagFactory safeBagFactory;
 
-				if (contentType.equals(PKCSObjectIdentifiers.encryptedData)) {
-					safeBagFactory = getSafeBagFactory(contentInfo, in.resource(), password);
-				} else {
-					safeBagFactory = getSafeBagFactory(contentInfo);
-				}
-				for (PKCS12SafeBag safeBag : safeBagFactory.getSafeBags()) {
-					Object safeBagValue = safeBag.getBagValue();
-
-					if (safeBagValue instanceof X509CertificateHolder) {
-						X509Certificate crt = convertCRT((X509CertificateHolder) safeBagValue);
-
-						resolveKey(keyPairs, safeBag.getAttributes(), crt.getPublicKey(), null);
-						certObjects.add(crt);
-					} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
-						PrivateKey privateKey = convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
-								in.resource(), password);
-
-						resolveKey(keyPairs, safeBag.getAttributes(), null, privateKey);
-					} else if (safeBagValue instanceof PrivateKeyInfo) {
-						PrivateKey privateKey = convertPrivateKey((PrivateKeyInfo) safeBagValue);
-
-						resolveKey(keyPairs, safeBag.getAttributes(), null, privateKey);
+					if (contentType.equals(PKCSObjectIdentifiers.encryptedData)) {
+						safeBagFactory = getSafeBagFactory(contentInfo, in.resource(), password);
 					} else {
-						LOG.warning("Ignoring unrecognized PKCS#12 object of type {0}",
-								safeBagValue.getClass().getName());
+						safeBagFactory = getSafeBagFactory(contentInfo);
+					}
+					for (PKCS12SafeBag safeBag : safeBagFactory.getSafeBags()) {
+						Object safeBagValue = safeBag.getBagValue();
+
+						if (safeBagValue instanceof X509CertificateHolder) {
+							X509Certificate crt = convertCRT((X509CertificateHolder) safeBagValue);
+
+							keyPairs.addPublicKey(crt.getPublicKey());
+							certObjects.add(crt);
+						} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
+							PrivateKey privateKey = convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
+									in.resource(), password);
+
+							keyPairs.addPrivateKey(privateKey);
+						} else if (safeBagValue instanceof PrivateKeyInfo) {
+							PrivateKey privateKey = convertPrivateKey((PrivateKeyInfo) safeBagValue);
+
+							keyPairs.addPrivateKey(privateKey);
+						} else {
+							LOG.warning("Ignoring unrecognized PKCS#12 object of type {0}",
+									safeBagValue.getClass().getName());
+						}
 					}
 				}
+				certObjects.addAll(keyPairs.resolve());
+			} catch (GeneralSecurityException e) {
+				e.printStackTrace();
 			}
-			certObjects.addAll(keyPairs.resolve());
 		}
 		return certObjects;
 	}
@@ -276,22 +278,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 			throw new CertProviderException(e);
 		}
 		return privateKey;
-	}
-
-	private static void resolveKey(KeyPairResolver<ASN1Encodable> keyPairs, Attribute[] safeBagAttributes,
-			@Nullable PublicKey publicKey, @Nullable PrivateKey privateKey) {
-		for (Attribute safeBagAttribute : safeBagAttributes) {
-			if (safeBagAttribute.getAttrType().equals(PKCS12SafeBag.localKeyIdAttribute)) {
-				ASN1Encodable keyId = safeBagAttribute.getAttributeValues()[0];
-
-				if (publicKey != null) {
-					keyPairs.addPublicKey(keyId, publicKey);
-				}
-				if (privateKey != null) {
-					keyPairs.addPrivateKey(keyId, privateKey);
-				}
-			}
-		}
 	}
 
 	@Override
