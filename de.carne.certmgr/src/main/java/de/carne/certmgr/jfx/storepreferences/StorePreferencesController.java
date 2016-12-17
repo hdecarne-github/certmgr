@@ -259,7 +259,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_INVALID_NAME(a));
 
 		InputValidator.isTrue(!Files.exists(storeHome),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_STORE_HOME_EXISTS(a));
+				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_STORE_HOME_EXISTS(storeHome));
 		return storeHome;
 	}
 
