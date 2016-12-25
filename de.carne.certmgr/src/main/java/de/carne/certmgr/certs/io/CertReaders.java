@@ -28,9 +28,10 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
-import java.util.List;
 
+import de.carne.certmgr.certs.CertObject;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.util.ProviderMap;
@@ -61,7 +62,7 @@ public final class CertReaders {
 	 *         certificate data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
-	public static List<Object> readFile(Path file, PasswordCallback password) throws IOException {
+	public static Collection<CertObject> readFile(Path file, PasswordCallback password) throws IOException {
 		assert file != null;
 		assert password != null;
 
@@ -76,7 +77,7 @@ public final class CertReaders {
 			}
 		}
 
-		List<Object> certObjects = null;
+		Collection<CertObject> certObjects = null;
 
 		for (CertReader reader : certReaders) {
 			try (IOResource<InputStream> in = IOResource.newInputStream(file.toString(), file,
@@ -102,7 +103,7 @@ public final class CertReaders {
 	 *         certificate data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
-	public static List<Object> readURL(URL url, PasswordCallback password) throws IOException {
+	public static Collection<CertObject> readURL(URL url, PasswordCallback password) throws IOException {
 		assert url != null;
 		assert password != null;
 
@@ -127,7 +128,7 @@ public final class CertReaders {
 			}
 		}
 
-		List<Object> certObjects = null;
+		Collection<CertObject> certObjects = null;
 
 		for (CertReader reader : certReaders) {
 			try (IOResource<InputStream> in = new IOResource<>(url.openStream(), file.toString())) {
@@ -143,7 +144,7 @@ public final class CertReaders {
 	private static boolean matchFileName(CertReader reader, Path fileName) {
 		boolean matches = false;
 
-		for (String filterExtension : reader.fileExtensions()) {
+		for (String filterExtension : reader.fileExtensionPatterns()) {
 			PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + filterExtension);
 
 			if (matcher.matches(fileName)) {
@@ -167,11 +168,12 @@ public final class CertReaders {
 	 *         certificate data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
-	public static List<Object> readString(String data, String resource, PasswordCallback password) throws IOException {
+	public static Collection<CertObject> readString(String data, String resource, PasswordCallback password)
+			throws IOException {
 		assert data != null;
 		assert password != null;
 
-		List<Object> certObjects = null;
+		Collection<CertObject> certObjects = null;
 
 		for (CertReader reader : REGISTERED.providers()) {
 			try (IOResource<Reader> in = new IOResource<>(new StringReader(data), resource)) {

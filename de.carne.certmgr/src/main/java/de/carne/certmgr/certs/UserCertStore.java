@@ -173,11 +173,11 @@ public final class UserCertStore {
 		assert files != null;
 		assert password != null;
 
-		List<Object> certObjects = new ArrayList<>();
+		Collection<CertObject> certObjects = new ArrayList<>();
 
 		for (Path file : files) {
 			try {
-				List<Object> fileCertObjects = CertReaders.readFile(file, password);
+				Collection<CertObject> fileCertObjects = CertReaders.readFile(file, password);
 
 				if (fileCertObjects != null) {
 					certObjects.addAll(fileCertObjects);
@@ -205,7 +205,7 @@ public final class UserCertStore {
 		assert url != null;
 		assert password != null;
 
-		List<Object> certObjects = CertReaders.readURL(url, password);
+		Collection<CertObject> certObjects = CertReaders.readURL(url, password);
 
 		return createFromCertObjects(certObjects);
 	}
@@ -223,12 +223,12 @@ public final class UserCertStore {
 	public static UserCertStore createFromServer(SSLPeer.Protocol protocol, String host, int port) throws IOException {
 		SSLPeer sslPeer = SSLPeer.getInstance(host, port);
 		Certificate[] certificates = sslPeer.readCertificates(protocol);
-		List<Object> certObjects = new ArrayList<>();
+		Collection<CertObject> certObjects = new ArrayList<>();
 
 		if (certificates != null) {
-			for (Certificate cert : certificates) {
-				if (cert instanceof X509Certificate) {
-					certObjects.add(cert);
+			for (Certificate certificate : certificates) {
+				if (certificate instanceof X509Certificate) {
+					certObjects.add(CertObject.wrap(certObjects.size(), certificate));
 				}
 			}
 		}
@@ -252,7 +252,7 @@ public final class UserCertStore {
 		assert resource != null;
 		assert password != null;
 
-		List<Object> certObjects = CertReaders.readString(data, resource, password);
+		Collection<CertObject> certObjects = CertReaders.readString(data, resource, password);
 
 		return createFromCertObjects(certObjects);
 	}
@@ -329,7 +329,7 @@ public final class UserCertStore {
 		assert request != null;
 		assert password != null;
 
-		List<Object> certObjects = generator.generateCert(request, password);
+		Collection<CertObject> certObjects = generator.generateCert(request, password);
 		Set<UserCertStoreEntry> mergedEntries = mergeCertObjects(certObjects, newPassword, aliasHint);
 
 		assert mergedEntries.size() == 1;
@@ -376,19 +376,20 @@ public final class UserCertStore {
 		assert entry != null;
 		assert newPassword != null;
 
-		List<Object> certObjects = new ArrayList<>();
+		Collection<CertObject> certObjects = new ArrayList<>();
+		String entryAlias = entry.id().getAlias();
 
 		if (entry.hasCRT()) {
-			certObjects.add(entry.getCRT());
+			certObjects.add(CertObject.wrap(entryAlias, entry.getCRT()));
 		}
 		if (entry.hasKey()) {
-			certObjects.add(entry.getKey());
+			certObjects.add(CertObject.wrap(entryAlias, entry.getKey()));
 		}
 		if (entry.hasCSR()) {
-			certObjects.add(entry.getCSR());
+			certObjects.add(CertObject.wrap(entryAlias, entry.getCSR()));
 		}
 		if (entry.hasCRL()) {
-			certObjects.add(entry.getCRL());
+			certObjects.add(CertObject.wrap(entryAlias, entry.getCRL()));
 		}
 
 		Set<UserCertStoreEntry> mergedEntries = mergeCertObjects(certObjects, newPassword, aliasHint);
@@ -497,7 +498,7 @@ public final class UserCertStore {
 		resetIssuers();
 	}
 
-	private static UserCertStore createFromCertObjects(List<Object> certObjects) throws IOException {
+	private static UserCertStore createFromCertObjects(Collection<CertObject> certObjects) throws IOException {
 		UserCertStore store = null;
 
 		if (certObjects != null && !certObjects.isEmpty()) {
@@ -507,30 +508,30 @@ public final class UserCertStore {
 		return store;
 	}
 
-	private synchronized Set<UserCertStoreEntry> mergeCertObjects(List<Object> certObjects,
+	private synchronized Set<UserCertStoreEntry> mergeCertObjects(Collection<CertObject> certObjects,
 			PasswordCallback newPassword, String aliasHint) throws IOException {
 		Set<UserCertStoreEntry> mergedEntries = new HashSet<>();
 
 		// First merge CRT and CSR objects as they provide the entry's DN
-		for (Object certObject : certObjects) {
+		for (CertObject certObject : certObjects) {
 			UserCertStoreEntry mergedEntry = null;
 
-			if (certObject instanceof X509Certificate) {
-				mergedEntry = mergeX509Certificate((X509Certificate) certObject, aliasHint);
-			} else if (certObject instanceof PKCS10CertificateRequest) {
-				mergedEntry = mergePKCS10CertificateRequest((PKCS10CertificateRequest) certObject, aliasHint);
+			if (certObject.isCRT()) {
+				mergedEntry = mergeX509Certificate(certObject.getCRT(), aliasHint);
+			} else if (certObject.isCSR()) {
+				mergedEntry = mergePKCS10CertificateRequest(certObject.getCSR(), aliasHint);
 			}
 			if (mergedEntry != null) {
 				mergedEntries.add(mergedEntry);
 			}
 		}
-		for (Object certObject : certObjects) {
+		for (CertObject certObject : certObjects) {
 			UserCertStoreEntry mergedEntry = null;
 
-			if (certObject instanceof KeyPair) {
-				mergedEntry = mergeKey((KeyPair) certObject, newPassword);
-			} else if (certObject instanceof X509CRL) {
-				mergedEntry = mergeX509CRL((X509CRL) certObject, aliasHint);
+			if (certObject.isKey()) {
+				mergedEntry = mergeKey(certObject.getKey(), newPassword);
+			} else if (certObject.isCRL()) {
+				mergedEntry = mergeX509CRL(certObject.getCRL(), aliasHint);
 			}
 			if (mergedEntry != null) {
 				mergedEntries.add(mergedEntry);

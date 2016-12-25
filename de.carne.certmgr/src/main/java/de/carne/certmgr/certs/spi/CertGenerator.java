@@ -17,8 +17,9 @@
 package de.carne.certmgr.certs.spi;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
+import de.carne.certmgr.certs.CertObject;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -110,6 +111,6 @@ public interface CertGenerator extends NamedProvider {
 	 * @return The generated certificate objects.
 	 * @throws IOException if an error occurs during generation.
 	 */
-	List<Object> generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException;
+	Collection<CertObject> generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException;
 
 }

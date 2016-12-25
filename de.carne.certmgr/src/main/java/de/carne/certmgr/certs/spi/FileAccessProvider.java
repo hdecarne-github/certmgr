@@ -35,6 +35,15 @@ public interface FileAccessProvider {
 	 *
 	 * @return The usual file name extensions used by this provider.
 	 */
-	String[] fileExtensions();
+	String[] fileExtensionPatterns();
+
+	/**
+	 * Get the file extension for a specific certificate object type.
+	 *
+	 * @param cls The certificate object type to get the extension for.
+	 * @return The extension suitable for the submitted certificate object type
+	 *         or a default extension.
+	 */
+	String fileExtension(Class<?> cls);
 
 }

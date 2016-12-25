@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.test.certs;
+package de.carne.certmgr.test.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import de.carne.certmgr.util.ProviderMap;
 /**
  * Test SPI class access via {@link ProviderMap} class.
  */
-public class ProviderTest {
+public class ProviderMapTest {
 
 	/**
 	 * Test {@link CertReader} provider.

@@ -132,7 +132,7 @@ public class CertExportController extends StageController {
 		CertWriter writer = this.ctlFormatOption.getValue();
 
 		if (writer != null) {
-			extensionFilters.add(new ExtensionFilter(writer.fileType(), writer.fileExtensions()));
+			extensionFilters.add(new ExtensionFilter(writer.fileType(), writer.fileExtensionPatterns()));
 		}
 		extensionFilters.add(FileChooserHelper.filterFromString(CertExportI18N.formatSTR_FILTER_ALLFILES()));
 		chooser.getExtensionFilters().addAll(extensionFilters);

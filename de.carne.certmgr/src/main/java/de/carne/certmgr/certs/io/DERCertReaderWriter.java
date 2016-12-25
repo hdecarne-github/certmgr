@@ -22,22 +22,24 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.security.GeneralSecurityException;
+import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import de.carne.certmgr.certs.CertObject;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
+import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
@@ -46,15 +48,11 @@ import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
 /**
- * DER I/O support.
+ * DER read/write support.
  */
-public class DERCertReaderWriter implements CertReader, CertWriter {
+public class DERCertReaderWriter extends JCAConversion implements CertReader, CertWriter {
 
 	private static final Log LOG = new Log();
-
-	private static final JcaX509CertificateConverter CRT_CONVERTER = new JcaX509CertificateConverter();
-
-	private static final JcaX509CRLConverter CRL_CONVERTER = new JcaX509CRLConverter();
 
 	/**
 	 * Provider name.
@@ -72,54 +70,80 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public String[] fileExtensions() {
-		return Strings.split(CertIOI18N.formatSTR_DER_EXTENSIONS(), "|");
+	public String[] fileExtensionPatterns() {
+		return Strings.split(CertIOI18N.formatSTR_DER_EXTENSION_PATTERNS(), "|");
 	}
 
 	@Override
-	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+	public String fileExtension(Class<?> cls) {
+		String extension;
+
+		if (X509Certificate.class.isAssignableFrom(cls)) {
+			extension = ".crt";
+		} else if (KeyPair.class.isAssignableFrom(cls)) {
+			extension = ".key";
+		} else if (PKCS10CertificateRequest.class.isAssignableFrom(cls)) {
+			extension = ".csr";
+		} else if (X509CRL.class.isAssignableFrom(cls)) {
+			extension = ".crl";
+		} else {
+			extension = fileExtensionPatterns()[0].replace("*", "");
+		}
+		return extension;
+	}
+
+	@Override
+	@Nullable
+	public Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
 
 		LOG.debug("Trying to read DER objects from: ''{0}''...", in);
 
-		List<Object> certObjects = null;
+		Collection<CertObject> certObjects = null;
 
-		try (ASN1InputStream asn1Stream = new ASN1InputStream(in.io())) {
-			ASN1Primitive asn1Object;
+		try (ASN1InputStream derStream = new ASN1InputStream(in.io())) {
+			int crtIndex = 0;
+			int keyIndex = 0;
+			int csrIndex = 0;
+			int crlIndex = 0;
+			ASN1Primitive derObject;
 
-			while ((asn1Object = asn1Stream.readObject()) != null) {
+			while ((derObject = derStream.readObject()) != null) {
 				if (certObjects == null) {
 					certObjects = new ArrayList<>();
 				}
 
-				X509Certificate crt = decodeCRT(asn1Object);
+				X509Certificate crt = decodeCRT(derObject);
 
 				if (crt != null) {
-					certObjects.add(crt);
+					certObjects.add(CertObject.wrap(crtIndex, crt));
 					continue;
 				}
 
-				PKCS10CertificateRequest csr = decodeCSR(asn1Object);
+				PKCS10CertificateRequest csr = decodeCSR(derObject);
 
 				if (csr != null) {
-					certObjects.add(csr);
+					certObjects.add(CertObject.wrap(csrIndex, csr));
 					continue;
 				}
 
-				X509CRL crl = decodeCRL(asn1Object);
+				X509CRL crl = decodeCRL(derObject);
 
 				if (crl != null) {
-					certObjects.add(crl);
+					certObjects.add(CertObject.wrap(crlIndex, crl));
 					continue;
 				}
+
+				LOG.warning("Ignoring unrecognized DER object of type {0}", derObject.getClass().getName());
 			}
 		}
 		return certObjects;
 	}
 
 	@Override
-	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	@Nullable
+	public Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
 
@@ -141,15 +165,21 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 	@Override
 	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
-		// TODO Auto-generated method stub
-
+		for (Object certObject : certObjects) {
+			writeObject(out, certObject);
+		}
 	}
 
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
-		// TODO Auto-generated method stub
-
+		for (Object certObject : certObjects) {
+			if (certObject instanceof KeyPair) {
+				writeEncryptedObject(out, certObject, newPassword);
+			} else {
+				writeObject(out, certObject);
+			}
+		}
 	}
 
 	@Override
@@ -162,6 +192,50 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
+	}
+
+	private static void writeObject(IOResource<OutputStream> out, Object object) throws IOException {
+		LOG.debug("Writing DER object ''{0}'' to resource ''{1}''...", object.getClass().getName(), out.resource());
+
+		try {
+			if (object instanceof X509Certificate) {
+				out.io().write(((X509Certificate) object).getEncoded());
+			} else if (object instanceof KeyPair) {
+
+			} else if (object instanceof PKCS10CertificateRequest) {
+				out.io().write(((PKCS10CertificateRequest) object).toPKCS10().getEncoded());
+			} else if (object instanceof X509CRL) {
+				out.io().write(((X509CRL) object).getEncoded());
+			}
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
+	}
+
+	private static void writeEncryptedObject(IOResource<OutputStream> out, Object object, PasswordCallback password)
+			throws IOException {
+		LOG.debug("Writing encrypted DER object ''{0}'' to resource ''{1}''...", object.getClass().getName(),
+				out.resource());
+
+		char[] passwordChars = password.queryPassword(out.resource());
+
+		if (passwordChars == null) {
+			throw new PasswordRequiredException(out.resource());
+		}
+
+		try {
+			if (object instanceof X509Certificate) {
+				out.io().write(((X509Certificate) object).getEncoded());
+			} else if (object instanceof KeyPair) {
+
+			} else if (object instanceof PKCS10CertificateRequest) {
+				out.io().write(((PKCS10CertificateRequest) object).toPKCS10().getEncoded());
+			} else if (object instanceof X509CRL) {
+				out.io().write(((X509CRL) object).getEncoded());
+			}
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
 	}
 
 	private static X509Certificate decodeCRT(ASN1Primitive asn1Object) throws IOException {
@@ -195,32 +269,6 @@ public class DERCertReaderWriter implements CertReader, CertWriter {
 			Exceptions.ignore(e);
 		}
 		return (crlObject != null ? convertCRL(crlObject) : null);
-	}
-
-	private static X509Certificate convertCRT(X509CertificateHolder pemObject) throws IOException {
-		X509Certificate crt;
-
-		try {
-			crt = CRT_CONVERTER.getCertificate(pemObject);
-		} catch (GeneralSecurityException e) {
-			throw new CertProviderException(e);
-		}
-		return crt;
-	}
-
-	private static PKCS10CertificateRequest convertCSR(PKCS10CertificationRequest pemObject) throws IOException {
-		return PKCS10CertificateRequest.fromPKCS10(pemObject);
-	}
-
-	private static X509CRL convertCRL(X509CRLHolder pemObject) throws IOException {
-		X509CRL crl;
-
-		try {
-			crl = CRL_CONVERTER.getCRL(pemObject);
-		} catch (GeneralSecurityException e) {
-			throw new CertProviderException(e);
-		}
-		return crl;
 	}
 
 	@Override

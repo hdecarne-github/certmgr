@@ -181,7 +181,7 @@ public class CertImportController extends StageController {
 
 		extensionFilters.add(FileChooserHelper.filterFromString(CertImportI18N.formatSTR_FILTER_ALLFILES()));
 		for (CertReader reader : CertReaders.REGISTERED.providers()) {
-			extensionFilters.add(new ExtensionFilter(reader.fileType(), reader.fileExtensions()));
+			extensionFilters.add(new ExtensionFilter(reader.fileType(), reader.fileExtensionPatterns()));
 		}
 
 		chooser.getExtensionFilters().addAll(extensionFilters);

@@ -22,17 +22,15 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CRLConverter;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.openssl.EncryptionException;
 import org.bouncycastle.openssl.PEMDecryptorProvider;
 import org.bouncycastle.openssl.PEMEncryptedKeyPair;
@@ -45,7 +43,7 @@ import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import de.carne.certmgr.certs.CertProviderException;
+import de.carne.certmgr.certs.CertObject;
 import de.carne.certmgr.certs.NoPassword;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
@@ -57,9 +55,9 @@ import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
 /**
- * PEM I/O support.
+ * PEM read/write support.
  */
-public class PEMCertReaderWriter implements CertReader, CertWriter {
+public class PEMCertReaderWriter extends JCAConversion implements CertReader, CertWriter {
 
 	private static final Log LOG = new Log();
 
@@ -75,11 +73,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 
 	private static final JcePEMEncryptorBuilder PEM_ENCRYPTOR_BUILDER = new JcePEMEncryptorBuilder(PEM_ENCRYPTION);
 
-	private static final JcaX509CertificateConverter CRT_CONVERTER = new JcaX509CertificateConverter();
-
-	private static final JcaPEMKeyConverter KEY_CONVERTER = new JcaPEMKeyConverter();
-
-	private static final JcaX509CRLConverter CRL_CONVERTER = new JcaX509CRLConverter();
+	private static final JcaPEMKeyConverter PEM_KEY_CONVERTER = new JcaPEMKeyConverter();
 
 	@Override
 	public String providerName() {
@@ -92,19 +86,39 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public String[] fileExtensions() {
-		return Strings.split(CertIOI18N.formatSTR_PEM_EXTENSIONS(), "|");
+	public String[] fileExtensionPatterns() {
+		return Strings.split(CertIOI18N.formatSTR_PEM_EXTENSION_PATTERNS(), "|");
 	}
 
 	@Override
-	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+	public String fileExtension(Class<?> cls) {
+		String extension;
+
+		if (X509Certificate.class.isAssignableFrom(cls)) {
+			extension = ".crt";
+		} else if (KeyPair.class.isAssignableFrom(cls)) {
+			extension = ".key";
+		} else if (PKCS10CertificateRequest.class.isAssignableFrom(cls)) {
+			extension = ".csr";
+		} else if (X509CRL.class.isAssignableFrom(cls)) {
+			extension = ".crl";
+		} else {
+			extension = fileExtensionPatterns()[0].replace("*", "");
+		}
+		return extension;
+	}
+
+	@Override
+	@Nullable
+	public Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 
 		return readObjectsBinary(in, password);
 	}
 
 	@Override
-	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	@Nullable
+	public Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		assert in != null;
 
 		return readObjectsString(in, password);
@@ -175,11 +189,11 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
-	public static List<Object> readObjectsBinary(IOResource<InputStream> in, PasswordCallback password)
+	public static Collection<CertObject> readObjectsBinary(IOResource<InputStream> in, PasswordCallback password)
 			throws IOException {
 		assert in != null;
 
-		List<Object> certObjects;
+		Collection<CertObject> certObjects;
 
 		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
 			certObjects = readObjectsString(inReader, password);
@@ -197,13 +211,14 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	 *         input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
-	public static List<Object> readObjectsString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	public static Collection<CertObject> readObjectsString(IOResource<Reader> in, PasswordCallback password)
+			throws IOException {
 		assert in != null;
 		assert password != null;
 
 		LOG.debug("Trying to read PEM objects from: ''{0}''...", in);
 
-		List<Object> certObjects = null;
+		Collection<CertObject> certObjects = null;
 
 		try (PEMParser parser = new PEMParser(in.io())) {
 			Object pemObject;
@@ -214,6 +229,12 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 				LOG.info(e, "No PEM objects recognized in: ''{0}''", in);
 				pemObject = null;
 			}
+
+			int crtIndex = 0;
+			int keyIndex = 0;
+			int csrIndex = 0;
+			int crlIndex = 0;
+
 			while (pemObject != null) {
 				if (certObjects == null) {
 					certObjects = new ArrayList<>();
@@ -222,15 +243,21 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 				LOG.info("Decoding PEM object of type {0}", pemObject.getClass().getName());
 
 				if (pemObject instanceof X509CertificateHolder) {
-					certObjects.add(convertCRT((X509CertificateHolder) pemObject));
+					certObjects.add(CertObject.wrap("crt" + crtIndex, convertCRT((X509CertificateHolder) pemObject)));
+					crtIndex++;
 				} else if (pemObject instanceof PEMKeyPair) {
-					certObjects.add(convertKey((PEMKeyPair) pemObject));
+					certObjects.add(CertObject.wrap(keyIndex, convertKey((PEMKeyPair) pemObject)));
+					keyIndex++;
 				} else if (pemObject instanceof PEMEncryptedKeyPair) {
-					certObjects.add(convertKey((PEMEncryptedKeyPair) pemObject, in.resource(), password));
+					certObjects.add(CertObject.wrap(keyIndex,
+							convertKey((PEMEncryptedKeyPair) pemObject, in.resource(), password)));
+					keyIndex++;
 				} else if (pemObject instanceof PKCS10CertificationRequest) {
-					certObjects.add(convertCSR((PKCS10CertificationRequest) pemObject));
+					certObjects.add(CertObject.wrap(csrIndex, convertCSR((PKCS10CertificationRequest) pemObject)));
+					csrIndex++;
 				} else if (pemObject instanceof X509CRLHolder) {
-					certObjects.add(convertCRL((X509CRLHolder) pemObject));
+					certObjects.add(CertObject.wrap(crlIndex, convertCRL((X509CRLHolder) pemObject)));
+					crlIndex++;
 				} else {
 					LOG.warning("Ignoring unrecognized PEM object of type {0}", pemObject.getClass().getName());
 				}
@@ -268,7 +295,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public static X509Certificate readCRTString(IOResource<Reader> in) throws IOException {
 		assert in != null;
 
-		return readObjectString(X509Certificate.class, in, NoPassword.getInstance());
+		return readObjectString(in, NoPassword.getInstance()).getCRT();
 	}
 
 	/**
@@ -303,7 +330,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		assert in != null;
 		assert password != null;
 
-		return readObjectString(KeyPair.class, in, password);
+		return readObjectString(in, password).getKey();
 	}
 
 	/**
@@ -334,7 +361,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public static PKCS10CertificateRequest readCSRString(IOResource<Reader> in) throws IOException {
 		assert in != null;
 
-		return readObjectString(PKCS10CertificateRequest.class, in, NoPassword.getInstance());
+		return readObjectString(in, NoPassword.getInstance()).getCSR();
 	}
 
 	/**
@@ -365,12 +392,11 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	public static X509CRL readCRLString(IOResource<Reader> in) throws IOException {
 		assert in != null;
 
-		return readObjectString(X509CRL.class, in, NoPassword.getInstance());
+		return readObjectString(in, NoPassword.getInstance()).getCRL();
 	}
 
-	private static <T> T readObjectString(Class<T> type, IOResource<Reader> in, PasswordCallback password)
-			throws IOException {
-		List<Object> certObjects = readObjectsString(in, password);
+	private static CertObject readObjectString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+		Collection<CertObject> certObjects = readObjectsString(in, password);
 		int certObjectsCount = (certObjects != null ? certObjects.size() : 0);
 
 		if (certObjectsCount != 1) {
@@ -379,12 +405,7 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 
 		assert certObjects != null;
 
-		Object certObject = certObjects.get(0);
-
-		if (!type.isInstance(certObject)) {
-			throw new IOException(certObject.getClass().getName() + " read (expected " + type.getName() + ")");
-		}
-		return type.cast(certObject);
+		return certObjects.iterator().next();
 	}
 
 	/**
@@ -526,7 +547,11 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 	private static void writeObject(JcaPEMWriter writer, String resource, Object object) throws IOException {
 		LOG.debug("Writing PEM object ''{0}'' to resource ''{1}''...", object.getClass().getName(), resource);
 
-		writer.writeObject(object);
+		if (object instanceof PKCS10CertificateRequest) {
+			writer.writeObject(((PKCS10CertificateRequest) object).toPKCS10());
+		} else {
+			writer.writeObject(object);
+		}
 	}
 
 	private static void writeEncryptedObject(JcaPEMWriter writer, String resource, Object object,
@@ -539,21 +564,6 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 			throw new PasswordRequiredException(resource);
 		}
 		writer.writeObject(object, PEM_ENCRYPTOR_BUILDER.build(passwordChars));
-	}
-
-	private static X509Certificate convertCRT(X509CertificateHolder pemObject) throws IOException {
-		X509Certificate crt;
-
-		try {
-			crt = CRT_CONVERTER.getCertificate(pemObject);
-		} catch (GeneralSecurityException e) {
-			throw new CertProviderException(e);
-		}
-		return crt;
-	}
-
-	private static KeyPair convertKey(PEMKeyPair pemObject) throws IOException {
-		return KEY_CONVERTER.getKeyPair(pemObject);
 	}
 
 	private static KeyPair convertKey(PEMEncryptedKeyPair pemObject, String resource, PasswordCallback password)
@@ -581,19 +591,8 @@ public class PEMCertReaderWriter implements CertReader, CertWriter {
 		return convertKey(pemKeyPair);
 	}
 
-	private static PKCS10CertificateRequest convertCSR(PKCS10CertificationRequest pemObject) throws IOException {
-		return PKCS10CertificateRequest.fromPKCS10(pemObject);
-	}
-
-	private static X509CRL convertCRL(X509CRLHolder pemObject) throws IOException {
-		X509CRL crl;
-
-		try {
-			crl = CRL_CONVERTER.getCRL(pemObject);
-		} catch (GeneralSecurityException e) {
-			throw new CertProviderException(e);
-		}
-		return crl;
+	private static KeyPair convertKey(PEMKeyPair pemObject) throws IOException {
+		return PEM_KEY_CONVERTER.getKeyPair(pemObject);
 	}
 
 	@Override

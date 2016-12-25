@@ -19,10 +19,11 @@ package de.carne.certmgr.certs.spi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.List;
+import java.util.Collection;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import de.carne.certmgr.certs.CertObject;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.IOResource;
@@ -51,7 +52,7 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	@Nullable
-	List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException;
+	Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException;
 
 	/**
 	 * Read all available certificate objects.
@@ -63,6 +64,6 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	@Nullable
-	List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException;
+	Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException;
 
 }

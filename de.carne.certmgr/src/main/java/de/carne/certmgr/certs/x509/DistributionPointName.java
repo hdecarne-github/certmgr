@@ -93,7 +93,8 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	 *
 	 * @return The full name or {@code null} if the relative name is set.
 	 */
-	public @Nullable GeneralNames getFullName() {
+	@Nullable
+	public GeneralNames getFullName() {
 		return this.fullName;
 	}
 
@@ -102,7 +103,8 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	 *
 	 * @return The relative name or {@code null} if the full name is set.
 	 */
-	public @Nullable X500Principal getRelativeName() {
+	@Nullable
+	public X500Principal getRelativeName() {
 		return this.nameRelativeToCRLIssuer;
 	}
 

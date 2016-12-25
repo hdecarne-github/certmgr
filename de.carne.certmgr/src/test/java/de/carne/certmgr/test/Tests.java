@@ -14,15 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.carne.certmgr.certs;
+package de.carne.certmgr.test;
 
-import java.io.IOException;
-import java.nio.file.Path;
+import de.carne.certmgr.certs.PasswordCallback;
+import de.carne.certmgr.certs.StaticPassword;
 
-interface CertObjectHolder<T> {
+/**
+ * Common test data and functions.
+ */
+public final class Tests {
 
-	Path path();
+	private static final char[] TEST_PASSWORD = "password".toCharArray();
 
-	T get() throws IOException;
+	/**
+	 * @return The password callback for test data access.
+	 */
+	public static PasswordCallback password() {
+		return StaticPassword.getInstance(TEST_PASSWORD);
+	}
 
 }

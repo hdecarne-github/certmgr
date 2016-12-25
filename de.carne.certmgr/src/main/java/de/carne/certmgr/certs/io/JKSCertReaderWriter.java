@@ -30,11 +30,13 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import de.carne.certmgr.certs.CertObject;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
@@ -69,12 +71,18 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public String[] fileExtensions() {
-		return Strings.split(CertIOI18N.formatSTR_JKS_EXTENSIONS(), "|");
+	public String[] fileExtensionPatterns() {
+		return Strings.split(CertIOI18N.formatSTR_JKS_EXTENSION_PATTERNS(), "|");
 	}
 
 	@Override
-	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+	public String fileExtension(Class<?> cls) {
+		return fileExtensionPatterns()[0].replace("*", "");
+	}
+
+	@Override
+	@Nullable
+	public Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
 
@@ -84,7 +92,8 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	@Nullable
+	public Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
 
@@ -106,15 +115,35 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	@Override
 	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
 			throws IOException, UnsupportedOperationException {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
-		// TODO Auto-generated method stub
+		char[] passwordChars = newPassword.queryPassword(out.resource());
 
+		if (passwordChars == null) {
+			throw new PasswordRequiredException(out.resource());
+		}
+		try {
+			KeyStore keyStore = KeyStore.getInstance(INPUT_KEYSTORE_TYPE);
+
+			keyStore.load(null, null);
+
+			int certficiateIndex = 0;
+			int keyIndex = 0;
+
+			for (Object certObject : certObjects) {
+				if (certObject instanceof X509Certificate) {
+					keyStore.setCertificateEntry("certificate" + certficiateIndex, (X509Certificate) certObject);
+					certficiateIndex++;
+				}
+			}
+			keyStore.store(out.io(), passwordChars);
+		} catch (GeneralSecurityException e) {
+			throw new CertProviderException(e);
+		}
 	}
 
 	@Override
@@ -139,8 +168,8 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	@Nullable
-	public static List<Object> readPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
-			throws IOException {
+	public static Collection<CertObject> readPlatformKeyStore(PlatformKeyStore platformKeyStore,
+			PasswordCallback password) throws IOException {
 		assert platformKeyStore != null;
 		assert password != null;
 
@@ -149,9 +178,10 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return readKeyStore(platformKeyStore.algorithm(), null, platformKeyStore.algorithm(), password);
 	}
 
-	private static @Nullable List<Object> readKeyStore(String keyStoreType, @Nullable InputStream inputStream,
+	@Nullable
+	private static Collection<CertObject> readKeyStore(String keyStoreType, @Nullable InputStream inputStream,
 			String resource, PasswordCallback password) throws IOException {
-		List<Object> certObjects = null;
+		Collection<CertObject> certObjects = null;
 		KeyStore keyStore = null;
 
 		try {
@@ -180,13 +210,13 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 						KeyPair key = getKey(alias, aliasKey, aliasCertificate);
 
 						if (key != null) {
-							certObjects.add(key);
+							certObjects.add(CertObject.wrap(alias, key));
 						}
 
 						X509Certificate crt = getCRT(alias, aliasCertificate);
 
 						if (crt != null) {
-							certObjects.add(crt);
+							certObjects.add(CertObject.wrap(alias, crt));
 						}
 					}
 				}

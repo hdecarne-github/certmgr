@@ -30,7 +30,9 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.pkcs.ContentInfo;
@@ -48,6 +50,7 @@ import org.bouncycastle.pkcs.PKCSException;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import de.carne.certmgr.certs.CertObject;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
@@ -85,18 +88,24 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public String[] fileExtensions() {
-		return Strings.split(CertIOI18N.formatSTR_PKCS12_EXTENSIONS(), "|");
+	public String[] fileExtensionPatterns() {
+		return Strings.split(CertIOI18N.formatSTR_PKCS12_EXTENSION_PATTERNS(), "|");
 	}
 
 	@Override
-	public @Nullable List<Object> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+	public String fileExtension(Class<?> cls) {
+		return fileExtensionPatterns()[0].replace("*", "");
+	}
+
+	@Override
+	@Nullable
+	public Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
 
 		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", in);
 
-		List<Object> certObjects = null;
+		Collection<CertObject> certObjects = null;
 		PKCS12PfxPdu pkcs12 = readPKCS12(in);
 
 		if (pkcs12 != null) {
@@ -121,7 +130,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 							X509Certificate crt = convertCRT((X509CertificateHolder) safeBagValue);
 
 							keyPairs.addPublicKey(crt.getPublicKey());
-							certObjects.add(crt);
+							certObjects.add(CertObject.wrap(0, crt));
 						} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
 							PrivateKey privateKey = convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
 									in.resource(), password);
@@ -137,7 +146,8 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 						}
 					}
 				}
-				certObjects.addAll(keyPairs.resolve());
+				certObjects.addAll(
+						keyPairs.resolve().stream().map((key) -> CertObject.wrap(0, key)).collect(Collectors.toList()));
 			} catch (GeneralSecurityException e) {
 				e.printStackTrace();
 			}
@@ -146,7 +156,8 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public @Nullable List<Object> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	@Nullable
+	public Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
 

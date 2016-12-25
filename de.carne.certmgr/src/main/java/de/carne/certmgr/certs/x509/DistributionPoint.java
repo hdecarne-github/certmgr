@@ -106,7 +106,8 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @return The defined distribution point name object or {@code null} if
 	 *         none has been defined.
 	 */
-	public @Nullable DistributionPointName getName() {
+	@Nullable
+	public DistributionPointName getName() {
 		return this.name;
 	}
 
@@ -116,7 +117,8 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @return The defined CRL issuer's names or {@code null} if none have been
 	 *         defined.
 	 */
-	public @Nullable GeneralNames getCRLIssuer() {
+	@Nullable
+	public GeneralNames getCRLIssuer() {
 		return this.crlIssuer;
 	}
 
@@ -137,7 +139,8 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @return The reasons this distribution point is authoritative for or
 	 *         {@code null} if this distribution point is used for all reasons.
 	 */
-	public @Nullable ReasonFlags getReasons() {
+	@Nullable
+	public ReasonFlags getReasons() {
 		return this.reasons;
 	}
 
