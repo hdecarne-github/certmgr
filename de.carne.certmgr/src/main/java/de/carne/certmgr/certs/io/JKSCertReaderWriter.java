@@ -23,20 +23,16 @@ import java.io.Reader;
 import java.io.Writer;
 import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.List;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
@@ -82,7 +78,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	@Nullable
-	public Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
 
@@ -93,7 +89,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	@Nullable
-	public Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
 
@@ -113,13 +109,13 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
+	public void writeBinary(IOResource<OutputStream> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
+	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		char[] passwordChars = newPassword.queryPassword(out.resource());
 
@@ -147,13 +143,13 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeString(IOResource<Writer> out, List<Object> certObjects)
+	public void writeString(IOResource<Writer> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
+	public void writeEncryptedString(IOResource<Writer> out, CertObjectStore certObjects, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
@@ -168,8 +164,8 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	@Nullable
-	public static Collection<CertObject> readPlatformKeyStore(PlatformKeyStore platformKeyStore,
-			PasswordCallback password) throws IOException {
+	public static CertObjectStore readPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
+			throws IOException {
 		assert platformKeyStore != null;
 		assert password != null;
 
@@ -179,9 +175,8 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Nullable
-	private static Collection<CertObject> readKeyStore(String keyStoreType, @Nullable InputStream inputStream,
-			String resource, PasswordCallback password) throws IOException {
-		Collection<CertObject> certObjects = null;
+	private static CertObjectStore readKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
+			PasswordCallback password) throws IOException {
 		KeyStore keyStore = null;
 
 		try {
@@ -193,9 +188,12 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		} catch (IOException e) {
 			LOG.info(e, "No KeyStore objects recognized in: ''{0}''", resource);
 		}
+
+		CertObjectStore certObjects = null;
+
 		if (keyStore != null) {
 			try {
-				certObjects = new ArrayList<>();
+				certObjects = new CertObjectStore();
 
 				Enumeration<String> aliases = keyStore.aliases();
 
@@ -207,16 +205,15 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 					if (aliasKey == null && aliasCertificate == null) {
 						LOG.warning("Ignoring key store entry ''{0}'' due to missing data", alias);
 					} else {
-						KeyPair key = getKey(alias, aliasKey, aliasCertificate);
+						if (aliasCertificate instanceof X509Certificate) {
+							certObjects.addCRT((X509Certificate) aliasCertificate);
+						} else {
 
-						if (key != null) {
-							certObjects.add(CertObject.wrap(alias, key));
 						}
+						if (aliasKey instanceof PrivateKey) {
+							certObjects.addPrivateKey((PrivateKey) aliasKey);
+						} else {
 
-						X509Certificate crt = getCRT(alias, aliasCertificate);
-
-						if (crt != null) {
-							certObjects.add(CertObject.wrap(alias, crt));
 						}
 					}
 				}
@@ -273,36 +270,6 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			}
 		}
 		return key;
-	}
-
-	private static KeyPair getKey(String alias, Key aliasKey, Certificate aliasCertificate) {
-		KeyPair keyPair = null;
-
-		if (aliasKey != null) {
-			if (!(aliasKey instanceof PrivateKey)) {
-				LOG.info("Ignoring key entry ''{0}'' due to unsupported key type ''{1}''", alias,
-						aliasKey.getClass().getName());
-			} else if (aliasCertificate == null) {
-				LOG.info("Ignoring key entry ''{0}'' due to missing public key", alias);
-			} else {
-				keyPair = new KeyPair(aliasCertificate.getPublicKey(), (PrivateKey) aliasKey);
-			}
-		}
-		return keyPair;
-	}
-
-	private static X509Certificate getCRT(String alias, Certificate aliasCertificate) {
-		X509Certificate crt = null;
-
-		if (aliasCertificate != null) {
-			if (!(aliasCertificate instanceof X509Certificate)) {
-				LOG.info("Ignoring certificate entry ''{0}'' due to unsupported certificate type ''{1}''", alias,
-						aliasCertificate.getClass().getName());
-			} else {
-				crt = (X509Certificate) aliasCertificate;
-			}
-		}
-		return crt;
 	}
 
 	@Override

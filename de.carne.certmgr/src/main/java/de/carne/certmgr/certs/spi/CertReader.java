@@ -19,11 +19,10 @@ package de.carne.certmgr.certs.spi;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Collection;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.IOResource;
@@ -47,23 +46,23 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 *
 	 * @param in The input resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if the
-	 *         input is not recognized.
+	 * @return The read certificate objects, or {@code null} if the input is not
+	 *         recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	@Nullable
-	Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException;
+	CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException;
 
 	/**
 	 * Read all available certificate objects.
 	 *
 	 * @param in The input resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if the
-	 *         input is not recognized.
+	 * @return The read certificate objects, or {@code null} if the input is not
+	 *         recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	@Nullable
-	Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException;
+	CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException;
 
 }

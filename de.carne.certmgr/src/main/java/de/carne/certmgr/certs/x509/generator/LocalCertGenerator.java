@@ -20,13 +20,11 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 
 import javax.security.auth.x500.X500Principal;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -112,8 +110,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 	}
 
 	@Override
-	public Collection<CertObject> generateCert(GenerateCertRequest request, PasswordCallback password)
-			throws IOException {
+	public CertObjectStore generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException {
 		Issuer issuer = requiredParameter(request.getIssuer(), "Issuer");
 		BigInteger serial = BigInteger.ONE;
 		X500Principal issuerDN = null;
@@ -141,8 +138,11 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 				"SignatureAlgorithm");
 		X509Certificate crt = X509CertificateHelper.generateCRT(dn, key, serial, notBefore, notAfter,
 				request.getExtensions(), issuerDN, issuerKey, signatureAlgorithm);
+		CertObjectStore certObjects = new CertObjectStore();
 
-		return Arrays.asList(CertObject.wrap(0, key), CertObject.wrap(0, crt));
+		certObjects.addKey(key);
+		certObjects.addCRT(crt);
+		return certObjects;
 	}
 
 	private class LocalIssuer extends Issuer {

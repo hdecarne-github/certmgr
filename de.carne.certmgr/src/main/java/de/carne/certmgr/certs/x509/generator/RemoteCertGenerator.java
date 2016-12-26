@@ -18,10 +18,8 @@ package de.carne.certmgr.certs.x509.generator;
 
 import java.io.IOException;
 import java.security.KeyPair;
-import java.util.Arrays;
-import java.util.Collection;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -77,15 +75,17 @@ public class RemoteCertGenerator extends AbstractCertGenerator {
 	}
 
 	@Override
-	public Collection<CertObject> generateCert(GenerateCertRequest request, PasswordCallback password)
-			throws IOException {
+	public CertObjectStore generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException {
 		KeyPair key = KeyHelper.generateKey(request.keyPairAlgorithm(), request.keySize());
 		SignatureAlgorithm signatureAlgorithm = requiredParameter(request.getSignatureAlgorithm(),
 				"SignatureAlgorithm");
 		PKCS10CertificateRequest csr = PKCS10CertificateRequest.generateCSR(request.dn(), key, request.getExtensions(),
 				signatureAlgorithm);
+		CertObjectStore certObjects = new CertObjectStore();
 
-		return Arrays.asList(CertObject.wrap(0, key), CertObject.wrap(0, csr));
+		certObjects.addKey(key);
+		certObjects.addCSR(csr);
+		return certObjects;
 	}
 
 }

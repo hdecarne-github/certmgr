@@ -29,10 +29,6 @@ import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.pkcs.ContentInfo;
@@ -50,13 +46,12 @@ import org.bouncycastle.pkcs.PKCSException;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
-import de.carne.certmgr.util.KeyPairResolver;
 import de.carne.io.IOHelper;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -99,57 +94,41 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	@Nullable
-	public Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
 
 		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", in);
 
-		Collection<CertObject> certObjects = null;
+		CertObjectStore certObjects = null;
 		PKCS12PfxPdu pkcs12 = readPKCS12(in);
 
 		if (pkcs12 != null) {
-			certObjects = new ArrayList<>();
+			certObjects = new CertObjectStore();
+			for (ContentInfo contentInfo : pkcs12.getContentInfos()) {
+				ASN1ObjectIdentifier contentType = contentInfo.getContentType();
+				PKCS12SafeBagFactory safeBagFactory;
 
-			KeyPairResolver keyPairs = new KeyPairResolver();
+				if (contentType.equals(PKCSObjectIdentifiers.encryptedData)) {
+					safeBagFactory = getSafeBagFactory(contentInfo, in.resource(), password);
+				} else {
+					safeBagFactory = getSafeBagFactory(contentInfo);
+				}
+				for (PKCS12SafeBag safeBag : safeBagFactory.getSafeBags()) {
+					Object safeBagValue = safeBag.getBagValue();
 
-			try {
-				for (ContentInfo contentInfo : pkcs12.getContentInfos()) {
-					ASN1ObjectIdentifier contentType = contentInfo.getContentType();
-					PKCS12SafeBagFactory safeBagFactory;
-
-					if (contentType.equals(PKCSObjectIdentifiers.encryptedData)) {
-						safeBagFactory = getSafeBagFactory(contentInfo, in.resource(), password);
+					if (safeBagValue instanceof X509CertificateHolder) {
+						certObjects.addCRT(convertCRT((X509CertificateHolder) safeBagValue));
+					} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
+						certObjects.addPrivateKey(convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
+								in.resource(), password));
+					} else if (safeBagValue instanceof PrivateKeyInfo) {
+						certObjects.addPrivateKey(convertPrivateKey((PrivateKeyInfo) safeBagValue));
 					} else {
-						safeBagFactory = getSafeBagFactory(contentInfo);
-					}
-					for (PKCS12SafeBag safeBag : safeBagFactory.getSafeBags()) {
-						Object safeBagValue = safeBag.getBagValue();
-
-						if (safeBagValue instanceof X509CertificateHolder) {
-							X509Certificate crt = convertCRT((X509CertificateHolder) safeBagValue);
-
-							keyPairs.addPublicKey(crt.getPublicKey());
-							certObjects.add(CertObject.wrap(0, crt));
-						} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
-							PrivateKey privateKey = convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
-									in.resource(), password);
-
-							keyPairs.addPrivateKey(privateKey);
-						} else if (safeBagValue instanceof PrivateKeyInfo) {
-							PrivateKey privateKey = convertPrivateKey((PrivateKeyInfo) safeBagValue);
-
-							keyPairs.addPrivateKey(privateKey);
-						} else {
-							LOG.warning("Ignoring unrecognized PKCS#12 object of type {0}",
-									safeBagValue.getClass().getName());
-						}
+						LOG.warning("Ignoring unrecognized PKCS#12 object of type {0}",
+								safeBagValue.getClass().getName());
 					}
 				}
-				certObjects.addAll(
-						keyPairs.resolve().stream().map((key) -> CertObject.wrap(0, key)).collect(Collectors.toList()));
-			} catch (GeneralSecurityException e) {
-				e.printStackTrace();
 			}
 		}
 		return certObjects;
@@ -157,7 +136,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	@Nullable
-	public Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
 
@@ -177,27 +156,27 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
+	public void writeBinary(IOResource<OutputStream> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
+	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void writeString(IOResource<Writer> out, List<Object> certObjects)
+	public void writeString(IOResource<Writer> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
+	public void writeEncryptedString(IOResource<Writer> out, CertObjectStore certObjects, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}

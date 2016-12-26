@@ -28,10 +28,9 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Deque;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.util.ProviderMap;
@@ -58,11 +57,11 @@ public final class CertReaders {
 	 *
 	 * @param file The file to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if no
-	 *         certificate data was recognized.
+	 * @return The read certificate objects, or {@code null} if no certificate
+	 *         data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
-	public static Collection<CertObject> readFile(Path file, PasswordCallback password) throws IOException {
+	public static CertObjectStore readFile(Path file, PasswordCallback password) throws IOException {
 		assert file != null;
 		assert password != null;
 
@@ -77,7 +76,7 @@ public final class CertReaders {
 			}
 		}
 
-		Collection<CertObject> certObjects = null;
+		CertObjectStore certObjects = null;
 
 		for (CertReader reader : certReaders) {
 			try (IOResource<InputStream> in = IOResource.newInputStream(file.toString(), file,
@@ -99,11 +98,11 @@ public final class CertReaders {
 	 *
 	 * @param url The URL to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if no
-	 *         certificate data was recognized.
+	 * @return The read certificate objects, or {@code null} if no certificate
+	 *         data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
-	public static Collection<CertObject> readURL(URL url, PasswordCallback password) throws IOException {
+	public static CertObjectStore readURL(URL url, PasswordCallback password) throws IOException {
 		assert url != null;
 		assert password != null;
 
@@ -128,7 +127,7 @@ public final class CertReaders {
 			}
 		}
 
-		Collection<CertObject> certObjects = null;
+		CertObjectStore certObjects = null;
 
 		for (CertReader reader : certReaders) {
 			try (IOResource<InputStream> in = new IOResource<>(url.openStream(), file.toString())) {
@@ -164,16 +163,16 @@ public final class CertReaders {
 	 * @param data The string data to read from.
 	 * @param resource The name of the resource providing the data.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if no
-	 *         certificate data was recognized.
+	 * @return The read certificate objects, or {@code null} if no certificate
+	 *         data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
-	public static Collection<CertObject> readString(String data, String resource, PasswordCallback password)
+	public static CertObjectStore readString(String data, String resource, PasswordCallback password)
 			throws IOException {
 		assert data != null;
 		assert password != null;
 
-		Collection<CertObject> certObjects = null;
+		CertObjectStore certObjects = null;
 
 		for (CertReader reader : REGISTERED.providers()) {
 			try (IOResource<Reader> in = new IOResource<>(new StringReader(data), resource)) {

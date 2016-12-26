@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertWriters;
 import de.carne.certmgr.certs.io.IOResource;
@@ -182,7 +183,7 @@ public class CertExportController extends StageController {
 						exportCSR, exportCRL, exportFormat, exportFile, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Path param, List<Object> exportObjects,
+					protected void export(CertWriter format, Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
 						exportToFile(format, param, exportObjects, encryptExport);
 					}
@@ -195,7 +196,7 @@ public class CertExportController extends StageController {
 						exportCSR, exportCRL, exportFormat, exportDirectory, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Path param, List<Object> exportObjects,
+					protected void export(CertWriter format, Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
 						exportToDirectory(format, param, exportObjects, encryptExport);
 					}
@@ -206,7 +207,7 @@ public class CertExportController extends StageController {
 						exportCSR, exportCRL, exportFormat, null, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Void param, List<Object> exportObjects,
+					protected void export(CertWriter format, Void param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
 						exportToClipboard(format, exportObjects, encryptExport);
 					}
@@ -334,7 +335,7 @@ public class CertExportController extends StageController {
 				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
 	}
 
-	void exportToFile(CertWriter format, Path file, List<Object> exportObjects, boolean encryptExport)
+	void exportToFile(CertWriter format, Path file, CertObjectStore exportObjects, boolean encryptExport)
 			throws IOException {
 		try (IOResource<OutputStream> out = IOResource.newOutputStream(file.toString(), file, StandardOpenOption.CREATE,
 				StandardOpenOption.TRUNCATE_EXISTING)) {
@@ -346,12 +347,12 @@ public class CertExportController extends StageController {
 		}
 	}
 
-	void exportToDirectory(CertWriter format, Path directory, List<Object> exportObjects, boolean encryptExport)
+	void exportToDirectory(CertWriter format, Path directory, CertObjectStore exportObjects, boolean encryptExport)
 			throws IOException {
 
 	}
 
-	void exportToClipboard(CertWriter format, List<Object> exportObjects, boolean encryptExport) throws IOException {
+	void exportToClipboard(CertWriter format, CertObjectStore exportObjects, boolean encryptExport) throws IOException {
 		StringWriter text = new StringWriter();
 
 		try (IOResource<Writer> out = new IOResource<>(text, CertExportI18N.formatSTR_TEXT_CLIPBOARD())) {
@@ -373,34 +374,35 @@ public class CertExportController extends StageController {
 		});
 	}
 
-	List<Object> getExportObjectList(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
-			boolean exportCSR, boolean exportCRL) throws IOException {
-		List<Object> exportObjects = new ArrayList<>();
+	CertObjectStore getExportObjectList(boolean exportCert, boolean exportChain, boolean exportChainRoot,
+			boolean exportKey, boolean exportCSR, boolean exportCRL) throws IOException {
+		CertObjectStore exportObjects = new CertObjectStore();
+		String exportEntryAlias = this.exportEntry.id().getAlias();
 
 		if (exportCert) {
-			exportObjects.add(this.exportEntry.getCRT());
+			exportObjects.addCRT(exportEntryAlias, this.exportEntry.getCRT());
 			if (exportChain && !this.exportEntry.isSelfSigned()) {
 				UserCertStoreEntry issuer = this.exportEntry.issuer();
 
 				while (!issuer.isSelfSigned()) {
 					if (issuer.hasCRT()) {
-						exportObjects.add(0, issuer.getCRT());
+						exportObjects.addCRT(issuer.id().getAlias(), issuer.getCRT());
 					}
 					issuer = issuer.issuer();
 				}
 				if (exportChainRoot && issuer.hasCRT()) {
-					exportObjects.add(0, issuer.getCRT());
+					exportObjects.addCRT(issuer.id().getAlias(), issuer.getCRT());
 				}
 			}
 		}
 		if (exportKey) {
-			exportObjects.add(this.exportEntry.getKey(PasswordDialog.enterPassword(this)));
+			exportObjects.addKey(exportEntryAlias, this.exportEntry.getKey(PasswordDialog.enterPassword(this)));
 		}
 		if (exportCSR) {
-			exportObjects.add(this.exportEntry.getCSR());
+			exportObjects.addCSR(exportEntryAlias, this.exportEntry.getCSR());
 		}
 		if (exportCRL) {
-			exportObjects.add(this.exportEntry.getCRL());
+			exportObjects.addCRL(exportEntryAlias, this.exportEntry.getCRL());
 		}
 		return exportObjects;
 	}
@@ -430,12 +432,12 @@ public class CertExportController extends StageController {
 			this.encrypt = encrypt;
 		}
 
-		protected abstract void export(CertWriter format, P param, List<Object> exportObjects, boolean encryptExport)
+		protected abstract void export(CertWriter format, P param, CertObjectStore exportObjects, boolean encryptExport)
 				throws IOException;
 
 		@Override
 		protected Void call() throws Exception {
-			List<Object> exportObjects = getExportObjectList(this.exportCert, this.exportChain, this.exportChainRoot,
+			CertObjectStore exportObjects = getExportObjectList(this.exportCert, this.exportChain, this.exportChainRoot,
 					this.exportKey, this.exportCSR, this.exportCRL);
 
 			export(this.exportFormat, this.exportParam, exportObjects, this.encrypt);

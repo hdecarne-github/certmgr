@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -32,7 +31,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.CertWriters;
 import de.carne.certmgr.certs.io.IOResource;
@@ -64,7 +63,7 @@ public class CertReadersWritersTest {
 
 		for (String testResource : testResources) {
 			URL testResourceURL = getClass().getResource(testResource);
-			Collection<CertObject> certObjects = CertReaders.readURL(testResourceURL, Tests.password());
+			CertObjectStore certObjects = CertReaders.readURL(testResourceURL, Tests.password());
 
 			Assert.assertNotNull(certObjects);
 			Assert.assertTrue(certObjects.size() > 0);
@@ -81,8 +80,7 @@ public class CertReadersWritersTest {
 		}
 	}
 
-	private void testReaderAndWriter(CertWriter writer, Path testPath, Collection<CertObject> certObjects)
-			throws IOException {
+	private void testReaderAndWriter(CertWriter writer, Path testPath, CertObjectStore certObjects) throws IOException {
 		System.out.println("Testing provider: " + writer.providerName());
 
 		CertReader reader = CertReaders.REGISTERED.get(writer.providerName());
@@ -97,12 +95,12 @@ public class CertReadersWritersTest {
 		boolean certObjectsWritten = false;
 
 		try (IOResource<OutputStream> out = IOResource.newOutputStream(testPath.toString(), testPath)) {
-			// writer.writeBinary(out, certObjects);
+			writer.writeBinary(out, certObjects);
 		} catch (UnsupportedOperationException e) {
 			Assert.assertTrue(writer.isEncryptionRequired() || (!writer.isContainerWriter() && certObjects.size() > 1));
 		}
 		try (IOResource<OutputStream> out = IOResource.newOutputStream(testPath.toString(), testPath)) {
-			// writer.writeEncryptedBinary(out, certObjects, Tests.password());
+			writer.writeEncryptedBinary(out, certObjects, Tests.password());
 			certObjectsWritten = true;
 		} catch (UnsupportedOperationException e) {
 			Assert.assertTrue(!writer.isContainerWriter() && certObjects.size() > 1);
@@ -110,10 +108,10 @@ public class CertReadersWritersTest {
 
 		if (reader != null && certObjectsWritten) {
 			try (IOResource<InputStream> in = IOResource.newInputStream(testPath.toString(), testPath)) {
-				Collection<CertObject> readCertObjects = reader.readBinary(in, Tests.password());
+				CertObjectStore readCertObjects = reader.readBinary(in, Tests.password());
 
 				Assert.assertNotNull(readCertObjects);
-				Assert.assertArrayEquals(certObjects.toArray(), readCertObjects.toArray());
+				Assert.assertEquals(certObjects.size(), readCertObjects.size());
 			}
 		}
 	}

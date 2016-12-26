@@ -25,9 +25,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -36,7 +33,8 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import de.carne.certmgr.certs.CertObject;
+import de.carne.certmgr.certs.CertObjectStore;
+import de.carne.certmgr.certs.CertObjectType;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
@@ -94,44 +92,40 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	@Nullable
-	public Collection<CertObject> readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
+	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
 
 		LOG.debug("Trying to read DER objects from: ''{0}''...", in);
 
-		Collection<CertObject> certObjects = null;
+		CertObjectStore certObjects = null;
 
 		try (ASN1InputStream derStream = new ASN1InputStream(in.io())) {
-			int crtIndex = 0;
-			int keyIndex = 0;
-			int csrIndex = 0;
-			int crlIndex = 0;
 			ASN1Primitive derObject;
 
 			while ((derObject = derStream.readObject()) != null) {
 				if (certObjects == null) {
-					certObjects = new ArrayList<>();
+					certObjects = new CertObjectStore();
 				}
 
 				X509Certificate crt = decodeCRT(derObject);
 
 				if (crt != null) {
-					certObjects.add(CertObject.wrap(crtIndex, crt));
+					certObjects.addCRT(crt);
 					continue;
 				}
 
 				PKCS10CertificateRequest csr = decodeCSR(derObject);
 
 				if (csr != null) {
-					certObjects.add(CertObject.wrap(csrIndex, csr));
+					certObjects.addCSR(csr);
 					continue;
 				}
 
 				X509CRL crl = decodeCRL(derObject);
 
 				if (crl != null) {
-					certObjects.add(CertObject.wrap(crlIndex, crl));
+					certObjects.addCRL(crl);
 					continue;
 				}
 
@@ -143,7 +137,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	@Nullable
-	public Collection<CertObject> readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
+	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
 
@@ -163,18 +157,18 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	public void writeBinary(IOResource<OutputStream> out, List<Object> certObjects)
+	public void writeBinary(IOResource<OutputStream> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
-		for (Object certObject : certObjects) {
+		for (CertObjectStore.Entry certObject : certObjects) {
 			writeObject(out, certObject);
 		}
 	}
 
 	@Override
-	public void writeEncryptedBinary(IOResource<OutputStream> out, List<Object> certObjects,
+	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
-		for (Object certObject : certObjects) {
-			if (certObject instanceof KeyPair) {
+		for (CertObjectStore.Entry certObject : certObjects) {
+			if (certObject.type() == CertObjectType.KEY) {
 				writeEncryptedObject(out, certObject, newPassword);
 			} else {
 				writeObject(out, certObject);
@@ -183,55 +177,62 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	public void writeString(IOResource<Writer> out, List<Object> certObjects)
+	public void writeString(IOResource<Writer> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void writeEncryptedString(IOResource<Writer> out, List<Object> certObjects, PasswordCallback newPassword)
+	public void writeEncryptedString(IOResource<Writer> out, CertObjectStore certObjects, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
-	private static void writeObject(IOResource<OutputStream> out, Object object) throws IOException {
-		LOG.debug("Writing DER object ''{0}'' to resource ''{1}''...", object.getClass().getName(), out.resource());
+	private static void writeObject(IOResource<OutputStream> out, CertObjectStore.Entry storeEntry) throws IOException {
+		LOG.debug("Writing DER object ''{0}'' to resource ''{1}''...", storeEntry, out);
 
 		try {
-			if (object instanceof X509Certificate) {
-				out.io().write(((X509Certificate) object).getEncoded());
-			} else if (object instanceof KeyPair) {
-
-			} else if (object instanceof PKCS10CertificateRequest) {
-				out.io().write(((PKCS10CertificateRequest) object).toPKCS10().getEncoded());
-			} else if (object instanceof X509CRL) {
-				out.io().write(((X509CRL) object).getEncoded());
+			switch (storeEntry.type()) {
+			case CRT:
+				out.io().write(storeEntry.getCRT().getEncoded());
+				break;
+			case KEY:
+				break;
+			case CSR:
+				out.io().write(storeEntry.getCSR().toPKCS10().getEncoded());
+				break;
+			case CRL:
+				out.io().write(storeEntry.getCRL().getEncoded());
+				break;
 			}
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
 		}
 	}
 
-	private static void writeEncryptedObject(IOResource<OutputStream> out, Object object, PasswordCallback password)
-			throws IOException {
-		LOG.debug("Writing encrypted DER object ''{0}'' to resource ''{1}''...", object.getClass().getName(),
-				out.resource());
+	private static void writeEncryptedObject(IOResource<OutputStream> out, CertObjectStore.Entry storeEntry,
+			PasswordCallback newPassword) throws IOException {
+		LOG.debug("Writing encrypted DER object ''{0}'' to resource ''{1}''...", storeEntry, out);
 
-		char[] passwordChars = password.queryPassword(out.resource());
+		char[] passwordChars = newPassword.queryPassword(out.resource());
 
 		if (passwordChars == null) {
 			throw new PasswordRequiredException(out.resource());
 		}
 
 		try {
-			if (object instanceof X509Certificate) {
-				out.io().write(((X509Certificate) object).getEncoded());
-			} else if (object instanceof KeyPair) {
-
-			} else if (object instanceof PKCS10CertificateRequest) {
-				out.io().write(((PKCS10CertificateRequest) object).toPKCS10().getEncoded());
-			} else if (object instanceof X509CRL) {
-				out.io().write(((X509CRL) object).getEncoded());
+			switch (storeEntry.type()) {
+			case CRT:
+				out.io().write(storeEntry.getCRT().getEncoded());
+				break;
+			case KEY:
+				break;
+			case CSR:
+				out.io().write(storeEntry.getCSR().toPKCS10().getEncoded());
+				break;
+			case CRL:
+				out.io().write(storeEntry.getCRL().getEncoded());
+				break;
 			}
 		} catch (GeneralSecurityException e) {
 			throw new CertProviderException(e);
