@@ -41,15 +41,6 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	boolean isCharWriter();
 
 	/**
-	 * Check whether this writer can write multiple certificate objects to a
-	 * single output (e.g. PEM).
-	 *
-	 * @return {@code true} if the the writer can write multiple certificate
-	 *         objects to a single output (e.g. PEM).
-	 */
-	boolean isContainerWriter();
-
-	/**
 	 * Check whether this writer enforces encryption of the generated output.
 	 *
 	 * @return {@code true} if the writer enforces encryption of the generated
@@ -61,11 +52,9 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * Write certificate objects to a (not encrypted) binary stream.
 	 *
 	 * @param out The stream resource to write to.
-	 * @param certObjects The certificate objects to write. This is a single
-	 *        element store if this instance is not a container writer.
+	 * @param certObjects The certificate objects to write.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
-	 * @see #isContainerWriter()
 	 * @see #isEncryptionRequired()
 	 */
 	void writeBinary(IOResource<OutputStream> out, CertObjectStore certObjects)
@@ -75,13 +64,11 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * Write certificate objects to an encrypted binary stream.
 	 *
 	 * @param out The stream resource to write to.
-	 * @param certObjects The certificate objects to write. This is a single
-	 *        element store if this instance is not a container writer.
+	 * @param certObjects The certificate objects to write.
 	 * @param newPassword The callback to use for querying the encryption
 	 *        password.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
-	 * @see #isContainerWriter()
 	 */
 	void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException;
@@ -90,12 +77,10 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * Write certificate objects to a (not encrypted) string writer.
 	 *
 	 * @param out The writer resource to write to.
-	 * @param certObjects The certificate objects to write. This is a single
-	 *        element store if this instance is not a container writer.
+	 * @param certObjects The certificate objects to write.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
 	 * @see #isCharWriter()
-	 * @see #isContainerWriter()
 	 * @see #isEncryptionRequired()
 	 */
 	void writeString(IOResource<Writer> out, CertObjectStore certObjects)
@@ -105,14 +90,12 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 * Write certificate objects to a (not encrypted) string writer.
 	 *
 	 * @param out The writer resource to write to.
-	 * @param certObjects The certificate objects to write. This is a single
-	 *        element store if this instance is not a container writer.
+	 * @param certObjects The certificate objects to write.
 	 * @param newPassword The callback to use for querying the encryption
 	 *        password.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
 	 * @see #isCharWriter()
-	 * @see #isContainerWriter()
 	 */
 	void writeEncryptedString(IOResource<Writer> out, CertObjectStore certObjects, PasswordCallback newPassword)
 			throws IOException, UnsupportedOperationException;

@@ -28,7 +28,9 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -43,13 +45,13 @@ import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
 /**
- * Java KeyStore I/O support.
+ * Java KeyStore read/write support.
  */
 public class JKSCertReaderWriter implements CertReader, CertWriter {
 
-	private static final Log LOG = new Log();
+	private static final Log LOG = new Log(CertIOI18N.BUNDLE);
 
-	private static final String INPUT_KEYSTORE_TYPE = "CaseExactJKS";
+	private static final String KEYSTORE_TYPE = "JKS";
 
 	/**
 	 * Provider name.
@@ -84,7 +86,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 		LOG.debug("Trying to read KeyStore objects from file: ''{0}''...", in);
 
-		return readKeyStore(INPUT_KEYSTORE_TYPE, in.io(), in.resource(), password);
+		return readKeyStore(KEYSTORE_TYPE, in.io(), in.resource(), password);
 	}
 
 	@Override
@@ -96,11 +98,6 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	@Override
 	public boolean isCharWriter() {
 		return false;
-	}
-
-	@Override
-	public boolean isContainerWriter() {
-		return true;
 	}
 
 	@Override
@@ -123,17 +120,27 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			throw new PasswordRequiredException(out.resource());
 		}
 		try {
-			KeyStore keyStore = KeyStore.getInstance(INPUT_KEYSTORE_TYPE);
+			KeyStore keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
 
 			keyStore.load(null, null);
 
-			int certficiateIndex = 0;
-			int keyIndex = 0;
+			List<X509Certificate> crtChain = new ArrayList<>(certObjects.size());
 
-			for (Object certObject : certObjects) {
-				if (certObject instanceof X509Certificate) {
-					keyStore.setCertificateEntry("certificate" + certficiateIndex, (X509Certificate) certObject);
-					certficiateIndex++;
+			for (CertObjectStore.Entry certObject : certObjects) {
+				switch (certObject.type()) {
+				case CRT:
+					keyStore.setCertificateEntry(certObject.alias(), certObject.getCRT());
+					crtChain.add(certObject.getCRT());
+					break;
+				case KEY:
+					keyStore.setKeyEntry(certObject.alias(), certObject.getKey().getPrivate(), passwordChars,
+							crtChain.toArray(new X509Certificate[crtChain.size()]));
+					crtChain.clear();
+					break;
+				case CSR:
+					break;
+				case CRL:
+					break;
 				}
 			}
 			keyStore.store(out.io(), passwordChars);
@@ -256,7 +263,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		Key key = null;
 		Throwable passwordException = null;
 
-		while (key == null) {
+		do {
 			char[] passwordChars = (passwordException != null ? password.requeryPassword(alias, passwordException)
 					: password.queryPassword(alias));
 
@@ -268,7 +275,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			} catch (UnrecoverableKeyException e) {
 				passwordException = e;
 			}
-		}
+		} while (key == null && passwordException != null);
 		return key;
 	}
 

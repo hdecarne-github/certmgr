@@ -313,9 +313,6 @@ public class CertExportController extends StageController {
 		}
 		InputValidator.isTrue(exportObjectCount > 0,
 				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_EXPORT(writer.providerName()));
-		InputValidator.isTrue(
-				exportObjectCount == 1 || this.ctlDirectoryDestinationOption.isSelected() || writer.isContainerWriter(),
-				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_CONTAINER_FORMAT(writer.providerName()));
 		return writer;
 	}
 

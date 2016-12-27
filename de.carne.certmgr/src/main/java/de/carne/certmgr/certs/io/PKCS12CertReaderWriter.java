@@ -23,26 +23,39 @@ import java.io.Reader;
 import java.io.Writer;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.DERBMPString;
 import org.bouncycastle.asn1.pkcs.ContentInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
+import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
+import org.bouncycastle.crypto.engines.DESedeEngine;
+import org.bouncycastle.crypto.modes.CBCBlockCipher;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.InputDecryptorProvider;
 import org.bouncycastle.pkcs.PKCS12PfxPdu;
+import org.bouncycastle.pkcs.PKCS12PfxPduBuilder;
 import org.bouncycastle.pkcs.PKCS12SafeBag;
+import org.bouncycastle.pkcs.PKCS12SafeBagBuilder;
 import org.bouncycastle.pkcs.PKCS12SafeBagFactory;
 import org.bouncycastle.pkcs.PKCS8EncryptedPrivateKeyInfo;
 import org.bouncycastle.pkcs.PKCSException;
+import org.bouncycastle.pkcs.bc.BcPKCS12MacCalculatorBuilder;
+import org.bouncycastle.pkcs.bc.BcPKCS12PBEOutputEncryptorBuilder;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS12SafeBagBuilder;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -57,13 +70,16 @@ import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
 /**
- * PKCS#12 I/O support.
+ * PKCS#12 read/write support.
  */
 public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
-	private static final Log LOG = new Log();
+	private static final Log LOG = new Log(CertIOI18N.BUNDLE);
 
-	private static final JcePKCSPBEInputDecryptorProviderBuilder PKCS_DECRYPTOR_PROVIDER_BUILDER = new JcePKCSPBEInputDecryptorProviderBuilder();
+	private static final JcePKCSPBEInputDecryptorProviderBuilder PKCS12_DECRYPTOR_PROVIDER_BUILDER = new JcePKCSPBEInputDecryptorProviderBuilder();
+
+	private static final BcPKCS12PBEOutputEncryptorBuilder PKCS12_ENCRYPTOR_BUILDER = new BcPKCS12PBEOutputEncryptorBuilder(
+			PKCSObjectIdentifiers.pbeWithSHAAnd3_KeyTripleDES_CBC, new CBCBlockCipher(new DESedeEngine()));
 
 	private static final JcaX509CertificateConverter CRT_CONVERTER = new JcaX509CertificateConverter();
 
@@ -125,8 +141,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 					} else if (safeBagValue instanceof PrivateKeyInfo) {
 						certObjects.addPrivateKey(convertPrivateKey((PrivateKeyInfo) safeBagValue));
 					} else {
-						LOG.warning("Ignoring unrecognized PKCS#12 object of type {0}",
-								safeBagValue.getClass().getName());
+						LOG.warning(CertIOI18N.STR_PKCS12_UNKNOWN_OBJECT, safeBagValue.getClass().getName());
 					}
 				}
 			}
@@ -146,27 +161,93 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	public boolean isContainerWriter() {
-		return true;
-	}
-
-	@Override
 	public boolean isEncryptionRequired() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public void writeBinary(IOResource<OutputStream> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
-		// TODO Auto-generated method stub
+		assert out != null;
+		assert certObjects != null;
 
+		try {
+			List<PKCS12SafeBagBuilder> safeBagBuilders = new ArrayList<>(certObjects.size());
+
+			for (CertObjectStore.Entry certObject : certObjects) {
+				switch (certObject.type()) {
+				case CRT:
+					safeBagBuilders.add(createCRTSafeBagBuilder(certObject.alias(), certObject.getCRT(),
+							safeBagBuilders.isEmpty()));
+					break;
+				case KEY:
+					safeBagBuilders.add(createKeySafeBagBuilder(certObject.alias(), certObject.getKey()));
+					break;
+				case CSR:
+					break;
+				case CRL:
+					break;
+				}
+			}
+
+			PKCS12PfxPduBuilder pkcs12Builder = new PKCS12PfxPduBuilder();
+
+			for (PKCS12SafeBagBuilder safeBagBuilder : safeBagBuilders) {
+				pkcs12Builder.addData(safeBagBuilder.build());
+			}
+
+			PKCS12PfxPdu pkcs12 = pkcs12Builder.build(null, null);
+
+			out.io().write(pkcs12.getEncoded());
+		} catch (GeneralSecurityException | PKCSException e) {
+			throw new CertProviderException(e);
+		}
 	}
 
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
-		// TODO Auto-generated method stub
+		assert out != null;
+		assert certObjects != null;
+		assert newPassword != null;
 
+		char[] passwordChars = newPassword.queryPassword(out.resource());
+
+		if (passwordChars == null) {
+			throw new PasswordRequiredException(out.resource());
+		}
+		try {
+			List<PKCS12SafeBagBuilder> safeBagBuilders = new ArrayList<>(certObjects.size());
+
+			for (CertObjectStore.Entry certObject : certObjects) {
+				switch (certObject.type()) {
+				case CRT:
+					safeBagBuilders.add(createCRTSafeBagBuilder(certObject.alias(), certObject.getCRT(),
+							safeBagBuilders.isEmpty()));
+					break;
+				case KEY:
+					safeBagBuilders
+							.add(createKeySafeBagBuilder(certObject.alias(), certObject.getKey(), passwordChars));
+					break;
+				case CSR:
+					break;
+				case CRL:
+					break;
+				}
+			}
+
+			PKCS12PfxPduBuilder pkcs12Builder = new PKCS12PfxPduBuilder();
+
+			for (PKCS12SafeBagBuilder safeBagBuilder : safeBagBuilders) {
+				pkcs12Builder.addData(safeBagBuilder.build());
+			}
+
+			PKCS12PfxPdu pkcs12 = pkcs12Builder.build(new BcPKCS12MacCalculatorBuilder(), passwordChars);
+
+			out.io().write(pkcs12.getEncoded());
+		} catch (GeneralSecurityException | PKCSException e) {
+			throw new CertProviderException(e);
+		}
 	}
 
 	@Override
@@ -181,7 +262,49 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		throw new UnsupportedOperationException();
 	}
 
-	private static @Nullable PKCS12PfxPdu readPKCS12(IOResource<InputStream> in) {
+	private static PKCS12SafeBagBuilder createCRTSafeBagBuilder(String alias, X509Certificate crt, boolean addKeyId)
+			throws IOException, GeneralSecurityException {
+		PKCS12SafeBagBuilder safeBagBuilder = new JcaPKCS12SafeBagBuilder(crt);
+
+		safeBagBuilder.addBagAttribute(PKCSObjectIdentifiers.pkcs_9_at_friendlyName, new DERBMPString(alias));
+		if (addKeyId) {
+			JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+			SubjectKeyIdentifier subjectKeyIdentifier = extensionUtils.createSubjectKeyIdentifier(crt.getPublicKey());
+
+			safeBagBuilder.addBagAttribute(PKCSObjectIdentifiers.pkcs_9_at_localKeyId, subjectKeyIdentifier);
+		}
+		return safeBagBuilder;
+	}
+
+	private static PKCS12SafeBagBuilder createKeySafeBagBuilder(String alias, KeyPair key)
+			throws GeneralSecurityException {
+		PKCS12SafeBagBuilder safeBagBuilder = new JcaPKCS12SafeBagBuilder(key.getPrivate());
+
+		safeBagBuilder.addBagAttribute(PKCSObjectIdentifiers.pkcs_9_at_friendlyName, new DERBMPString(alias));
+
+		JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+		SubjectKeyIdentifier subjectKeyIdentifier = extensionUtils.createSubjectKeyIdentifier(key.getPublic());
+
+		safeBagBuilder.addBagAttribute(PKCSObjectIdentifiers.pkcs_9_at_localKeyId, subjectKeyIdentifier);
+		return safeBagBuilder;
+	}
+
+	private static PKCS12SafeBagBuilder createKeySafeBagBuilder(String alias, KeyPair key, char[] passwordChars)
+			throws GeneralSecurityException {
+		PKCS12SafeBagBuilder safeBagBuilder = new JcaPKCS12SafeBagBuilder(key.getPrivate(),
+				PKCS12_ENCRYPTOR_BUILDER.build(passwordChars));
+
+		safeBagBuilder.addBagAttribute(PKCSObjectIdentifiers.pkcs_9_at_friendlyName, new DERBMPString(alias));
+
+		JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+		SubjectKeyIdentifier subjectKeyIdentifier = extensionUtils.createSubjectKeyIdentifier(key.getPublic());
+
+		safeBagBuilder.addBagAttribute(PKCSObjectIdentifiers.pkcs_9_at_localKeyId, subjectKeyIdentifier);
+		return safeBagBuilder;
+	}
+
+	@Nullable
+	private static PKCS12PfxPdu readPKCS12(IOResource<InputStream> in) {
 		PKCS12PfxPdu pkcs12 = null;
 
 		try {
@@ -206,7 +329,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		if (passwordChars == null) {
 			throw new PasswordRequiredException(resource, decryptException);
 		}
-		return PKCS_DECRYPTOR_PROVIDER_BUILDER.build(passwordChars);
+		return PKCS12_DECRYPTOR_PROVIDER_BUILDER.build(passwordChars);
 	}
 
 	private static PKCS12SafeBagFactory getSafeBagFactory(ContentInfo contentInfo, String resource,

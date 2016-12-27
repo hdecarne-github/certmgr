@@ -433,9 +433,9 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	}
 
 	/**
-	 * Get the number of certificate objects in the store.
+	 * Get the number of certificate objects in this store.
 	 *
-	 * @return The number of certificate objects in the store.
+	 * @return The number of certificate objects in this store.
 	 */
 	public int size() {
 		return this.entries.stream().filter((entry) -> filterIncompleteKeys(entry)).mapToInt((entry) -> 1).sum();

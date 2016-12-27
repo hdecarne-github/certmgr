@@ -34,7 +34,6 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertObjectStore;
-import de.carne.certmgr.certs.CertObjectType;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
@@ -50,7 +49,7 @@ import de.carne.util.logging.Log;
  */
 public class DERCertReaderWriter extends JCAConversion implements CertReader, CertWriter {
 
-	private static final Log LOG = new Log();
+	private static final Log LOG = new Log(CertIOI18N.BUNDLE);
 
 	/**
 	 * Provider name.
@@ -129,7 +128,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 					continue;
 				}
 
-				LOG.warning("Ignoring unrecognized DER object of type {0}", derObject.getClass().getName());
+				LOG.warning(CertIOI18N.STR_DER_UNKNOWN_OBJECT, derObject.getClass().getName());
 			}
 		}
 		return certObjects;
@@ -147,11 +146,6 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	public boolean isContainerWriter() {
-		return true;
-	}
-
-	@Override
 	public boolean isEncryptionRequired() {
 		return false;
 	}
@@ -160,7 +154,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	public void writeBinary(IOResource<OutputStream> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
 		for (CertObjectStore.Entry certObject : certObjects) {
-			writeObject(out, certObject);
+			writeCertObject(out, certObject);
 		}
 	}
 
@@ -168,11 +162,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
 		for (CertObjectStore.Entry certObject : certObjects) {
-			if (certObject.type() == CertObjectType.KEY) {
-				writeEncryptedObject(out, certObject, newPassword);
-			} else {
-				writeObject(out, certObject);
-			}
+			writeEncryptedCertObject(out, certObject, newPassword);
 		}
 	}
 
@@ -188,7 +178,8 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 		throw new UnsupportedOperationException();
 	}
 
-	private static void writeObject(IOResource<OutputStream> out, CertObjectStore.Entry storeEntry) throws IOException {
+	private static void writeCertObject(IOResource<OutputStream> out, CertObjectStore.Entry storeEntry)
+			throws IOException {
 		LOG.debug("Writing DER object ''{0}'' to resource ''{1}''...", storeEntry, out);
 
 		try {
@@ -210,7 +201,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 		}
 	}
 
-	private static void writeEncryptedObject(IOResource<OutputStream> out, CertObjectStore.Entry storeEntry,
+	private static void writeEncryptedCertObject(IOResource<OutputStream> out, CertObjectStore.Entry storeEntry,
 			PasswordCallback newPassword) throws IOException {
 		LOG.debug("Writing encrypted DER object ''{0}'' to resource ''{1}''...", storeEntry, out);
 

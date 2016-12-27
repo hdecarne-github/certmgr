@@ -127,11 +127,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	public boolean isContainerWriter() {
-		return true;
-	}
-
-	@Override
 	public boolean isEncryptionRequired() {
 		return false;
 	}
