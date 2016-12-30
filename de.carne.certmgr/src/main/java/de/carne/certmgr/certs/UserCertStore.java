@@ -556,7 +556,7 @@ public final class UserCertStore {
 
 				matchingEntry.setCRT(crtHolder);
 			} else {
-				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CRT_ALREADY_SET(matchingEntry));
+				LOG.debug("Skipping duplicate CRT ''{0}''.", matchingEntry);
 			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
@@ -578,10 +578,10 @@ public final class UserCertStore {
 
 				matchingEntry.setKey(keyHolder);
 			} else {
-				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_KEY_ALREADY_SET(matchingEntry));
+				LOG.info("Skipping duplicate Key ''{0}''.", matchingEntry);
 			}
 		} else {
-			LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_DANGLING_KEY(KeyHelper.toString(key.getPublic())));
+			LOG.info("Skipping non-matching Key ''{0}''.", KeyHelper.toString(key.getPublic()));
 		}
 		return matchingEntry;
 	}
@@ -596,7 +596,7 @@ public final class UserCertStore {
 
 				matchingEntry.setCSR(csrHolder);
 			} else {
-				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CSR_ALREADY_SET(matchingEntry));
+				LOG.info("Skipping duplicate CSR ''{0}''.", matchingEntry);
 			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
@@ -617,7 +617,7 @@ public final class UserCertStore {
 
 				matchingEntry.setCRL(crlHolder);
 			} else {
-				LOG.warning(UserCertStoreI18N.formatSTR_MESSAGE_CRL_ALREADY_SET(matchingEntry));
+				LOG.info("Skipping duplicate CRL ''{0}''.", matchingEntry);
 			}
 		} else {
 			UserCertStoreEntryId entryId = this.storeHandler.nextEntryId(aliasHint);
