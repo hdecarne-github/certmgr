@@ -44,7 +44,7 @@
         </rowConstraints>
          <children>
             <Label text="%_STR_LABEL_CERT" />
-            <TextField fx:id="ctlCertField" editable="false" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" />
+            <TextField fx:id="ctlCertField" disable="true" editable="false" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" />
             <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_FORMAT" GridPane.rowIndex="1" />
             <ChoiceBox fx:id="ctlFormatOption" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
             <RadioButton fx:id="ctlFileDestinationOption" mnemonicParsing="false" text="%_STR_LABEL_FILE" GridPane.rowIndex="2">
