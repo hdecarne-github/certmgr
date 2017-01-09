@@ -34,7 +34,7 @@
         </rowConstraints>
          <children>
             <Label text="%_STR_LABEL_ISSUER" />
-            <TextField fx:id="ctlIssuerField" editable="false" GridPane.columnIndex="1" />
+            <TextField fx:id="ctlIssuerField" disable="true" editable="false" GridPane.columnIndex="1" />
             <Label layoutX="14.0" layoutY="19.0" text="%_STR_LABEL_SIGALG" GridPane.rowIndex="1" />
             <ComboBox fx:id="ctlSigAlgOption" layoutX="209.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <Label layoutX="14.0" layoutY="81.0" text="%_STR_LABEL_LAST_UPDATE" GridPane.rowIndex="2" />
