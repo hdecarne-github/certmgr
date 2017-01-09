@@ -92,6 +92,8 @@ public class CertOptionsController extends StageController {
 
 	private boolean expertMode = false;
 
+	private CertOptionsPreset defaultPreset = null;
+
 	private final ObjectProperty<BasicConstraintsExtensionData> basicConstraintsExtension = new SimpleObjectProperty<>(
 			null);
 
@@ -116,7 +118,7 @@ public class CertOptionsController extends StageController {
 	Menu ctlStorePresetsMenu;
 
 	@FXML
-	Menu ctlTemplatePresetsMenu;
+	Menu ctlPresetTemplatesMenu;
 
 	@FXML
 	TextField ctlAliasInput;
@@ -190,6 +192,26 @@ public class CertOptionsController extends StageController {
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
 		}
+	}
+
+	@FXML
+	void onCmdApplyDefaultPreset(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdApplyStorePreset(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdApplyTemplatePreset(ActionEvent evt) {
+
+	}
+
+	@FXML
+	void onCmdEditPresetTemplates(ActionEvent evt) {
+
 	}
 
 	@FXML
@@ -440,6 +462,7 @@ public class CertOptionsController extends StageController {
 		this.storePreferences = this.store.storePreferences();
 		this.storeEntry = issuerEntryParam;
 		this.expertMode = expertModeParam;
+		this.defaultPreset = CertOptionsPreset.getDefault();
 		initExpertMode();
 		initCertificateNames();
 		initKeyAlgOptions();
@@ -557,6 +580,10 @@ public class CertOptionsController extends StageController {
 			extensionDataItems.add(extensionDataModel);
 			extensionDataItems.sort((o1, o2) -> o1.getExtensionData().oid().compareTo(o2.getExtensionData().oid()));
 		}
+	}
+
+	private void applyPreset(CertOptionsPreset preset) {
+
 	}
 
 	private GenerateCertRequest validateAndGetGenerateRequest(CertGenerator generator) throws ValidationException {

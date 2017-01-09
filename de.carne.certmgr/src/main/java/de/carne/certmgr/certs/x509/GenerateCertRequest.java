@@ -16,10 +16,7 @@
  */
 package de.carne.certmgr.certs.x509;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -30,16 +27,12 @@ import de.carne.certmgr.certs.x509.generator.Issuer;
 /**
  * Parameter container for certificate generation.
  */
-public class GenerateCertRequest {
+public class GenerateCertRequest extends CertParams {
 
-	private final X500Principal dn;
-	private final KeyPairAlgorithm keyPairAlgorithm;
-	private final int keySize;
 	private Issuer issuer = null;
 	private SignatureAlgorithm signatureAlgorithm = null;
 	private Date notBefore = null;
 	private Date notAfter = null;
-	private List<X509ExtensionData> extensions = new ArrayList<>();
 
 	/**
 	 * Construct {@code GenerateCertRequest}.
@@ -49,39 +42,7 @@ public class GenerateCertRequest {
 	 * @param keySize The key size to use for generation.
 	 */
 	public GenerateCertRequest(X500Principal dn, KeyPairAlgorithm keyPairAlgorithm, int keySize) {
-		assert dn != null;
-		assert keyPairAlgorithm != null;
-
-		this.dn = dn;
-		this.keyPairAlgorithm = keyPairAlgorithm;
-		this.keySize = keySize;
-	}
-
-	/**
-	 * Get the Distinguished Name (DN) to use for generation.
-	 *
-	 * @return The Distinguished Name (DN) to use for generation.
-	 */
-	public X500Principal dn() {
-		return this.dn;
-	}
-
-	/**
-	 * Get the key pair algorithm to use for generation.
-	 *
-	 * @return The key pair algorithm to use for generation.
-	 */
-	public KeyPairAlgorithm keyPairAlgorithm() {
-		return this.keyPairAlgorithm;
-	}
-
-	/**
-	 * Get the key size to use for generation.
-	 *
-	 * @return The key size to use for generation.
-	 */
-	public int keySize() {
-		return this.keySize;
+		super(dn, keyPairAlgorithm, keySize);
 	}
 
 	/**
@@ -162,26 +123,6 @@ public class GenerateCertRequest {
 	 */
 	public Date getNotAfter() {
 		return this.notAfter;
-	}
-
-	/**
-	 * Add an extension object.
-	 *
-	 * @param extension The extension object to add.
-	 */
-	public void addExtension(X509ExtensionData extension) {
-		assert extension != null;
-
-		this.extensions.add(extension);
-	}
-
-	/**
-	 * Get the extension objects.
-	 * 
-	 * @return The extension objects.
-	 */
-	public List<X509ExtensionData> getExtensions() {
-		return Collections.unmodifiableList(this.extensions);
 	}
 
 }

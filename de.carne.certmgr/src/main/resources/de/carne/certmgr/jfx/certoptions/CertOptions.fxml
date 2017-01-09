@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckMenuItem?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -12,6 +11,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -21,11 +21,12 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
    <children>
       <GridPane fx:id="ctlControlPane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
         <columnConstraints>
@@ -33,7 +34,6 @@
             <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints vgrow="NEVER" />
             <RowConstraints vgrow="NEVER" />
           <RowConstraints vgrow="NEVER" />
             <RowConstraints vgrow="NEVER" />
@@ -51,17 +51,10 @@
             <RowConstraints vgrow="NEVER" />
         </rowConstraints>
          <children>
-            <MenuButton maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%_STR_MENU_PRESET" GridPane.columnSpan="2147483647">
-              <items>
-                  <CheckMenuItem mnemonicParsing="false" text="%_STR_MENU_PRESET_EMPTY" />
-                  <Menu fx:id="ctlStorePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESET_TEMPLATE" />
-                  <Menu fx:id="ctlTemplatePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESET_STORE" />
-              </items>
-            </MenuButton>
-            <Label layoutX="14.0" layoutY="77.0" text="%_STR_LABEL_ALIAS" GridPane.rowIndex="1" />
-            <TextField fx:id="ctlAliasInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label layoutX="14.0" layoutY="14.0" text="%_STR_LABEL_DN" GridPane.rowIndex="2" />
-            <HBox GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label layoutX="14.0" layoutY="77.0" text="%_STR_LABEL_ALIAS" />
+            <TextField fx:id="ctlAliasInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
+            <Label layoutX="14.0" layoutY="14.0" text="%_STR_LABEL_DN" GridPane.rowIndex="1" />
+            <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
                   <TextField fx:id="ctlDNInput" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                   <Button mnemonicParsing="false" onAction="#onCmdEditDN" HBox.hgrow="NEVER">
@@ -75,24 +68,24 @@
                   </Button>
                </children>
             </HBox>
-            <Separator layoutX="14.0" layoutY="232.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="3" />
-            <Label layoutX="14.0" layoutY="303.0" text="%_STR_LABEL_KEYALG" GridPane.rowIndex="4" />
-            <ComboBox fx:id="ctlKeyAlgOption" layoutX="161.0" layoutY="202.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_KEYSIZE" GridPane.rowIndex="5" />
-            <ComboBox fx:id="ctlKeySizeOption" editable="true" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="6" />
-            <Label text="%_STR_LABEL_GENERATOR" GridPane.rowIndex="7" />
-            <ChoiceBox fx:id="ctlGeneratorOption" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_ISSUER" GridPane.rowIndex="8" />
-            <ComboBox fx:id="ctlIssuerInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-            <Label layoutX="14.0" layoutY="105.0" text="%_STR_LABEL_SIGALG" GridPane.rowIndex="9" />
-            <ComboBox fx:id="ctlSigAlgOption" layoutX="161.0" layoutY="289.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-            <Label layoutX="14.0" layoutY="76.0" text="%_STR_LABEL_NOTBEFORE" GridPane.rowIndex="10" />
-            <DatePicker fx:id="ctlNotBeforeInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_NOTAFTER" GridPane.rowIndex="11" />
-            <DatePicker fx:id="ctlNotAfterInput" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="11" />
-            <Separator layoutX="14.0" layoutY="130.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="12" />
-            <ToolBar GridPane.columnSpan="2147483647" GridPane.rowIndex="13">
+            <Separator layoutX="14.0" layoutY="232.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="2" />
+            <Label layoutX="14.0" layoutY="303.0" text="%_STR_LABEL_KEYALG" GridPane.rowIndex="3" />
+            <ComboBox fx:id="ctlKeyAlgOption" layoutX="161.0" layoutY="202.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_KEYSIZE" GridPane.rowIndex="4" />
+            <ComboBox fx:id="ctlKeySizeOption" editable="true" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Separator GridPane.columnSpan="2147483647" GridPane.rowIndex="5" />
+            <Label text="%_STR_LABEL_GENERATOR" GridPane.rowIndex="6" />
+            <ChoiceBox fx:id="ctlGeneratorOption" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_ISSUER" GridPane.rowIndex="7" />
+            <ComboBox fx:id="ctlIssuerInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <Label layoutX="14.0" layoutY="105.0" text="%_STR_LABEL_SIGALG" GridPane.rowIndex="8" />
+            <ComboBox fx:id="ctlSigAlgOption" layoutX="161.0" layoutY="289.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <Label layoutX="14.0" layoutY="76.0" text="%_STR_LABEL_NOTBEFORE" GridPane.rowIndex="9" />
+            <DatePicker fx:id="ctlNotBeforeInput" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <Label layoutX="14.0" layoutY="18.0" text="%_STR_LABEL_NOTAFTER" GridPane.rowIndex="10" />
+            <DatePicker fx:id="ctlNotAfterInput" layoutX="14.0" layoutY="14.0" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <Separator layoutX="14.0" layoutY="130.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="11" />
+            <ToolBar GridPane.columnSpan="2147483647" GridPane.rowIndex="12">
               <items>
                   <Label text="%_STR_LABEL_EXTENSIONS" />
                   <MenuButton mnemonicParsing="false">
@@ -131,15 +124,25 @@
                   </Button>
               </items>
             </ToolBar>
-            <TableView fx:id="ctlExtensionData" editable="true" prefHeight="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="14">
+            <TableView fx:id="ctlExtensionData" editable="true" prefHeight="200.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="13">
               <columns>
                 <TableColumn fx:id="ctlExtensionDataCritical" maxWidth="1.7976931348623157E308" prefWidth="50.0" text="%_STR_COL_CRITICAL" />
                 <TableColumn fx:id="ctlExtensionDataName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="200.0" text="%_STR_COL_NAME" />
                   <TableColumn fx:id="ctlExtensionDataValue" editable="false" maxWidth="1.7976931348623157E308" prefWidth="480.0" text="%_STR_COL_VALUE" />
               </columns>
             </TableView>
-            <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="15">
+            <HBox alignment="BOTTOM_RIGHT" spacing="4.0" GridPane.columnSpan="2147483647" GridPane.rowIndex="14">
                <children>
+                  <MenuButton mnemonicParsing="false" popupSide="TOP" text="%_STR_MENU_PRESETS">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#onCmdApplyDefaultPreset" text="%_STR_MENU_PRESETS_DEFAULT" />
+                      <MenuItem mnemonicParsing="false" onAction="#onCmdApplyStorePreset" text="%_STR_MENU_PRESETS_STORE" />
+                        <Menu fx:id="ctlPresetTemplatesMenu" mnemonicParsing="false" text="%_STR_MENU_PRESETS_TEMPLATE" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#onCmdEditPresetTemplates" text="%_STR_MENU_PRESETS_EDIT_TEMPLATES" />
+                    </items>
+                  </MenuButton>
+                  <Pane HBox.hgrow="ALWAYS" />
                   <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdGenerate" text="%_STR_BUTTON_GENERATE" />
                   <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />
                </children>
