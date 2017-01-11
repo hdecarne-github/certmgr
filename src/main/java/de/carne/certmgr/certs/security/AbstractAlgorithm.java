@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 Holger de Carne and contributors, All Rights Reserved.
+ * Copyright (c) 2015-2017 Holger de Carne and contributors, All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
