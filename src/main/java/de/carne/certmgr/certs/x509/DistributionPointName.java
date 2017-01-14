@@ -24,7 +24,6 @@ import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DERTaggedObject;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.x500.X500Names;
@@ -93,7 +92,6 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	 *
 	 * @return The full name or {@code null} if the relative name is set.
 	 */
-	@Nullable
 	public GeneralNames getFullName() {
 		return this.fullName;
 	}
@@ -103,7 +101,6 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	 *
 	 * @return The relative name or {@code null} if the full name is set.
 	 */
-	@Nullable
 	public X500Principal getRelativeName() {
 		return this.nameRelativeToCRLIssuer;
 	}

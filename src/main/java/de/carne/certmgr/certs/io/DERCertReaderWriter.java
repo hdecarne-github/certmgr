@@ -31,7 +31,6 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertProviderException;
@@ -90,7 +89,6 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
@@ -135,7 +133,6 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}

@@ -18,16 +18,13 @@ package de.carne.certmgr.certs;
 
 import java.util.Objects;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.util.Strings;
 
 /**
- * Id class for identifying certificate store entries in a unique way and
- * supporting transient and persistent entries.
+ * Id class for identifying certificate store entries in a unique way and supporting transient and persistent entries.
  * <p>
- * The actual id consists of two elements. A required id value and an optional
- * alias string. The semantic of the alias string is handler specific.
+ * The actual id consists of two elements. A required id value and an optional alias string. The semantic of the alias
+ * string is handler specific.
  *
  * @see UserCertStoreHandler
  */
@@ -66,7 +63,7 @@ public final class UserCertStoreEntryId {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object obj) {
+	public boolean equals(Object obj) {
 		boolean equal = false;
 
 		if (this == obj) {

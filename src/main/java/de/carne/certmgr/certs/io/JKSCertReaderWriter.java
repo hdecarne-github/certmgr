@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
@@ -79,7 +77,6 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
@@ -90,7 +87,6 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
@@ -166,11 +162,9 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	 *
 	 * @param platformKeyStore The platform store to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The list of read certificate objects, or {@code null} if the
-	 *         input is not recognized.
+	 * @return The list of read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
-	@Nullable
 	public static CertObjectStore readPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
 			throws IOException {
 		assert platformKeyStore != null;
@@ -181,8 +175,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return readKeyStore(platformKeyStore.algorithm(), null, platformKeyStore.algorithm(), password);
 	}
 
-	@Nullable
-	private static CertObjectStore readKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
+	private static CertObjectStore readKeyStore(String keyStoreType, InputStream inputStream, String resource,
 			PasswordCallback password) throws IOException {
 		KeyStore keyStore = null;
 
@@ -231,7 +224,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return certObjects;
 	}
 
-	private static KeyStore loadKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
+	private static KeyStore loadKeyStore(String keyStoreType, InputStream inputStream, String resource,
 			PasswordCallback password) throws GeneralSecurityException, IOException {
 		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
 		char[] passwordChars = null;

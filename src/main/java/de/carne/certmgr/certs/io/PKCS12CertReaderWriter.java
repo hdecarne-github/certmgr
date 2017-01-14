@@ -57,7 +57,6 @@ import org.bouncycastle.pkcs.bc.BcPKCS12MacCalculatorBuilder;
 import org.bouncycastle.pkcs.bc.BcPKCS12PBEOutputEncryptorBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS12SafeBagBuilder;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertProviderException;
@@ -109,7 +108,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 		assert password != null;
@@ -150,7 +148,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
@@ -303,7 +300,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		return safeBagBuilder;
 	}
 
-	@Nullable
 	private static PKCS12PfxPdu readPKCS12(IOResource<InputStream> in) {
 		PKCS12PfxPdu pkcs12 = null;
 
@@ -322,7 +318,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	private static InputDecryptorProvider buildInputDecryptorProvider(String resource, PasswordCallback password,
-			@Nullable PKCSException decryptException) throws IOException {
+			PKCSException decryptException) throws IOException {
 		char[] passwordChars = (decryptException != null ? password.requeryPassword(resource, decryptException)
 				: password.queryPassword(resource));
 

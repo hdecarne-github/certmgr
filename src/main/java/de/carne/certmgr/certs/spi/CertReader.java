@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaders;
@@ -36,8 +34,8 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	/**
 	 * The maximum number of bytes to read into memory during read operations.
 	 * <p>
-	 * This property is used to avoid out of memory conditions when we try to
-	 * read huge files with readers that require all data to be read in advance.
+	 * This property is used to avoid out of memory conditions when we try to read huge files with readers that require
+	 * all data to be read in advance.
 	 */
 	static final int READ_LIMIT = PropertiesHelper.getInt(CertReaders.class, ".readLimit", 1 << 20);
 
@@ -46,11 +44,9 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 *
 	 * @param in The input resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The read certificate objects, or {@code null} if the input is not
-	 *         recognized.
+	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
-	@Nullable
 	CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException;
 
 	/**
@@ -58,11 +54,9 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 *
 	 * @param in The input resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The read certificate objects, or {@code null} if the input is not
-	 *         recognized.
+	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
-	@Nullable
 	CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException;
 
 }

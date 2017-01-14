@@ -37,8 +37,6 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.JKSCertReaderWriter;
 import de.carne.certmgr.certs.net.SSLPeer;
@@ -56,8 +54,7 @@ import de.carne.util.logging.Log;
 /**
  * This class provides the actual certificate store functionality.
  * <p>
- * The actual kind of certificate store provided by this class depends on how
- * the instance was created.
+ * The actual kind of certificate store provided by this class depends on how the instance was created.
  *
  * @see #createStore(Path)
  * @see #openStore(Path)
@@ -104,8 +101,7 @@ public final class UserCertStore {
 	}
 
 	/**
-	 * Open a certificate store previously created via a
-	 * {@link #createStore(Path)} call.
+	 * Open a certificate store previously created via a {@link #createStore(Path)} call.
 	 *
 	 * @param storeHome The directory path to use for certificate storage.
 	 * @return The opened certificate store.
@@ -126,13 +122,11 @@ public final class UserCertStore {
 	/**
 	 * Create a certificate store backed up by a platform key store.
 	 *
-	 * @param platformKeyStore The platform key store providing the certificate
-	 *        data.
+	 * @param platformKeyStore The platform key store providing the certificate data.
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The created certificate store.
 	 * @throws PasswordRequiredException if no valid password was given.
-	 * @throws IOException if an I/O error occurs while reading/decoding
-	 *         certificate data.
+	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
 			throws IOException {
@@ -149,8 +143,7 @@ public final class UserCertStore {
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The created certificate store.
 	 * @throws PasswordRequiredException if no valid password was given.
-	 * @throws IOException if an I/O error occurs while reading/decoding
-	 *         certificate data.
+	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromFile(Path file, PasswordCallback password) throws IOException {
 		assert file != null;
@@ -166,8 +159,7 @@ public final class UserCertStore {
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The created certificate store.
 	 * @throws PasswordRequiredException if no valid password was given.
-	 * @throws IOException if an I/O error occurs while reading/decoding
-	 *         certificate data.
+	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromFiles(Collection<Path> files, PasswordCallback password) throws IOException {
 		assert files != null;
@@ -198,8 +190,7 @@ public final class UserCertStore {
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The created certificate store.
 	 * @throws PasswordRequiredException if no valid password was given.
-	 * @throws IOException if an I/O error occurs while reading/decoding
-	 *         certificate data.
+	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromURL(URL url, PasswordCallback password) throws IOException {
 		assert url != null;
@@ -217,8 +208,7 @@ public final class UserCertStore {
 	 * @param host The host to retrieve the certificate data from.
 	 * @param port The port to retrieve the certificate data from.
 	 * @return The created certificate store.
-	 * @throws IOException if an I/O error occurs while reading/decoding
-	 *         certificate data.
+	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromServer(SSLPeer.Protocol protocol, String host, int port) throws IOException {
 		SSLPeer sslPeer = SSLPeer.getInstance(host, port);
@@ -245,8 +235,7 @@ public final class UserCertStore {
 	 * @param password The callback to use for querying passwords (if needed).
 	 * @return The created certificate store.
 	 * @throws PasswordRequiredException if no valid password was given.
-	 * @throws IOException if an I/O error occurs while reading/decoding
-	 *         certificate data.
+	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromData(String data, String resource, PasswordCallback password)
 			throws IOException {
@@ -262,15 +251,12 @@ public final class UserCertStore {
 	/**
 	 * Get this store's home path.
 	 * <p>
-	 * This path is only available if this store was created/opened via
-	 * {@linkplain #createStore(Path)} or {@linkplain #openStore(Path)}.
-	 * Otherwise this path is {@code null} indicating that the store is
-	 * transient and only supports read access.
+	 * This path is only available if this store was created/opened via {@linkplain #createStore(Path)} or
+	 * {@linkplain #openStore(Path)}. Otherwise this path is {@code null} indicating that the store is transient and
+	 * only supports read access.
 	 *
-	 * @return This store's home path, or {@code null} if this store only
-	 *         supports read access.
+	 * @return This store's home path, or {@code null} if this store only supports read access.
 	 */
-	@Nullable
 	public Path storeHome() {
 		return this.storeHandler.storeHome();
 	}
@@ -283,7 +269,6 @@ public final class UserCertStore {
 	 * @return This store's name, or {@code null} if this store is transient.
 	 * @see #storeHome()
 	 */
-	@Nullable
 	public String storeName() {
 		Path storeHome = this.storeHandler.storeHome();
 
@@ -293,8 +278,7 @@ public final class UserCertStore {
 	/**
 	 * Get this store's preferences object.
 	 *
-	 * @return This store's preferences object, or {@code null} if this store is
-	 *         transient.
+	 * @return This store's preferences object, or {@code null} if this store is transient.
 	 * @see #storeHome()
 	 */
 	public UserCertStorePreferences storePreferences() {
@@ -319,8 +303,7 @@ public final class UserCertStore {
 	 * @param generator The {@link CertGenerator} to use for generation.
 	 * @param request The generation parameters.
 	 * @param password The password to use for password querying.
-	 * @param newPassword The password callback to use for new password
-	 *        querying.
+	 * @param newPassword The password callback to use for new password querying.
 	 * @param aliasHint The preferred alias for the generated entry's id.
 	 * @return The generated entry.
 	 * @throws IOException if an I/O error occurs during import.
@@ -362,15 +345,12 @@ public final class UserCertStore {
 	}
 
 	/**
-	 * Import an store entry from another store by merging the entry's
-	 * certificate objects.
+	 * Import an store entry from another store by merging the entry's certificate objects.
 	 *
 	 * @param entry The store entry to merge.
-	 * @param newPassword The password callback to use for new password
-	 *        querying.
+	 * @param newPassword The password callback to use for new password querying.
 	 * @param aliasHint The preferred alias for entry id generation.
-	 * @return The generated or merged entry or {@code null} if nothing has been
-	 *         imported.
+	 * @return The generated or merged entry or {@code null} if nothing has been imported.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
 	public UserCertStoreEntry importEntry(UserCertStoreEntry entry, PasswordCallback newPassword, String aliasHint)

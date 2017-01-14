@@ -18,14 +18,11 @@ package de.carne.certmgr.util;
 
 import java.time.Period;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * Utility class used to manage a period of days.
  * <p>
- * This class is actually a simple wrapper around the JDK's {@link Period}
- * class. It adds a {@link Comparable} implementation and some convenience
- * functions.
+ * This class is actually a simple wrapper around the JDK's {@link Period} class. It adds a {@link Comparable}
+ * implementation and some convenience functions.
  */
 public class Days implements Comparable<Days> {
 
@@ -83,7 +80,7 @@ public class Days implements Comparable<Days> {
 
 	@Override
 	public int compareTo(Days o) {
-		return this.count() - o.count();
+		return count() - o.count();
 	}
 
 	@Override
@@ -92,7 +89,7 @@ public class Days implements Comparable<Days> {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object obj) {
+	public boolean equals(Object obj) {
 		return this == obj || (obj instanceof Days && count() == ((Days) obj).count());
 	}
 

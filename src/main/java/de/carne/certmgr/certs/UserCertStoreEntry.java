@@ -28,8 +28,6 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
@@ -38,8 +36,7 @@ import de.carne.util.Exceptions;
 /**
  * Certificate store entry.
  * <p>
- * A Certificate store entry consists of multiple (optional) certificate
- * objects:
+ * A Certificate store entry consists of multiple (optional) certificate objects:
  * <ul>
  * <li><strong>CRT</strong>: The actual certificate</li>
  * <li><strong>Key</strong>: The certificate's key pair</li>
@@ -61,8 +58,8 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's display name.
 	 * <p>
-	 * The name is either the entry's Distinguished Name or if the latter is not
-	 * available, the id's string representation.
+	 * The name is either the entry's Distinguished Name or if the latter is not available, the id's string
+	 * representation.
 	 *
 	 * @return This entry's display name.
 	 */
@@ -164,8 +161,7 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's Key object.
 	 * <p>
-	 * This function assumes that the Key object is decrypted and therefore no
-	 * password is required to access it.
+	 * This function assumes that the Key object is decrypted and therefore no password is required to access it.
 	 *
 	 * @return This entry's Key object (may be {@code null}).
 	 * @throws PasswordRequiredException if a password is required.
@@ -188,11 +184,9 @@ public abstract class UserCertStoreEntry {
 	public abstract KeyPair getKey(PasswordCallback password) throws IOException;
 
 	/**
-	 * Check whether this entry contains a CSR (Certificate Signing Request)
-	 * object.
+	 * Check whether this entry contains a CSR (Certificate Signing Request) object.
 	 *
-	 * @return {@code true} if this entry contains a CSR (Certificate Signing
-	 *         Request) object.
+	 * @return {@code true} if this entry contains a CSR (Certificate Signing Request) object.
 	 * @see #getCSR()
 	 */
 	public abstract boolean hasCSR();
@@ -200,19 +194,16 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's CSR (Certificate Signing Request) object.
 	 *
-	 * @return This entry's CSR (Certificate Signing Request) object (may be
-	 *         {@code null}).
+	 * @return This entry's CSR (Certificate Signing Request) object (may be {@code null}).
 	 * @throws IOException if an I/O error occurs while loading the CSR object.
 	 * @see #hasCSR()
 	 */
 	public abstract PKCS10CertificateRequest getCSR() throws IOException;
 
 	/**
-	 * Check whether this entry contains a CRL (Certificate Revocation List)
-	 * object.
+	 * Check whether this entry contains a CRL (Certificate Revocation List) object.
 	 *
-	 * @return {@code true} if this entry contains a CRL (Certificate Revocation
-	 *         List) object.
+	 * @return {@code true} if this entry contains a CRL (Certificate Revocation List) object.
 	 * @see #getCRL()
 	 */
 	public abstract boolean hasCRL();
@@ -220,8 +211,7 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's CRL (Certificate Revocation List) object.
 	 *
-	 * @return This entry's CRL (Certificate Revocation List) object (may be
-	 *         {@code null}).
+	 * @return This entry's CRL (Certificate Revocation List) object (may be {@code null}).
 	 * @throws IOException if an I/O error occurs while loading the CRL object.
 	 * @see #hasCRL()
 	 */
@@ -233,8 +223,7 @@ public abstract class UserCertStoreEntry {
 	 * @param request The update request information.
 	 * @param password The password callback to use for password querying.
 	 * @throws IOException if an I/O error occurs during the update.
-	 * @see UserCertStore#updateEntryCRL(UserCertStoreEntry, UpdateCRLRequest,
-	 *      PasswordCallback)
+	 * @see UserCertStore#updateEntryCRL(UserCertStoreEntry, UpdateCRLRequest, PasswordCallback)
 	 */
 	public void updateCRL(UpdateCRLRequest request, PasswordCallback password) throws IOException {
 		store().updateEntryCRL(this, request, password);
@@ -243,11 +232,9 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Check whether this entry contains a direct accessible public key object.
 	 * <p>
-	 * This is the case if the entry contains a decrypted key pair, a CRT or a
-	 * CSR object.
+	 * This is the case if the entry contains a decrypted key pair, a CRT or a CSR object.
 	 *
-	 * @return {@code true} if this entry contains a direct accessible public
-	 *         key object.
+	 * @return {@code true} if this entry contains a direct accessible public key object.
 	 * @see #getPublicKey()
 	 */
 	public boolean hasPublicKey() {
@@ -258,8 +245,7 @@ public abstract class UserCertStoreEntry {
 	 * Get this entry's public key object.
 	 *
 	 * @return This entry's public key object (may be {@code null}).
-	 * @throws IOException if an I/O error occurs while accessing the public key
-	 *         object.
+	 * @throws IOException if an I/O error occurs while accessing the public key object.
 	 * @see #hasPublicKey()
 	 */
 	public PublicKey getPublicKey() throws IOException {
@@ -278,17 +264,14 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's certificate objects' file paths (if available).
 	 *
-	 * @return This entry's certificate objects' file paths. This list may be
-	 *         empty.
+	 * @return This entry's certificate objects' file paths. This list may be empty.
 	 */
 	public abstract List<Path> getFilePaths();
 
 	/**
-	 * Check whether this entry represents an external certificate (means
-	 * contains no actual certificate objects).
+	 * Check whether this entry represents an external certificate (means contains no actual certificate objects).
 	 * <p>
-	 * External entries are used whenever an issuer reference cannot be resolved
-	 * to another certificate store entry.
+	 * External entries are used whenever an issuer reference cannot be resolved to another certificate store entry.
 	 *
 	 * @return {@code true} if this entry represents an external certificate.
 	 */
@@ -297,8 +280,7 @@ public abstract class UserCertStoreEntry {
 	}
 
 	/**
-	 * Check whether this entry is valid (and the current point in time lies
-	 * within this validity range).
+	 * Check whether this entry is valid (and the current point in time lies within this validity range).
 	 *
 	 * @return {@code true} if this entry is valid.
 	 */
@@ -341,11 +323,10 @@ public abstract class UserCertStoreEntry {
 	}
 
 	/**
-	 * Check whether this entry is able to issue other certificates (means has a
-	 * key and hat it's Basic Constraints CA flag set to true).
+	 * Check whether this entry is able to issue other certificates (means has a key and hat it's Basic Constraints CA
+	 * flag set to true).
 	 *
-	 * @return {@code true} if this entry can be used for issuing new
-	 *         certificates.
+	 * @return {@code true} if this entry can be used for issuing new certificates.
 	 */
 	public final boolean canIssue() {
 		boolean canIssue = false;
@@ -366,7 +347,7 @@ public abstract class UserCertStoreEntry {
 	}
 
 	@Override
-	public boolean equals(@Nullable Object obj) {
+	public boolean equals(Object obj) {
 		boolean equal = false;
 
 		if (obj instanceof UserCertStoreEntry) {

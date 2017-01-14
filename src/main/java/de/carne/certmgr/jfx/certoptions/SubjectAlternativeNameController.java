@@ -16,8 +16,6 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
@@ -51,12 +49,12 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	private final ListViewEditor<GeneralName> namesEditor = new ListViewEditor<GeneralName>() {
 
 		@Override
-		protected @Nullable GeneralName getInput() {
+		protected GeneralName getInput() {
 			return getGeneralNameInput();
 		}
 
 		@Override
-		protected void setInput(@Nullable GeneralName input) {
+		protected void setInput(GeneralName input) {
 			setGeneralNameInput(input);
 		}
 
@@ -139,8 +137,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	/**
 	 * Initialize the dialog.
 	 *
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public SubjectAlternativeNameController init(boolean expertMode) {
@@ -153,8 +150,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	 * Initialize the dialog with existing extension data.
 	 *
 	 * @param data The extension data to use.
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public SubjectAlternativeNameController init(SubjectAlternativeNameExtensionData data, boolean expertMode) {

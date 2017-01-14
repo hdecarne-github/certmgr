@@ -21,8 +21,6 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.scene.control.DialogController;
@@ -50,12 +48,12 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	private final ListViewEditor<Rdn> rdnEntriesEditor = new ListViewEditor<Rdn>() {
 
 		@Override
-		protected @Nullable Rdn getInput() {
+		protected Rdn getInput() {
 			return getRdnInput();
 		}
 
 		@Override
-		protected void setInput(@Nullable Rdn input) {
+		protected void setInput(Rdn input) {
 			setRdnInput(input);
 		}
 

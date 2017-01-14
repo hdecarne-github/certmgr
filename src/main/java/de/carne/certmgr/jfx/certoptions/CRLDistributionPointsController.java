@@ -16,8 +16,6 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
 import de.carne.certmgr.certs.x509.DistributionPoint;
 import de.carne.certmgr.certs.x509.DistributionPointName;
@@ -53,12 +51,12 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 	private final ListViewEditor<GeneralName> namesEditor = new ListViewEditor<GeneralName>() {
 
 		@Override
-		protected @Nullable GeneralName getInput() {
+		protected GeneralName getInput() {
 			return getGeneralNameInput();
 		}
 
 		@Override
-		protected void setInput(@Nullable GeneralName input) {
+		protected void setInput(GeneralName input) {
 			setGeneralNameInput(input);
 		}
 
@@ -142,8 +140,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 	/**
 	 * Initialize the dialog.
 	 *
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public CRLDistributionPointsController init(boolean expertMode) {
@@ -156,8 +153,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 	 * Initialize the dialog with existing extension data.
 	 *
 	 * @param data The extension data to use.
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public CRLDistributionPointsController init(CRLDistributionPointsExtensionData data, boolean expertMode) {

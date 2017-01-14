@@ -24,7 +24,6 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERTaggedObject;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 
@@ -103,10 +102,8 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	/**
 	 * Get the defined distribution point name object.
 	 *
-	 * @return The defined distribution point name object or {@code null} if
-	 *         none has been defined.
+	 * @return The defined distribution point name object or {@code null} if none has been defined.
 	 */
-	@Nullable
 	public DistributionPointName getName() {
 		return this.name;
 	}
@@ -114,10 +111,8 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	/**
 	 * Get the defined CRL issuer's names.
 	 *
-	 * @return The defined CRL issuer's names or {@code null} if none have been
-	 *         defined.
+	 * @return The defined CRL issuer's names or {@code null} if none have been defined.
 	 */
-	@Nullable
 	public GeneralNames getCRLIssuer() {
 		return this.crlIssuer;
 	}
@@ -125,21 +120,19 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	/**
 	 * Set the reasons this distribution point is authoritative for.
 	 *
-	 * @param reasons The reasons this distribution point is authoritative for.
-	 *        May be {@code null} to use this distribution point for all
-	 *        reasons.
+	 * @param reasons The reasons this distribution point is authoritative for. May be {@code null} to use this
+	 *        distribution point for all reasons.
 	 */
-	public void setReasons(@Nullable ReasonFlags reasons) {
+	public void setReasons(ReasonFlags reasons) {
 		this.reasons = reasons;
 	}
 
 	/**
 	 * Get the reasons this distribution point is authoritative for.
 	 *
-	 * @return The reasons this distribution point is authoritative for or
-	 *         {@code null} if this distribution point is used for all reasons.
+	 * @return The reasons this distribution point is authoritative for or {@code null} if this distribution point is
+	 *         used for all reasons.
 	 */
-	@Nullable
 	public ReasonFlags getReasons() {
 		return this.reasons;
 	}

@@ -45,7 +45,6 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequest;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.asn1.ASN1Data;
@@ -56,11 +55,10 @@ import de.carne.util.logging.Log;
 /**
  * This class represents a PKCS#10 Certificate Signing Request (CSR) object.
  * <p>
- * As there is no official CSR class in the {@code java.security} package this
- * application specific class is used instead.
+ * As there is no official CSR class in the {@code java.security} package this application specific class is used
+ * instead.
  * <p>
- * In the current implementation this class is wrapper around BouncyCastle's
- * {@link PKCS10CertificationRequest} class.
+ * In the current implementation this class is wrapper around BouncyCastle's {@link PKCS10CertificationRequest} class.
  */
 public class PKCS10CertificateRequest extends ASN1Data implements X509Extension, AttributesProvider {
 
@@ -130,8 +128,7 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 	 *
 	 * @param pkcs10 The PCKS#10 object.
 	 * @return The constructed {@code PKCS10CertificateRequest}.
-	 * @throws IOException if an I/O error occurs while accessing the PKCS#10
-	 *         object.
+	 * @throws IOException if an I/O error occurs while accessing the PKCS#10 object.
 	 */
 	public static PKCS10CertificateRequest fromPKCS10(PKCS10CertificationRequest pkcs10) throws IOException {
 		JcaPKCS10CertificationRequest csr;
@@ -278,7 +275,7 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 	}
 
 	@Override
-	public boolean equals(@Nullable Object obj) {
+	public boolean equals(Object obj) {
 		return obj instanceof PKCS10CertificateRequest && this.csr.equals(((PKCS10CertificateRequest) obj).csr);
 	}
 

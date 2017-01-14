@@ -38,7 +38,6 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.NoPassword;
@@ -106,7 +105,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		assert in != null;
 
@@ -114,7 +112,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
-	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		assert in != null;
 
@@ -168,13 +165,11 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	/**
-	 * Read all available certificate objects from a PEM encoded
-	 * {@link InputStream} resource.
+	 * Read all available certificate objects from a PEM encoded {@link InputStream} resource.
 	 *
 	 * @param in The stream resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The read certificate objects, or {@code null} if the input is not
-	 *         recognized.
+	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	public static CertObjectStore readObjectsBinary(IOResource<InputStream> in, PasswordCallback password)
@@ -190,13 +185,11 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	/**
-	 * Read all available certificate objects from a PEM encoded {@link Reader}
-	 * resource.
+	 * Read all available certificate objects from a PEM encoded {@link Reader} resource.
 	 *
 	 * @param in The reader resource to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The read certificate objects, or {@code null} if the input is not
-	 *         recognized.
+	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
 	public static CertObjectStore readObjectsString(IOResource<Reader> in, PasswordCallback password)
@@ -422,8 +415,7 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 *
 	 * @param out The stream resource to to write to.
 	 * @param key The Key object to write.
-	 * @param newPassword The callback to use for querying the encryption
-	 *        password.
+	 * @param newPassword The callback to use for querying the encryption password.
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeKeyBinary(IOResource<OutputStream> out, KeyPair key, PasswordCallback newPassword)
@@ -442,8 +434,7 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 *
 	 * @param out The writer resource to to write to.
 	 * @param key The Key object to write.
-	 * @param newPassword The callback to use for querying the encryption
-	 *        password.
+	 * @param newPassword The callback to use for querying the encryption password.
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeKeyString(IOResource<Writer> out, KeyPair key, PasswordCallback newPassword)

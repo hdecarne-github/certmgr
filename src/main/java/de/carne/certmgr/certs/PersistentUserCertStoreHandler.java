@@ -36,8 +36,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.io.PEMCertReaderWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
@@ -57,8 +55,7 @@ import de.carne.util.logging.Log;
  * ./private/*.key (encrypted key files)
  * </pre>
  *
- * A certificate object's file names are determined based upon the corresponding
- * entry id's alias attributes.
+ * A certificate object's file names are determined based upon the corresponding entry id's alias attributes.
  */
 class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
@@ -276,8 +273,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 			this(id, path, null, null);
 		}
 
-		protected PersistentCertObjectHolder(UserCertStoreEntryId id, Path path, @Nullable T object,
-				@Nullable FileTime fileTime) {
+		protected PersistentCertObjectHolder(UserCertStoreEntryId id, Path path, T object, FileTime fileTime) {
 			this.id = id;
 			this.path = path;
 			this.cached = new SoftReference<>(object);
