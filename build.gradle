@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'de.carne.gradleplugins.java'
 apply plugin: 'jacoco'
+apply plugin: 'distribution'
+apply plugin: 'eclipse'
 
 buildscript {
 	repositories {
@@ -15,29 +17,14 @@ buildscript {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext.checkerFrameworkVersion = '2.1.7'
-
 repositories {
 	mavenLocal()
 	mavenCentral()
-}
-
-configurations {
-	checkerFrameworkAnnotatedJDK {
-		description = 'a copy of JDK classes with Checker Framework type qualifers inserted'
-	}
-	checkerFramework {
-		description = 'The Checker Framework: custom pluggable types for Java'
-	}
+	maven { url 'https://oss.sonatype.org/content/repositories/snapshots' } 
 }
 
 dependencies {
-    checkerFrameworkAnnotatedJDK("org.checkerframework:jdk8:${checkerFrameworkVersion}")
-	checkerFramework("org.checkerframework:checker:${checkerFrameworkVersion}")
-	compile("org.checkerframework:checker-qual:${checkerFrameworkVersion}")
-	
-	compile('de.carne:default:1')
-	compile('de.carne:jfx:1')
+	compile('de.carne:jfx:2-SNAPSHOT')
 
 	compile('org.bouncycastle:bcpkix-jdk15on:1.55')    
 	
@@ -51,5 +38,52 @@ jacocoTestReport {
 		html.enabled true
 		html.destination "${buildDir}/reports/jacoco"
 		csv.enabled false
+	}
+}
+
+import java.text.SimpleDateFormat
+
+jar {
+	def buildTimestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	
+	manifest {
+		attributes(
+			'Main-Class': 'de.carne.ApplicationLoader',
+			'X-Version-ProjectId': project.name,
+			'X-Version-ProjectName' : rootProject.name,
+			'X-Version-ProjectVersion': version,
+			'X-Version-ProjectBuild' : buildTimestamp
+		)
+	}
+	from configurations.runtime.collect {
+		it.name.matches('(default-.*.jar)|(jfx-.*.jar)') ? zipTree(it).matching { exclude 'META-INF/**' } : it
+	}
+}
+
+distributions {
+	main {
+		contents {
+			from jar
+		}
+	}
+}
+
+tasks.withType(Tar){
+	compression = Compression.GZIP
+	extension = 'tar.gz'
+}
+
+import org.gradle.plugins.ide.eclipse.model.AccessRule
+
+eclipse {
+	classpath {
+		defaultOutputDir = file('eclipse-build')
+		file {
+			whenMerged {
+				def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
+				
+				jre.accessRules.add(new AccessRule('0', 'javafx/**'))
+			}
+		}
 	}
 }
