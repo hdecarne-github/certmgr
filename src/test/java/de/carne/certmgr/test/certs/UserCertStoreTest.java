@@ -363,7 +363,7 @@ public class UserCertStoreTest {
 			UserCertStore importStore = UserCertStore.createFromServer(Protocol.STARTTLS_SMTP, TEST_SSL_HOST,
 					TEST_SSL_PORT);
 
-			Assert.assertNull(importStore);
+			Assert.assertEquals(0, importStore.size());
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}

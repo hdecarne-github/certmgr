@@ -586,7 +586,7 @@ public final class UserCertStore {
 
 		for (Entry entry : this.storeEntries.values()) {
 			if (crtDN.equals(entry.dn())) {
-				if (crtPublicKey.equals(entry.getPublicKey())) {
+				if (entry.hasPublicKey() && crtPublicKey.equals(entry.getPublicKey())) {
 					matchingEntry = entry;
 					break;
 				}
@@ -605,7 +605,7 @@ public final class UserCertStore {
 		Entry matchingEntry = null;
 
 		for (Entry entry : this.storeEntries.values()) {
-			if (publicKey.equals(entry.getPublicKey())) {
+			if (entry.hasPublicKey() && publicKey.equals(entry.getPublicKey())) {
 				matchingEntry = entry;
 				break;
 			}
@@ -624,7 +624,7 @@ public final class UserCertStore {
 		Entry matchingEntry = null;
 
 		for (Entry entry : this.storeEntries.values()) {
-			if (csrDN.equals(entry.dn()) && csrPublicKey.equals(entry.getPublicKey())) {
+			if (csrDN.equals(entry.dn()) && entry.hasPublicKey() && csrPublicKey.equals(entry.getPublicKey())) {
 				matchingEntry = entry;
 				break;
 			}
