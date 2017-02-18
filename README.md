@@ -1,4 +1,8 @@
 ## CertMgr
+
+[![Build Status](https://travis-ci.org/hdecarne/de.carne.certmgr.svg?branch=master)](https://travis-ci.org/hdecarne/de.carne.certmgr)
+[![codecov](https://codecov.io/gh/hdecarne/de.carne.certmgr/branch/master/graph/badge.svg)](https://codecov.io/gh/hdecarne/de.carne.certmgr)
+
 Create and manage X.509 certificates.
 
 ![store view](http://hdecarne.github.io/certmgr.png)
