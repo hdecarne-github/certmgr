@@ -21,35 +21,45 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.check.Nullable;
 
 final class PersistentEntry {
 
+	@Nullable
 	private final CertObjectHolder<X509Certificate> crtHolder;
+	@Nullable
 	private final SecureCertObjectHolder<KeyPair> keyHolder;
+	@Nullable
 	private final CertObjectHolder<PKCS10CertificateRequest> csrHolder;
+	@Nullable
 	private final CertObjectHolder<X509CRL> crlHolder;
 
-	PersistentEntry(PersistentEntry base, CertObjectHolder<X509Certificate> crtHolder,
-			SecureCertObjectHolder<KeyPair> keyHolder, CertObjectHolder<PKCS10CertificateRequest> csrHolder,
-			CertObjectHolder<X509CRL> crlHolder) {
+	PersistentEntry(@Nullable PersistentEntry base, @Nullable CertObjectHolder<X509Certificate> crtHolder,
+			@Nullable SecureCertObjectHolder<KeyPair> keyHolder,
+			@Nullable CertObjectHolder<PKCS10CertificateRequest> csrHolder,
+			@Nullable CertObjectHolder<X509CRL> crlHolder) {
 		this.crtHolder = (crtHolder != null ? crtHolder : (base != null ? base.crtHolder : null));
 		this.keyHolder = (keyHolder != null ? keyHolder : (base != null ? base.keyHolder : null));
 		this.csrHolder = (csrHolder != null ? csrHolder : (base != null ? base.csrHolder : null));
 		this.crlHolder = (crlHolder != null ? crlHolder : (base != null ? base.crlHolder : null));
 	}
 
+	@Nullable
 	public CertObjectHolder<X509Certificate> crt() {
 		return this.crtHolder;
 	}
 
+	@Nullable
 	public SecureCertObjectHolder<KeyPair> key() {
 		return this.keyHolder;
 	}
 
+	@Nullable
 	public CertObjectHolder<PKCS10CertificateRequest> csr() {
 		return this.csrHolder;
 	}
 
+	@Nullable
 	public CertObjectHolder<X509CRL> crl() {
 		return this.crlHolder;
 	}

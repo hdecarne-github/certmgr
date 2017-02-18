@@ -65,8 +65,6 @@ public final class X509CRLHelper {
 	 * @return The CRL object's attributes.
 	 */
 	public static Attributes toAttributes(X509CRL crl) {
-		assert crl != null;
-
 		Attributes crlAttributes = new Attributes(AttributesI18N.formatSTR_CRL());
 
 		crlAttributes.add(AttributesI18N.formatSTR_CRL_VERSION(), Integer.toString(crl.getVersion()));
@@ -112,8 +110,7 @@ public final class X509CRLHelper {
 	 *
 	 * @param crl The CRL object to check.
 	 * @param publicKey The public key of the key pair to check.
-	 * @return {@code true} if the CRL object has been signed by the public
-	 *         key's key pair.
+	 * @return {@code true} if the CRL object has been signed by the public key's key pair.
 	 * @throws IOException if a general security error occurs during the check.
 	 */
 	public static boolean isCRLSignedBy(X509CRL crl, PublicKey publicKey) throws IOException {
@@ -133,8 +130,7 @@ public final class X509CRLHelper {
 	/**
 	 * Generate a CRL object.
 	 *
-	 * @param currentCRL The current CRL object in case of an update (may be
-	 *        {@code null}).
+	 * @param currentCRL The current CRL object in case of an update (may be {@code null}).
 	 * @param lastUpdate The last update timestamp to set.
 	 * @param nextUpdate The next update timestamp to set (may be {@code null}).
 	 * @param revokeEntries The revoked entries.
@@ -147,11 +143,6 @@ public final class X509CRLHelper {
 	public static X509CRL generateCRL(X509CRL currentCRL, Date lastUpdate, Date nextUpdate,
 			Map<BigInteger, ReasonFlag> revokeEntries, X500Principal issuerDN, KeyPair issuerKey,
 			SignatureAlgorithm signatureAlgorithm) throws IOException {
-		assert lastUpdate != null;
-		assert issuerDN != null;
-		assert issuerKey != null;
-		assert signatureAlgorithm != null;
-
 		LOG.info("CRL generation ''{0}'' started...", issuerDN);
 
 		// Initialize CRL builder

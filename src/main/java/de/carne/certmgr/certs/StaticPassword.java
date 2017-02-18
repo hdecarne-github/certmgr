@@ -16,35 +16,38 @@
  */
 package de.carne.certmgr.certs;
 
+import de.carne.check.Nullable;
+
 /**
  * {@link PasswordCallback} implementation providing a static passwords.
  */
 public class StaticPassword implements PasswordCallback {
 
+	@Nullable
 	private final char[] password;
 
-	private StaticPassword(char[] password) {
+	private StaticPassword(@Nullable char[] password) {
 		this.password = password;
 	}
 
 	/**
 	 * Get {@code StaticPassword} instance.
-	 * 
+	 *
 	 * @param password The password to return.
 	 * @return {@code StaticPassword} instance.
 	 */
-	public static StaticPassword getInstance(char[] password) {
-		assert password != null;
-
+	public static StaticPassword getInstance(@Nullable char[] password) {
 		return new StaticPassword(password);
 	}
 
 	@Override
+	@Nullable
 	public char[] queryPassword(String resource) {
 		return this.password;
 	}
 
 	@Override
+	@Nullable
 	public char[] requeryPassword(String resource, Throwable cause) {
 		return null;
 	}

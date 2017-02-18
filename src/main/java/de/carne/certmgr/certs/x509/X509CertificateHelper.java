@@ -82,14 +82,10 @@ public final class X509CertificateHelper {
 	 *
 	 * @param crt The certificate to check.
 	 * @param publicKey The public key of the key pair to check.
-	 * @return {@code true} if the certificate has been signed by the public
-	 *         key's key pair.
+	 * @return {@code true} if the certificate has been signed by the public key's key pair.
 	 * @throws IOException if a general security error occurs during the check.
 	 */
 	public static boolean isCRTSignedBy(X509Certificate crt, PublicKey publicKey) throws IOException {
-		assert crt != null;
-		assert publicKey != null;
-
 		boolean isSignedBy = false;
 
 		try {
@@ -121,15 +117,6 @@ public final class X509CertificateHelper {
 	public static X509Certificate generateCRT(X500Principal dn, KeyPair key, BigInteger serial, Date notBefore,
 			Date notAfter, List<X509ExtensionData> extensions, X500Principal issuerDN, KeyPair issuerKey,
 			SignatureAlgorithm signatureAlgorithm) throws IOException {
-		assert dn != null;
-		assert key != null;
-		assert serial != null;
-		assert notBefore != null;
-		assert notAfter != null;
-		assert extensions != null;
-		assert issuerDN != null;
-		assert signatureAlgorithm != null;
-
 		LOG.info("CRT generation ''{0}'' started...", dn);
 
 		// Initialize CRT builder

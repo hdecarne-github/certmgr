@@ -18,6 +18,8 @@ package de.carne.certmgr.jfx.util;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.jfx.resources.Images;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -49,8 +51,6 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 	 * @param entry The represented certificate store entry.
 	 */
 	protected UserCertStoreEntryModel(UserCertStoreEntry entry) {
-		assert entry != null;
-
 		this.entry = entry;
 		this.idProperty = new SimpleStringProperty(this.entry.id().toString());
 		this.nameProperty = new SimpleStringProperty(this.entry.getName());
@@ -238,7 +238,7 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 	 * @return The HasCRL property value.
 	 */
 	public final Boolean getHasCRL() {
-		return this.hasCRLProperty.get();
+		return this.hasCRLProperty.getValue();
 	}
 
 	/**
@@ -260,8 +260,8 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 	}
 
 	@Override
-	public int compareTo(UserCertStoreEntryModel o) {
-		return this.nameProperty.get().compareTo(o.nameProperty.get());
+	public int compareTo(@Nullable UserCertStoreEntryModel o) {
+		return this.nameProperty.get().compareTo(Check.nonNull(o).nameProperty.get());
 	}
 
 	@Override

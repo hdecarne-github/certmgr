@@ -24,6 +24,7 @@ import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.IOResource;
+import de.carne.check.Nullable;
 import de.carne.util.PropertiesHelper;
 
 /**
@@ -47,6 +48,7 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
+	@Nullable
 	CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException;
 
 	/**
@@ -57,6 +59,7 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
+	@Nullable
 	CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException;
 
 }

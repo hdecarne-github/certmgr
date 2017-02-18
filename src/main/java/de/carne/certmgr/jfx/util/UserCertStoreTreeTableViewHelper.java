@@ -26,26 +26,19 @@ import java.util.function.Function;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.check.Nullable;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;
 
 /**
- * Helper class for building up and updating the {@link TreeTableView} model for
- * a certificate store.
+ * Helper class for building up and updating the {@link TreeTableView} model for a certificate store.
  *
  * @param <T> The model type.
  */
 public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntryModel> {
 
-	private final Comparator<TreeItem<T>> comparator = new Comparator<TreeItem<T>>() {
-
-		@Override
-		public int compare(TreeItem<T> o1, TreeItem<T> o2) {
-			return o1.getValue().compareTo(o2.getValue());
-		}
-
-	};
+	private final Comparator<TreeItem<T>> comparator = (o1, o2) -> o1.getValue().compareTo(o2.getValue());
 
 	private final TreeTableView<T> treeTableView;
 	private final Function<UserCertStoreEntry, T> modelFactory;
@@ -58,9 +51,6 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 	 */
 	public UserCertStoreTreeTableViewHelper(TreeTableView<T> treeTableView,
 			Function<UserCertStoreEntry, T> modelFactory) {
-		assert treeTableView != null;
-		assert modelFactory != null;
-
 		this.treeTableView = treeTableView;
 		this.modelFactory = modelFactory;
 	}
@@ -68,9 +58,9 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 	/**
 	 * Update the {@link TreeTableView}'s model.
 	 *
-	 * @param store The certificate store providing the data to display.
+	 * @param store The certificate store providing the data to display (may be {@code null}).
 	 */
-	public void update(UserCertStore store) {
+	public void update(@Nullable UserCertStore store) {
 		if (store != null) {
 			TreeItem<T> root = this.treeTableView.getRoot();
 

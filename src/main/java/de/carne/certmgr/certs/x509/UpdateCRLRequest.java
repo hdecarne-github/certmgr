@@ -42,9 +42,6 @@ public class UpdateCRLRequest {
 	 * @param signatureAlgorithm The signature algorithm to use for CRL signing.
 	 */
 	public UpdateCRLRequest(Date lastUpdate, Date nextUpdate, SignatureAlgorithm signatureAlgorithm) {
-		assert lastUpdate != null;
-		assert signatureAlgorithm != null;
-
 		this.lastUpdate = lastUpdate;
 		this.nextUpdate = nextUpdate;
 		this.signatureAlgorithm = signatureAlgorithm;
@@ -71,7 +68,7 @@ public class UpdateCRLRequest {
 
 	/**
 	 * Get the CRL's last update date.
-	 * 
+	 *
 	 * @return The CRL's last update date.
 	 */
 	public Date lastUpdate() {
@@ -80,7 +77,7 @@ public class UpdateCRLRequest {
 
 	/**
 	 * Get the CRL's next update date.
-	 * 
+	 *
 	 * @return The CRL's next update date.
 	 */
 	public Date nextUpdate() {
@@ -89,7 +86,7 @@ public class UpdateCRLRequest {
 
 	/**
 	 * Get the signature algorithm to use for CRL signing.
-	 * 
+	 *
 	 * @return The signature algorithm to use for CRL signing.
 	 */
 	public SignatureAlgorithm signatureAlgorithm() {

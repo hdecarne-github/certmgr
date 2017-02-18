@@ -23,22 +23,18 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.check.Nullable;
 import de.carne.util.Strings;
 
 /**
- * {@link UserCertStoreHandler} implementation providing simple heap based
- * storage.
+ * {@link UserCertStoreHandler} implementation providing simple heap based storage.
  */
 class TransientUserCertStoreHandler extends UserCertStoreHandler {
 
 	private int nextId = 1;
 
-	TransientUserCertStoreHandler() {
-		super(null);
-	}
-
 	@Override
-	public UserCertStoreEntryId nextEntryId(String aliasHint) {
+	public UserCertStoreEntryId nextEntryId(@Nullable String aliasHint) {
 		return new UserCertStoreEntryId(this.nextId++, Strings.safe(aliasHint));
 	}
 
@@ -79,6 +75,7 @@ class TransientUserCertStoreHandler extends UserCertStoreHandler {
 		}
 
 		@Override
+		@Nullable
 		public Path path() {
 			return null;
 		}

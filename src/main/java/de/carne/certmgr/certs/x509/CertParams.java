@@ -42,9 +42,6 @@ public class CertParams {
 	 * @param keySize The key size to use for generation.
 	 */
 	public CertParams(X500Principal dn, KeyPairAlgorithm keyPairAlgorithm, int keySize) {
-		assert dn != null;
-		assert keyPairAlgorithm != null;
-
 		this.dn = dn;
 		this.keyPairAlgorithm = keyPairAlgorithm;
 		this.keySize = keySize;
@@ -83,8 +80,6 @@ public class CertParams {
 	 * @param extension The extension object to add.
 	 */
 	public void addExtension(X509ExtensionData extension) {
-		assert extension != null;
-
 		this.extensions.add(extension);
 	}
 

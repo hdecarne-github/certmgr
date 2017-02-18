@@ -45,9 +45,6 @@ public final class IOResource<T extends AutoCloseable> implements AutoCloseable 
 	 * @param name The resource's name.
 	 */
 	public IOResource(T io, String name) {
-		assert io != null;
-		assert name != null;
-
 		this.io = io;
 		this.name = name;
 	}
@@ -98,9 +95,6 @@ public final class IOResource<T extends AutoCloseable> implements AutoCloseable 
 	 */
 	public static IOResource<InputStream> newInputStream(String resource, Path path, OpenOption... options)
 			throws IOException {
-		assert resource != null;
-		assert path != null;
-
 		return new IOResource<>(Files.newInputStream(path, options), resource);
 	}
 
@@ -116,39 +110,28 @@ public final class IOResource<T extends AutoCloseable> implements AutoCloseable 
 	 */
 	public static IOResource<OutputStream> newOutputStream(String resource, Path path, OpenOption... options)
 			throws IOException {
-		assert resource != null;
-		assert path != null;
-
 		return new IOResource<>(Files.newOutputStream(path, options), resource);
 	}
 
 	/**
-	 * Wrap an {@link InputStream} based I/O resource in a {@link Reader} based
-	 * resource.
+	 * Wrap an {@link InputStream} based I/O resource in a {@link Reader} based resource.
 	 *
 	 * @param in The stream resource to wrap.
 	 * @param charset The {@link Charset} to use for text to binary conversion.
 	 * @return The wrapped resource.
 	 */
 	public static IOResource<Reader> streamReader(IOResource<? extends InputStream> in, Charset charset) {
-		assert in != null;
-		assert charset != null;
-
 		return new IOResource<>(new InputStreamReader(in.io(), charset), in.resource());
 	}
 
 	/**
-	 * Wrap an {@link OutputStream} based I/O resource in a {@link Writer} based
-	 * resource.
+	 * Wrap an {@link OutputStream} based I/O resource in a {@link Writer} based resource.
 	 *
 	 * @param out The stream resource to wrap.
 	 * @param charset The {@link Charset} to use for text to binary conversion.
 	 * @return The wrapped resource.
 	 */
 	public static IOResource<Writer> streamWriter(IOResource<? extends OutputStream> out, Charset charset) {
-		assert out != null;
-		assert charset != null;
-
 		return new IOResource<>(new OutputStreamWriter(out.io(), charset), out.resource());
 	}
 

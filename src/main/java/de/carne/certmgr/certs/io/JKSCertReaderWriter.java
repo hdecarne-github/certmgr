@@ -39,6 +39,7 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.check.Nullable;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
@@ -77,16 +78,15 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
-		assert in != null;
-		assert password != null;
-
 		LOG.debug("Trying to read KeyStore objects from file: ''{0}''...", in);
 
 		return readKeyStore(KEYSTORE_TYPE, in.io(), in.resource(), password);
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
@@ -165,17 +165,16 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	 * @return The list of read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
+	@Nullable
 	public static CertObjectStore readPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
 			throws IOException {
-		assert platformKeyStore != null;
-		assert password != null;
-
 		LOG.debug("Trying to read KeyStore objects from platform store: ''{0}''...", platformKeyStore);
 
 		return readKeyStore(platformKeyStore.algorithm(), null, platformKeyStore.algorithm(), password);
 	}
 
-	private static CertObjectStore readKeyStore(String keyStoreType, InputStream inputStream, String resource,
+	@Nullable
+	private static CertObjectStore readKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
 			PasswordCallback password) throws IOException {
 		KeyStore keyStore = null;
 
@@ -224,7 +223,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return certObjects;
 	}
 
-	private static KeyStore loadKeyStore(String keyStoreType, InputStream inputStream, String resource,
+	private static KeyStore loadKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
 			PasswordCallback password) throws GeneralSecurityException, IOException {
 		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
 		char[] passwordChars = null;
@@ -251,6 +250,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 		return keyStore;
 	}
 
+	@Nullable
 	private static Key getAliasKey(KeyStore keyStore, String alias, PasswordCallback password)
 			throws GeneralSecurityException {
 		Key key = null;

@@ -35,13 +35,10 @@ public class CRLDistributionPointsDialog extends Dialog<CRLDistributionPointsExt
 	 * Load the CRL Distribution Points dialog.
 	 *
 	 * @param owner The stage controller owning this dialog.
-	 * @return The constructed controller which is bound to the newly created
-	 *         dialog.
+	 * @return The constructed controller which is bound to the newly created dialog.
 	 * @throws IOException if an I/O error occurs during dialog loading.
 	 */
 	public static CRLDistributionPointsController load(StageController owner) throws IOException {
-		assert owner != null;
-
 		return owner.loadDialog((c) -> new CRLDistributionPointsDialog(c), CRLDistributionPointsController.class);
 	}
 

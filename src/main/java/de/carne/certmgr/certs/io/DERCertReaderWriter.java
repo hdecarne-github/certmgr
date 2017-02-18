@@ -39,6 +39,7 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -89,10 +90,8 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
-		assert in != null;
-		assert password != null;
-
 		LOG.debug("Trying to read DER objects from: ''{0}''...", in);
 
 		CertObjectStore certObjects = null;
@@ -133,6 +132,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
@@ -227,6 +227,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 		}
 	}
 
+	@Nullable
 	private static X509Certificate decodeCRT(ASN1Primitive asn1Object) throws IOException {
 		X509CertificateHolder crtObject = null;
 
@@ -238,6 +239,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 		return (crtObject != null ? convertCRT(crtObject) : null);
 	}
 
+	@Nullable
 	private static PKCS10CertificateRequest decodeCSR(ASN1Primitive asn1Object) throws IOException {
 		PKCS10CertificationRequest csrObject = null;
 
@@ -249,6 +251,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 		return (csrObject != null ? convertCSR(csrObject) : null);
 	}
 
+	@Nullable
 	private static X509CRL decodeCRL(ASN1Primitive asn1Object) throws IOException {
 		X509CRLHolder crlObject = null;
 

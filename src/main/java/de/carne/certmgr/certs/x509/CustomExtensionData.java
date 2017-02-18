@@ -41,9 +41,6 @@ public class CustomExtensionData extends X509ExtensionData {
 	 */
 	public CustomExtensionData(String oid, boolean critical, byte[] encoded) {
 		super(oid, critical);
-
-		assert encoded != null;
-
 		this.encoded = encoded;
 	}
 
@@ -62,8 +59,6 @@ public class CustomExtensionData extends X509ExtensionData {
 	 * @param encoded The data to set.
 	 */
 	public void setEncoded(byte[] encoded) {
-		assert encoded != null;
-
 		this.encoded = encoded;
 	}
 

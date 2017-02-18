@@ -39,7 +39,7 @@ import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.Strings;
-import de.carne.util.prefs.DirectoryPreference;
+import de.carne.util.prefs.PathPreference;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.PathValidator;
 import de.carne.util.validation.ValidationException;
@@ -67,8 +67,8 @@ public class CertExportController extends StageController {
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertExportController.class);
 
-	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
-			"initialDirectory", true);
+	private final PathPreference preferenceInitalDirectory = new PathPreference(this.preferences, "initialDirectory",
+			PathPreference.IS_DIRECTORY);
 
 	private UserCertStoreEntry exportEntry;
 
@@ -256,8 +256,6 @@ public class CertExportController extends StageController {
 	 * @return This controller.
 	 */
 	public CertExportController init(UserCertStoreEntry exportEntryParam) {
-		assert exportEntryParam != null;
-
 		this.exportEntry = exportEntryParam;
 		this.ctlCertField.setText(this.exportEntry.getName());
 		this.ctlExportCertOption.setDisable(!this.exportEntry.hasCRT());
@@ -328,7 +326,7 @@ public class CertExportController extends StageController {
 				Strings.safeTrim(this.ctlDirectoryDestinationInput.getText()),
 				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_DIRECTORY(a));
 
-		return PathValidator.isWritableDirectory(directoryDestinationInput,
+		return PathValidator.isDirectoryPath(directoryDestinationInput,
 				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
 	}
 

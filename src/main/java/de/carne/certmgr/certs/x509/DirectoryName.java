@@ -40,9 +40,6 @@ public class DirectoryName extends GeneralName {
 	 */
 	public DirectoryName(X500Principal name) {
 		super(GeneralNameType.DIRECTORY_NAME);
-
-		assert name != null;
-
 		this.name = name;
 	}
 

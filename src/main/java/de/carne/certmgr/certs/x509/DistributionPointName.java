@@ -55,8 +55,6 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	}
 
 	private DistributionPointName(GeneralNames fullName, X500Principal nameRelativeToCRLIssuer) {
-		assert fullName != null || nameRelativeToCRLIssuer != null;
-
 		this.fullName = fullName;
 		this.nameRelativeToCRLIssuer = nameRelativeToCRLIssuer;
 	}

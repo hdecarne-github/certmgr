@@ -18,6 +18,9 @@ package de.carne.certmgr.util;
 
 import java.time.Period;
 
+import de.carne.check.Check;
+import de.carne.check.Nullable;
+
 /**
  * Utility class used to manage a period of days.
  * <p>
@@ -37,8 +40,6 @@ public class Days implements Comparable<Days> {
 	 * @param period The period to use for initialization.
 	 */
 	public Days(Period period) {
-		assert period != null;
-
 		this.period = period.normalized();
 	}
 
@@ -79,8 +80,8 @@ public class Days implements Comparable<Days> {
 	}
 
 	@Override
-	public int compareTo(Days o) {
-		return count() - o.count();
+	public int compareTo(@Nullable Days o) {
+		return count() - Check.nonNull(o).count();
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class Days implements Comparable<Days> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return this == obj || (obj instanceof Days && count() == ((Days) obj).count());
 	}
 

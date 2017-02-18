@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.certs;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.KeyPair;
@@ -31,6 +32,7 @@ import javax.security.auth.x500.X500Principal;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
+import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 
 /**
@@ -136,7 +138,7 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's CRT (Certificate) object.
 	 *
-	 * @return This entry's CRT (Certificate) object (may be {@code null}).
+	 * @return This entry's CRT (Certificate) object.
 	 * @throws IOException if an I/O error occurs while loading the CRT object.
 	 * @see #hasCRT()
 	 */
@@ -163,7 +165,7 @@ public abstract class UserCertStoreEntry {
 	 * <p>
 	 * This function assumes that the Key object is decrypted and therefore no password is required to access it.
 	 *
-	 * @return This entry's Key object (may be {@code null}).
+	 * @return This entry's Key object.
 	 * @throws PasswordRequiredException if a password is required.
 	 * @throws IOException if an I/O error occurs while loading the Key object.
 	 * @see #hasDecryptedKey()
@@ -176,7 +178,7 @@ public abstract class UserCertStoreEntry {
 	 * Get this entry's Key object.
 	 *
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return This entry's Key object (may be {@code null}).
+	 * @return This entry's Key object.
 	 * @throws PasswordRequiredException if no valid password was given.
 	 * @throws IOException if an I/O error occurs while loading the Key object.
 	 * @see #hasKey()
@@ -194,7 +196,7 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's CSR (Certificate Signing Request) object.
 	 *
-	 * @return This entry's CSR (Certificate Signing Request) object (may be {@code null}).
+	 * @return This entry's CSR (Certificate Signing Request) object.
 	 * @throws IOException if an I/O error occurs while loading the CSR object.
 	 * @see #hasCSR()
 	 */
@@ -211,7 +213,7 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's CRL (Certificate Revocation List) object.
 	 *
-	 * @return This entry's CRL (Certificate Revocation List) object (may be {@code null}).
+	 * @return This entry's CRL (Certificate Revocation List) object.
 	 * @throws IOException if an I/O error occurs while loading the CRL object.
 	 * @see #hasCRL()
 	 */
@@ -244,7 +246,7 @@ public abstract class UserCertStoreEntry {
 	/**
 	 * Get this entry's public key object.
 	 *
-	 * @return This entry's public key object (may be {@code null}).
+	 * @return This entry's public key object.
 	 * @throws IOException if an I/O error occurs while accessing the public key object.
 	 * @see #hasPublicKey()
 	 */
@@ -257,6 +259,8 @@ public abstract class UserCertStoreEntry {
 			publicKey = getKey().getPublic();
 		} else if (hasCSR()) {
 			publicKey = getCSR().getPublicKey();
+		} else {
+			throw new FileNotFoundException();
 		}
 		return publicKey;
 	}
@@ -347,7 +351,7 @@ public abstract class UserCertStoreEntry {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		boolean equal = false;
 
 		if (obj instanceof UserCertStoreEntry) {

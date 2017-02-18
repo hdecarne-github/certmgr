@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.logging.Log;
@@ -40,6 +41,7 @@ public final class OIDs {
 
 	private static final String OIDS_RESOURCE = OIDs.class.getSimpleName() + ".properties";
 
+	@Nullable
 	private static final String OIDS_USER_FILE = PropertiesHelper.get(OIDs.class, "", null);
 
 	private static final Map<String, String> OIDS = new HashMap<>();
@@ -75,8 +77,7 @@ public final class OIDs {
 	/**
 	 * Convert an OID string to it's string representation.
 	 * <p>
-	 * For known OID this is the defined OID name otherwise the unchanged OID
-	 * string.
+	 * For known OID this is the defined OID name otherwise the unchanged OID string.
 	 *
 	 * @param oid The OID to convert.
 	 * @return The OID's string representation.

@@ -16,6 +16,8 @@
  */
 package de.carne.certmgr.certs;
 
+import de.carne.check.Nullable;
+
 /**
  * {@link PasswordCallback} implementation providing no passwords.
  */
@@ -37,11 +39,13 @@ public class NoPassword implements PasswordCallback {
 	}
 
 	@Override
+	@Nullable
 	public char[] queryPassword(String resource) {
 		return null;
 	}
 
 	@Override
+	@Nullable
 	public char[] requeryPassword(String resource, Throwable cause) {
 		return null;
 	}

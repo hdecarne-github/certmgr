@@ -42,8 +42,7 @@ import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
 /**
- * Class used to collect/transfer individual certificate objects for reading and
- * writing.
+ * Class used to collect/transfer individual certificate objects for reading and writing.
  */
 public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 
@@ -84,8 +83,7 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 		}
 
 		/**
-		 * Get the CRT ({@link X509Certificate}) represented by this certificate
-		 * object.
+		 * Get the CRT ({@link X509Certificate}) represented by this certificate object.
 		 *
 		 * @return The CRT represented by this certificate object.
 		 * @throws ClassCastException if this certificate is not of type CRT.
@@ -107,8 +105,7 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 		}
 
 		/**
-		 * Get the CSR ({@link PKCS10CertificateRequest}) represented by this
-		 * certificate object.
+		 * Get the CSR ({@link PKCS10CertificateRequest}) represented by this certificate object.
 		 *
 		 * @return The CSR represented by this certificate object.
 		 * @throws ClassCastException if this certificate is not of type CSR.
@@ -190,7 +187,7 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 				}
 			}
 		} catch (GeneralSecurityException e) {
-			LOG.warning(CertObjectStoreI18N.STR_MESSAGE_PRIVATE_KEY_FAILURE, alias);
+			LOG.warning(e, CertObjectStoreI18N.STR_MESSAGE_PRIVATE_KEY_FAILURE, alias);
 		}
 		return merged;
 	}
@@ -222,7 +219,7 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 				merged = true;
 			}
 		} catch (GeneralSecurityException e) {
-			LOG.warning(CertObjectStoreI18N.STR_MESSAGE_PUBLIC_KEY_FAILURE, alias);
+			LOG.warning(e, CertObjectStoreI18N.STR_MESSAGE_PUBLIC_KEY_FAILURE, alias);
 		}
 		return merged;
 	}
@@ -313,9 +310,6 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 * @param crt The CRT object to add.
 	 */
 	public void addCRT(String alias, X509Certificate crt) {
-		assert alias != null;
-		assert crt != null;
-
 		this.entries.add(new Entry(alias, CertObjectType.CRT, crt));
 		mergePublicKey(alias, crt.getPublicKey(), true);
 	}
@@ -337,9 +331,6 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 * @param key The Key object to add.
 	 */
 	public void addKey(String alias, KeyPair key) {
-		assert alias != null;
-		assert key != null;
-
 		this.entries.add(new Entry(alias, CertObjectType.KEY, key));
 	}
 
@@ -402,9 +393,6 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 * @param csr The CSR object to add.
 	 */
 	public void addCSR(String alias, PKCS10CertificateRequest csr) {
-		assert alias != null;
-		assert csr != null;
-
 		this.entries.add(new Entry(alias, CertObjectType.CSR, csr));
 		mergePublicKey(alias, csr.getPublicKey(), true);
 	}
@@ -426,9 +414,6 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 * @param crl The CRL object to add.
 	 */
 	public void addCRL(String alias, X509CRL crl) {
-		assert alias != null;
-		assert crl != null;
-
 		this.entries.add(new Entry(alias, CertObjectType.CRL, crl));
 	}
 

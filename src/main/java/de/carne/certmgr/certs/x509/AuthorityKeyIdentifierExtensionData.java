@@ -32,8 +32,7 @@ import org.bouncycastle.asn1.DERTaggedObject;
 import de.carne.certmgr.util.Bytes;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.1">Authority
- * Key Identifier Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.1">Authority Key Identifier Extension</a> data.
  */
 public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 
@@ -64,17 +63,13 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	public AuthorityKeyIdentifierExtensionData(boolean critical, byte[] keyIdentifier, GeneralNames authorityCertIssuer,
 			BigInteger authorityCertSerialNumber) {
 		super(OID, critical);
-
-		assert keyIdentifier != null;
-
 		this.keyIdentifier = keyIdentifier;
 		this.authorityCertIssuer = authorityCertIssuer;
 		this.authorityCertSerialNumber = authorityCertSerialNumber;
 	}
 
 	/**
-	 * Decode {@code AuthorityKeyIdentifierExtensionData} from an ASN.1 data
-	 * object.
+	 * Decode {@code AuthorityKeyIdentifierExtensionData} from an ASN.1 data object.
 	 *
 	 * @param primitive The ASN.1 data object to decode.
 	 * @param critical The extension's critical flag.

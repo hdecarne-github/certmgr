@@ -18,9 +18,10 @@ package de.carne.certmgr.certs;
 
 import java.io.IOException;
 
+import de.carne.check.Nullable;
+
 /**
- * Exception indicating that no valid password was given while accessing an
- * encrypted resource.
+ * Exception indicating that no valid password was given while accessing an encrypted resource.
  */
 public class PasswordRequiredException extends IOException {
 
@@ -31,7 +32,7 @@ public class PasswordRequiredException extends IOException {
 
 	/**
 	 * Construct {@code PasswordRequiredException}.
-	 * 
+	 *
 	 * @param resource To resource requiring the password.
 	 */
 	public PasswordRequiredException(String resource) {
@@ -40,11 +41,11 @@ public class PasswordRequiredException extends IOException {
 
 	/**
 	 * Construct {@code PasswordRequiredException}.
-	 * 
+	 *
 	 * @param resource To resource requiring the password.
-	 * @param cause The cause while the password was rejected.
+	 * @param cause The cause while the password was rejected (may be {@code null}).
 	 */
-	public PasswordRequiredException(String resource, Throwable cause) {
+	public PasswordRequiredException(String resource, @Nullable Throwable cause) {
 		super(formatMessage(resource), cause);
 	}
 

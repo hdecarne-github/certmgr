@@ -23,27 +23,23 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.check.Nullable;
 
 /**
- * {@code UserCertStoreHandler} derived classes provide the actual certificate
- * storage functions used by a certificate store.
+ * {@code UserCertStoreHandler} derived classes provide the actual certificate storage functions used by a certificate
+ * store.
  * <p>
- * Different handler implementations allow different kind of stores to be
- * provided via a single store interface ({@link UserCertStore}).
+ * Different handler implementations allow different kind of stores to be provided via a single store interface
+ * ({@link UserCertStore}).
  */
 abstract class UserCertStoreHandler {
 
-	private final Path storeHome;
-
-	UserCertStoreHandler(Path storeHome) {
-		this.storeHome = storeHome;
+	@Nullable
+	public Path storeHome() {
+		return null;
 	}
 
-	public final Path storeHome() {
-		return this.storeHome;
-	}
-
-	public abstract UserCertStoreEntryId nextEntryId(String aliasHint);
+	public abstract UserCertStoreEntryId nextEntryId(@Nullable String aliasHint);
 
 	public abstract CertObjectHolder<X509Certificate> createCRT(UserCertStoreEntryId id, X509Certificate crt)
 			throws IOException;

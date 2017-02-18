@@ -16,6 +16,8 @@
  */
 package de.carne.certmgr.certs;
 
+import de.carne.check.Nullable;
+
 /**
  * Callback interface used to query passwords on demand.
  */
@@ -27,6 +29,7 @@ public interface PasswordCallback {
 	 * @param resource The resource requiring the password.
 	 * @return The provided password, or {@code null} if the password query was cancelled.
 	 */
+	@Nullable
 	char[] queryPassword(String resource);
 
 	/**
@@ -36,6 +39,7 @@ public interface PasswordCallback {
 	 * @param cause The optional cause why the previous password was rejected.
 	 * @return The provided password or {@code null} if the password query was cancelled.
 	 */
+	@Nullable
 	char[] requeryPassword(String resource, Throwable cause);
 
 }

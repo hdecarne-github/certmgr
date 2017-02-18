@@ -25,8 +25,7 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import de.carne.certmgr.util.Bytes;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.2">Subject
- * Key Identifier Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.2">Subject Key Identifier Extension</a> data.
  */
 public class SubjectKeyIdentifierExtensionData extends X509ExtensionData {
 
@@ -50,16 +49,12 @@ public class SubjectKeyIdentifierExtensionData extends X509ExtensionData {
 	 */
 	public SubjectKeyIdentifierExtensionData(boolean critical, byte[] keyIdentifier) {
 		super(OID, critical);
-
-		assert keyIdentifier != null;
-
 		this.keyIdentifier = new byte[keyIdentifier.length];
 		System.arraycopy(keyIdentifier, 0, this.keyIdentifier, 0, this.keyIdentifier.length);
 	}
 
 	/**
-	 * Decode {@code SubjectKeyIdentifierExtensionData} from an ASN.1 data
-	 * object.
+	 * Decode {@code SubjectKeyIdentifierExtensionData} from an ASN.1 data object.
 	 *
 	 * @param primitive The ASN.1 data object to decode.
 	 * @param critical The extension's critical flag.

@@ -29,8 +29,7 @@ import org.bouncycastle.asn1.DERBitString;
 import de.carne.util.Strings;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.3">Key Usage
- * Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.3">Key Usage Extension</a> data.
  */
 public class KeyUsageExtensionData extends X509ExtensionData implements Iterable<KeyUsage> {
 
@@ -64,9 +63,6 @@ public class KeyUsageExtensionData extends X509ExtensionData implements Iterable
 	 */
 	public KeyUsageExtensionData(boolean critical, Set<KeyUsage> usages) {
 		super(OID, critical);
-
-		assert usages != null;
-
 		this.usages = new HashSet<>(usages);
 	}
 

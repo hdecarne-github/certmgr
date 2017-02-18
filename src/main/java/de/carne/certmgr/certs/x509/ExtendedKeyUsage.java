@@ -143,8 +143,8 @@ public class ExtendedKeyUsage extends Enumeration<String> {
 	/**
 	 * Get the known extended key usage instances.
 	 * <p>
-	 * This includes the statically defined ones in this class as well as any
-	 * new ones encountered in a call to {@linkplain #fromValue(String )}.
+	 * This includes the statically defined ones in this class as well as any new ones encountered in a call to
+	 * {@linkplain #fromValue(String )}.
 	 *
 	 * @return The known extended key usage instances.
 	 */
@@ -156,12 +156,9 @@ public class ExtendedKeyUsage extends Enumeration<String> {
 	 * Get the extended key usage instance for a specific value.
 	 *
 	 * @param value The value to get the instance for.
-	 * @return The extended key usage instance corresponding to the submitted
-	 *         value.
+	 * @return The extended key usage instance corresponding to the submitted value.
 	 */
 	public static synchronized ExtendedKeyUsage fromValue(String value) {
-		assert value != null;
-
 		ExtendedKeyUsage usage = instanceMap.get(value);
 
 		if (usage == null) {

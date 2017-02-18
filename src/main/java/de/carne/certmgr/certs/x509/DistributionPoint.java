@@ -55,8 +55,6 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	}
 
 	private DistributionPoint(DistributionPointName name, GeneralNames crlIssuer) {
-		assert name != null || crlIssuer != null;
-
 		this.name = name;
 		this.crlIssuer = crlIssuer;
 	}

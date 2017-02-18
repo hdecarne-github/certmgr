@@ -21,23 +21,24 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import de.carne.certmgr.certs.PasswordCallback;
+import de.carne.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
 import de.carne.util.Exceptions;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.util.Callback;
 
 /**
- * This class implements the {@link PasswordCallback} interface by displaying
- * this package's "Enter password" or "Enter new password" dialogs.
+ * This class implements the {@link PasswordCallback} interface by displaying this package's "Enter password" or "Enter
+ * new password" dialogs.
  */
 public final class PasswordDialog implements PasswordCallback {
 
 	private final StageController owner;
 	private final Class<? extends PasswordController> controllerClass;
 	private boolean cancelAll = false;
+	@Nullable
 	private char[] rememberedPassword = null;
 
 	private PasswordDialog(StageController owner, Class<? extends PasswordController> passwordController) {
@@ -101,7 +102,7 @@ public final class PasswordDialog implements PasswordCallback {
 		return passwordResult.password();
 	}
 
-	private PasswordResult queryPasswordDialogHelper(String resource, Throwable cause) {
+	private PasswordResult queryPasswordDialogHelper(String resource, @Nullable Throwable cause) {
 		PasswordResult passwordResult = PasswordResult.CANCEL;
 
 		try {
@@ -124,14 +125,7 @@ public final class PasswordDialog implements PasswordCallback {
 
 		PasswordInputDialog(PasswordController controller) {
 			this.controller = controller;
-			setResultConverter(new Callback<ButtonType, PasswordResult>() {
-
-				@Override
-				public PasswordResult call(ButtonType param) {
-					return getPasswordInputResult(param);
-				}
-
-			});
+			setResultConverter(param -> getPasswordInputResult(param));
 		}
 
 		PasswordResult getPasswordInputResult(ButtonType button) {

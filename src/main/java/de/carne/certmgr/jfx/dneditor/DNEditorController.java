@@ -145,8 +145,6 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	 * @return This controller.
 	 */
 	public DNEditorController init(String dnInput) {
-		assert dnInput != null;
-
 		try {
 			LdapName dn = new LdapName(dnInput);
 

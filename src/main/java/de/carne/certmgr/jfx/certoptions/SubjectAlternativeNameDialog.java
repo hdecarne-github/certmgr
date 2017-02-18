@@ -35,13 +35,10 @@ public class SubjectAlternativeNameDialog extends Dialog<SubjectAlternativeNameE
 	 * Load the Subject Alternative Name dialog.
 	 *
 	 * @param owner The stage controller owning this dialog.
-	 * @return The constructed controller which is bound to the newly created
-	 *         dialog.
+	 * @return The constructed controller which is bound to the newly created dialog.
 	 * @throws IOException if an I/O error occurs during dialog loading.
 	 */
 	public static SubjectAlternativeNameController load(StageController owner) throws IOException {
-		assert owner != null;
-
 		return owner.loadDialog((c) -> new SubjectAlternativeNameDialog(c), SubjectAlternativeNameController.class);
 	}
 

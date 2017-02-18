@@ -58,7 +58,7 @@ import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.Exceptions;
-import de.carne.util.prefs.DirectoryPreference;
+import de.carne.util.prefs.PathPreference;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -88,8 +88,8 @@ public class StoreController extends StageController {
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(StoreController.class);
 
-	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
-			"initialDirectory", true);
+	private final PathPreference preferenceInitalDirectory = new PathPreference(this.preferences, "initialDirectory",
+			PathPreference.IS_DIRECTORY);
 
 	private final UserPreferences userPreferences = new UserPreferences();
 
@@ -459,8 +459,6 @@ public class StoreController extends StageController {
 	 * @param storeHome The home path of the store to open.
 	 */
 	public void openStore(File storeHome) {
-		assert storeHome != null;
-
 		try {
 			this.storeProperty.set(UserCertStore.openStore(storeHome.toPath()));
 			updateStoreEntryView();

@@ -19,8 +19,11 @@ package de.carne.certmgr.certs;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import de.carne.check.Nullable;
+
 interface CertObjectHolder<T> {
 
+	@Nullable
 	Path path();
 
 	T get() throws IOException;

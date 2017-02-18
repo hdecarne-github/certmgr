@@ -26,8 +26,7 @@ import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
 
 /**
- * Abstract base class for {@link CertGenerator} implementations which provides
- * the commonly used generation functions.
+ * Abstract base class for {@link CertGenerator} implementations which provides the commonly used generation functions.
  */
 abstract class AbstractCertGenerator implements CertGenerator {
 
@@ -51,8 +50,6 @@ abstract class AbstractCertGenerator implements CertGenerator {
 	}
 
 	protected BigInteger getNextSerial(UserCertStoreEntry issuer) throws IOException {
-		assert issuer != null;
-
 		UserCertStoreEntry rootIssuer = issuer;
 
 		while (!rootIssuer.isSelfSigned()) {

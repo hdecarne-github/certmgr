@@ -210,7 +210,7 @@ public class CertOptionsController extends StageController {
 	}
 
 	@FXML
-	void onCmdEditPresetTemplates(ActionEvent evt) {
+	void onCmdMangePresetTemplates(ActionEvent evt) {
 
 	}
 
@@ -450,10 +450,8 @@ public class CertOptionsController extends StageController {
 	 * Initialize dialog for certificate generation.
 	 *
 	 * @param storeParam The store to add the generated certificate to.
-	 * @param issuerEntryParam The (optional) store entry to use for certificate
-	 *        issuing.
-	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
-	 *        not ({@code false}).
+	 * @param issuerEntryParam The (optional) store entry to use for certificate issuing.
+	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry issuerEntryParam,

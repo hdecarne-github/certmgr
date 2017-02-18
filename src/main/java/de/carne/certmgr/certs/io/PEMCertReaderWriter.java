@@ -46,6 +46,8 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -62,8 +64,8 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 */
 	public static final String PROVIDER_NAME = "PEM";
 
-	private static final String PEM_ENCRYPTION = PropertiesHelper.get(PEMCertReaderWriter.class, "encryption",
-			"AES-128-CBC");
+	private static final String PEM_ENCRYPTION = Check
+			.nonNull(PropertiesHelper.get(PEMCertReaderWriter.class, "encryption", "AES-128-CBC"));
 
 	private static final JcePEMDecryptorProviderBuilder PEM_DECRYPTOR_BUILDER = new JcePEMDecryptorProviderBuilder();
 
@@ -106,15 +108,11 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
-		assert in != null;
-
 		return readObjectsBinary(in, password);
 	}
 
 	@Override
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
-		assert in != null;
-
 		return readObjectsString(in, password);
 	}
 
@@ -172,10 +170,9 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
+	@Nullable
 	public static CertObjectStore readObjectsBinary(IOResource<InputStream> in, PasswordCallback password)
 			throws IOException {
-		assert in != null;
-
 		CertObjectStore certObjects;
 
 		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
@@ -192,11 +189,9 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @return The read certificate objects, or {@code null} if the input is not recognized.
 	 * @throws IOException if an I/O error occurs while reading.
 	 */
+	@Nullable
 	public static CertObjectStore readObjectsString(IOResource<Reader> in, PasswordCallback password)
 			throws IOException {
-		assert in != null;
-		assert password != null;
-
 		LOG.debug("Trying to read PEM objects from: ''{0}''...", in);
 
 		CertObjectStore certObjects = null;
@@ -244,8 +239,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no CRT object can be read.
 	 */
 	public static X509Certificate readCRTBinary(IOResource<InputStream> in) throws IOException {
-		assert in != null;
-
 		X509Certificate crtObject;
 
 		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
@@ -262,8 +255,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no CRT object can be read.
 	 */
 	public static X509Certificate readCRTString(IOResource<Reader> in) throws IOException {
-		assert in != null;
-
 		return readObjectString(in, NoPassword.getInstance()).getCRT();
 	}
 
@@ -276,9 +267,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no Key object can be read.
 	 */
 	public static KeyPair readKeyBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
-		assert in != null;
-		assert password != null;
-
 		KeyPair keyObject;
 
 		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
@@ -296,9 +284,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no Key object can be read.
 	 */
 	public static KeyPair readKeyString(IOResource<Reader> in, PasswordCallback password) throws IOException {
-		assert in != null;
-		assert password != null;
-
 		return readObjectString(in, password).getKey();
 	}
 
@@ -310,8 +295,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no CSR object can be read.
 	 */
 	public static PKCS10CertificateRequest readCSRBinary(IOResource<InputStream> in) throws IOException {
-		assert in != null;
-
 		PKCS10CertificateRequest csrObject;
 
 		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
@@ -328,8 +311,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no CSR object can be read.
 	 */
 	public static PKCS10CertificateRequest readCSRString(IOResource<Reader> in) throws IOException {
-		assert in != null;
-
 		return readObjectString(in, NoPassword.getInstance()).getCSR();
 	}
 
@@ -341,8 +322,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no CRL object can be read.
 	 */
 	public static X509CRL readCRLBinary(IOResource<InputStream> in) throws IOException {
-		assert in != null;
-
 		X509CRL crlObject;
 
 		try (IOResource<Reader> inReader = IOResource.streamReader(in, StandardCharsets.US_ASCII)) {
@@ -359,8 +338,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if no CRL object can be read.
 	 */
 	public static X509CRL readCRLString(IOResource<Reader> in) throws IOException {
-		assert in != null;
-
 		return readObjectString(in, NoPassword.getInstance()).getCRL();
 	}
 
@@ -372,9 +349,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 		if (certObjectsCount != 1) {
 			throw new IOException(certObjectsCount + " objects read from '" + in.resource() + "' (expected 1)");
 		}
-
-		assert certObjects != null;
-
 		return certObjects.iterator().next();
 	}
 
@@ -386,9 +360,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeCRTBinary(IOResource<OutputStream> out, X509Certificate crt) throws IOException {
-		assert out != null;
-		assert crt != null;
-
 		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
 			writeCRTString(outWriter, crt);
 		}
@@ -402,9 +373,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeCRTString(IOResource<Writer> out, X509Certificate crt) throws IOException {
-		assert out != null;
-		assert crt != null;
-
 		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
 			writeObject(pemWriter, out.resource(), crt);
 		}
@@ -420,10 +388,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 */
 	public static void writeKeyBinary(IOResource<OutputStream> out, KeyPair key, PasswordCallback newPassword)
 			throws IOException {
-		assert out != null;
-		assert key != null;
-		assert newPassword != null;
-
 		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
 			writeKeyString(outWriter, key, newPassword);
 		}
@@ -439,10 +403,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 */
 	public static void writeKeyString(IOResource<Writer> out, KeyPair key, PasswordCallback newPassword)
 			throws IOException {
-		assert out != null;
-		assert key != null;
-		assert newPassword != null;
-
 		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
 			writeEncryptedObject(pemWriter, out.resource(), key, newPassword);
 		}
@@ -456,9 +416,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeCSRBinary(IOResource<OutputStream> out, PKCS10CertificateRequest csr) throws IOException {
-		assert out != null;
-		assert csr != null;
-
 		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
 			writeCSRString(outWriter, csr);
 		}
@@ -472,9 +429,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeCSRString(IOResource<Writer> out, PKCS10CertificateRequest csr) throws IOException {
-		assert out != null;
-		assert csr != null;
-
 		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
 			writeObject(pemWriter, out.resource(), csr.toPKCS10());
 		}
@@ -488,9 +442,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeCRLBinary(IOResource<OutputStream> out, X509CRL crl) throws IOException {
-		assert out != null;
-		assert crl != null;
-
 		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
 			writeCRLString(outWriter, crl);
 		}
@@ -504,9 +455,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 * @throws IOException if an I/O error occurs during encoding/writing.
 	 */
 	public static void writeCRLString(IOResource<Writer> out, X509CRL crl) throws IOException {
-		assert out != null;
-		assert crl != null;
-
 		try (JcaPEMWriter pemWriter = new JcaPEMWriter(out.io())) {
 			writeObject(pemWriter, out.resource(), crl);
 		}

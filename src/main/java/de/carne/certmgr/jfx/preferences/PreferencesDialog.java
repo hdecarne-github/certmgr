@@ -35,13 +35,10 @@ public class PreferencesDialog extends Dialog<UserPreferences> {
 	 * Load the preferences dialog.
 	 *
 	 * @param owner The stage controller owning this dialog.
-	 * @return The constructed controller which is bound to the newly created
-	 *         dialog.
+	 * @return The constructed controller which is bound to the newly created dialog.
 	 * @throws IOException if an I/O error occurs during dialog loading.
 	 */
 	public static PreferencesController load(StageController owner) throws IOException {
-		assert owner != null;
-
 		return owner.loadDialog((c) -> new PreferencesDialog(c), PreferencesController.class);
 	}
 

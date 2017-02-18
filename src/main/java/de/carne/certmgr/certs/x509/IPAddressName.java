@@ -40,9 +40,6 @@ public class IPAddressName extends GeneralName {
 	 */
 	public IPAddressName(InetAddress address, InetAddress netmask) {
 		super(GeneralNameType.IP_ADDRESS);
-
-		assert address != null;
-
 		this.address = address;
 		this.netmask = netmask;
 	}

@@ -43,10 +43,6 @@ public class OtherName extends GeneralName {
 	 */
 	public OtherName(String oid, byte[] nameBytes) {
 		super(GeneralNameType.OTHER_NAME);
-
-		assert oid != null;
-		assert nameBytes != null;
-
 		this.oid = oid;
 		this.nameBytes = nameBytes;
 	}

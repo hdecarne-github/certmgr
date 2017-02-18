@@ -40,9 +40,6 @@ public class StringName extends GeneralName {
 	 */
 	public StringName(GeneralNameType type, String name) {
 		super(type);
-
-		assert name != null;
-
 		this.name = name;
 	}
 

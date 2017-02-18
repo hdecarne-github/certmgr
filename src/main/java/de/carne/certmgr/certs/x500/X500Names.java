@@ -85,15 +85,12 @@ public final class X500Names {
 	/**
 	 * Convert {@link X500Principal} to it's string representation.
 	 * <p>
-	 * This function uses the configured OID informations to resolve any known
-	 * OID to a human readable string.
+	 * This function uses the configured OID informations to resolve any known OID to a human readable string.
 	 *
 	 * @param principal The principal to convert.
 	 * @return The principal's string representation.
 	 */
 	public static String toString(X500Principal principal) {
-		assert principal != null;
-
 		return principal.getName(X500Principal.RFC2253, OIDS);
 	}
 
@@ -105,8 +102,6 @@ public final class X500Names {
 	 * @throws IllegalArgumentException if the parse operation fails.
 	 */
 	public static X500Principal fromString(String name) throws IllegalArgumentException {
-		assert name != null;
-
 		return new X500Principal(name, NAMES);
 	}
 

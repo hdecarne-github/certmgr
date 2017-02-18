@@ -31,12 +31,12 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import de.carne.check.Nullable;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.logging.Log;
 
 /**
- * This class implements a dummy SSL/TLS client to retrieve certificate
- * information from a SSL/TLS peer.
+ * This class implements a dummy SSL/TLS client to retrieve certificate information from a SSL/TLS peer.
  */
 public final class SSLPeer {
 
@@ -48,17 +48,32 @@ public final class SSLPeer {
 		/**
 		 * Plain SSL
 		 */
-		SSL,
+		SSL(443),
 
 		/**
 		 * StartTLS SMTP
 		 */
-		STARTTLS_SMTP,
+		STARTTLS_SMTP(25),
 
 		/**
 		 * StartTLS IMAP
 		 */
-		STARTTLS_IMAP
+		STARTTLS_IMAP(143);
+
+		private int defaultPort;
+
+		private Protocol(int defaultPort) {
+			this.defaultPort = defaultPort;
+		}
+
+		/**
+		 * Get the protocol's default port.
+		 *
+		 * @return The protocol's default port.
+		 */
+		public int defaultPort() {
+			return this.defaultPort;
+		}
 
 	}
 
@@ -72,12 +87,14 @@ public final class SSLPeer {
 	private static final TrustManager INSECURE_TRUST_MANAGER = new X509TrustManager() {
 
 		@Override
-		public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		public void checkClientTrusted(@Nullable X509Certificate[] chain, @Nullable String authType)
+				throws CertificateException {
 			// Trust all
 		}
 
 		@Override
-		public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+		public void checkServerTrusted(@Nullable X509Certificate[] chain, @Nullable String authType)
+				throws CertificateException {
 			// Trust all
 		}
 
@@ -103,12 +120,9 @@ public final class SSLPeer {
 	 * @param host The host to access.
 	 * @param port The port to access.
 	 * @return The created {@code SSLPeer} instance.
-	 * @throws UnknownHostException if the host cannot be resolved to a network
-	 *         address.
+	 * @throws UnknownHostException if the host cannot be resolved to a network address.
 	 */
 	public static SSLPeer getInstance(String host, int port) throws UnknownHostException {
-		assert host != null;
-
 		InetAddress address = InetAddress.getByName(host);
 
 		return new SSLPeer(address, port);
@@ -118,12 +132,10 @@ public final class SSLPeer {
 	 * Read peer certificates.
 	 *
 	 * @param protocol The protocol to use for peer access.
-	 * @return The retrieved certificates, or {@code null} if none could be
-	 *         retrieved.
+	 * @return The retrieved certificates, or {@code null} if none could be retrieved.
 	 */
+	@Nullable
 	public Certificate[] readCertificates(Protocol protocol) {
-		assert protocol != null;
-
 		Certificate[] certificates = null;
 
 		try (SSLProtocalHelper protocolHelper = SSLProtocalHelper.getInstance(protocol, this.address, this.port)) {

@@ -24,8 +24,7 @@ import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-5.2.3">CRL Number
- * Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-5.2.3">CRL Number Extension</a> data.
  */
 public class CRLNumberExtensionData extends X509ExtensionData {
 
@@ -49,9 +48,6 @@ public class CRLNumberExtensionData extends X509ExtensionData {
 	 */
 	public CRLNumberExtensionData(boolean critical, BigInteger crlNumber) {
 		super(OID, critical);
-
-		assert crlNumber != null;
-
 		this.crlNumber = crlNumber;
 	}
 

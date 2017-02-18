@@ -38,9 +38,6 @@ public class GenericName extends GeneralName {
 	 */
 	public GenericName(GeneralNameType type, byte[] nameBytes) {
 		super(type);
-
-		assert nameBytes != null;
-
 		this.nameBytes = nameBytes;
 	}
 

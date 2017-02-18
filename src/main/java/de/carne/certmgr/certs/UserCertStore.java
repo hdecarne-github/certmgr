@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.certs;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
@@ -48,6 +49,8 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.nio.FileAttributes;
 import de.carne.util.logging.Log;
 
@@ -72,6 +75,8 @@ public final class UserCertStore {
 
 	private final Map<UserCertStoreEntryId, Entry> storeEntries = new HashMap<>();
 
+	private final Map<Entry, Entry> issuerCache = new HashMap<>();
+
 	private UserCertStore(UserCertStoreHandler storeHandler) {
 		this.storeHandler = storeHandler;
 	}
@@ -88,8 +93,6 @@ public final class UserCertStore {
 	 * @see PersistentUserCertStoreHandler
 	 */
 	public static UserCertStore createStore(Path storeHome) throws IOException {
-		assert storeHome != null;
-
 		if (Files.exists(storeHome)) {
 			throw new FileAlreadyExistsException("Store home path already exists: " + storeHome);
 		}
@@ -108,8 +111,6 @@ public final class UserCertStore {
 	 * @throws IOException if an I/O error occurs while opening the store.
 	 */
 	public static UserCertStore openStore(Path storeHome) throws IOException {
-		assert storeHome != null;
-
 		PersistentUserCertStoreHandler persistentStoreHandler = new PersistentUserCertStoreHandler(storeHome);
 
 		Map<UserCertStoreEntryId, PersistentEntry> persistentEntries = persistentStoreHandler.scanStore();
@@ -130,9 +131,6 @@ public final class UserCertStore {
 	 */
 	public static UserCertStore createFromPlatformKeyStore(PlatformKeyStore platformKeyStore, PasswordCallback password)
 			throws IOException {
-		assert platformKeyStore != null;
-		assert password != null;
-
 		return createFromCertObjects(JKSCertReaderWriter.readPlatformKeyStore(platformKeyStore, password));
 	}
 
@@ -146,9 +144,6 @@ public final class UserCertStore {
 	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromFile(Path file, PasswordCallback password) throws IOException {
-		assert file != null;
-		assert password != null;
-
 		return createFromFiles(Arrays.asList(file), password);
 	}
 
@@ -162,9 +157,6 @@ public final class UserCertStore {
 	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromFiles(Collection<Path> files, PasswordCallback password) throws IOException {
-		assert files != null;
-		assert password != null;
-
 		List<CertObjectStore> certObjectStores = new ArrayList<>();
 
 		for (Path file : files) {
@@ -193,9 +185,6 @@ public final class UserCertStore {
 	 * @throws IOException if an I/O error occurs while reading/decoding certificate data.
 	 */
 	public static UserCertStore createFromURL(URL url, PasswordCallback password) throws IOException {
-		assert url != null;
-		assert password != null;
-
 		CertObjectStore certObjects = CertReaders.readURL(url, password);
 
 		return createFromCertObjects(certObjects);
@@ -220,7 +209,7 @@ public final class UserCertStore {
 				if (certificate instanceof X509Certificate) {
 					certObjects.addCRT((X509Certificate) certificate);
 				} else {
-
+					LOG.warning("Ignoring unsupported certificate of type ''{0}''", certificates.getClass().getName());
 				}
 			}
 		}
@@ -239,10 +228,6 @@ public final class UserCertStore {
 	 */
 	public static UserCertStore createFromData(String data, String resource, PasswordCallback password)
 			throws IOException {
-		assert data != null;
-		assert resource != null;
-		assert password != null;
-
 		CertObjectStore certObjects = CertReaders.readString(data, resource, password);
 
 		return createFromCertObjects(certObjects);
@@ -257,6 +242,7 @@ public final class UserCertStore {
 	 *
 	 * @return This store's home path, or {@code null} if this store only supports read access.
 	 */
+	@Nullable
 	public Path storeHome() {
 		return this.storeHandler.storeHome();
 	}
@@ -269,6 +255,7 @@ public final class UserCertStore {
 	 * @return This store's name, or {@code null} if this store is transient.
 	 * @see #storeHome()
 	 */
+	@Nullable
 	public String storeName() {
 		Path storeHome = this.storeHandler.storeHome();
 
@@ -281,6 +268,7 @@ public final class UserCertStore {
 	 * @return This store's preferences object, or {@code null} if this store is transient.
 	 * @see #storeHome()
 	 */
+	@Nullable
 	public UserCertStorePreferences storePreferences() {
 		Path storeHome = this.storeHandler.storeHome();
 
@@ -310,14 +298,8 @@ public final class UserCertStore {
 	 */
 	public UserCertStoreEntry generateEntry(CertGenerator generator, GenerateCertRequest request,
 			PasswordCallback password, PasswordCallback newPassword, String aliasHint) throws IOException {
-		assert generator != null;
-		assert request != null;
-		assert password != null;
-
 		CertObjectStore certObjects = generator.generateCert(request, password);
 		Set<UserCertStoreEntry> mergedEntries = mergeCertObjects(certObjects, newPassword, aliasHint);
-
-		assert mergedEntries.size() == 1;
 
 		return mergedEntries.iterator().next();
 	}
@@ -332,10 +314,6 @@ public final class UserCertStore {
 	 */
 	public synchronized void updateEntryCRL(UserCertStoreEntry issuerEntry, UpdateCRLRequest request,
 			PasswordCallback password) throws IOException {
-		assert issuerEntry != null;
-		assert request != null;
-		assert password != null;
-
 		Entry storeEntry = this.storeEntries.get(issuerEntry.id());
 		X509CRL crl = X509CRLHelper.generateCRL(storeEntry.getCRL(), request.lastUpdate(), request.nextUpdate(),
 				request.getRevokeEntries(), storeEntry.dn(), storeEntry.getKey(password), request.signatureAlgorithm());
@@ -353,11 +331,9 @@ public final class UserCertStore {
 	 * @return The generated or merged entry or {@code null} if nothing has been imported.
 	 * @throws IOException if an I/O error occurs during import.
 	 */
+	@Nullable
 	public UserCertStoreEntry importEntry(UserCertStoreEntry entry, PasswordCallback newPassword, String aliasHint)
 			throws IOException {
-		assert entry != null;
-		assert newPassword != null;
-
 		CertObjectStore certObjects = new CertObjectStore();
 		String entryAlias = entry.id().getAlias();
 
@@ -376,8 +352,6 @@ public final class UserCertStore {
 
 		Set<UserCertStoreEntry> mergedEntries = mergeCertObjects(certObjects, newPassword, aliasHint);
 
-		assert mergedEntries.size() <= 1;
-
 		return (!mergedEntries.isEmpty() ? mergedEntries.iterator().next() : null);
 	}
 
@@ -388,8 +362,6 @@ public final class UserCertStore {
 	 * @throws IOException if an I/O error occurs during deletion.
 	 */
 	public synchronized void deleteEntry(UserCertStoreEntryId entryId) throws IOException {
-		assert entryId != null;
-
 		if (!this.storeEntries.containsKey(entryId)) {
 			throw new IllegalArgumentException("Invalid entry: " + entryId);
 		}
@@ -439,8 +411,6 @@ public final class UserCertStore {
 	 * @return The store entries which are issued by the submitted store entry.
 	 */
 	public synchronized Set<UserCertStoreEntry> getIssuedEntries(UserCertStoreEntry entry) {
-		assert entry != null;
-
 		Set<UserCertStoreEntry> issuedEntries = new HashSet<>();
 
 		for (Entry issuedEntry : this.storeEntries.values()) {
@@ -481,13 +451,10 @@ public final class UserCertStore {
 	}
 
 	private static UserCertStore createFromCertObjects(CertObjectStore... certObjectStores) throws IOException {
-		UserCertStore store = null;
+		UserCertStore store = new UserCertStore(new TransientUserCertStoreHandler());
 
 		for (CertObjectStore certObjectStore : certObjectStores) {
-			if (certObjectStore.size() > 0) {
-				if (store == null) {
-					store = new UserCertStore(new TransientUserCertStoreHandler());
-				}
+			if (certObjectStore != null && certObjectStore.size() > 0) {
 				store.mergeCertObjects(certObjectStore, NoPassword.getInstance(), null);
 			}
 		}
@@ -495,7 +462,7 @@ public final class UserCertStore {
 	}
 
 	private synchronized Set<UserCertStoreEntry> mergeCertObjects(CertObjectStore certObjects,
-			PasswordCallback newPassword, String aliasHint) throws IOException {
+			PasswordCallback newPassword, @Nullable String aliasHint) throws IOException {
 		Set<UserCertStoreEntry> mergedEntries = new HashSet<>();
 
 		// First merge CRT and CSR objects as they provide the entry's DN
@@ -527,7 +494,7 @@ public final class UserCertStore {
 		return mergedEntries;
 	}
 
-	private Entry mergeX509Certificate(X509Certificate crt, String aliasHint) throws IOException {
+	private Entry mergeX509Certificate(X509Certificate crt, @Nullable String aliasHint) throws IOException {
 		Entry matchingEntry = matchX509Certificate(crt);
 
 		if (matchingEntry != null) {
@@ -548,6 +515,7 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
+	@Nullable
 	private Entry mergeKey(KeyPair key, PasswordCallback newPassword) throws IOException {
 		Entry matchingEntry = matchKey(key);
 
@@ -566,7 +534,8 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
-	private Entry mergePKCS10CertificateRequest(PKCS10CertificateRequest csr, String aliasHint) throws IOException {
+	private Entry mergePKCS10CertificateRequest(PKCS10CertificateRequest csr, @Nullable String aliasHint)
+			throws IOException {
 		Entry matchingEntry = matchPKCS10CertificateRequest(csr);
 
 		if (matchingEntry != null) {
@@ -588,7 +557,7 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
-	private Entry mergeX509CRL(X509CRL crl, String aliasHint) throws IOException {
+	private Entry mergeX509CRL(X509CRL crl, @Nullable String aliasHint) throws IOException {
 		Entry matchingEntry = matchX509CRL(crl);
 
 		if (matchingEntry != null) {
@@ -609,73 +578,7 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
-	private void resetIssuers() throws IOException {
-		// Collect external issuers and clear invalid issuers
-		Map<X500Principal, Entry> externalIssuers = new HashMap<>(this.storeEntries.size());
-
-		for (Entry entry : this.storeEntries.values()) {
-			UserCertStoreEntry issuer = entry.issuer();
-
-			if (issuer != null) {
-				if (issuer.isExternal()) {
-					externalIssuers.put(issuer.dn(), this.storeEntries.get(issuer.id()));
-				} else if (!this.storeEntries.containsKey(issuer.id())) {
-					entry.setIssuer(null);
-				}
-			}
-		}
-
-		// Update all missing and external issuer references
-		Set<UserCertStoreEntryId> usedExternalIssuerIds = new HashSet<>(this.storeEntries.size());
-
-		for (Entry entry : this.storeEntries.values()) {
-			UserCertStoreEntry issuer = entry.issuer();
-
-			if (issuer == null || issuer.isExternal()) {
-				if (entry.hasCRT()) {
-					X509Certificate entryCRT = entry.getCRT();
-					X500Principal issuerDN = entryCRT.getIssuerX500Principal();
-					Entry foundIssuerEntry = null;
-
-					for (Entry issuerEntry : this.storeEntries.values()) {
-						if (issuerDN.equals(issuerEntry.dn()) && issuerEntry.hasPublicKey()
-								&& X509CertificateHelper.isCRTSignedBy(entryCRT, issuerEntry.getPublicKey())) {
-							foundIssuerEntry = issuerEntry;
-							break;
-						}
-					}
-					if (foundIssuerEntry != null) {
-						entry.setIssuer(foundIssuerEntry);
-					} else {
-						Entry externalIssuer = externalIssuers.get(issuerDN);
-
-						if (externalIssuer == null) {
-							externalIssuer = new Entry(this.storeHandler.nextEntryId(null), issuerDN);
-							externalIssuer.setIssuer(externalIssuer);
-							externalIssuers.put(issuerDN, externalIssuer);
-						}
-						entry.setIssuer(externalIssuer);
-						usedExternalIssuerIds.add(externalIssuer.id());
-					}
-				} else {
-					// Without a CRT an entry is always self-signed
-					entry.setIssuer(entry);
-				}
-			}
-		}
-
-		// Also update external issuer entries as needed
-		for (Entry externalIssuer : externalIssuers.values()) {
-			UserCertStoreEntryId externalIssuerId = externalIssuer.id();
-
-			if (usedExternalIssuerIds.contains(externalIssuer.id())) {
-				this.storeEntries.put(externalIssuerId, externalIssuer);
-			} else {
-				this.storeEntries.remove(externalIssuerId);
-			}
-		}
-	}
-
+	@Nullable
 	private Entry matchX509Certificate(X509Certificate crt) throws IOException {
 		X500Principal crtDN = crt.getSubjectX500Principal();
 		PublicKey crtPublicKey = crt.getPublicKey();
@@ -696,6 +599,7 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
+	@Nullable
 	private Entry matchKey(KeyPair key) throws IOException {
 		PublicKey publicKey = key.getPublic();
 		Entry matchingEntry = null;
@@ -713,6 +617,7 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
+	@Nullable
 	private Entry matchPKCS10CertificateRequest(PKCS10CertificateRequest csr) throws IOException {
 		X500Principal csrDN = csr.getSubjectX500Principal();
 		PublicKey csrPublicKey = csr.getPublicKey();
@@ -731,6 +636,7 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
+	@Nullable
 	private Entry matchX509CRL(X509CRL crl) throws IOException {
 		X500Principal crlDN = crl.getIssuerX500Principal();
 		Entry matchingEntry = null;
@@ -750,21 +656,96 @@ public final class UserCertStore {
 		return matchingEntry;
 	}
 
+	private void resetIssuers() throws IOException {
+		// Collect external issuers and remove invalid issuers
+		Map<X500Principal, Entry> externalIssuers = new HashMap<>(this.storeEntries.size());
+
+		for (Entry entry : this.storeEntries.values()) {
+			Entry issuer = this.issuerCache.get(entry);
+
+			if (issuer != null) {
+				if (issuer.isExternal()) {
+					externalIssuers.put(issuer.dn(), this.storeEntries.get(issuer.id()));
+				} else if (!this.storeEntries.containsKey(issuer.id())) {
+					this.issuerCache.remove(entry);
+				}
+			}
+		}
+
+		// Update all missing and external issuer references
+		Set<UserCertStoreEntryId> usedExternalIssuerIds = new HashSet<>(this.storeEntries.size());
+
+		for (Entry entry : this.storeEntries.values()) {
+			Entry issuer = this.issuerCache.get(entry);
+
+			if (issuer == null || issuer.isExternal()) {
+				if (entry.hasCRT()) {
+					X509Certificate entryCRT = entry.getCRT();
+					X500Principal issuerDN = entryCRT.getIssuerX500Principal();
+					Entry foundIssuerEntry = null;
+
+					for (Entry issuerEntry : this.storeEntries.values()) {
+						if (issuerDN.equals(issuerEntry.dn()) && issuerEntry.hasPublicKey()
+								&& X509CertificateHelper.isCRTSignedBy(entryCRT, issuerEntry.getPublicKey())) {
+							foundIssuerEntry = issuerEntry;
+							break;
+						}
+					}
+					if (foundIssuerEntry != null) {
+						this.issuerCache.put(entry, foundIssuerEntry);
+					} else {
+						Entry externalIssuer = externalIssuers.get(issuerDN);
+
+						if (externalIssuer == null) {
+							externalIssuer = new Entry(this.storeHandler.nextEntryId(null), issuerDN);
+							this.issuerCache.put(externalIssuer, externalIssuer);
+							externalIssuers.put(issuerDN, externalIssuer);
+						}
+						this.issuerCache.put(entry, externalIssuer);
+						usedExternalIssuerIds.add(externalIssuer.id());
+					}
+				} else {
+					// Without a CRT an entry is always self-signed
+					this.issuerCache.put(entry, entry);
+				}
+			}
+		}
+
+		// Also update external issuer entries as needed
+		for (Entry externalIssuer : externalIssuers.values()) {
+			UserCertStoreEntryId externalIssuerId = externalIssuer.id();
+
+			if (usedExternalIssuerIds.contains(externalIssuer.id())) {
+				this.storeEntries.put(externalIssuerId, externalIssuer);
+			} else {
+				this.storeEntries.remove(externalIssuerId);
+				this.issuerCache.remove(externalIssuer);
+			}
+		}
+	}
+
+	Entry resolveIssuer(Entry entry) {
+		return Check.nonNull(this.issuerCache.get(entry));
+	}
+
 	private class Entry extends UserCertStoreEntry {
 
-		private Entry issuer = null;
-
+		@Nullable
 		private CertObjectHolder<X509Certificate> crtHolder;
 
+		@Nullable
 		private SecureCertObjectHolder<KeyPair> keyHolder;
 
+		@Nullable
 		private CertObjectHolder<PKCS10CertificateRequest> csrHolder;
 
+		@Nullable
 		private CertObjectHolder<X509CRL> crlHolder;
 
-		Entry(UserCertStoreEntryId id, X500Principal dn, CertObjectHolder<X509Certificate> crtHolder,
-				SecureCertObjectHolder<KeyPair> keyHolder, CertObjectHolder<PKCS10CertificateRequest> csrHolder,
-				CertObjectHolder<X509CRL> crlHolder) {
+		Entry(UserCertStoreEntryId id, X500Principal dn, @Nullable CertObjectHolder<X509Certificate> crtHolder,
+				@Nullable SecureCertObjectHolder<KeyPair> keyHolder,
+				@Nullable CertObjectHolder<PKCS10CertificateRequest> csrHolder,
+				@Nullable CertObjectHolder<X509CRL> crlHolder) {
 			super(id, dn);
 			this.crtHolder = crtHolder;
 			this.keyHolder = keyHolder;
@@ -783,11 +764,7 @@ public final class UserCertStore {
 
 		@Override
 		public UserCertStoreEntry issuer() {
-			return this.issuer;
-		}
-
-		void setIssuer(Entry issuer) {
-			this.issuer = issuer;
+			return resolveIssuer(this);
 		}
 
 		@Override
@@ -797,7 +774,7 @@ public final class UserCertStore {
 
 		@Override
 		public X509Certificate getCRT() throws IOException {
-			return (this.crtHolder != null ? this.crtHolder.get() : null);
+			return ensureHas(this.crtHolder).get();
 		}
 
 		void setCRT(CertObjectHolder<X509Certificate> crtHolder) {
@@ -816,7 +793,7 @@ public final class UserCertStore {
 
 		@Override
 		public KeyPair getKey(PasswordCallback password) throws IOException {
-			return (this.keyHolder != null ? this.keyHolder.get(password) : null);
+			return ensureHas(this.keyHolder).get(password);
 		}
 
 		void setKey(SecureCertObjectHolder<KeyPair> keyHolder) {
@@ -830,7 +807,7 @@ public final class UserCertStore {
 
 		@Override
 		public PKCS10CertificateRequest getCSR() throws IOException {
-			return (this.csrHolder != null ? this.csrHolder.get() : null);
+			return ensureHas(this.csrHolder).get();
 		}
 
 		void setCSR(CertObjectHolder<PKCS10CertificateRequest> csrHolder) {
@@ -844,7 +821,7 @@ public final class UserCertStore {
 
 		@Override
 		public X509CRL getCRL() throws IOException {
-			return (this.crlHolder != null ? this.crlHolder.get() : null);
+			return ensureHas(this.crlHolder).get();
 		}
 
 		void setCRL(CertObjectHolder<X509CRL> crlHolder) {
@@ -884,6 +861,13 @@ public final class UserCertStore {
 				}
 			}
 			return filePaths;
+		}
+
+		private <T extends CertObjectHolder<?>> T ensureHas(@Nullable T holder) throws IOException {
+			if (holder == null) {
+				throw new FileNotFoundException();
+			}
+			return holder;
 		}
 
 	}

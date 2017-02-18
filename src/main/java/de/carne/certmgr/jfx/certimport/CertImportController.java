@@ -40,6 +40,8 @@ import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.io.IOHelper;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
@@ -47,10 +49,11 @@ import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
+import de.carne.util.ObjectHolder;
 import de.carne.util.Strings;
 import de.carne.util.logging.LogLevel;
 import de.carne.util.logging.LogMonitor;
-import de.carne.util.prefs.DirectoryPreference;
+import de.carne.util.prefs.PathPreference;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.PathValidator;
 import de.carne.util.validation.ValidationException;
@@ -83,97 +86,128 @@ import javafx.stage.Stage;
  */
 public class CertImportController extends StageController {
 
-	private static final Pattern SERVER_INPUT_PATTERN = Pattern.compile("(.+):(\\d+)");
+	private static final Pattern SERVER_INPUT_PATTERN = Pattern.compile("([^:]+)(?::(\\d+))?");
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertImportController.class);
 
-	private final DirectoryPreference preferenceInitalDirectory = new DirectoryPreference(this.preferences,
-			"initialDirectory", true);
+	private final PathPreference preferenceInitalDirectory = new PathPreference(this.preferences, "initialDirectory",
+			PathPreference.IS_DIRECTORY);
 
-	private UserCertStoreTreeTableViewHelper<ImportEntryModel> importEntryViewHelper = null;
+	private ObjectHolder<UserCertStoreTreeTableViewHelper<ImportEntryModel>> importEntryViewHelper = new ObjectHolder<>(
+			() -> new UserCertStoreTreeTableViewHelper<>(this.ctlImportEntryView,
+					(e) -> new ImportEntryModel(e, false)));
 
+	@Nullable
 	private UserCertStore importStore = null;
 
+	@Nullable
 	private UserCertStore sourceStore = null;
 
+	@SuppressWarnings("null")
 	@FXML
 	GridPane ctlControlPane;
 
+	@SuppressWarnings("null")
 	@FXML
 	VBox ctlProgressOverlay;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlFileSourceOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlFileSourceInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseFileSourceButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlDirectorySourceOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlDirectorySourceInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseDirectorySourceButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlURLSourceOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlURLSourceInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlServerSourceOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlServerSourceInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<SSLPeer.Protocol> ctlServerSourceProtocolInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlPlatformSourceOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<PlatformKeyStore> ctlPlatformSourceInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlClipboardSourceOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	ImageView ctlStatusImage;
 
+	@SuppressWarnings("null")
 	@FXML
 	Label ctlStatusMessage;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlSelectAllOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableView<ImportEntryModel> ctlImportEntryView;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewSelected;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, String> ctlImportEntryViewDN;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCRT;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewKey;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCSR;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCRL;
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdChooseFileSource(ActionEvent evt) {
 		FileChooser chooser = new FileChooser();
@@ -198,6 +232,7 @@ public class CertImportController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdChooseDirectorySource(ActionEvent evt) {
 		DirectoryChooser chooser = new DirectoryChooser();
@@ -214,6 +249,7 @@ public class CertImportController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdReload(ActionEvent evt) {
 		if (this.ctlFileSourceOption.isSelected()) {
@@ -231,6 +267,7 @@ public class CertImportController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdSelectAll(ActionEvent evt) {
 		boolean select = this.ctlSelectAllOption.isSelected();
@@ -244,6 +281,7 @@ public class CertImportController extends StageController {
 		});
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdImport(ActionEvent evt) {
 		try {
@@ -255,6 +293,7 @@ public class CertImportController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdCancel(ActionEvent evt) {
 		close(false);
@@ -272,7 +311,7 @@ public class CertImportController extends StageController {
 		}
 	}
 
-	void onReloadTaskFailed(ReloadTask<?> task, Throwable e) {
+	void onReloadTaskFailed(Throwable e) {
 		Alerts.error(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e).showAndWait();
 	}
 
@@ -330,8 +369,6 @@ public class CertImportController extends StageController {
 	 * @return This controller.
 	 */
 	public CertImportController init(UserCertStore importStoreParam) {
-		assert importStoreParam != null;
-
 		this.importStore = importStoreParam;
 		return this;
 	}
@@ -488,17 +525,13 @@ public class CertImportController extends StageController {
 	}
 
 	private void updateImportEntryView() {
-		if (this.importEntryViewHelper == null) {
-			this.importEntryViewHelper = new UserCertStoreTreeTableViewHelper<>(this.ctlImportEntryView,
-					(e) -> new ImportEntryModel(e, false));
-		}
-		this.importEntryViewHelper.update(this.sourceStore);
+		this.importEntryViewHelper.get().update(this.sourceStore);
 		if (this.sourceStore != null) {
-			this.ctlStatusImage.setImage(Images.OK16);
 			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NEW_STORE(this.sourceStore.size()));
+			this.ctlStatusImage.setImage(Images.OK16);
 		} else {
-			this.ctlStatusImage.setImage(Images.WARNING16);
 			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NO_STORE());
+			this.ctlStatusImage.setImage(Images.WARNING16);
 		}
 		this.ctlSelectAllOption.setSelected(false);
 	}
@@ -507,14 +540,15 @@ public class CertImportController extends StageController {
 		String fileSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileSourceInput.getText()),
 				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_FILE(a));
 
-		return PathValidator.isReadableFile(fileSourceInput, (a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
+		return PathValidator.isRegularFilePath(fileSourceInput,
+				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
 	}
 
 	private Path validateDirectorySourceInput() throws ValidationException {
 		String directorySourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDirectorySourceInput.getText()),
 				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_DIRECTORY(a));
 
-		return PathValidator.isReadableDirectory(directorySourceInput,
+		return PathValidator.isDirectoryPath(directorySourceInput,
 				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
 	}
 
@@ -539,13 +573,19 @@ public class CertImportController extends StageController {
 		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
 				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(a));
 		String host = serverSourceGroups[0];
+		String portInput = serverSourceGroups[1];
 		int port;
 
-		try {
-			port = Integer.valueOf(serverSourceGroups[1]);
-		} catch (NumberFormatException e) {
-			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
+		if (portInput != null) {
+			try {
+				port = Integer.valueOf(portInput).intValue();
+			} catch (NumberFormatException e) {
+				throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
+			}
+		} else {
+			port = protocol.defaultPort();
 		}
+
 		return new ServerParams(protocol, host, port);
 	}
 
@@ -618,7 +658,7 @@ public class CertImportController extends StageController {
 		@Override
 		protected void failed() {
 			super.failed();
-			onReloadTaskFailed(this, getException());
+			onReloadTaskFailed(getException());
 			this.logMonitor.close();
 		}
 
@@ -627,8 +667,10 @@ public class CertImportController extends StageController {
 	void importSelection(Set<UserCertStoreEntry> importSelection) throws IOException {
 		PasswordCallback newPassword = PasswordDialog.enterNewPassword(this);
 
+		UserCertStore checkedImportStore = Check.nonNull(this.importStore);
+
 		for (UserCertStoreEntry importEntry : importSelection) {
-			this.importStore.importEntry(importEntry, newPassword, CertImportI18N.formatSTR_TEXT_ALIASHINT());
+			checkedImportStore.importEntry(importEntry, newPassword, CertImportI18N.formatSTR_TEXT_ALIASHINT());
 		}
 	}
 
@@ -641,6 +683,7 @@ public class CertImportController extends StageController {
 		}
 
 		@Override
+		@Nullable
 		protected Void call() throws Exception {
 			importSelection(this.importSelection);
 			return null;

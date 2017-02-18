@@ -36,8 +36,6 @@ public abstract class Issuer implements Comparable<Issuer> {
 	 * @param storeEntry The store entry represented by this issuer instance.
 	 */
 	protected Issuer(UserCertStoreEntry storeEntry) {
-		assert storeEntry != null;
-
 		this.storeEntry = storeEntry;
 		this.name = CertGeneratorI18N.formatSTR_STOREENTRY_NAME(this.storeEntry.id().getAlias(),
 				X500Names.toString(this.storeEntry.dn()));
@@ -50,8 +48,6 @@ public abstract class Issuer implements Comparable<Issuer> {
 	 * @param name The name of this issuer instance.
 	 */
 	protected Issuer(String name) {
-		assert name != null;
-
 		this.storeEntry = null;
 		this.name = name;
 	}
@@ -66,9 +62,8 @@ public abstract class Issuer implements Comparable<Issuer> {
 	/**
 	 * Get the {@link UserCertStoreEntry} represented by this issuer.
 	 *
-	 * @return The {@link UserCertStoreEntry} represented by this issuer, or
-	 *         {@code null} if this issuer does not represent an actual store
-	 *         entry.
+	 * @return The {@link UserCertStoreEntry} represented by this issuer, or {@code null} if this issuer does not
+	 *         represent an actual store entry.
 	 */
 	public UserCertStoreEntry storeEntry() {
 		return this.storeEntry;
@@ -76,7 +71,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 
 	@Override
 	public int compareTo(Issuer o) {
-		if (!this.generator().equals(o.generator())) {
+		if (!generator().equals(o.generator())) {
 			throw new IllegalArgumentException();
 		}
 

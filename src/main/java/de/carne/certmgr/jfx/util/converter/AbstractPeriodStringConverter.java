@@ -22,6 +22,9 @@ import java.util.regex.Pattern;
 
 import de.carne.certmgr.certs.security.AbstractPeriod;
 import de.carne.certmgr.util.Days;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
+import de.carne.util.Strings;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
@@ -38,7 +41,7 @@ public abstract class AbstractPeriodStringConverter<T extends AbstractPeriod> ex
 	/**
 	 * Attach this converter to a {@link ComboBox}.
 	 *
-	 * @param comboBox The combobox to attach to.
+	 * @param comboBox The {@link ComboBox} to attach to.
 	 */
 	public void attach(ComboBox<T> comboBox) {
 		comboBox.setConverter(this);
@@ -51,7 +54,7 @@ public abstract class AbstractPeriodStringConverter<T extends AbstractPeriod> ex
 	}
 
 	private void onFocusedChanged(TextField textField, Boolean focused) {
-		if (focused) {
+		if (focused.booleanValue()) {
 			Matcher stringPatternMatcher = STRING_PATTERN.matcher(textField.getText());
 
 			if (stringPatternMatcher.matches()) {
@@ -61,13 +64,15 @@ public abstract class AbstractPeriodStringConverter<T extends AbstractPeriod> ex
 	}
 
 	@Override
-	public String toString(T object) {
-		return object.days().toLocalizedString() + " [" + object.days().toString() + "]";
+	public String toString(@Nullable T object) {
+		Days days = Check.nonNull(object).days();
+
+		return days.toLocalizedString() + " [" + days.toString() + "]";
 	}
 
 	@Override
-	public T fromString(String string) {
-		Matcher stringPatternMatcher = STRING_PATTERN.matcher(string);
+	public T fromString(@Nullable String string) {
+		Matcher stringPatternMatcher = STRING_PATTERN.matcher(Strings.safe(string));
 		String periodString = (stringPatternMatcher.matches() ? stringPatternMatcher.group(1) : string);
 
 		return fromDays(new Days(Period.parse(periodString)));

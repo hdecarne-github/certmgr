@@ -134,14 +134,11 @@ public class CRLOptionsController extends StageController {
 	 * Initialize the dialog for CRL options editing.
 	 *
 	 * @param issuerEntryParam The CRL issuer to edit the options for.
-	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
-	 *        not ({@code false}).
+	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 * @throws IOException if an I/O error occurs during initialization.
 	 */
 	public CRLOptionsController init(UserCertStoreEntry issuerEntryParam, boolean expertModeParam) throws IOException {
-		assert issuerEntryParam != null;
-
 		this.issuerEntry = issuerEntryParam;
 		this.ctlIssuerField.setText(this.issuerEntry.getName());
 

@@ -26,8 +26,7 @@ import de.carne.certmgr.certs.spi.NamedProvider;
 import de.carne.util.logging.Log;
 
 /**
- * Map like class providing access to named service providers of a specific
- * type.
+ * Map like class providing access to named service providers of a specific type.
  *
  * @param <P> The service provider type hold by this class.
  */
@@ -43,8 +42,6 @@ public class ProviderMap<P extends NamedProvider> {
 	 * @param providerClass The service provider type to load.
 	 */
 	public ProviderMap(Class<P> providerClass) {
-		assert providerClass != null;
-
 		ServiceLoader<P> serviceLoader = ServiceLoader.load(providerClass);
 
 		serviceLoader.forEach(p -> registerProvider(p));
@@ -83,14 +80,11 @@ public class ProviderMap<P extends NamedProvider> {
 
 	/**
 	 * Look up the service provider for a specific name.
-	 * 
+	 *
 	 * @param name The name to look up the service provider for.
-	 * @return The found service provider, or {@code null} if no service provider
-	 *         is known for the given name.
+	 * @return The found service provider, or {@code null} if no service provider is known for the given name.
 	 */
 	public P get(String name) {
-		assert name != null;
-
 		return this.providerMap.get(name);
 	}
 

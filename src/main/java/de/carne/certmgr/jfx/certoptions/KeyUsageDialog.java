@@ -35,13 +35,10 @@ public class KeyUsageDialog extends Dialog<KeyUsageExtensionData> {
 	 * Load the Key Usage dialog.
 	 *
 	 * @param owner The stage controller owning this dialog.
-	 * @return The constructed controller which is bound to the newly created
-	 *         dialog.
+	 * @return The constructed controller which is bound to the newly created dialog.
 	 * @throws IOException if an I/O error occurs during dialog loading.
 	 */
 	public static KeyUsageController load(StageController owner) throws IOException {
-		assert owner != null;
-
 		return owner.loadDialog((c) -> new KeyUsageDialog(c), KeyUsageController.class);
 	}
 

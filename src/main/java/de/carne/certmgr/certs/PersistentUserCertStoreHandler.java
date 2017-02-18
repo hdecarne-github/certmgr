@@ -39,6 +39,8 @@ import java.util.regex.Pattern;
 import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.io.PEMCertReaderWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.nio.FileAttributes;
 import de.carne.util.logging.Log;
 
@@ -76,8 +78,15 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 	private int nextId = 1;
 
+	private final Path storeHome;
+
 	PersistentUserCertStoreHandler(Path storeHome) {
-		super(storeHome);
+		this.storeHome = storeHome;
+	}
+
+	@Override
+	public Path storeHome() {
+		return this.storeHome;
 	}
 
 	public Map<UserCertStoreEntryId, PersistentEntry> scanStore() throws IOException {
@@ -88,7 +97,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	}
 
 	@Override
-	public UserCertStoreEntryId nextEntryId(String aliasHint) {
+	public UserCertStoreEntryId nextEntryId(@Nullable String aliasHint) {
 		String alias = null;
 
 		if (aliasHint != null) {
@@ -114,11 +123,12 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	@Override
 	public CertObjectHolder<X509Certificate> createCRT(UserCertStoreEntryId id, X509Certificate crt)
 			throws IOException {
-		Path crtPath = entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT);
+		String alias = Check.nonNull(id.getAlias());
+		Path crtPath = entryPath(DIR_CRT, alias, EXTENSION_CRT);
 
 		Files.createDirectories(crtPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), crtPath,
-				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(alias, crtPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEMCertReaderWriter.writeCRTBinary(out, crt);
 		}
 		return new PersistentCRTEntry(id, crt, Files.getLastModifiedTime(crtPath));
@@ -127,11 +137,12 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	@Override
 	public SecureCertObjectHolder<KeyPair> createKey(UserCertStoreEntryId id, KeyPair key, PasswordCallback newPassword)
 			throws IOException {
-		Path keyPath = entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY);
+		String alias = Check.nonNull(id.getAlias());
+		Path keyPath = entryPath(DIR_KEY, alias, EXTENSION_KEY);
 
 		Files.createDirectories(keyPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), keyPath,
-				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(alias, keyPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEMCertReaderWriter.writeKeyBinary(out, key, newPassword);
 		}
 		return new PersistentKeyEntry(id);
@@ -140,11 +151,12 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	@Override
 	public CertObjectHolder<PKCS10CertificateRequest> createCSR(UserCertStoreEntryId id, PKCS10CertificateRequest csr)
 			throws IOException {
-		Path csrPath = entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR);
+		String alias = Check.nonNull(id.getAlias());
+		Path csrPath = entryPath(DIR_CSR, alias, EXTENSION_CSR);
 
 		Files.createDirectories(csrPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), csrPath,
-				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(alias, csrPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEMCertReaderWriter.writeCSRBinary(out, csr);
 		}
 		return new PersistentCSREntry(id, csr, Files.getLastModifiedTime(csrPath));
@@ -152,11 +164,12 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 	@Override
 	public CertObjectHolder<X509CRL> createCRL(UserCertStoreEntryId id, X509CRL crl) throws IOException {
-		Path crlPath = entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL);
+		String alias = Check.nonNull(id.getAlias());
+		Path crlPath = entryPath(DIR_CRL, alias, EXTENSION_CRL);
 
 		Files.createDirectories(crlPath.getParent(), FileAttributes.defaultUserDirectoryAttributes(storeHome()));
-		try (IOResource<OutputStream> out = IOResource.newOutputStream(id.getAlias(), crlPath,
-				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+		try (IOResource<OutputStream> out = IOResource.newOutputStream(alias, crlPath, StandardOpenOption.CREATE,
+				StandardOpenOption.TRUNCATE_EXISTING)) {
 			PEMCertReaderWriter.writeCRLBinary(out, crl);
 		}
 		return new PersistentCRLEntry(id, crl, Files.getLastModifiedTime(crlPath));
@@ -196,19 +209,23 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		return new UserCertStoreEntryId(0, (extIndex > 0 ? fileName.substring(0, extIndex) : fileName));
 	}
 
-	CertObjectHolder<X509Certificate> toCRT(UserCertStoreEntryId id, Path crtPath) {
+	@Nullable
+	CertObjectHolder<X509Certificate> toCRT(UserCertStoreEntryId id, @Nullable Path crtPath) {
 		return (crtPath != null ? new PersistentCRTEntry(id) : null);
 	}
 
-	SecureCertObjectHolder<KeyPair> toKey(UserCertStoreEntryId id, Path keyPath) {
+	@Nullable
+	SecureCertObjectHolder<KeyPair> toKey(UserCertStoreEntryId id, @Nullable Path keyPath) {
 		return (keyPath != null ? new PersistentKeyEntry(id) : null);
 	}
 
-	CertObjectHolder<PKCS10CertificateRequest> toCSR(UserCertStoreEntryId id, Path csrPath) {
+	@Nullable
+	CertObjectHolder<PKCS10CertificateRequest> toCSR(UserCertStoreEntryId id, @Nullable Path csrPath) {
 		return (csrPath != null ? new PersistentCSREntry(id) : null);
 	}
 
-	CertObjectHolder<X509CRL> toCRL(UserCertStoreEntryId id, Path crlPath) {
+	@Nullable
+	CertObjectHolder<X509CRL> toCRL(UserCertStoreEntryId id, @Nullable Path crlPath) {
 		return (crlPath != null ? new PersistentCRLEntry(id) : null);
 	}
 
@@ -232,7 +249,9 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		}
 
 		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+		public FileVisitResult visitFile(@Nullable Path file, @Nullable BasicFileAttributes attrs) throws IOException {
+			assert file != null;
+
 			if (this.crtMatcher.matches(file)) {
 				this.log.info("Found CRT file: ''{0}''", file);
 				updateResult(pathId(file), file, null, null, null);
@@ -251,7 +270,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 			return FileVisitResult.CONTINUE;
 		}
 
-		private void updateResult(UserCertStoreEntryId id, Path crtPath, Path keyPath, Path csrPath, Path crlPath) {
+		private void updateResult(UserCertStoreEntryId id, @Nullable Path crtPath, @Nullable Path keyPath,
+				@Nullable Path csrPath, @Nullable Path crlPath) {
 			PersistentEntry resultEntry = new PersistentEntry(this.result.get(id), toCRT(id, crtPath),
 					toKey(id, keyPath), toCSR(id, csrPath), toCRL(id, crlPath));
 
@@ -273,7 +293,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 			this(id, path, null, null);
 		}
 
-		protected PersistentCertObjectHolder(UserCertStoreEntryId id, Path path, T object, FileTime fileTime) {
+		protected PersistentCertObjectHolder(UserCertStoreEntryId id, Path path, @Nullable T object,
+				@Nullable FileTime fileTime) {
 			this.id = id;
 			this.path = path;
 			this.cached = new SoftReference<>(object);
@@ -291,8 +312,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 			FileTime pathFileTime = Files.getLastModifiedTime(this.path);
 
 			if (object == null || !this.cachedFileTime.equals(pathFileTime)) {
-				try (IOResource<InputStream> in = IOResource.newInputStream(this.id.getAlias(), this.path,
-						StandardOpenOption.READ)) {
+				try (IOResource<InputStream> in = IOResource.newInputStream(Check.nonNull(this.id.getAlias()),
+						this.path, StandardOpenOption.READ)) {
 					object = read(in);
 				}
 				this.cached = new SoftReference<>(object);
@@ -323,7 +344,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 		@Override
 		public T get() throws IOException {
-			throw new PasswordRequiredException(this.id.getAlias());
+			throw new PasswordRequiredException(Check.nonNull(this.id.getAlias()));
 		}
 
 		@Override
@@ -335,7 +356,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		public T get(PasswordCallback password) throws IOException {
 			T object;
 
-			try (IOResource<InputStream> in = IOResource.newInputStream(this.id.getAlias(), this.path,
+			try (IOResource<InputStream> in = IOResource.newInputStream(Check.nonNull(this.id.getAlias()), this.path,
 					StandardOpenOption.READ)) {
 				object = read(in, password);
 			}
@@ -349,11 +370,11 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentCRTEntry extends PersistentCertObjectHolder<X509Certificate> {
 
 		PersistentCRTEntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT));
+			super(id, entryPath(DIR_CRT, Check.nonNull(id.getAlias()), EXTENSION_CRT));
 		}
 
 		PersistentCRTEntry(UserCertStoreEntryId id, X509Certificate crt, FileTime crtFileTime) {
-			super(id, entryPath(DIR_CRT, id.getAlias(), EXTENSION_CRT), crt, crtFileTime);
+			super(id, entryPath(DIR_CRT, Check.nonNull(id.getAlias()), EXTENSION_CRT), crt, crtFileTime);
 		}
 
 		@Override
@@ -366,7 +387,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentKeyEntry extends PersistentSecureCertObjectHolder<KeyPair> {
 
 		PersistentKeyEntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_KEY, id.getAlias(), EXTENSION_KEY));
+			super(id, entryPath(DIR_KEY, Check.nonNull(id.getAlias()), EXTENSION_KEY));
 		}
 
 		@Override
@@ -379,11 +400,11 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentCSREntry extends PersistentCertObjectHolder<PKCS10CertificateRequest> {
 
 		PersistentCSREntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR));
+			super(id, entryPath(DIR_CSR, Check.nonNull(id.getAlias()), EXTENSION_CSR));
 		}
 
 		PersistentCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr, FileTime csrFileTime) {
-			super(id, entryPath(DIR_CSR, id.getAlias(), EXTENSION_CSR), csr, csrFileTime);
+			super(id, entryPath(DIR_CSR, Check.nonNull(id.getAlias()), EXTENSION_CSR), csr, csrFileTime);
 		}
 
 		@Override
@@ -396,11 +417,11 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentCRLEntry extends PersistentCertObjectHolder<X509CRL> {
 
 		PersistentCRLEntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL));
+			super(id, entryPath(DIR_CRL, Check.nonNull(id.getAlias()), EXTENSION_CRL));
 		}
 
 		PersistentCRLEntry(UserCertStoreEntryId id, X509CRL crl, FileTime crlFileTime) {
-			super(id, entryPath(DIR_CRL, id.getAlias(), EXTENSION_CRL), crl, crlFileTime);
+			super(id, entryPath(DIR_CRL, Check.nonNull(id.getAlias()), EXTENSION_CRL), crl, crlFileTime);
 		}
 
 		@Override

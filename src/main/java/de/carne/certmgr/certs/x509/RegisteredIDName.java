@@ -38,9 +38,6 @@ public class RegisteredIDName extends GeneralName {
 	 */
 	public RegisteredIDName(String oid) {
 		super(GeneralNameType.REGISTERED_ID);
-
-		assert oid != null;
-
 		this.oid = oid;
 	}
 

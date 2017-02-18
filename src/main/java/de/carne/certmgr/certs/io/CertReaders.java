@@ -34,6 +34,7 @@ import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.util.ProviderMap;
+import de.carne.check.Nullable;
 
 /**
  * Utility class providing {@link CertReader} related functions.
@@ -52,19 +53,16 @@ public final class CertReaders {
 	/**
 	 * Read all available certificate objects from a file.
 	 * <p>
-	 * All registered {@link CertReader}s are considered for reading certificate
-	 * object until one recognizes the file data.
+	 * All registered {@link CertReader}s are considered for reading certificate object until one recognizes the file
+	 * data.
 	 *
 	 * @param file The file to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The read certificate objects, or {@code null} if no certificate
-	 *         data was recognized.
+	 * @return The read certificate objects, or {@code null} if no certificate data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
+	@Nullable
 	public static CertObjectStore readFile(Path file, PasswordCallback password) throws IOException {
-		assert file != null;
-		assert password != null;
-
 		Deque<CertReader> certReaders = new ArrayDeque<>();
 		Path fileName = file.getFileName();
 
@@ -93,19 +91,16 @@ public final class CertReaders {
 	/**
 	 * Read all available certificate objects from an {@link URL}.
 	 * <p>
-	 * All registered {@link CertReader}s are considered for reading certificate
-	 * object until one recognizes the file data.
+	 * All registered {@link CertReader}s are considered for reading certificate object until one recognizes the file
+	 * data.
 	 *
 	 * @param url The URL to read from.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The read certificate objects, or {@code null} if no certificate
-	 *         data was recognized.
+	 * @return The read certificate objects, or {@code null} if no certificate data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
+	@Nullable
 	public static CertObjectStore readURL(URL url, PasswordCallback password) throws IOException {
-		assert url != null;
-		assert password != null;
-
 		Deque<CertReader> certReaders = new ArrayDeque<>();
 		Path file;
 
@@ -157,21 +152,17 @@ public final class CertReaders {
 	/**
 	 * Read all available certificate objects from string data.
 	 * <p>
-	 * All registered {@link CertReader}s are considered for reading certificate
-	 * object until one recognizes the input.
+	 * All registered {@link CertReader}s are considered for reading certificate object until one recognizes the input.
 	 *
 	 * @param data The string data to read from.
 	 * @param resource The name of the resource providing the data.
 	 * @param password The callback to use for querying passwords (if needed).
-	 * @return The read certificate objects, or {@code null} if no certificate
-	 *         data was recognized.
+	 * @return The read certificate objects, or {@code null} if no certificate data was recognized.
 	 * @throws IOException if an I/O error occurs during reading/decoding.
 	 */
+	@Nullable
 	public static CertObjectStore readString(String data, String resource, PasswordCallback password)
 			throws IOException {
-		assert data != null;
-		assert password != null;
-
 		CertObjectStore certObjects = null;
 
 		for (CertReader reader : REGISTERED.providers()) {

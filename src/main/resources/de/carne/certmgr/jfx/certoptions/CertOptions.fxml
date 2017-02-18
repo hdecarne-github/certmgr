@@ -139,7 +139,7 @@
                       <MenuItem mnemonicParsing="false" onAction="#onCmdApplyStorePreset" text="%_STR_MENU_PRESETS_STORE" />
                         <Menu fx:id="ctlPresetTemplatesMenu" mnemonicParsing="false" text="%_STR_MENU_PRESETS_TEMPLATE" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#onCmdEditPresetTemplates" text="%_STR_MENU_PRESETS_EDIT_TEMPLATES" />
+                        <MenuItem mnemonicParsing="false" onAction="#onCmdMangePresetTemplates" text="%_STR_MENU_PRESETS_MANAGE_TEMPLATES" />
                     </items>
                   </MenuButton>
                   <Pane HBox.hgrow="ALWAYS" />

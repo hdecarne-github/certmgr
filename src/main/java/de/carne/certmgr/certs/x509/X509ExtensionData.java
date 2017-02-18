@@ -40,8 +40,6 @@ public abstract class X509ExtensionData extends ASN1Data implements AttributesPr
 	 * @param critical The extension's critical flag.
 	 */
 	protected X509ExtensionData(String oid, boolean critical) {
-		assert oid != null;
-
 		this.oid = oid;
 		this.critical = critical;
 	}
@@ -56,8 +54,6 @@ public abstract class X509ExtensionData extends ASN1Data implements AttributesPr
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static X509ExtensionData decode(String oid, boolean critical, byte[] data) throws IOException {
-		assert oid != null;
-
 		ASN1Primitive primitive = JcaX509ExtensionUtils.parseExtensionValue(data);
 		X509ExtensionData decoded;
 
@@ -121,7 +117,7 @@ public abstract class X509ExtensionData extends ASN1Data implements AttributesPr
 
 	/**
 	 * Get the extension's value string representation.
-	 * 
+	 *
 	 * @return The extension's value string representation.
 	 */
 	public abstract String toValueString();

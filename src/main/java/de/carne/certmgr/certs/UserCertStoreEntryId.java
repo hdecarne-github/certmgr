@@ -18,6 +18,7 @@ package de.carne.certmgr.certs;
 
 import java.util.Objects;
 
+import de.carne.check.Nullable;
 import de.carne.util.Strings;
 
 /**
@@ -34,9 +35,9 @@ public final class UserCertStoreEntryId {
 
 	private final String alias;
 
-	UserCertStoreEntryId(int id, String alias) {
+	UserCertStoreEntryId(int id, @Nullable String alias) {
 		this.id = id;
-		this.alias = alias;
+		this.alias = Strings.safe(alias);
 	}
 
 	/**
@@ -63,7 +64,7 @@ public final class UserCertStoreEntryId {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		boolean equal = false;
 
 		if (this == obj) {

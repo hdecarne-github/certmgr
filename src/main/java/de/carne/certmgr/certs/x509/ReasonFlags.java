@@ -41,8 +41,6 @@ public class ReasonFlags extends ASN1Data implements AttributesContent, Iterable
 	 * @param reasonFlags The reason flags.
 	 */
 	public ReasonFlags(Set<ReasonFlag> reasonFlags) {
-		assert reasonFlags != null;
-
 		this.reasonFlags = reasonFlags;
 	}
 

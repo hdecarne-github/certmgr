@@ -51,8 +51,6 @@ public class GenerateCertRequest extends CertParams {
 	 * @param issuer The issuer to use for generation.
 	 */
 	public void setIssuer(Issuer issuer) {
-		assert issuer != null;
-
 		this.issuer = issuer;
 	}
 
@@ -71,8 +69,6 @@ public class GenerateCertRequest extends CertParams {
 	 * @param signatureAlgorithm The signature algorithm to use for generation.
 	 */
 	public void setSignatureAlgorithm(SignatureAlgorithm signatureAlgorithm) {
-		assert signatureAlgorithm != null;
-
 		this.signatureAlgorithm = signatureAlgorithm;
 	}
 
@@ -91,8 +87,6 @@ public class GenerateCertRequest extends CertParams {
 	 * @param notBefore The validity begin date.
 	 */
 	public void setNotBefore(Date notBefore) {
-		assert notBefore != null;
-
 		this.notBefore = notBefore;
 	}
 
@@ -111,8 +105,6 @@ public class GenerateCertRequest extends CertParams {
 	 * @param notAfter The validity end date.
 	 */
 	public void setNotAfter(Date notAfter) {
-		assert notAfter != null;
-
 		this.notAfter = notAfter;
 	}
 

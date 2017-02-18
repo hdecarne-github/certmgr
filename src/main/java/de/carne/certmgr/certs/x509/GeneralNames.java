@@ -58,8 +58,6 @@ public class GeneralNames extends ASN1Data implements Iterable<GeneralName>, Att
 	 * @param name The name object to add.
 	 */
 	public void addName(GeneralName name) {
-		assert name != null;
-
 		this.names.add(name);
 	}
 

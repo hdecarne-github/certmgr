@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.jfx.password;
 
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.DialogHelper;
 
@@ -24,7 +25,7 @@ import de.carne.jfx.scene.control.DialogHelper;
  */
 abstract class PasswordController extends DialogController<PasswordResult> {
 
-	public PasswordController init(String resource, boolean rememberPassword, Throwable passwordException) {
+	public PasswordController init(String resource, boolean rememberPassword, @Nullable Throwable passwordException) {
 		getUI().setHeaderText(getHeaderText(resource));
 		DialogHelper.setExceptionContent(getUI(), passwordException);
 		return this;

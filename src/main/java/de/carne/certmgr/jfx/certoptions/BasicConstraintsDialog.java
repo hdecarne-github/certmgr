@@ -35,13 +35,10 @@ public class BasicConstraintsDialog extends Dialog<BasicConstraintsExtensionData
 	 * Load the Basic Constraints dialog.
 	 *
 	 * @param owner The stage controller owning this dialog.
-	 * @return The constructed controller which is bound to the newly created
-	 *         dialog.
+	 * @return The constructed controller which is bound to the newly created dialog.
 	 * @throws IOException if an I/O error occurs during dialog loading.
 	 */
 	public static BasicConstraintsController load(StageController owner) throws IOException {
-		assert owner != null;
-
 		return owner.loadDialog((c) -> new BasicConstraintsDialog(c), BasicConstraintsController.class);
 	}
 

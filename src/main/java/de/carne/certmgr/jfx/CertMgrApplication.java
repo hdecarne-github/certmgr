@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.carne.ApplicationShutdownTask;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.jfx.stage.StageController;
@@ -74,6 +75,7 @@ public class CertMgrApplication extends Application {
 	@Override
 	public void stop() throws Exception {
 		LOG.info("JavaFX GUI stopped");
+		ApplicationShutdownTask.trigger();
 	}
 
 	private File evalCmdLine() {

@@ -109,9 +109,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
-		assert in != null;
-		assert password != null;
-
 		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", in);
 
 		CertObjectStore certObjects = null;
@@ -165,9 +162,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	@Override
 	public void writeBinary(IOResource<OutputStream> out, CertObjectStore certObjects)
 			throws IOException, UnsupportedOperationException {
-		assert out != null;
-		assert certObjects != null;
-
 		try {
 			List<PKCS12SafeBagBuilder> safeBagBuilders = new ArrayList<>(certObjects.size());
 
@@ -204,10 +198,6 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
 			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
-		assert out != null;
-		assert certObjects != null;
-		assert newPassword != null;
-
 		char[] passwordChars = newPassword.queryPassword(out.resource());
 
 		if (passwordChars == null) {

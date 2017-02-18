@@ -29,6 +29,7 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.jfx.util.converter.CRLUpdatePeriodStringConverter;
 import de.carne.certmgr.jfx.util.converter.CRTValidityPeriodStringConverter;
 import de.carne.certmgr.util.Days;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
@@ -54,36 +55,47 @@ import javafx.util.converter.IntegerStringConverter;
 public class StorePreferencesController extends DialogController<UserCertStore>
 		implements Callback<ButtonType, UserCertStore> {
 
+	@Nullable
 	private UserCertStore store = null;
 
+	@Nullable
 	private UserCertStorePreferences storePreferences = null;
 
 	private boolean expertMode = false;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlNameInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlPathInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdChoosePathButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<CRTValidityPeriod> ctlDefCRTValidityInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<CRLUpdatePeriod> ctlDefCRLUpdateInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<KeyPairAlgorithm> ctlDefKeyAlgOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<Integer> ctlDefKeySizeOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<SignatureAlgorithm> ctlDefSigAlgOption;
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdChoosePath(ActionEvent evt) {
 		DirectoryChooser chooser = new DirectoryChooser();
@@ -154,8 +166,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	/**
 	 * Initialize dialog for creating a new store.
 	 *
-	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
-	 *        not ({@code false}).
+	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public StorePreferencesController init(boolean expertModeParam) {
@@ -173,13 +184,10 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	 * Initialize dialog for editing an existing store's preferences.
 	 *
 	 * @param storeParam The store to edit the preferences for.
-	 * @param expertModeParam Whether to run in expert mode ({@code true}) or
-	 *        not ({@code false}).
+	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public StorePreferencesController init(UserCertStore storeParam, boolean expertModeParam) {
-		assert storeParam != null;
-
 		this.store = storeParam;
 		this.storePreferences = this.store.storePreferences();
 		this.expertMode = expertModeParam;
@@ -244,7 +252,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	}
 
 	@Override
-	public UserCertStore call(ButtonType param) {
+	public UserCertStore call(@Nullable ButtonType param) {
 		return this.store;
 	}
 
@@ -253,7 +261,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_NAME(a));
 		String pathInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlPathInput.getText()),
 				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_PATH(a));
-		Path path = PathValidator.isWritableDirectory(pathInput,
+		Path path = PathValidator.isDirectoryPath(pathInput,
 				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_INVALID_PATH(a));
 		Path storeHome = PathValidator.isPath(path, nameInput,
 				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_INVALID_NAME(a));
