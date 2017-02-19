@@ -24,8 +24,12 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.List;
 
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SNIServerName;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -82,7 +86,7 @@ public final class SSLPeer {
 	/**
 	 * The socket timeout to use in milliseconds.
 	 */
-	public static final int SOCKET_TIMEOUT = PropertiesHelper.getInt(SSLPeer.class, ".socket-timeout", 250);
+	public static final int SOCKET_TIMEOUT = PropertiesHelper.getInt(SSLPeer.class, ".socket-timeout", 1000);
 
 	private static final TrustManager INSECURE_TRUST_MANAGER = new X509TrustManager() {
 
@@ -156,15 +160,19 @@ public final class SSLPeer {
 
 		SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
+		// Prepare additional options: SNI server names
+		List<SNIServerName> serverNames = Arrays.asList(new SNIHostName(this.address.getHostName()));
+
+		// Start SSL handshake and retrieve certificates
 		Certificate[] certificates = null;
 
 		try (SSLSocket sslSocket = protocolHelper.createSSLSocket(sslSocketFactory, this.address, this.port)) {
-			String[] supportedProtocols = sslSocket.getSupportedProtocols();
-
-			LOG.debug("Enabling all supported protocols: {0}", Arrays.toString(supportedProtocols));
-
-			sslSocket.setEnabledProtocols(supportedProtocols);
 			sslSocket.setSoTimeout(SOCKET_TIMEOUT);
+
+			SSLParameters sslParams = sslSocket.getSSLParameters();
+
+			sslParams.setServerNames(serverNames);
+			sslSocket.setSSLParameters(sslParams);
 			sslSocket.startHandshake();
 			certificates = sslSocket.getSession().getPeerCertificates();
 		}

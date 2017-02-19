@@ -31,6 +31,9 @@ import java.nio.charset.StandardCharsets;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import de.carne.check.Check;
+import de.carne.check.Nullable;
+import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
 abstract class SSLProtocalHelper implements AutoCloseable {
@@ -41,11 +44,16 @@ abstract class SSLProtocalHelper implements AutoCloseable {
 
 	private static final int INPUT_CHUNK_SIZE = INPUT_BUFFER_SIZE / 8;
 
+	@Nullable
 	private final Socket plainSocket;
+
+	@Nullable
 	private OutputStream outputStream = null;
+
+	@Nullable
 	private InputStream inputStream = null;
 
-	protected SSLProtocalHelper(Socket plainSocket) {
+	protected SSLProtocalHelper(@Nullable Socket plainSocket) {
 		this.plainSocket = plainSocket;
 	}
 
@@ -66,40 +74,52 @@ abstract class SSLProtocalHelper implements AutoCloseable {
 
 	public SSLSocket createSSLSocket(SSLSocketFactory sslSocketFactory, InetAddress address, int port)
 			throws IOException {
-		return (SSLSocket) (this.plainSocket != null
-				? sslSocketFactory.createSocket(this.plainSocket, address.getHostName(), port, false)
+		Socket checkedPlainSocket = this.plainSocket;
+
+		return (SSLSocket) (checkedPlainSocket != null
+				? sslSocketFactory.createSocket(checkedPlainSocket, address.getHostName(), port, false)
 				: sslSocketFactory.createSocket(address, port));
 	}
 
 	@Override
 	public void close() {
-		if (this.plainSocket != null) {
+		Socket checkedPlainSocket = this.plainSocket;
+
+		if (checkedPlainSocket != null) {
 			try {
-				this.plainSocket.close();
+				checkedPlainSocket.close();
 			} catch (IOException e) {
-				LOG.warning(e, "An error occuring while closing plain socket.");
+				LOG.warning(e, "An error occurred while closing plain socket.");
 			}
 		}
 	}
 
-	private void initSocket() throws IOException {
+	private Socket getPlainSocket() throws IOException {
+		Socket checkedPlainSocket = Check.nonNull(this.plainSocket);
+
 		if (this.outputStream == null && this.inputStream == null) {
-			this.plainSocket.setSoTimeout(SSLPeer.SOCKET_TIMEOUT);
+			checkedPlainSocket.setSoTimeout(SSLPeer.SOCKET_TIMEOUT);
 		}
+		return checkedPlainSocket;
 	}
 
-	private void initOutputStream() throws IOException {
-		if (this.outputStream == null) {
-			initSocket();
-			this.outputStream = this.plainSocket.getOutputStream();
+	private OutputStream getOutputStream() throws IOException {
+		OutputStream checkedOutputStream = this.outputStream;
+
+		if (checkedOutputStream == null) {
+			checkedOutputStream = this.outputStream = getPlainSocket().getOutputStream();
 		}
+		return checkedOutputStream;
 	}
 
-	private void initInputStream() throws IOException {
-		if (this.inputStream == null) {
-			initSocket();
-			this.inputStream = new BufferedInputStream(this.plainSocket.getInputStream(), INPUT_BUFFER_SIZE);
+	private InputStream getInputStream() throws IOException {
+		InputStream checkedInputStream = this.inputStream;
+
+		if (checkedInputStream == null) {
+			checkedInputStream = this.inputStream = new BufferedInputStream(getPlainSocket().getInputStream(),
+					INPUT_BUFFER_SIZE);
 		}
+		return checkedInputStream;
 	}
 
 	protected String getHostname() {
@@ -108,19 +128,18 @@ abstract class SSLProtocalHelper implements AutoCloseable {
 		try {
 			hostname = InetAddress.getLocalHost().getCanonicalHostName();
 		} catch (UnknownHostException e) {
+			Exceptions.ignore(e);
 			hostname = "localhost";
 		}
 		return hostname;
 	}
 
 	protected void send(byte[] data) throws IOException {
-		initOutputStream();
-		this.outputStream.write(data);
+		getOutputStream().write(data);
 	}
 
 	protected void send(byte[] data, int off, int len) throws IOException {
-		initOutputStream();
-		this.outputStream.write(data, off, len);
+		getOutputStream().write(data, off, len);
 	}
 
 	protected void send(String data, Charset charset) throws IOException {
@@ -132,24 +151,22 @@ abstract class SSLProtocalHelper implements AutoCloseable {
 	}
 
 	protected int receive(byte[] buffer) throws IOException {
-		initInputStream();
-		return this.inputStream.read(buffer);
+		return getInputStream().read(buffer);
 	}
 
 	protected int receive(byte[] buffer, int off, int len) throws IOException {
-		initInputStream();
-		return this.inputStream.read(buffer, off, len);
+		return getInputStream().read(buffer, off, len);
 	}
 
 	protected ByteBuffer receiveAll(byte[]... stopMarkers) throws IOException {
-		initInputStream();
+		InputStream checkedInputStream = getInputStream();
 
 		byte[] matchingStopMarker = null;
 		byte[] buffer = new byte[INPUT_CHUNK_SIZE];
 		int pos = 0;
 
 		while (matchingStopMarker == null) {
-			int received = this.inputStream.read();
+			int received = checkedInputStream.read();
 
 			if (received == -1) {
 				throw new EOFException();
