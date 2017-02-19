@@ -783,7 +783,9 @@ public final class UserCertStore {
 
 		@Override
 		public boolean hasDecryptedKey() {
-			return this.keyHolder != null && !this.keyHolder.isSecured();
+			SecureCertObjectHolder<KeyPair> checkedKeyHolder = this.keyHolder;
+
+			return checkedKeyHolder != null && !checkedKeyHolder.isSecured();
 		}
 
 		@Override
@@ -832,34 +834,10 @@ public final class UserCertStore {
 		public List<Path> getFilePaths() {
 			List<Path> filePaths = new ArrayList<>();
 
-			if (this.crtHolder != null) {
-				Path crtPath = this.crtHolder.path();
-
-				if (crtPath != null) {
-					filePaths.add(crtPath);
-				}
-			}
-			if (this.keyHolder != null) {
-				Path keyPath = this.keyHolder.path();
-
-				if (keyPath != null) {
-					filePaths.add(keyPath);
-				}
-			}
-			if (this.csrHolder != null) {
-				Path csrPath = this.csrHolder.path();
-
-				if (csrPath != null) {
-					filePaths.add(csrPath);
-				}
-			}
-			if (this.crlHolder != null) {
-				Path crlPath = this.crlHolder.path();
-
-				if (crlPath != null) {
-					filePaths.add(crlPath);
-				}
-			}
+			collectHolderPath(filePaths, this.crtHolder);
+			collectHolderPath(filePaths, this.keyHolder);
+			collectHolderPath(filePaths, this.csrHolder);
+			collectHolderPath(filePaths, this.crlHolder);
 			return filePaths;
 		}
 
@@ -868,6 +846,17 @@ public final class UserCertStore {
 				throw new FileNotFoundException();
 			}
 			return holder;
+		}
+
+		private List<Path> collectHolderPath(List<Path> paths, @Nullable CertObjectHolder<?> holder) {
+			if (holder != null) {
+				Path path = holder.path();
+
+				if (path != null) {
+					paths.add(path);
+				}
+			}
+			return paths;
 		}
 
 	}

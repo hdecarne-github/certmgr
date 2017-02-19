@@ -40,7 +40,6 @@ import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
-import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.io.IOHelper;
 import de.carne.jfx.application.PlatformHelper;
@@ -49,7 +48,8 @@ import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
-import de.carne.util.ObjectHolder;
+import de.carne.util.Late;
+import de.carne.util.Lazy;
 import de.carne.util.Strings;
 import de.carne.util.logging.LogLevel;
 import de.carne.util.logging.LogMonitor;
@@ -93,12 +93,11 @@ public class CertImportController extends StageController {
 	private final PathPreference preferenceInitalDirectory = new PathPreference(this.preferences, "initialDirectory",
 			PathPreference.IS_DIRECTORY);
 
-	private ObjectHolder<UserCertStoreTreeTableViewHelper<ImportEntryModel>> importEntryViewHelper = new ObjectHolder<>(
+	private Lazy<UserCertStoreTreeTableViewHelper<ImportEntryModel>> lazyImportEntryViewHelper = new Lazy<>(
 			() -> new UserCertStoreTreeTableViewHelper<>(this.ctlImportEntryView,
 					(e) -> new ImportEntryModel(e, false)));
 
-	@Nullable
-	private UserCertStore importStore = null;
+	private Late<UserCertStore> importStoreParam = new Late<>();
 
 	@Nullable
 	private UserCertStore sourceStore = null;
@@ -365,11 +364,11 @@ public class CertImportController extends StageController {
 	/**
 	 * Initialize the dialog for certificate import.
 	 *
-	 * @param importStoreParam The callback to invoke for import.
+	 * @param importStore The {@link UserCertStore} to import into.
 	 * @return This controller.
 	 */
-	public CertImportController init(UserCertStore importStoreParam) {
-		this.importStore = importStoreParam;
+	public CertImportController init(UserCertStore importStore) {
+		this.importStoreParam.initialize(importStore);
 		return this;
 	}
 
@@ -525,9 +524,12 @@ public class CertImportController extends StageController {
 	}
 
 	private void updateImportEntryView() {
-		this.importEntryViewHelper.get().update(this.sourceStore);
-		if (this.sourceStore != null) {
-			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NEW_STORE(this.sourceStore.size()));
+		this.lazyImportEntryViewHelper.get().update(this.sourceStore);
+
+		UserCertStore checkedSourceStore = this.sourceStore;
+
+		if (checkedSourceStore != null) {
+			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NEW_STORE(checkedSourceStore.size()));
 			this.ctlStatusImage.setImage(Images.OK16);
 		} else {
 			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NO_STORE());
@@ -667,10 +669,10 @@ public class CertImportController extends StageController {
 	void importSelection(Set<UserCertStoreEntry> importSelection) throws IOException {
 		PasswordCallback newPassword = PasswordDialog.enterNewPassword(this);
 
-		UserCertStore checkedImportStore = Check.nonNull(this.importStore);
+		UserCertStore importStore = this.importStoreParam.get();
 
 		for (UserCertStoreEntry importEntry : importSelection) {
-			checkedImportStore.importEntry(importEntry, newPassword, CertImportI18N.formatSTR_TEXT_ALIASHINT());
+			importStore.importEntry(importEntry, newPassword, CertImportI18N.formatSTR_TEXT_ALIASHINT());
 		}
 	}
 

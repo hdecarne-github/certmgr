@@ -17,6 +17,7 @@
 package de.carne.certmgr.certs.security;
 
 import de.carne.certmgr.util.Days;
+import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 
 /**
@@ -36,12 +37,11 @@ public class CRLUpdatePeriod extends AbstractPeriod {
 	/**
 	 * Get the standard CRL Update Periods.
 	 *
-	 * @param defaultHint The default to return (may be {@code null}). If this
-	 *        period is contained in the default set, it is also set as the
-	 *        default.
+	 * @param defaultHint The default to return (may be {@code null}). If this period is contained in the default set,
+	 *        it is also set as the default.
 	 * @return The standard CRL Update Periods.
 	 */
-	public static DefaultSet<CRLUpdatePeriod> getDefaultSet(Days defaultHint) {
+	public static DefaultSet<CRLUpdatePeriod> getDefaultSet(@Nullable Days defaultHint) {
 		DefaultSet<Days> defaultPeriods = SecurityDefaults.getCRLUpdatedPeriods();
 		DefaultSet<CRLUpdatePeriod> crlUpdatePeriods = new DefaultSet<>();
 

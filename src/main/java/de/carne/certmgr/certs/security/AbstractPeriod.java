@@ -17,6 +17,7 @@
 package de.carne.certmgr.certs.security;
 
 import de.carne.certmgr.util.Days;
+import de.carne.check.Nullable;
 
 /**
  * Abstract base class for {@link Days} based objects.
@@ -49,7 +50,7 @@ public abstract class AbstractPeriod {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return this == obj || (obj instanceof AbstractPeriod && (this.period.equals(((AbstractPeriod) obj).period)));
 	}
 
