@@ -20,10 +20,11 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
-
-import de.carne.util.DefaultSet;
-
 import java.security.Security;
+
+import de.carne.check.Check;
+import de.carne.check.Nullable;
+import de.carne.util.DefaultSet;
 
 /**
  * Key pair algorithm provisioning.
@@ -39,18 +40,16 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 	/**
 	 * Get the available key pair algorithms.
 	 *
-	 * @param defaultHint The default to return (may be {@code null}). If this
-	 *        algorithm is contained in the default set, it is also set as the
-	 *        default.
-	 * @param expertMode Whether only standard algorithms are considered
-	 *        ({@code false}) or all algorithms available on the current
-	 *        platform ({@code true}).
+	 * @param defaultHint The default to return (may be {@code null}). If this algorithm is contained in the default
+	 *        set, it is also set as the default.
+	 * @param expertMode Whether only standard algorithms are considered ({@code false}) or all algorithms available on
+	 *        the current platform ({@code true}).
 	 * @return The available key pair algorithms
 	 */
-	public static DefaultSet<KeyPairAlgorithm> getDefaultSet(String defaultHint, boolean expertMode) {
+	public static DefaultSet<KeyPairAlgorithm> getDefaultSet(@Nullable String defaultHint, boolean expertMode) {
 		DefaultSet<KeyPairAlgorithm> keyPairAlgorithms = new DefaultSet<>();
 		DefaultSet<String> defaultNames = SecurityDefaults.getKeyAlgorithmNames();
-		String defaultName = (defaultHint != null ? defaultHint : defaultNames.getDefault());
+		String defaultName = (defaultHint != null ? defaultHint : Check.nonNull(defaultNames.getDefault()));
 
 		for (Provider provider : Security.getProviders()) {
 			for (Provider.Service service : provider.getServices()) {
@@ -92,11 +91,11 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 	/**
 	 * Get this algorithm's standard key sizes.
 	 *
-	 * @param defaultHint The default to return (may be {@code null}). If not
-	 *        yet part of the default set, this size is added to the set.
+	 * @param defaultHint The default to return (may be {@code null}). If not yet part of the default set, this size is
+	 *        added to the set.
 	 * @return This algorithm's standard key sizes.
 	 */
-	public DefaultSet<Integer> getStandardKeySizes(Integer defaultHint) {
+	public DefaultSet<Integer> getStandardKeySizes(@Nullable Integer defaultHint) {
 		DefaultSet<Integer> standardKeySizes = SecurityDefaults.getKeySizes(algorithm());
 
 		if (defaultHint != null) {
@@ -117,7 +116,7 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			return this == obj || (obj instanceof StandardKeyPairAlgorithm
 					&& algorithm().equals(((StandardKeyPairAlgorithm) obj).algorithm()));
 		}
@@ -141,7 +140,7 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			return this == obj || (obj instanceof ExpertKeyPairAlgorithm
 					&& service().equals(((ExpertKeyPairAlgorithm) obj).service()));
 		}

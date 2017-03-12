@@ -17,6 +17,7 @@
 package de.carne.certmgr.certs.security;
 
 import de.carne.certmgr.util.Days;
+import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 
@@ -48,7 +49,7 @@ public class CRLUpdatePeriod extends AbstractPeriod {
 		if (defaultHint != null) {
 			crlUpdatePeriods.addDefault(new CRLUpdatePeriod(defaultHint));
 		} else {
-			crlUpdatePeriods.addDefault(new CRLUpdatePeriod(defaultPeriods.getDefault()));
+			crlUpdatePeriods.addDefault(new CRLUpdatePeriod(Check.nonNull(defaultPeriods.getDefault())));
 		}
 		for (Days period : defaultPeriods) {
 			crlUpdatePeriods.add(new CRLUpdatePeriod(period));

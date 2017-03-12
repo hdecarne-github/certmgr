@@ -18,10 +18,11 @@ package de.carne.certmgr.certs.security;
 
 import java.security.Provider;
 import java.security.Provider.Service;
-
-import de.carne.util.DefaultSet;
-
 import java.security.Security;
+
+import de.carne.check.Check;
+import de.carne.check.Nullable;
+import de.carne.util.DefaultSet;
 
 /**
  * Signature algorithm provisioning.
@@ -37,42 +38,43 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 	/**
 	 * Get the available signature algorithms.
 	 *
-	 * @param keyPairAlgorithm The key pair algorithm to get the signature
-	 *        algorithms for.
-	 * @param defaultHint The default to return (may be {@code null}). If this
-	 *        algorithm is contained in the default set, it is also set as the
-	 *        default.
-	 * @param expertMode Whether only standard algorithms are considered
-	 *        ({@code false}) or all algorithms available on the current
-	 *        platform ({@code true}).
+	 * @param keyPairAlgorithm The key pair algorithm to get the signature algorithms for.
+	 * @param defaultHint The default to return (may be {@code null}). If this algorithm is contained in the default
+	 *        set, it is also set as the default.
+	 * @param expertMode Whether only standard algorithms are considered ({@code false}) or all algorithms available on
+	 *        the current platform ({@code true}).
 	 * @return The available signature algorithms
 	 */
-	public static DefaultSet<SignatureAlgorithm> getDefaultSet(String keyPairAlgorithm, String defaultHint,
+	public static DefaultSet<SignatureAlgorithm> getDefaultSet(String keyPairAlgorithm, @Nullable String defaultHint,
 			boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 		DefaultSet<String> defaultNames = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
-		String defaultName = (defaultHint != null ? defaultHint.toUpperCase() : defaultNames.getDefault());
 
-		for (Provider provider : Security.getProviders()) {
-			for (Provider.Service service : provider.getServices()) {
-				if (!SERVICE_TYPE_SIGNATURE.equals(service.getType())) {
-					continue;
-				}
+		if (!defaultNames.isEmpty()) {
+			String defaultName = (defaultHint != null ? defaultHint : Check.nonNull(defaultNames.getDefault()))
+					.toUpperCase();
 
-				String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
+			for (Provider provider : Security.getProviders()) {
+				for (Provider.Service service : provider.getServices()) {
+					if (!SERVICE_TYPE_SIGNATURE.equals(service.getType())) {
+						continue;
+					}
 
-				if (!expertMode && !defaultName.equals(upperCaseAlgorithm)
-						&& !defaultNames.contains(upperCaseAlgorithm)) {
-					continue;
-				}
+					String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
 
-				SignatureAlgorithm signatureAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
-						: new StandardKeyPairAlgorithm(service));
+					if (!expertMode && !defaultName.equals(upperCaseAlgorithm)
+							&& !defaultNames.contains(upperCaseAlgorithm)) {
+						continue;
+					}
 
-				if (upperCaseAlgorithm.equals(defaultName)) {
-					signatureAlgorithms.addDefault(signatureAlgorithm);
-				} else {
-					signatureAlgorithms.add(signatureAlgorithm);
+					SignatureAlgorithm signatureAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
+							: new StandardKeyPairAlgorithm(service));
+
+					if (upperCaseAlgorithm.equals(defaultName)) {
+						signatureAlgorithms.addDefault(signatureAlgorithm);
+					} else {
+						signatureAlgorithms.add(signatureAlgorithm);
+					}
 				}
 			}
 		}
@@ -91,7 +93,7 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			return this == obj || (obj instanceof StandardKeyPairAlgorithm
 					&& algorithm().equals(((StandardKeyPairAlgorithm) obj).algorithm()));
 		}
@@ -115,7 +117,7 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			return this == obj || (obj instanceof ExpertKeyPairAlgorithm
 					&& service().equals(((ExpertKeyPairAlgorithm) obj).service()));
 		}

@@ -34,6 +34,7 @@ import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
+import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 import de.carne.util.Exceptions;
 
@@ -67,7 +68,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 	}
 
 	@Override
-	public DefaultSet<Issuer> getIssuers(UserCertStore store, UserCertStoreEntry defaultHint) {
+	public DefaultSet<Issuer> getIssuers(UserCertStore store, @Nullable UserCertStoreEntry defaultHint) {
 		DefaultSet<Issuer> issuers = new DefaultSet<>();
 
 		issuers.addDefault(this.selfSignedIssuer);
@@ -86,8 +87,8 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 	}
 
 	@Override
-	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, KeyPairAlgorithm keyPairAlgorithm,
-			String defaultHint, boolean expertMode) {
+	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(@Nullable Issuer issuer,
+			@Nullable KeyPairAlgorithm keyPairAlgorithm, @Nullable String defaultHint, boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 
 		if (issuer != null && keyPairAlgorithm != null) {

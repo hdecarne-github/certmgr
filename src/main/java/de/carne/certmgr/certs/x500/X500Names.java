@@ -29,6 +29,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.util.Strings;
 
+import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.PropertiesHelper;
 import de.carne.util.logging.Log;
@@ -46,6 +47,7 @@ public final class X500Names {
 
 	private static final String OIDS_RESOURCE = X500Names.class.getSimpleName() + ".properties";
 
+	@Nullable
 	private static final String OIDS_USER_FILE = PropertiesHelper.get(X500Names.class, "", null);
 
 	private static final Map<String, String> OIDS = new HashMap<>();

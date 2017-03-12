@@ -24,11 +24,11 @@ import java.util.List;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.check.Nullable;
 import de.carne.jfx.util.ShortDate;
 
 /**
- * This class provides a generic way to access the content/attributes of all
- * kind of X.509 certificate objects.
+ * This class provides a generic way to access the content/attributes of all kind of X.509 certificate objects.
  */
 public class Attributes {
 
@@ -44,6 +44,7 @@ public class Attributes {
 
 	private final String name;
 
+	@Nullable
 	private final String value;
 
 	private final List<Attributes> children = new ArrayList<>();
@@ -52,7 +53,7 @@ public class Attributes {
 		this(name, null);
 	}
 
-	Attributes(String name, String value) {
+	Attributes(String name, @Nullable String value) {
 		this.name = name;
 		this.value = value;
 	}
@@ -61,7 +62,7 @@ public class Attributes {
 		return add(childName, null);
 	}
 
-	Attributes add(String childName, String childValue) {
+	Attributes add(String childName, @Nullable String childValue) {
 		Attributes childAttributes = new Attributes(childName, childValue);
 
 		this.children.add(childAttributes);
@@ -92,6 +93,7 @@ public class Attributes {
 	 *
 	 * @return This attribute's value, or {@code null} if there is no value.
 	 */
+	@Nullable
 	public String value() {
 		return this.value;
 	}
@@ -99,8 +101,7 @@ public class Attributes {
 	/**
 	 * Get this attribute's children.
 	 *
-	 * @return This attribute's children, or {@code null} if there are no
-	 *         children.
+	 * @return This attribute's children, or {@code null} if there are no children.
 	 */
 	public List<Attributes> children() {
 		return Collections.unmodifiableList(this.children);

@@ -26,6 +26,7 @@ import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.generator.Issuer;
+import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 
 /**
@@ -79,28 +80,25 @@ public interface CertGenerator extends NamedProvider {
 	 * Get the available issuers.
 	 *
 	 * @param store The store to use for issuer provisioning.
-	 * @param defaultHint The default to return (may be {@code null}). If the
-	 *        issuer representing this store entry is part of the default set,
-	 *        it is also set as the default.
+	 * @param defaultHint The default to return (may be {@code null}). If the issuer representing this store entry is
+	 *        part of the default set, it is also set as the default.
 	 * @return The available issuers (may be an empty set).
 	 */
-	DefaultSet<Issuer> getIssuers(UserCertStore store, UserCertStoreEntry defaultHint);
+	DefaultSet<Issuer> getIssuers(UserCertStore store, @Nullable UserCertStoreEntry defaultHint);
 
 	/**
 	 * Get the available signature algorithms.
 	 *
-	 * @param issuer The selected issuer.
-	 * @param keyPairAlgorithm The selected key pair algorithm.
-	 * @param defaultHint The default to return (may be {@code null}). If this
-	 *        algorithm is contained in the default set, it is also set as the
-	 *        default.
-	 * @param expertMode Whether only standard algorithms are considered
-	 *        ({@code false}) or all algorithms available on the current
-	 *        platform ({@code true}).
+	 * @param issuer The selected issuer (may be {@code null}).
+	 * @param keyPairAlgorithm The selected key pair algorithm (may be {@code null}).
+	 * @param defaultHint The default to return (may be {@code null}). If this algorithm is contained in the default
+	 *        set, it is also set as the default.
+	 * @param expertMode Whether only standard algorithms are considered ({@code false}) or all algorithms available on
+	 *        the current platform ({@code true}).
 	 * @return The available signature algorithms
 	 */
-	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, KeyPairAlgorithm keyPairAlgorithm,
-			String defaultHint, boolean expertMode);
+	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(@Nullable Issuer issuer,
+			@Nullable KeyPairAlgorithm keyPairAlgorithm, @Nullable String defaultHint, boolean expertMode);
 
 	/**
 	 * Generate certificate objects.

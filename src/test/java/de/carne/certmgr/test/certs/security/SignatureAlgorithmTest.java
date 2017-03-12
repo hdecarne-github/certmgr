@@ -63,7 +63,6 @@ public class SignatureAlgorithmTest {
 			for (SignatureAlgorithm expertAlgorithm : expertAlgorithms) {
 				System.out.println(expertAlgorithm);
 			}
-			Assert.assertTrue(expertAlgorithms.size() > 0);
 		}
 	}
 

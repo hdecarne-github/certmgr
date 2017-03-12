@@ -26,9 +26,10 @@ import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERSequence;
 
+import de.carne.check.Nullable;
+
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.9">Basic
- * Constraints Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.9">Basic Constraints Extension</a> data.
  */
 public class BasicConstraintsExtensionData extends X509ExtensionData {
 
@@ -44,6 +45,7 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 
 	private boolean ca = false;
 
+	@Nullable
 	private BigInteger pathLenConstraint = null;
 
 	/**
@@ -60,10 +62,9 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	 *
 	 * @param critical The extension's critical flag.
 	 * @param ca The extension's CA flag.
-	 * @param pathLenConstraint The extension's path length constraint value or
-	 *        {@code null} if there is none.
+	 * @param pathLenConstraint The extension's path length constraint value or {@code null} if there is none.
 	 */
-	public BasicConstraintsExtensionData(boolean critical, boolean ca, BigInteger pathLenConstraint) {
+	public BasicConstraintsExtensionData(boolean critical, boolean ca, @Nullable BigInteger pathLenConstraint) {
 		super(OID, critical);
 		this.ca = ca;
 		this.pathLenConstraint = pathLenConstraint;
@@ -112,9 +113,9 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 	/**
 	 * Get this extension's path length constraint.
 	 *
-	 * @return This extension's path length constraint, or {@code null} if none
-	 *         has been defined.
+	 * @return This extension's path length constraint, or {@code null} if none has been defined.
 	 */
+	@Nullable
 	public BigInteger getPathLenConstraint() {
 		return this.pathLenConstraint;
 	}
@@ -150,11 +151,13 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 
 		extensionAttributes.add(AttributesI18N.formatSTR_BC_CA(), Boolean.toString(this.ca));
 
-		if (this.pathLenConstraint != null) {
-			int pathLenConstraintValue = this.pathLenConstraint.intValue();
+		BigInteger checkedPathLenConstraint = this.pathLenConstraint;
+
+		if (checkedPathLenConstraint != null) {
+			int pathLenConstraintValue = checkedPathLenConstraint.intValue();
 
 			extensionAttributes.add(AttributesI18N.formatSTR_BC_PATHLENCONSTRAINT(),
-					(pathLenConstraintValue >= 0 ? Integer.toString(this.pathLenConstraint.intValue()) : "\u221E"));
+					(pathLenConstraintValue >= 0 ? Integer.toString(pathLenConstraintValue) : "\u221E"));
 		}
 		return extensionAttributes;
 	}

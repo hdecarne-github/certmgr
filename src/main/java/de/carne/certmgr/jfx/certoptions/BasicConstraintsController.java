@@ -19,6 +19,7 @@ package de.carne.certmgr.jfx.certoptions;
 import java.math.BigInteger;
 
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.util.validation.ValidationAlerts;
@@ -39,14 +40,18 @@ import javafx.util.Callback;
 public class BasicConstraintsController extends DialogController<BasicConstraintsExtensionData>
 		implements Callback<ButtonType, BasicConstraintsExtensionData> {
 
+	@Nullable
 	private BasicConstraintsExtensionData extensionDataResult = null;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCritical;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCA;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<BasicConstraintsPathLen> ctlPathLenConstraint;
 
@@ -77,8 +82,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	/**
 	 * Initialize the dialog.
 	 *
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public BasicConstraintsController init(boolean expertMode) {
@@ -92,8 +96,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	 * Initialize the dialog with existing extension data.
 	 *
 	 * @param data The extension data to use.
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public BasicConstraintsController init(BasicConstraintsExtensionData data, boolean expertMode) {
@@ -124,7 +127,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	}
 
 	@Override
-	public BasicConstraintsExtensionData call(ButtonType param) {
+	public BasicConstraintsExtensionData call(@Nullable ButtonType param) {
 		return this.extensionDataResult;
 	}
 

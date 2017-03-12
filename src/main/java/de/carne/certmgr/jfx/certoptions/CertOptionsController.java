@@ -47,12 +47,15 @@ import de.carne.certmgr.jfx.dneditor.DNEditorController;
 import de.carne.certmgr.jfx.dneditor.DNEditorDialog;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
+import de.carne.util.Late;
 import de.carne.util.Strings;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.ValidationException;
@@ -84,15 +87,15 @@ public class CertOptionsController extends StageController {
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertOptionsController.class);
 
-	private UserCertStore store = null;
+	private Late<UserCertStore> storeParam = new Late<>();
 
-	private UserCertStorePreferences storePreferences = null;
+	private Late<UserCertStorePreferences> storePreferencesParam = new Late<>();
 
-	private UserCertStoreEntry storeEntry = null;
+	private Late<UserCertStoreEntry> storeEntryParam = new Late<>();
 
-	private boolean expertMode = false;
+	private boolean expertModeParam = false;
 
-	private CertOptionsPreset defaultPreset = null;
+	private Late<CertOptionsPreset> defaultPresetParam = new Late<>();
 
 	private final ObjectProperty<BasicConstraintsExtensionData> basicConstraintsExtension = new SimpleObjectProperty<>(
 			null);
@@ -108,78 +111,103 @@ public class CertOptionsController extends StageController {
 	private final ObjectProperty<CRLDistributionPointsExtensionData> crlDistributionPointsExtension = new SimpleObjectProperty<>(
 			null);
 
+	@SuppressWarnings("null")
 	@FXML
 	GridPane ctlControlPane;
 
+	@SuppressWarnings("null")
 	@FXML
 	VBox ctlProgressOverlay;
 
+	@SuppressWarnings("null")
 	@FXML
 	Menu ctlStorePresetsMenu;
 
+	@SuppressWarnings("null")
 	@FXML
 	Menu ctlPresetTemplatesMenu;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlAliasInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlDNInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<KeyPairAlgorithm> ctlKeyAlgOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<Integer> ctlKeySizeOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<CertGenerator> ctlGeneratorOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<SignatureAlgorithm> ctlSigAlgOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	DatePicker ctlNotBeforeInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	DatePicker ctlNotAfterInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<Issuer> ctlIssuerInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddBasicConstraints;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddKeyUsage;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddExtendedKeyUsage;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddSubjectAlternativeName;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddCRLDistributionPoints;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdEditExtension;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdDeleteExtension;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableView<ExtensionDataModel> ctlExtensionData;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<ExtensionDataModel, Boolean> ctlExtensionDataCritical;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<ExtensionDataModel, String> ctlExtensionDataName;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<ExtensionDataModel, String> ctlExtensionDataValue;
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdEditDN(ActionEvent evt) {
 		try {
@@ -194,26 +222,31 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdApplyDefaultPreset(ActionEvent evt) {
 
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdApplyStorePreset(ActionEvent evt) {
 
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdApplyTemplatePreset(ActionEvent evt) {
 
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdMangePresetTemplates(ActionEvent evt) {
 
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdEditBasicConstraints(ActionEvent evt) {
 		try {
@@ -221,9 +254,9 @@ public class CertOptionsController extends StageController {
 			BasicConstraintsExtensionData extensionData = this.basicConstraintsExtension.get();
 
 			if (extensionData != null) {
-				extensionDialog.init(extensionData, this.expertMode);
+				extensionDialog.init(extensionData, this.expertModeParam);
 			} else {
-				extensionDialog.init(this.expertMode);
+				extensionDialog.init(this.expertModeParam);
 			}
 
 			Optional<BasicConstraintsExtensionData> dialogResult = extensionDialog.showAndWait();
@@ -238,6 +271,7 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdEditKeyUsage(ActionEvent evt) {
 		try {
@@ -245,9 +279,9 @@ public class CertOptionsController extends StageController {
 			KeyUsageExtensionData extensionData = this.keyUsageExtension.get();
 
 			if (extensionData != null) {
-				extensionDialog.init(extensionData, this.expertMode);
+				extensionDialog.init(extensionData, this.expertModeParam);
 			} else {
-				extensionDialog.init(this.expertMode);
+				extensionDialog.init(this.expertModeParam);
 			}
 
 			Optional<KeyUsageExtensionData> dialogResult = extensionDialog.showAndWait();
@@ -262,6 +296,7 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdEditExtendedKeyUsage(ActionEvent evt) {
 		try {
@@ -269,9 +304,9 @@ public class CertOptionsController extends StageController {
 			ExtendedKeyUsageExtensionData extensionData = this.extendedKeyUsageExtension.get();
 
 			if (extensionData != null) {
-				extensionDialog.init(extensionData, this.expertMode);
+				extensionDialog.init(extensionData, this.expertModeParam);
 			} else {
-				extensionDialog.init(this.expertMode);
+				extensionDialog.init(this.expertModeParam);
 			}
 
 			Optional<ExtendedKeyUsageExtensionData> dialogResult = extensionDialog.showAndWait();
@@ -286,6 +321,7 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdEditSubjectAlternativeName(ActionEvent evt) {
 		try {
@@ -293,9 +329,9 @@ public class CertOptionsController extends StageController {
 			SubjectAlternativeNameExtensionData extensionData = this.subjectAlternativeExtension.get();
 
 			if (extensionData != null) {
-				extensionDialog.init(extensionData, this.expertMode);
+				extensionDialog.init(extensionData, this.expertModeParam);
 			} else {
-				extensionDialog.init(this.expertMode);
+				extensionDialog.init(this.expertModeParam);
 			}
 
 			Optional<SubjectAlternativeNameExtensionData> dialogResult = extensionDialog.showAndWait();
@@ -310,6 +346,7 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdEditCRLDistributionPoints(ActionEvent evt) {
 		try {
@@ -317,9 +354,9 @@ public class CertOptionsController extends StageController {
 			CRLDistributionPointsExtensionData extensionData = this.crlDistributionPointsExtension.get();
 
 			if (extensionData != null) {
-				extensionDialog.init(extensionData, this.expertMode);
+				extensionDialog.init(extensionData, this.expertModeParam);
 			} else {
-				extensionDialog.init(this.expertMode);
+				extensionDialog.init(this.expertModeParam);
 			}
 
 			Optional<CRLDistributionPointsExtensionData> dialogResult = extensionDialog.showAndWait();
@@ -355,6 +392,7 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdDeleteExtension(ActionEvent evt) {
 		ExtensionDataModel extensionDataItem = this.ctlExtensionData.getSelectionModel().getSelectedItem();
@@ -377,6 +415,7 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdGenerate(ActionEvent evt) {
 		try {
@@ -390,19 +429,21 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdCancel(ActionEvent evt) {
 		close(false);
 	}
 
-	private void onKeyAlgChanged(KeyPairAlgorithm keyAlg) {
+	private void onKeyAlgChanged(@Nullable KeyPairAlgorithm keyAlg) {
 		DefaultSet<Integer> keySizes = null;
 
 		if (keyAlg != null) {
+			UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
 			Integer defaultHint = null;
 
-			if (keyAlg.algorithm().equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
-				defaultHint = this.storePreferences.defaultKeySize.get();
+			if (keyAlg.algorithm().equals(storePreferences.defaultKeyPairAlgorithm.get())) {
+				defaultHint = storePreferences.defaultKeySize.get();
 			}
 			keySizes = keyAlg.getStandardKeySizes(defaultHint);
 		}
@@ -410,17 +451,17 @@ public class CertOptionsController extends StageController {
 		resetSigAlgOptions(keyAlg);
 	}
 
-	private void onGeneratorChanged(CertGenerator newGenerator) {
-		DefaultSet<Issuer> issuers = (newGenerator != null ? newGenerator.getIssuers(this.store, this.storeEntry)
-				: null);
+	private void onGeneratorChanged(@Nullable CertGenerator generator) {
+		DefaultSet<Issuer> issuers = (generator != null
+				? generator.getIssuers(this.storeParam.get(), this.storeEntryParam.getIfInitialized()) : null);
 
 		Controls.resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
-		resetSigAlgOptions(newGenerator);
-		resetValidityInput(newGenerator);
+		resetSigAlgOptions(generator);
+		resetValidityInput(generator);
 	}
 
-	private void onIssuerChanged(Issuer newIssuer) {
-		resetSigAlgOptions(newIssuer);
+	private void onIssuerChanged(Issuer issuer) {
+		resetSigAlgOptions(issuer);
 	}
 
 	@Override
@@ -449,18 +490,17 @@ public class CertOptionsController extends StageController {
 	/**
 	 * Initialize dialog for certificate generation.
 	 *
-	 * @param storeParam The store to add the generated certificate to.
-	 * @param issuerEntryParam The (optional) store entry to use for certificate issuing.
-	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
+	 * @param store The store to add the generated certificate to.
+	 * @param issuerEntry The (optional) store entry to use for certificate issuing.
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
-	public CertOptionsController init(UserCertStore storeParam, UserCertStoreEntry issuerEntryParam,
-			boolean expertModeParam) {
-		this.store = storeParam;
-		this.storePreferences = this.store.storePreferences();
-		this.storeEntry = issuerEntryParam;
-		this.expertMode = expertModeParam;
-		this.defaultPreset = CertOptionsPreset.getDefault();
+	public CertOptionsController init(UserCertStore store, UserCertStoreEntry issuerEntry, boolean expertMode) {
+		this.storeParam.initialize(store);
+		this.storePreferencesParam.initialize(Check.nonNull(store.storePreferences()));
+		this.storeEntryParam.initialize(issuerEntry);
+		this.expertModeParam = expertMode;
+		this.defaultPresetParam.initialize(CertOptionsPreset.getDefault());
 		initExpertMode();
 		initCertificateNames();
 		initKeyAlgOptions();
@@ -469,19 +509,22 @@ public class CertOptionsController extends StageController {
 	}
 
 	private void initExpertMode() {
-		this.ctlKeySizeOption.setEditable(this.expertMode);
+		this.ctlKeySizeOption.setEditable(this.expertModeParam);
 	}
 
 	private void initCertificateNames() {
-		UserCertStoreEntryId entryId = this.store.generateEntryId(CertOptionsI18N.formatSTR_TEXT_ALIASHINT());
+		UserCertStore store = this.storeParam.get();
+		UserCertStoreEntryId entryId = store.generateEntryId(CertOptionsI18N.formatSTR_TEXT_ALIASHINT());
 
 		this.ctlAliasInput.setText(entryId.getAlias());
-		this.ctlDNInput.setText(CertOptionsI18N.formatSTR_TEXT_DEFAULTDN(entryId.getAlias(), this.store.storeName()));
+		this.ctlDNInput.setText(CertOptionsI18N.formatSTR_TEXT_DEFAULTDN(entryId.getAlias(), store.storeName()));
 	}
 
 	private void initKeyAlgOptions() {
+		UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
+
 		Controls.resetComboBoxOptions(this.ctlKeyAlgOption,
-				KeyPairAlgorithm.getDefaultSet(this.storePreferences.defaultKeyPairAlgorithm.get(), this.expertMode),
+				KeyPairAlgorithm.getDefaultSet(storePreferences.defaultKeyPairAlgorithm.get(), this.expertModeParam),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
@@ -494,48 +537,52 @@ public class CertOptionsController extends StageController {
 		this.ctlGeneratorOption.setValue(CertGenerators.DEFAULT);
 	}
 
-	private void resetSigAlgOptions(CertGenerator generator) {
+	private void resetSigAlgOptions(@Nullable CertGenerator generator) {
 		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getValue();
 		Issuer issuer = this.ctlIssuerInput.getValue();
 
 		resetSigAlgOptions(generator, keyPairAlgorithm, issuer);
 	}
 
-	private void resetSigAlgOptions(KeyPairAlgorithm keyPairAlgorithm) {
+	private void resetSigAlgOptions(@Nullable KeyPairAlgorithm keyPairAlgorithm) {
 		CertGenerator generator = this.ctlGeneratorOption.getValue();
 		Issuer issuer = this.ctlIssuerInput.getValue();
 
 		resetSigAlgOptions(generator, keyPairAlgorithm, issuer);
 	}
 
-	private void resetSigAlgOptions(Issuer issuer) {
+	private void resetSigAlgOptions(@Nullable Issuer issuer) {
 		CertGenerator generator = this.ctlGeneratorOption.getValue();
 		KeyPairAlgorithm keyPairAlgorithm = this.ctlKeyAlgOption.getValue();
 
 		resetSigAlgOptions(generator, keyPairAlgorithm, issuer);
 	}
 
-	private void resetSigAlgOptions(CertGenerator generator, KeyPairAlgorithm keyPairAlgorithm, Issuer issuer) {
+	private void resetSigAlgOptions(@Nullable CertGenerator generator, @Nullable KeyPairAlgorithm keyPairAlgorithm,
+			@Nullable Issuer issuer) {
 		DefaultSet<SignatureAlgorithm> sigAlgs = null;
 
 		if (generator != null) {
 			String defaultHint = null;
 
 			if (keyPairAlgorithm != null) {
-				if (keyPairAlgorithm.algorithm().equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
-					defaultHint = this.storePreferences.defaultSignatureAlgorithm.get();
+				UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
+
+				if (keyPairAlgorithm.algorithm().equals(storePreferences.defaultKeyPairAlgorithm.get())) {
+					defaultHint = storePreferences.defaultSignatureAlgorithm.get();
 				}
 			}
-			sigAlgs = generator.getSignatureAlgorithms(issuer, keyPairAlgorithm, defaultHint, this.expertMode);
+			sigAlgs = generator.getSignatureAlgorithms(issuer, keyPairAlgorithm, defaultHint, this.expertModeParam);
 		}
 		Controls.resetComboBoxOptions(this.ctlSigAlgOption, sigAlgs,
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
-	private void resetValidityInput(CertGenerator generator) {
+	private void resetValidityInput(@Nullable CertGenerator generator) {
 		if (generator != null && generator.hasFeature(CertGenerator.Feature.CUSTOM_VALIDITY)) {
+			UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
 			LocalDate notBeforeValue = LocalDate.now();
-			LocalDate notAfterValue = notBeforeValue.plus(this.storePreferences.defaultCRTValidityPeriod.get(),
+			LocalDate notAfterValue = notBeforeValue.plus(storePreferences.defaultCRTValidityPeriod.get(),
 					ChronoUnit.DAYS);
 
 			this.ctlNotBeforeInput.setValue(notBeforeValue);
@@ -673,7 +720,9 @@ public class CertOptionsController extends StageController {
 	}
 
 	void generateEntry(CertGenerator generator, GenerateCertRequest generateRequest, String alias) throws IOException {
-		this.store.generateEntry(generator, generateRequest, PasswordDialog.enterPassword(this),
+		UserCertStore store = this.storeParam.get();
+
+		store.generateEntry(generator, generateRequest, PasswordDialog.enterPassword(this),
 				PasswordDialog.enterNewPassword(this), alias);
 	}
 

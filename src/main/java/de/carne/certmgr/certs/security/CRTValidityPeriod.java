@@ -17,6 +17,8 @@
 package de.carne.certmgr.certs.security;
 
 import de.carne.certmgr.util.Days;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 
 /**
@@ -36,19 +38,18 @@ public class CRTValidityPeriod extends AbstractPeriod {
 	/**
 	 * Get the standard CRT Validity Periods.
 	 *
-	 * @param defaultHint The default to return (may be {@code null}). If this
-	 *        period is contained in the default set, it is also set as the
-	 *        default.
+	 * @param defaultHint The default to return (may be {@code null}). If this period is contained in the default set,
+	 *        it is also set as the default.
 	 * @return The standard CRT Validity Periods.
 	 */
-	public static DefaultSet<CRTValidityPeriod> getDefaultSet(Days defaultHint) {
+	public static DefaultSet<CRTValidityPeriod> getDefaultSet(@Nullable Days defaultHint) {
 		DefaultSet<Days> defaultPeriods = SecurityDefaults.getCRTValidityPeriods();
 		DefaultSet<CRTValidityPeriod> crlUpdatePeriods = new DefaultSet<>();
 
 		if (defaultHint != null) {
 			crlUpdatePeriods.addDefault(new CRTValidityPeriod(defaultHint));
 		} else {
-			crlUpdatePeriods.addDefault(new CRTValidityPeriod(defaultPeriods.getDefault()));
+			crlUpdatePeriods.addDefault(new CRTValidityPeriod(Check.nonNull(defaultPeriods.getDefault())));
 		}
 		for (Days period : defaultPeriods) {
 			crlUpdatePeriods.add(new CRTValidityPeriod(period));

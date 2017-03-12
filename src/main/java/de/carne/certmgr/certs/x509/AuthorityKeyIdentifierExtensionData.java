@@ -30,6 +30,9 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERTaggedObject;
 
 import de.carne.certmgr.util.Bytes;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
+import de.carne.util.Strings;
 
 /**
  * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.1">Authority Key Identifier Extension</a> data.
@@ -46,10 +49,13 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 */
 	public static final boolean CRITICAL_DEFAULT = false;
 
+	@Nullable
 	private final byte[] keyIdentifier;
 
+	@Nullable
 	private final GeneralNames authorityCertIssuer;
 
+	@Nullable
 	private final BigInteger authorityCertSerialNumber;
 
 	/**
@@ -60,9 +66,12 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 * @param authorityCertIssuer The issuer's certificate name.
 	 * @param authorityCertSerialNumber The issuer's certificate serial number.
 	 */
-	public AuthorityKeyIdentifierExtensionData(boolean critical, byte[] keyIdentifier, GeneralNames authorityCertIssuer,
-			BigInteger authorityCertSerialNumber) {
+	public AuthorityKeyIdentifierExtensionData(boolean critical, @Nullable byte[] keyIdentifier,
+			@Nullable GeneralNames authorityCertIssuer, @Nullable BigInteger authorityCertSerialNumber) {
 		super(OID, critical);
+
+		Check.condition(keyIdentifier != null || (authorityCertIssuer != null && authorityCertSerialNumber != null));
+
 		this.keyIdentifier = keyIdentifier;
 		this.authorityCertIssuer = authorityCertIssuer;
 		this.authorityCertSerialNumber = authorityCertSerialNumber;
@@ -101,6 +110,9 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 				throw new IOException("Unsupported tag: " + taggedObjectTag);
 			}
 		}
+		if (keyIdentifier == null && (authorityCertIssuer == null || authorityCertSerialNumber == null)) {
+			throw new IOException("Invalid or incomplete extension data");
+		}
 		return new AuthorityKeyIdentifierExtensionData(critical, keyIdentifier, authorityCertIssuer,
 				authorityCertSerialNumber);
 	}
@@ -110,6 +122,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 *
 	 * @return The issuer's key identifier.
 	 */
+	@Nullable
 	public byte[] getKeyIdentifier() {
 		return this.keyIdentifier;
 	}
@@ -119,6 +132,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 *
 	 * @return The issuer's certificate name.
 	 */
+	@Nullable
 	public GeneralNames getAuthorityCertIssuer() {
 		return this.authorityCertIssuer;
 	}
@@ -128,6 +142,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 *
 	 * @return The issuer's certificate serial number.
 	 */
+	@Nullable
 	public BigInteger getAuthorityCertSerialNumber() {
 		return this.authorityCertSerialNumber;
 	}
@@ -135,22 +150,47 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	@Override
 	public ASN1Encodable encode() throws IOException {
 		ASN1EncodableVector sequence = new ASN1EncodableVector();
+		byte[] checkedKeyIdentifier = this.keyIdentifier;
 
-		if (this.keyIdentifier != null) {
-			sequence.add(new DERTaggedObject(false, 0, new DEROctetString(this.keyIdentifier)));
+		if (checkedKeyIdentifier != null) {
+			sequence.add(new DERTaggedObject(false, 0, new DEROctetString(checkedKeyIdentifier)));
 		}
-		if (this.authorityCertIssuer != null) {
-			sequence.add(new DERTaggedObject(false, 1, this.authorityCertIssuer.encode()));
+
+		GeneralNames checkedAuthorityCertIssuer = this.authorityCertIssuer;
+
+		if (checkedAuthorityCertIssuer != null) {
+			sequence.add(new DERTaggedObject(false, 1, checkedAuthorityCertIssuer.encode()));
 		}
-		if (this.authorityCertSerialNumber != null) {
-			sequence.add(new DERTaggedObject(false, 2, new ASN1Integer(this.authorityCertSerialNumber)));
+
+		BigInteger checkedAuthorityCertSerialNumber = this.authorityCertSerialNumber;
+
+		if (checkedAuthorityCertSerialNumber != null) {
+			sequence.add(new DERTaggedObject(false, 2, new ASN1Integer(checkedAuthorityCertSerialNumber)));
 		}
 		return new DERSequence(sequence);
 	}
 
 	@Override
 	public String toValueString() {
-		return Bytes.toString(this.keyIdentifier);
+		StringBuilder buffer = new StringBuilder();
+		byte[] checkedKeyIdentifier = this.keyIdentifier;
+
+		if (checkedKeyIdentifier != null) {
+			buffer.append(Bytes.toString(checkedKeyIdentifier));
+		}
+
+		GeneralNames checkedAuthorityCertIssuer = this.authorityCertIssuer;
+
+		if (checkedAuthorityCertIssuer != null) {
+			buffer.append(Strings.join(checkedAuthorityCertIssuer, ", ", Attributes.FORMAT_LIMIT_LONG));
+		}
+
+		BigInteger checkedAuthorityCertSerialNumber = this.authorityCertSerialNumber;
+
+		if (checkedAuthorityCertSerialNumber != null) {
+			buffer.append(" (").append(checkedAuthorityCertSerialNumber.toString()).append(")");
+		}
+		return buffer.toString();
 	}
 
 	@Override
