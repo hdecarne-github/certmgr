@@ -17,13 +17,19 @@
 package de.carne.certmgr.jfx.certoptions;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.prefs.Preferences;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.UserCertStore;
@@ -55,6 +61,7 @@ import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
+import de.carne.util.Exceptions;
 import de.carne.util.Late;
 import de.carne.util.Strings;
 import de.carne.util.validation.InputValidator;
@@ -84,6 +91,10 @@ import javafx.util.converter.IntegerStringConverter;
  * Certificate (CRT/CSR) creation dialog.
  */
 public class CertOptionsController extends StageController {
+
+	private static final String DEFAULT_DN = "CN={0},OU={1}";
+
+	private static final String DN_ALIAS_KEY = "CN";
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertOptionsController.class);
 
@@ -435,6 +446,29 @@ public class CertOptionsController extends StageController {
 		close(false);
 	}
 
+	private void onAliasChanged(@Nullable String newAlias, @Nullable String oldAlias) {
+		try {
+			LdapName oldDN = new LdapName(Strings.safe(Strings.safeTrim(this.ctlDNInput.getText())));
+			List<Rdn> oldRdns = oldDN.getRdns();
+			String checkedOldAlias = Strings.safe(Strings.safeTrim(oldAlias));
+			List<Rdn> newRdns = new ArrayList<>(oldRdns.size());
+
+			for (Rdn oldRdn : oldRdns) {
+				if (DN_ALIAS_KEY.equals(oldRdn.getType()) && checkedOldAlias.equals(oldRdn.getValue())) {
+					newRdns.add(new Rdn(oldRdn.getType(), Strings.safe(Strings.safeTrim(newAlias))));
+				} else {
+					newRdns.add(oldRdn);
+				}
+			}
+
+			LdapName newDN = new LdapName(newRdns);
+
+			this.ctlDNInput.setText(newDN.toString());
+		} catch (InvalidNameException e) {
+			Exceptions.ignore(e);
+		}
+	}
+
 	private void onKeyAlgChanged(@Nullable KeyPairAlgorithm keyAlg) {
 		DefaultSet<Integer> keySizes = null;
 
@@ -468,6 +502,7 @@ public class CertOptionsController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
+		this.ctlAliasInput.textProperty().addListener((p, o, n) -> onAliasChanged(n, o));
 		this.ctlKeyAlgOption.valueProperty().addListener((p, o, n) -> onKeyAlgChanged(n));
 		this.ctlKeySizeOption.setConverter(new IntegerStringConverter());
 		this.ctlGeneratorOption.valueProperty().addListener((p, o, n) -> onGeneratorChanged(n));
@@ -517,7 +552,7 @@ public class CertOptionsController extends StageController {
 		UserCertStoreEntryId entryId = store.generateEntryId(CertOptionsI18N.formatSTR_TEXT_ALIASHINT());
 
 		this.ctlAliasInput.setText(entryId.getAlias());
-		this.ctlDNInput.setText(CertOptionsI18N.formatSTR_TEXT_DEFAULTDN(entryId.getAlias(), store.storeName()));
+		this.ctlDNInput.setText(MessageFormat.format(DEFAULT_DN, entryId.getAlias(), store.storeName()));
 	}
 
 	private void initKeyAlgOptions() {
