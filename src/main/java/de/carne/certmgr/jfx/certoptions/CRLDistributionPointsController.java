@@ -64,30 +64,39 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 
 	private CRLDistributionPointsExtensionData extensionDataResult = null;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCritical;
 
+	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<GeneralNameType> ctlNameTypeOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlNameInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdAddName;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdApplyName;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdDeleteName;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveNameUp;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveNameDown;
 
+	@SuppressWarnings("null")
 	@FXML
 	ListView<GeneralName> ctlNames;
 

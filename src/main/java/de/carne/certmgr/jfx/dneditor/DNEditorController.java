@@ -61,27 +61,35 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 
 	private X500Principal dnResult = null;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<String> ctlTypeInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlValueInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdAddRdn;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdApplyRdn;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdDeleteRdn;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveRdnUp;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveRdnDown;
 
+	@SuppressWarnings("null")
 	@FXML
 	ListView<Rdn> ctlRdnEntries;
 

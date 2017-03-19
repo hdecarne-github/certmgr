@@ -32,9 +32,11 @@ import javafx.scene.control.PasswordField;
  */
 public class EnterNewPasswordController extends PasswordController {
 
+	@SuppressWarnings("null")
 	@FXML
 	PasswordField ctlPasswordInput1;
 
+	@SuppressWarnings("null")
 	@FXML
 	PasswordField ctlPasswordInput2;
 

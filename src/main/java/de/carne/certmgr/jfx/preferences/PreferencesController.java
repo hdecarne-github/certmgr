@@ -35,6 +35,7 @@ public class PreferencesController extends DialogController<UserPreferences>
 
 	private UserPreferences preferences = null;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExpertModeOption;
 

@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.jfx.password;
 
+import de.carne.check.Nullable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -28,9 +29,11 @@ import javafx.scene.control.PasswordField;
  */
 public class EnterPasswordController extends PasswordController {
 
+	@SuppressWarnings("null")
 	@FXML
 	PasswordField ctlPasswordInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlRememberPassword;
 
@@ -44,7 +47,7 @@ public class EnterPasswordController extends PasswordController {
 	}
 
 	@Override
-	public PasswordController init(String resource, boolean rememberPassword, Throwable passwordException) {
+	public PasswordController init(String resource, boolean rememberPassword, @Nullable Throwable passwordException) {
 		this.ctlRememberPassword.setSelected(rememberPassword);
 		return super.init(resource, rememberPassword, passwordException);
 	}

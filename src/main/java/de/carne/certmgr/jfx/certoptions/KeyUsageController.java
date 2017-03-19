@@ -40,15 +40,19 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 
 	private KeyUsageExtensionData extensionDataResult = null;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCritical;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlAnyUsage;
 
+	@SuppressWarnings("null")
 	@FXML
 	ListView<KeyUsage> ctlUsages;
 
+	@SuppressWarnings("unused")
 	private void onApply(ActionEvent evt) {
 		boolean critical = this.ctlCritical.isSelected();
 		Set<KeyUsage> usages = new HashSet<>();
@@ -73,8 +77,7 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 	/**
 	 * Initialize the dialog.
 	 *
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public KeyUsageController init(boolean expertMode) {
@@ -97,8 +100,7 @@ public class KeyUsageController extends DialogController<KeyUsageExtensionData>
 	 * Initialize the dialog with existing extension data.
 	 *
 	 * @param data The extension data to use.
-	 * @param expertMode Whether to run in expert mode ({@code true}) or not
-	 *        ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
 	public KeyUsageController init(KeyUsageExtensionData data, boolean expertMode) {

@@ -72,60 +72,78 @@ public class CertExportController extends StageController {
 
 	private UserCertStoreEntry exportEntry;
 
+	@SuppressWarnings("null")
 	@FXML
 	GridPane ctlControlPane;
 
+	@SuppressWarnings("null")
 	@FXML
 	VBox ctlProgressOverlay;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlCertField;
 
+	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<CertWriter> ctlFormatOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlFileDestinationOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlFileDestinationInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseFileDestinationButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlDirectoryDestinationOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlDirectoryDestinationInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseDirectoryDestinationButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlClipboardDestinationOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlEncryptOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportCertOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportChainOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportChainRootOption;
 
 	@FXML
 	CheckBox ctlExportKeyOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportCSROption;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportCRLOption;
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdChooseFileDestination(ActionEvent evt) {
 		FileChooser chooser = new FileChooser();
@@ -149,6 +167,7 @@ public class CertExportController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdChooseDirectoryDestination(ActionEvent evt) {
 		DirectoryChooser chooser = new DirectoryChooser();
@@ -164,6 +183,7 @@ public class CertExportController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdExport(ActionEvent evt) {
 		try {
@@ -219,6 +239,7 @@ public class CertExportController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdCancel(ActionEvent evt) {
 		close(false);

@@ -62,42 +62,55 @@ public class CRLOptionsController extends StageController {
 
 	private UserCertStoreEntry issuerEntry = null;
 
+	@SuppressWarnings("null")
 	@FXML
 	GridPane ctlControlPane;
 
+	@SuppressWarnings("null")
 	@FXML
 	VBox ctlProgressOverlay;
 
+	@SuppressWarnings("null")
 	@FXML
 	TextField ctlIssuerField;
 
+	@SuppressWarnings("null")
 	@FXML
 	ComboBox<SignatureAlgorithm> ctlSigAlgOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	DatePicker ctlLastUpdateInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	DatePicker ctlNextUpdateInput;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableView<CRLEntryModel> ctlEntryOptions;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<CRLEntryModel, Boolean> ctlEntryOptionRevoked;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<CRLEntryModel, String> ctlEntryOptionName;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<CRLEntryModel, BigInteger> ctlEntryOptionSerial;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<CRLEntryModel, ReasonFlag> ctlEntryOptionReason;
 
+	@SuppressWarnings("null")
 	@FXML
 	TableColumn<CRLEntryModel, Date> ctlEntryOptionDate;
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdUpdate(ActionEvent evt) {
 		try {
@@ -109,6 +122,7 @@ public class CRLOptionsController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdCancel(ActionEvent evt) {
 		close(false);

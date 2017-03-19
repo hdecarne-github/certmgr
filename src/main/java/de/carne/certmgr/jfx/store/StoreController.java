@@ -97,87 +97,115 @@ public class StoreController extends StageController {
 
 	private ObjectProperty<UserCertStore> storeProperty = new SimpleObjectProperty<>(null);
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdStorePreferences;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdCopyEntry;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdDeleteEntry;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdNewCert;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdRevokeCert;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdManageCRL;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdExportCert;
 
+	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdImportCerts;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckMenuItem cmdToggleLogView;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdStorePreferencesButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdCopyEntryButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdDeleteEntryButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdNewCertButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdRevokeCertButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdManageCRLButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdExportCertButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	Button cmdImportCertsButton;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableView<StoreEntryModel> ctlStoreEntryView;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewId;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<StoreEntryModel, String> ctlStoreEntryViewName;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<StoreEntryModel, BigInteger> ctlStoreEntryViewSerial;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<StoreEntryModel, Date> ctlStoreEntryViewExpires;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableView<AttributeModel> ctlDetailsView;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<AttributeModel, String> ctlDetailsViewName;
 
+	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<AttributeModel, String> ctlDetailsViewValue;
 
+	@SuppressWarnings("null")
 	@FXML
 	Label ctlStoreStatusLabel;
 
+	@SuppressWarnings("null")
 	@FXML
 	Label ctlHeapStatusLabel;
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdNewStore(ActionEvent evt) {
 		try {
@@ -197,6 +225,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdOpenStore(ActionEvent evt) {
 		DirectoryChooser chooser = new DirectoryChooser();
@@ -212,6 +241,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdStorePreferences(ActionEvent evt) {
 		try {
@@ -224,11 +254,13 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdClose(ActionEvent evt) {
 		close(true);
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdCopyEntry(ActionEvent evt) {
 		UserCertStoreEntry entry = getSelectedStoreEntry();
@@ -247,6 +279,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdDeleteEntry(ActionEvent evt) {
 		UserCertStoreEntry entry = getSelectedStoreEntry();
@@ -266,6 +299,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdNewCert(ActionEvent evt) {
 		UserCertStore store = this.storeProperty.get();
@@ -283,6 +317,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdRevokeCert(ActionEvent evt) {
 		UserCertStoreEntry entry = getSelectedStoreEntry();
@@ -308,6 +343,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdManageCRL(ActionEvent evt) {
 		UserCertStoreEntry issuerEntry = getSelectedStoreEntry();
@@ -330,6 +366,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdExportCert(ActionEvent evt) {
 		UserCertStoreEntry exportEntry = getSelectedStoreEntry();
@@ -346,6 +383,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdImportCerts(ActionEvent evt) {
 		try {
@@ -359,6 +397,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdToggleLogView(ActionEvent evt) {
 		if (this.cmdToggleLogView.isSelected()) {
@@ -370,6 +409,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdPreferences(ActionEvent evt) {
 		try {
@@ -381,6 +421,7 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@FXML
 	void onCmdAbout(ActionEvent evt) {
 		try {
