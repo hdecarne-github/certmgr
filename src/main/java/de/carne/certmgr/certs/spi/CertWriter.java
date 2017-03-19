@@ -25,16 +25,14 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.IOResource;
 
 /**
- * Service provider interface for writing certificate objects to output
- * channels.
+ * Service provider interface for writing certificate objects to output channels.
  */
 public interface CertWriter extends NamedProvider, FileAccessProvider {
 
 	/**
 	 * Check whether this writer produces string based output (e.g. PEM).
 	 *
-	 * @return {@code true} if the writer produces string based output (e.g.
-	 *         PEM).
+	 * @return {@code true} if the writer produces string based output (e.g. PEM).
 	 * @see #writeString(IOResource, CertObjectStore)
 	 * @see #writeEncryptedString(IOResource, CertObjectStore, PasswordCallback)
 	 */
@@ -43,8 +41,7 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	/**
 	 * Check whether this writer enforces encryption of the generated output.
 	 *
-	 * @return {@code true} if the writer enforces encryption of the generated
-	 *         output.
+	 * @return {@code true} if the writer enforces encryption of the generated output.
 	 */
 	boolean isEncryptionRequired();
 
@@ -65,13 +62,11 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 	 *
 	 * @param out The stream resource to write to.
 	 * @param certObjects The certificate objects to write.
-	 * @param newPassword The callback to use for querying the encryption
-	 *        password.
+	 * @param newPassword The callback to use for querying the encryption password.
 	 * @throws IOException if an I/O error occurs while writing to the output.
-	 * @throws UnsupportedOperationException if the operation is not supported.
 	 */
 	void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects, PasswordCallback newPassword)
-			throws IOException, UnsupportedOperationException;
+			throws IOException;
 
 	/**
 	 * Write certificate objects to a (not encrypted) string writer.
@@ -87,12 +82,11 @@ public interface CertWriter extends NamedProvider, FileAccessProvider {
 			throws IOException, UnsupportedOperationException;
 
 	/**
-	 * Write certificate objects to a (not encrypted) string writer.
+	 * Write certificate objects to a string writer.
 	 *
 	 * @param out The writer resource to write to.
 	 * @param certObjects The certificate objects to write.
-	 * @param newPassword The callback to use for querying the encryption
-	 *        password.
+	 * @param newPassword The callback to use for querying the encryption password.
 	 * @throws IOException if an I/O error occurs while writing to the output.
 	 * @throws UnsupportedOperationException if the operation is not supported.
 	 * @see #isCharWriter()

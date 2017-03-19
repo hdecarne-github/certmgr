@@ -157,7 +157,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+			PasswordCallback newPassword) throws IOException {
 		for (CertObjectStore.Entry certObject : certObjects) {
 			writeEncryptedCertObject(out, certObject, newPassword);
 		}

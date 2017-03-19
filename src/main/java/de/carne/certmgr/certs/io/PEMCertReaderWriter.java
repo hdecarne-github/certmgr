@@ -67,9 +67,9 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	private static final String PEM_ENCRYPTION = Check
 			.nonNull(PropertiesHelper.get(PEMCertReaderWriter.class, "encryption", "AES-128-CBC"));
 
-	private static final JcePEMDecryptorProviderBuilder PEM_DECRYPTOR_BUILDER = new JcePEMDecryptorProviderBuilder();
-
 	private static final JcePEMEncryptorBuilder PEM_ENCRYPTOR_BUILDER = new JcePEMEncryptorBuilder(PEM_ENCRYPTION);
+
+	private static final JcePEMDecryptorProviderBuilder PEM_DECRYPTOR_PROVIDER_BUILDER = new JcePEMDecryptorProviderBuilder();
 
 	private static final JcaPEMKeyConverter PEM_KEY_CONVERTER = new JcaPEMKeyConverter();
 
@@ -107,11 +107,13 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		return readObjectsBinary(in, password);
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return readObjectsString(in, password);
 	}
@@ -136,7 +138,7 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+			PasswordCallback newPassword) throws IOException {
 		try (IOResource<Writer> outWriter = IOResource.streamWriter(out, StandardCharsets.US_ASCII)) {
 			writeEncryptedString(outWriter, certObjects, newPassword);
 		}
@@ -344,7 +346,12 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	private static CertObjectStore.Entry readObjectString(IOResource<Reader> in, PasswordCallback password)
 			throws IOException {
 		CertObjectStore certObjects = readObjectsString(in, password);
-		int certObjectsCount = (certObjects != null ? certObjects.size() : 0);
+
+		if (certObjects == null) {
+			throw new IOException("No objects read from '" + in.resource() + "'");
+		}
+
+		int certObjectsCount = certObjects.size();
 
 		if (certObjectsCount != 1) {
 			throw new IOException(certObjectsCount + " objects read from '" + in.resource() + "' (expected 1)");
@@ -525,15 +532,13 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 				throw new PasswordRequiredException(resource, passwordException);
 			}
 
-			PEMDecryptorProvider pemDecryptorProvider = PEM_DECRYPTOR_BUILDER.build(passwordChars);
+			PEMDecryptorProvider pemDecryptorProvider = PEM_DECRYPTOR_PROVIDER_BUILDER.build(passwordChars);
 
 			try {
 				pemKeyPair = pemObject.decryptKeyPair(pemDecryptorProvider);
 			} catch (EncryptionException e) {
 				passwordException = e;
-			}
-			if (pemKeyPair == null) {
-				passwordChars = password.requeryPassword(resource, passwordException);
+				passwordChars = password.requeryPassword(resource, e);
 			}
 		}
 		return convertKey(pemKeyPair);

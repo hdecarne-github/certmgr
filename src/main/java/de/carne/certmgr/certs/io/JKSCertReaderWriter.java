@@ -109,7 +109,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+			PasswordCallback newPassword) throws IOException {
 		char[] passwordChars = newPassword.queryPassword(out.resource());
 
 		if (passwordChars == null) {
@@ -198,21 +198,40 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 				while (aliases.hasMoreElements()) {
 					String alias = aliases.nextElement();
-					Key aliasKey = getAliasKey(keyStore, alias, password);
 					Certificate aliasCertificate = keyStore.getCertificate(alias);
 
-					if (aliasKey == null && aliasCertificate == null) {
-						LOG.warning("Ignoring key store entry ''{0}'' due to missing data", alias);
-					} else {
+					if (aliasCertificate != null) {
 						if (aliasCertificate instanceof X509Certificate) {
 							certObjects.addCRT((X509Certificate) aliasCertificate);
 						} else {
-
+							LOG.warning(
+									"Ignoring certificate of key store entry ''{0}'' due to unsupported type ''{1}''",
+									alias, aliasCertificate.getClass().getName());
 						}
+					}
+
+					Key aliasKey = getAliasKey(keyStore, alias, password);
+
+					if (aliasKey != null) {
 						if (aliasKey instanceof PrivateKey) {
 							certObjects.addPrivateKey((PrivateKey) aliasKey);
 						} else {
+							LOG.warning("Ignoring key of key store entry ''{0}'' due to unsupported type ''{1}''",
+									alias, aliasKey.getClass().getName());
+						}
+					}
 
+					Certificate[] aliasChain = keyStore.getCertificateChain(alias);
+
+					if (aliasChain != null) {
+						for (Certificate aliasChainEntry : aliasChain) {
+							if (aliasChainEntry instanceof X509Certificate) {
+								certObjects.addCRT((X509Certificate) aliasChainEntry);
+							} else {
+								LOG.warning(
+										"Ignoring chain certificate of key store entry ''{0}'' due to unsupported type ''{1}''",
+										alias, aliasChainEntry.getClass().getName());
+							}
 						}
 					}
 				}

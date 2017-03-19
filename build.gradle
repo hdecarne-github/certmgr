@@ -26,8 +26,8 @@ repositories {
 dependencies {
 	compile('de.carne:jfx:3-SNAPSHOT')
 
-	compile('org.bouncycastle:bcpkix-jdk15on:1.56')    
-	
+	compile('org.bouncycastle:bcpkix-jdk15on:1.56')
+
 	testCompile('junit:junit:4.12')
 }
 

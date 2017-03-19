@@ -64,6 +64,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.check.Nullable;
 import de.carne.io.IOHelper;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -108,6 +109,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		LOG.debug("Trying to read PKCS#12 objects from: ''{0}''...", in);
 
@@ -145,6 +147,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	@Override
+	@Nullable
 	public CertObjectStore readString(IOResource<Reader> in, PasswordCallback password) throws IOException {
 		return null;
 	}
@@ -197,7 +200,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public void writeEncryptedBinary(IOResource<OutputStream> out, CertObjectStore certObjects,
-			PasswordCallback newPassword) throws IOException, UnsupportedOperationException {
+			PasswordCallback newPassword) throws IOException {
 		char[] passwordChars = newPassword.queryPassword(out.resource());
 
 		if (passwordChars == null) {
@@ -290,6 +293,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		return safeBagBuilder;
 	}
 
+	@Nullable
 	private static PKCS12PfxPdu readPKCS12(IOResource<InputStream> in) {
 		PKCS12PfxPdu pkcs12 = null;
 
@@ -308,7 +312,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 	}
 
 	private static InputDecryptorProvider buildInputDecryptorProvider(String resource, PasswordCallback password,
-			PKCSException decryptException) throws IOException {
+			@Nullable PKCSException decryptException) throws IOException {
 		char[] passwordChars = (decryptException != null ? password.requeryPassword(resource, decryptException)
 				: password.queryPassword(resource));
 
