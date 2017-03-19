@@ -454,8 +454,10 @@ public class CertOptionsController extends StageController {
 			List<Rdn> newRdns = new ArrayList<>(oldRdns.size());
 
 			for (Rdn oldRdn : oldRdns) {
-				if (DN_ALIAS_KEY.equals(oldRdn.getType()) && checkedOldAlias.equals(oldRdn.getValue())) {
-					newRdns.add(new Rdn(oldRdn.getType(), Strings.safe(Strings.safeTrim(newAlias))));
+				String checkedNewAlias = Strings.safe(Strings.safeTrim(newAlias));
+				if (Strings.notEmpty(checkedNewAlias) && DN_ALIAS_KEY.equals(oldRdn.getType())
+						&& (Strings.isEmpty(checkedOldAlias) || checkedOldAlias.equals(oldRdn.getValue()))) {
+					newRdns.add(new Rdn(oldRdn.getType(), checkedNewAlias));
 				} else {
 					newRdns.add(oldRdn);
 				}
