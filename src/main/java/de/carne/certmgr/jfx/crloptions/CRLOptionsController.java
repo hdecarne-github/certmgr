@@ -201,7 +201,6 @@ public class CRLOptionsController extends StageController {
 	}
 
 	private void initEntries() throws IOException {
-		X509CRL crl = this.issuerEntry.getCRL();
 		ObservableList<CRLEntryModel> entryItems = this.ctlEntryOptions.getItems();
 
 		for (UserCertStoreEntry issuedEntry : this.issuerEntry.issuedEntries()) {
@@ -210,7 +209,8 @@ public class CRLOptionsController extends StageController {
 			ReasonFlag reason = ReasonFlag.UNSPECIFIED;
 			Date date = null;
 
-			if (crl != null) {
+			if (this.issuerEntry.hasCRL()) {
+				X509CRL crl = this.issuerEntry.getCRL();
 				X509CRLEntry crlEntry = crl.getRevokedCertificate(issuedSerial);
 
 				if (crlEntry != null) {
