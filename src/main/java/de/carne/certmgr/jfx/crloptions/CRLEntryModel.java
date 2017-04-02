@@ -20,8 +20,11 @@ import java.math.BigInteger;
 import java.util.Date;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.ReasonFlag;
-import de.carne.jfx.util.ShortDate;
+import de.carne.check.Nullable;
+import de.carne.jfx.util.FormattedBigInteger;
+import de.carne.jfx.util.FormattedDate;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -46,13 +49,16 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 
 	private final ObjectProperty<Date> dateProperty;
 
-	CRLEntryModel(UserCertStoreEntry storeEntry, boolean revoked, BigInteger serial, ReasonFlag reason, Date date) {
+	CRLEntryModel(UserCertStoreEntry storeEntry, boolean revoked, BigInteger serial, ReasonFlag reason,
+			@Nullable Date date) {
 		this.storeEntry = storeEntry;
 		this.revokedProperty = new SimpleBooleanProperty(revoked);
 		this.nameProperty = new SimpleStringProperty(storeEntry.getName());
-		this.serialProperty = new SimpleObjectProperty<>(serial);
+		this.serialProperty = new SimpleObjectProperty<>(
+				FormattedBigInteger.fromBigInteger(Attributes.SERIAL_FORMAT, serial));
 		this.reasonProperty = new SimpleObjectProperty<>(reason);
-		this.dateProperty = new SimpleObjectProperty<>(date != null ? new ShortDate(date.getTime()) : null);
+		this.dateProperty = new SimpleObjectProperty<>(
+				date != null ? FormattedDate.fromDate(Attributes.DATE_FORMAT, date) : null);
 	}
 
 	UserCertStoreEntry getStoreEntry() {
@@ -128,7 +134,7 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 	 * @param serial The entry serial to set.
 	 */
 	public void setSerial(BigInteger serial) {
-		this.serialProperty.set(serial);
+		this.serialProperty.set(FormattedBigInteger.fromBigInteger(Attributes.SERIAL_FORMAT, serial));
 	}
 
 	/**
@@ -181,8 +187,8 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 	 *
 	 * @param date The revocation date to set.
 	 */
-	public void setDate(Date date) {
-		this.dateProperty.set(date != null ? new ShortDate(date.getTime()) : null);
+	public void setDate(@Nullable Date date) {
+		this.dateProperty.set(date != null ? FormattedDate.fromDate(Attributes.DATE_FORMAT, date) : null);
 	}
 
 	/**

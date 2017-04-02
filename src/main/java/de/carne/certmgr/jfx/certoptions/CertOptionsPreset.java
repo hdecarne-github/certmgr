@@ -16,19 +16,65 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import javax.security.auth.x500.X500Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
-import de.carne.certmgr.certs.x509.CertParams;
+import de.carne.certmgr.certs.x509.X509ExtensionData;
+import de.carne.check.Nullable;
 
-class CertOptionsPreset extends CertParams {
+class CertOptionsPreset {
 
-	private CertOptionsPreset(X500Principal dn, KeyPairAlgorithm keyPairAlgorithm, int keySize) {
-		super(dn, keyPairAlgorithm, keySize);
+	private final String aliasInput;
+
+	private final String dnInput;
+
+	@Nullable
+	private KeyPairAlgorithm keyAlg = null;
+
+	@Nullable
+	private Integer keySize = null;
+
+	private final List<X509ExtensionData> extensions = new ArrayList<>();
+
+	CertOptionsPreset(String aliasInput, String dnInput) {
+		this.aliasInput = aliasInput;
+		this.dnInput = dnInput;
 	}
 
-	public static CertOptionsPreset getDefault() {
-		return null;
+	public String aliasInput() {
+		return this.aliasInput;
+	}
+
+	public String dnInput() {
+		return this.dnInput;
+	}
+
+	public void setKeyAlg(@Nullable KeyPairAlgorithm keyAlg) {
+		this.keyAlg = keyAlg;
+	}
+
+	@Nullable
+	public KeyPairAlgorithm getKeyAlg() {
+		return this.keyAlg;
+	}
+
+	public void setKeySize(@Nullable Integer keySize) {
+		this.keySize = keySize;
+	}
+
+	@Nullable
+	public Integer getKeySize() {
+		return this.keySize;
+	}
+
+	public void addExtension(X509ExtensionData extension) {
+		this.extensions.add(extension);
+	}
+
+	public List<X509ExtensionData> getExtensions() {
+		return Collections.unmodifiableList(this.extensions);
 	}
 
 }

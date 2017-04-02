@@ -53,6 +53,8 @@ import de.carne.certmgr.jfx.dneditor.DNEditorController;
 import de.carne.certmgr.jfx.dneditor.DNEditorDialog;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
+import de.carne.certmgr.jfx.store.CertChooserController;
+import de.carne.certmgr.jfx.store.CertChooserDialog;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
@@ -236,13 +238,19 @@ public class CertOptionsController extends StageController {
 	@SuppressWarnings("unused")
 	@FXML
 	void onCmdApplyDefaultPreset(ActionEvent evt) {
-
+		applyPreset(this.defaultPresetParam.get());
 	}
 
 	@SuppressWarnings("unused")
 	@FXML
 	void onCmdApplyStorePreset(ActionEvent evt) {
+		try {
+			CertChooserController certChooser = CertChooserDialog.load(this).init(this.storeParam.get());
 
+			certChooser.showAndWait();
+		} catch (Exception e) {
+			Alerts.unexpected(e).showAndWait();
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -537,11 +545,11 @@ public class CertOptionsController extends StageController {
 		this.storePreferencesParam.initialize(Check.nonNull(store.storePreferences()));
 		this.storeEntryParam.initialize(issuerEntry);
 		this.expertModeParam = expertMode;
-		this.defaultPresetParam.initialize(CertOptionsPreset.getDefault());
 		initExpertMode();
 		initCertificateNames();
 		initKeyAlgOptions();
 		initGeneratorOptions();
+		this.defaultPresetParam.initialize(getCurrentPreset());
 		return this;
 	}
 
@@ -619,7 +627,7 @@ public class CertOptionsController extends StageController {
 		if (generator != null && generator.hasFeature(CertGenerator.Feature.CUSTOM_VALIDITY)) {
 			UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
 			LocalDate notBeforeValue = LocalDate.now();
-			LocalDate notAfterValue = notBeforeValue.plus(storePreferences.defaultCRTValidityPeriod.get(),
+			LocalDate notAfterValue = notBeforeValue.plus(storePreferences.defaultCRTValidityPeriod.getInt(0),
 					ChronoUnit.DAYS);
 
 			this.ctlNotBeforeInput.setValue(notBeforeValue);
@@ -664,8 +672,44 @@ public class CertOptionsController extends StageController {
 		}
 	}
 
-	private void applyPreset(CertOptionsPreset preset) {
+	private CertOptionsPreset getCurrentPreset() {
+		String aliasInput = Strings.safe(this.ctlAliasInput.getText());
+		String dnInput = Strings.safe(this.ctlDNInput.getText());
+		CertOptionsPreset preset = new CertOptionsPreset(aliasInput, dnInput);
 
+		preset.setKeyAlg(this.ctlKeyAlgOption.getValue());
+		preset.setKeySize(this.ctlKeySizeOption.getValue());
+		for (ExtensionDataModel extensionData : this.ctlExtensionData.getItems()) {
+			preset.addExtension(extensionData.getExtensionData());
+		}
+		return preset;
+	}
+
+	private void applyPreset(CertOptionsPreset preset) {
+		this.ctlAliasInput.setText(preset.aliasInput());
+		this.ctlDNInput.setText(preset.dnInput());
+		this.ctlKeyAlgOption.setValue(preset.getKeyAlg());
+		this.ctlKeySizeOption.setValue(preset.getKeySize());
+		this.basicConstraintsExtension.set(null);
+		this.keyUsageExtension.set(null);
+		this.extendedKeyUsageExtension.set(null);
+		this.subjectAlternativeExtension.set(null);
+		this.crlDistributionPointsExtension.set(null);
+		this.ctlExtensionData.getItems().clear();
+		for (X509ExtensionData extensionData : preset.getExtensions()) {
+			if (extensionData instanceof BasicConstraintsExtensionData) {
+				this.basicConstraintsExtension.set((BasicConstraintsExtensionData) extensionData);
+			} else if (extensionData instanceof KeyUsageExtensionData) {
+				this.keyUsageExtension.set((KeyUsageExtensionData) extensionData);
+			} else if (extensionData instanceof ExtendedKeyUsageExtensionData) {
+				this.extendedKeyUsageExtension.set((ExtendedKeyUsageExtensionData) extensionData);
+			} else if (extensionData instanceof SubjectAlternativeNameExtensionData) {
+				this.subjectAlternativeExtension.set((SubjectAlternativeNameExtensionData) extensionData);
+			} else if (extensionData instanceof CRLDistributionPointsExtensionData) {
+				this.crlDistributionPointsExtension.set((CRLDistributionPointsExtensionData) extensionData);
+			}
+			this.ctlExtensionData.getItems().add(new ExtensionDataModel(extensionData));
+		}
 	}
 
 	private GenerateCertRequest validateAndGetGenerateRequest(CertGenerator generator) throws ValidationException {
@@ -776,6 +820,7 @@ public class CertOptionsController extends StageController {
 		}
 
 		@Override
+		@Nullable
 		protected Void call() throws Exception {
 			generateEntry(this.generator, this.generateRequest, this.alias);
 			return null;

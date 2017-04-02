@@ -17,6 +17,10 @@
 package de.carne.certmgr.certs.x509;
 
 import java.math.BigInteger;
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -25,7 +29,6 @@ import java.util.List;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.check.Nullable;
-import de.carne.jfx.util.ShortDate;
 
 /**
  * This class provides a generic way to access the content/attributes of all kind of X.509 certificate objects.
@@ -33,14 +36,42 @@ import de.carne.jfx.util.ShortDate;
 public class Attributes {
 
 	/**
+	 * Format for date display.
+	 */
+	public static final Format DATE_FORMAT = new SimpleDateFormat();
+
+	/**
+	 * Format for serial display.
+	 */
+	public static final Format SERIAL_FORMAT = new Format() {
+
+		private static final long serialVersionUID = -1294811585729848737L;
+
+		@Override
+		public StringBuffer format(@Nullable Object obj, @Nullable StringBuffer toAppendTo,
+				@Nullable FieldPosition pos) {
+
+			// TODO Auto-generated method stub
+			return toAppendTo;
+		}
+
+		@Override
+		@Nullable
+		public Object parseObject(@Nullable String source, @Nullable ParsePosition pos) {
+			return null;
+		}
+
+	};
+
+	/**
 	 * Length limit for short formats.
 	 */
-	public static int FORMAT_LIMIT_SHORT = 16;
+	public static final int FORMAT_LIMIT_SHORT = 16;
 
 	/**
 	 * Length limit for long formats.
 	 */
-	public static int FORMAT_LIMIT_LONG = 256;
+	public static final int FORMAT_LIMIT_LONG = 256;
 
 	private final String name;
 
@@ -122,7 +153,7 @@ public class Attributes {
 	}
 
 	static String printShortDate(Date date) {
-		return ShortDate.FORMAT.format(date);
+		return DATE_FORMAT.format(date);
 	}
 
 	static String printSerial(BigInteger serial) {

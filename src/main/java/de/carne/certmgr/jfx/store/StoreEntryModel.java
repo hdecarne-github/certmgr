@@ -22,8 +22,11 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
+import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.jfx.util.UserCertStoreEntryModel;
-import de.carne.jfx.util.ShortDate;
+import de.carne.check.Nullable;
+import de.carne.jfx.util.FormattedBigInteger;
+import de.carne.jfx.util.FormattedDate;
 import de.carne.util.Exceptions;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -57,8 +60,10 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 				Exceptions.warn(e);
 			}
 		}
-		this.expiresProperty = new SimpleObjectProperty<>(expires != null ? new ShortDate(expires.getTime()) : null);
-		this.serialProperty = new SimpleObjectProperty<>(serial);
+		this.expiresProperty = new SimpleObjectProperty<>(
+				expires != null ? FormattedDate.fromDate(Attributes.DATE_FORMAT, expires) : null);
+		this.serialProperty = new SimpleObjectProperty<>(
+				serial != null ? FormattedBigInteger.fromBigInteger(Attributes.SERIAL_FORMAT, serial) : null);
 	}
 
 	/**
@@ -66,6 +71,7 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 *
 	 * @return The Expires value.
 	 */
+	@Nullable
 	public final Date getExpires() {
 		return this.expiresProperty.getValue();
 	}
@@ -75,8 +81,8 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 *
 	 * @param expires The Expires value to set.
 	 */
-	public final void setExpired(Date expires) {
-		this.expiresProperty.setValue(expires != null ? new ShortDate(expires.getTime()) : null);
+	public final void setExpired(@Nullable Date expires) {
+		this.expiresProperty.setValue(expires != null ? FormattedDate.fromDate(Attributes.DATE_FORMAT, expires) : null);
 	}
 
 	/**
@@ -93,6 +99,7 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 *
 	 * @return The Serial value.
 	 */
+	@Nullable
 	public BigInteger getSerial() {
 		return this.serialProperty.get();
 	}
@@ -102,13 +109,14 @@ public class StoreEntryModel extends UserCertStoreEntryModel {
 	 *
 	 * @param serial The Serial value to set.
 	 */
-	public void setSerial(BigInteger serial) {
-		this.serialProperty.set(serial);
+	public void setSerial(@Nullable BigInteger serial) {
+		this.serialProperty
+				.set(serial != null ? FormattedBigInteger.fromBigInteger(Attributes.SERIAL_FORMAT, serial) : null);
 	}
 
 	/**
 	 * Get the Serial property.
-	 * 
+	 *
 	 * @return The Serial property.
 	 */
 	public ObjectProperty<BigInteger> serialProperty() {
