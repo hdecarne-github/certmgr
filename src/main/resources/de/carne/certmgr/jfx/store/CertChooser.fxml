@@ -10,7 +10,7 @@
    <content>
       <AnchorPane prefHeight="400.0" prefWidth="800.0">
          <children>
-            <TreeTableView fx:id="ctlStoreEntryView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TreeTableView fx:id="ctlStoreEntryView" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columns>
                 <TreeTableColumn fx:id="ctlStoreEntryViewId" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_ID" />
                 <TreeTableColumn fx:id="ctlStoreEntryViewName" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_NAME" />

@@ -245,7 +245,8 @@ public class CertOptionsController extends StageController {
 	@FXML
 	void onCmdApplyStorePreset(ActionEvent evt) {
 		try {
-			CertChooserController certChooser = CertChooserDialog.load(this).init(this.storeParam.get());
+			CertChooserController certChooser = CertChooserDialog.load(this).init(this.storeParam.get(),
+					(entry) -> entry.hasCRT() || entry.hasCSR());
 
 			certChooser.showAndWait();
 		} catch (Exception e) {
@@ -541,15 +542,15 @@ public class CertOptionsController extends StageController {
 	 * @return This controller.
 	 */
 	public CertOptionsController init(UserCertStore store, UserCertStoreEntry issuerEntry, boolean expertMode) {
-		this.storeParam.initialize(store);
-		this.storePreferencesParam.initialize(Check.nonNull(store.storePreferences()));
-		this.storeEntryParam.initialize(issuerEntry);
+		this.storeParam.init(store);
+		this.storePreferencesParam.init(Check.nonNull(store.storePreferences()));
+		this.storeEntryParam.init(issuerEntry);
 		this.expertModeParam = expertMode;
 		initExpertMode();
 		initCertificateNames();
 		initKeyAlgOptions();
 		initGeneratorOptions();
-		this.defaultPresetParam.initialize(getCurrentPreset());
+		this.defaultPresetParam.init(getCurrentPreset());
 		return this;
 	}
 

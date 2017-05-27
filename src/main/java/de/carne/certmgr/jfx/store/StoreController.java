@@ -58,6 +58,7 @@ import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
 import de.carne.text.MemUnitFormat;
 import de.carne.util.Exceptions;
+import de.carne.util.Lazy;
 import de.carne.util.prefs.PathPreference;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -93,7 +94,8 @@ public class StoreController extends StageController {
 
 	private final UserPreferences userPreferences = new UserPreferences();
 
-	private UserCertStoreTreeTableViewHelper<StoreEntryModel> storeEntryViewHelper = null;
+	private final Lazy<UserCertStoreTreeTableViewHelper<StoreEntryModel>> storeEntryViewHelper = new Lazy<>(
+			() -> new UserCertStoreTreeTableViewHelper<>(this.ctlStoreEntryView, (e) -> new StoreEntryModel(e)));
 
 	private ObjectProperty<UserCertStore> storeProperty = new SimpleObjectProperty<>(null);
 
@@ -516,11 +518,7 @@ public class StoreController extends StageController {
 	}
 
 	private void updateStoreEntryView() {
-		if (this.storeEntryViewHelper == null) {
-			this.storeEntryViewHelper = new UserCertStoreTreeTableViewHelper<>(this.ctlStoreEntryView,
-					(e) -> new StoreEntryModel(e));
-		}
-		this.storeEntryViewHelper.update(this.storeProperty.get());
+		this.storeEntryViewHelper.get().update(this.storeProperty.get());
 	}
 
 	private void updateDetailsView(TreeItem<StoreEntryModel> selection) {

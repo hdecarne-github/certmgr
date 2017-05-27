@@ -28,6 +28,7 @@ import java.util.List;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.check.Check;
 import de.carne.check.Nullable;
 
 /**
@@ -50,15 +51,20 @@ public class Attributes {
 		@Override
 		public StringBuffer format(@Nullable Object obj, @Nullable StringBuffer toAppendTo,
 				@Nullable FieldPosition pos) {
+			StringBuffer formatBuffer = Check.nonNull(toAppendTo);
 
-			// TODO Auto-generated method stub
-			return toAppendTo;
+			formatBuffer.append("0x");
+
+			BigInteger serial = (BigInteger) Check.nonNull(obj);
+
+			formatBuffer.append(serial.toString(16).toUpperCase());
+			return formatBuffer;
 		}
 
 		@Override
 		@Nullable
 		public Object parseObject(@Nullable String source, @Nullable ParsePosition pos) {
-			return null;
+			return Check.fail();
 		}
 
 	};

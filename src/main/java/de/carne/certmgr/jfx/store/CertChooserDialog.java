@@ -18,17 +18,18 @@ package de.carne.certmgr.jfx.store;
 
 import java.io.IOException;
 
-import de.carne.certmgr.certs.UserCertStore;
+import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.jfx.stage.StageController;
 import javafx.scene.control.Dialog;
 
 /**
  * Choose certificate dialog.
  */
-public class CertChooserDialog extends Dialog<UserCertStore> {
+public class CertChooserDialog extends Dialog<UserCertStoreEntry> {
 
 	private CertChooserDialog(CertChooserController controller) {
 		setResultConverter(controller);
+		setResizable(true);
 	}
 
 	/**

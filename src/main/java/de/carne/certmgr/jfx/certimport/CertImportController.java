@@ -368,7 +368,7 @@ public class CertImportController extends StageController {
 	 * @return This controller.
 	 */
 	public CertImportController init(UserCertStore importStore) {
-		this.importStoreParam.initialize(importStore);
+		this.importStoreParam.init(importStore);
 		return this;
 	}
 
