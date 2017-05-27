@@ -1,1 +1,4 @@
 rootProject.name = 'de.carne.certmgr'
+
+includeBuild '../java-default'
+includeBuild '../java-jfx'
