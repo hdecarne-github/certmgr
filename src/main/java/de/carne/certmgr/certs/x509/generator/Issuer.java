@@ -19,12 +19,15 @@ package de.carne.certmgr.certs.x509.generator;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 
 /**
  * This class represents an available issuer for certificate signing.
  */
 public abstract class Issuer implements Comparable<Issuer> {
 
+	@Nullable
 	private final UserCertStoreEntry storeEntry;
 
 	private final String name;
@@ -65,27 +68,30 @@ public abstract class Issuer implements Comparable<Issuer> {
 	 * @return The {@link UserCertStoreEntry} represented by this issuer, or {@code null} if this issuer does not
 	 *         represent an actual store entry.
 	 */
+	@Nullable
 	public UserCertStoreEntry storeEntry() {
 		return this.storeEntry;
 	}
 
 	@Override
-	public int compareTo(Issuer o) {
-		if (!generator().equals(o.generator())) {
+	public int compareTo(@Nullable Issuer o) {
+		Issuer checkedO = Check.nonNull(o);
+
+		if (!generator().equals(checkedO.generator())) {
 			throw new IllegalArgumentException();
 		}
 
 		int comparison;
 
 		if (this.storeEntry != null) {
-			if (o.storeEntry != null) {
-				comparison = this.name.compareTo(o.name);
+			if (checkedO.storeEntry != null) {
+				comparison = this.name.compareTo(checkedO.name);
 			} else {
 				comparison = 1;
 			}
 		} else {
-			if (o.storeEntry == null) {
-				comparison = this.name.compareTo(o.name);
+			if (checkedO.storeEntry == null) {
+				comparison = this.name.compareTo(checkedO.name);
 			} else {
 				comparison = -1;
 			}
@@ -99,7 +105,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		boolean equal = false;
 
 		if (this == obj) {

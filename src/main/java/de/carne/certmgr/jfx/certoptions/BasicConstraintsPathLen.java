@@ -19,6 +19,8 @@ package de.carne.certmgr.jfx.certoptions;
 import java.math.BigInteger;
 import java.util.Objects;
 
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 import de.carne.util.Strings;
 import javafx.util.StringConverter;
@@ -55,6 +57,7 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 
 	};
 
+	@Nullable
 	private final BigInteger pathLenConstraint;
 
 	private BasicConstraintsPathLen(BigInteger pathLenConstraint) {
@@ -74,13 +77,15 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 	}
 
 	@Override
-	public int compareTo(BasicConstraintsPathLen o) {
+	public int compareTo(@Nullable BasicConstraintsPathLen o) {
+		BasicConstraintsPathLen checkedO = Check.nonNull(o);
 		int comparision;
 
 		if (this.pathLenConstraint == null) {
-			comparision = (o.pathLenConstraint == null ? 0 : 1);
+			comparision = (checkedO.pathLenConstraint == null ? 0 : 1);
 		} else {
-			comparision = (o.pathLenConstraint != null ? this.pathLenConstraint.compareTo(o.pathLenConstraint) : -1);
+			comparision = (checkedO.pathLenConstraint != null
+					? this.pathLenConstraint.compareTo(checkedO.pathLenConstraint) : -1);
 		}
 		return comparision;
 	}

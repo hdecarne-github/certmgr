@@ -23,6 +23,8 @@ import java.util.List;
 import de.carne.ApplicationShutdownTask;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.store.StoreController;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.logview.LogViewImages;
 import de.carne.util.cmdline.CmdLine;
@@ -50,7 +52,7 @@ public class CertMgrApplication extends Application {
 	}
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(@Nullable Stage primaryStage) throws Exception {
 		// Evaluate command line as soon as possible to apply logging options as
 		// soon as possible
 		File defaultStoreHome = evalCmdLine();
@@ -64,7 +66,7 @@ public class CertMgrApplication extends Application {
 		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_ERROR, Images.ERROR16);
 		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_NOTICE, Images.NOTICE16);
 
-		StoreController store = StageController.loadPrimaryStage(primaryStage, StoreController.class);
+		StoreController store = StageController.loadPrimaryStage(Check.nonNull(primaryStage), StoreController.class);
 
 		store.show();
 		if (defaultStoreHome != null) {
@@ -78,6 +80,7 @@ public class CertMgrApplication extends Application {
 		ApplicationShutdownTask.trigger();
 	}
 
+	@Nullable
 	private File evalCmdLine() {
 		CmdLine cmdLine = new CmdLine(getParameters().getRaw());
 		List<String> defaultArgs = new ArrayList<>();

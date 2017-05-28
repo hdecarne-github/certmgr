@@ -24,6 +24,7 @@ import java.util.Set;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
+import de.carne.check.Nullable;
 
 /**
  * Abstract base class for {@link CertGenerator} implementations which provides the commonly used generation functions.
@@ -71,7 +72,7 @@ abstract class AbstractCertGenerator implements CertGenerator {
 		return maxSerial;
 	}
 
-	protected static <T> T requiredParameter(T parameter, String name) throws IllegalArgumentException {
+	protected static <T> T requiredParameter(@Nullable T parameter, String name) throws IllegalArgumentException {
 		if (parameter == null) {
 			throw new IllegalArgumentException("Required parameter " + name + " is not set");
 		}

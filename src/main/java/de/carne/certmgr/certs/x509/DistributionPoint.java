@@ -26,15 +26,20 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERTaggedObject;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 
 /**
  * Distribution point object.
  */
 public class DistributionPoint extends ASN1Data implements AttributesContent {
 
+	@Nullable
 	private final DistributionPointName name;
+	@Nullable
 	private final GeneralNames crlIssuer;
-	private ReasonFlags reasons = null;
+	@Nullable
+	private ReasonFlags reasons;
 
 	/**
 	 * Construct {@code DistributionPoint}.
@@ -42,7 +47,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @param name The distribution point's name data.
 	 */
 	public DistributionPoint(DistributionPointName name) {
-		this(name, null);
+		this(name, null, null);
 	}
 
 	/**
@@ -51,12 +56,14 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @param crlIssuer The distribution point's CRL issuer.
 	 */
 	public DistributionPoint(GeneralNames crlIssuer) {
-		this(null, crlIssuer);
+		this(null, crlIssuer, null);
 	}
 
-	private DistributionPoint(DistributionPointName name, GeneralNames crlIssuer) {
+	private DistributionPoint(@Nullable DistributionPointName name, @Nullable GeneralNames crlIssuer,
+			@Nullable ReasonFlags reasons) {
 		this.name = name;
 		this.crlIssuer = crlIssuer;
+		this.reasons = reasons;
 	}
 
 	/**
@@ -90,11 +97,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 				throw new IOException("Unsupported tag: " + taggedObjectTag);
 			}
 		}
-
-		DistributionPoint distributionPoint = new DistributionPoint(name, crlIssuer);
-
-		distributionPoint.setReasons(reasons);
-		return distributionPoint;
+		return new DistributionPoint(name, crlIssuer, reasons);
 	}
 
 	/**
@@ -102,6 +105,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 *
 	 * @return The defined distribution point name object or {@code null} if none has been defined.
 	 */
+	@Nullable
 	public DistributionPointName getName() {
 		return this.name;
 	}
@@ -111,6 +115,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 *
 	 * @return The defined CRL issuer's names or {@code null} if none have been defined.
 	 */
+	@Nullable
 	public GeneralNames getCRLIssuer() {
 		return this.crlIssuer;
 	}
@@ -131,6 +136,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @return The reasons this distribution point is authoritative for or {@code null} if this distribution point is
 	 *         used for all reasons.
 	 */
+	@Nullable
 	public ReasonFlags getReasons() {
 		return this.reasons;
 	}
@@ -157,10 +163,10 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 			attributes.add(this.name);
 		}
 		if (this.reasons != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_REASONS()).add(this.reasons);
+			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_REASONS()).add(Check.nonNull(this.reasons));
 		}
 		if (this.crlIssuer != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_CRLISSUER()).add(this.crlIssuer);
+			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_CRLISSUER()).add(Check.nonNull(this.crlIssuer));
 		}
 	}
 

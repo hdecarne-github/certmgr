@@ -21,18 +21,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.security.auth.x500.X500Principal;
-
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERSequence;
 
+import de.carne.check.Check;
 import de.carne.util.Strings;
 
 /**
- * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.13">CRL
- * Distribution Points Extension</a> data.
+ * X.509 <a href="https://tools.ietf.org/html/rfc5280#section-4.2.1.13">CRL Distribution Points Extension</a> data.
  */
 public class CRLDistributionPointsExtensionData extends X509ExtensionData implements Iterable<DistributionPoint> {
 
@@ -58,8 +56,7 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 	}
 
 	/**
-	 * Decode {@code CRLDistributionPointsExtensionData} from an ASN.1 data
-	 * object.
+	 * Decode {@code CRLDistributionPointsExtensionData} from an ASN.1 data object.
 	 *
 	 * @param primitive The ASN.1 data object to decode.
 	 * @param critical The extension's critical flag.
@@ -113,12 +110,11 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 
 		if (name != null) {
 			GeneralNames fullName = name.getFullName();
-			X500Principal relativeName = name.getRelativeName();
 
 			if (fullName != null) {
 				valueString = Strings.join(fullName, ", ", Attributes.FORMAT_LIMIT_LONG);
 			} else {
-				valueString = relativeName.toString();
+				valueString = Check.nonNull(name.getRelativeName()).toString();
 			}
 		}
 		if (crlIssuer != null) {

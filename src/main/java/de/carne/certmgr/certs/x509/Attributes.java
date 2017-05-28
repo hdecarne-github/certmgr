@@ -138,7 +138,7 @@ public class Attributes {
 	/**
 	 * Get this attribute's children.
 	 *
-	 * @return This attribute's children, or {@code null} if there are no children.
+	 * @return This attribute's children; an empty list if there are no children.
 	 */
 	public List<Attributes> children() {
 		return Collections.unmodifiableList(this.children);

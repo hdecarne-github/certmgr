@@ -27,13 +27,17 @@ import org.bouncycastle.asn1.DERTaggedObject;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 
 /**
  * Distribution point name object.
  */
 public class DistributionPointName extends ASN1Data implements AttributesContent {
 
+	@Nullable
 	private final GeneralNames fullName;
+	@Nullable
 	private final X500Principal nameRelativeToCRLIssuer;
 
 	/**
@@ -54,7 +58,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 		this(null, nameRelativeToCRLIssuer);
 	}
 
-	private DistributionPointName(GeneralNames fullName, X500Principal nameRelativeToCRLIssuer) {
+	private DistributionPointName(@Nullable GeneralNames fullName, @Nullable X500Principal nameRelativeToCRLIssuer) {
 		this.fullName = fullName;
 		this.nameRelativeToCRLIssuer = nameRelativeToCRLIssuer;
 	}
@@ -90,6 +94,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	 *
 	 * @return The full name or {@code null} if the relative name is set.
 	 */
+	@Nullable
 	public GeneralNames getFullName() {
 		return this.fullName;
 	}
@@ -99,6 +104,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 	 *
 	 * @return The relative name or {@code null} if the full name is set.
 	 */
+	@Nullable
 	public X500Principal getRelativeName() {
 		return this.nameRelativeToCRLIssuer;
 	}
@@ -111,7 +117,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 			encoded = new DERTaggedObject(false, 0, this.fullName.encode());
 		} else {
 			encoded = new DERTaggedObject(false, 1,
-					ASN1Primitive.fromByteArray(this.nameRelativeToCRLIssuer.getEncoded()));
+					ASN1Primitive.fromByteArray(Check.nonNull(this.nameRelativeToCRLIssuer).getEncoded()));
 		}
 		return encoded;
 	}
@@ -123,7 +129,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 		}
 		if (this.nameRelativeToCRLIssuer != null) {
 			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINTNAME_NAMERELATIVETOCRLISSUER(),
-					X500Names.toString(this.nameRelativeToCRLIssuer));
+					X500Names.toString(Check.nonNull(this.nameRelativeToCRLIssuer)));
 		}
 	}
 

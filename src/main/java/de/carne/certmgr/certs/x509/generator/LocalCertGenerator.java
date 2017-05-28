@@ -34,6 +34,7 @@ import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
+import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 import de.carne.util.Exceptions;
@@ -98,7 +99,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
 			} else {
 				try {
-					keyPairAlgorithmName = issuer.storeEntry().getPublicKey().getAlgorithm();
+					keyPairAlgorithmName = Check.nonNull(issuer.storeEntry()).getPublicKey().getAlgorithm();
 				} catch (IOException e) {
 					Exceptions.warn(e);
 				}
@@ -112,23 +113,20 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 
 	@Override
 	public CertObjectStore generateCert(GenerateCertRequest request, PasswordCallback password) throws IOException {
+		KeyPair key = KeyHelper.generateKey(request.keyPairAlgorithm(), request.keySize());
 		Issuer issuer = requiredParameter(request.getIssuer(), "Issuer");
 		BigInteger serial = BigInteger.ONE;
 		X500Principal issuerDN = null;
 		KeyPair issuerKey = null;
+		X500Principal dn = request.dn();
 
 		if (!this.selfSignedIssuer.equals(issuer)) {
-			UserCertStoreEntry issuerEntry = issuer.storeEntry();
+			UserCertStoreEntry issuerEntry = Check.nonNull(issuer.storeEntry());
 
 			serial = getNextSerial(issuerEntry);
 			issuerDN = issuerEntry.dn();
 			issuerKey = issuerEntry.getKey(password);
-		}
-
-		X500Principal dn = request.dn();
-		KeyPair key = KeyHelper.generateKey(request.keyPairAlgorithm(), request.keySize());
-
-		if (issuerKey == null) {
+		} else {
 			issuerKey = key;
 			issuerDN = dn;
 		}

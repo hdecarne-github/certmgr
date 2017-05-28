@@ -28,6 +28,7 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
+import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 
 /**
@@ -58,13 +59,13 @@ public class RemoteCertGenerator extends AbstractCertGenerator {
 	}
 
 	@Override
-	public DefaultSet<Issuer> getIssuers(UserCertStore store, UserCertStoreEntry defaultHint) {
+	public DefaultSet<Issuer> getIssuers(UserCertStore store, @Nullable UserCertStoreEntry defaultHint) {
 		return new DefaultSet<>();
 	}
 
 	@Override
-	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(Issuer issuer, KeyPairAlgorithm keyPairAlgorithm,
-			String defaultHint, boolean expertMode) {
+	public DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(@Nullable Issuer issuer,
+			@Nullable KeyPairAlgorithm keyPairAlgorithm, @Nullable String defaultHint, boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 
 		if (keyPairAlgorithm != null) {

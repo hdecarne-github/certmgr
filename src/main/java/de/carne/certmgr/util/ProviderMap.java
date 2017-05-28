@@ -23,6 +23,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import de.carne.certmgr.certs.spi.NamedProvider;
+import de.carne.check.Nullable;
 import de.carne.util.logging.Log;
 
 /**
@@ -84,6 +85,7 @@ public class ProviderMap<P extends NamedProvider> {
 	 * @param name The name to look up the service provider for.
 	 * @return The found service provider, or {@code null} if no service provider is known for the given name.
 	 */
+	@Nullable
 	public P get(String name) {
 		return this.providerMap.get(name);
 	}

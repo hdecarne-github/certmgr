@@ -22,6 +22,7 @@ import java.util.Date;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.ReasonFlag;
+import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.jfx.util.FormattedBigInteger;
 import de.carne.jfx.util.FormattedDate;
@@ -201,11 +202,12 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 	}
 
 	@Override
-	public int compareTo(CRLEntryModel o) {
-		int comparison = this.nameProperty.get().compareTo(o.nameProperty.get());
+	public int compareTo(@Nullable CRLEntryModel o) {
+		CRLEntryModel checkedO = Check.nonNull(o);
+		int comparison = this.nameProperty.get().compareTo(checkedO.nameProperty.get());
 
 		if (comparison == 0) {
-			comparison = this.serialProperty.get().compareTo(o.serialProperty.get());
+			comparison = this.serialProperty.get().compareTo(checkedO.serialProperty.get());
 		}
 		return comparison;
 	}

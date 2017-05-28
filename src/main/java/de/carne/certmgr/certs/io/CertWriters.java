@@ -18,6 +18,7 @@ package de.carne.certmgr.certs.io;
 
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.util.ProviderMap;
+import de.carne.check.Check;
 
 /**
  * Utility class providing {@link CertWriter} related functions.
@@ -36,6 +37,6 @@ public final class CertWriters {
 	/**
 	 * The default {@link CertWriter}.
 	 */
-	public static final CertWriter DEFAULT = REGISTERED.get(PEMCertReaderWriter.PROVIDER_NAME);
+	public static final CertWriter DEFAULT = Check.nonNull(REGISTERED.get(PEMCertReaderWriter.PROVIDER_NAME));
 
 }
