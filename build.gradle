@@ -10,7 +10,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("de.carne:gradleplugins:0.4.0")
+		classpath("de.carne:java-gradleplugins:0.4.0")
 	}
 }
 
@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-	compile('de.carne:java-jfx:3-SNAPSHOT')
+	compile('de.carne:java-jfx:3')
 	compile('org.bouncycastle:bcpkix-jdk15on:1.56')
 
 	testCompile('junit:junit:4.12')
