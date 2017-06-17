@@ -26,7 +26,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.CertOptionsController">
    <children>
       <GridPane fx:id="ctlControlPane" hgap="4.0" minHeight="400.0" minWidth="750.0" vgap="4.0">
         <columnConstraints>
@@ -136,15 +136,15 @@
                   <MenuButton mnemonicParsing="false" popupSide="TOP" text="%_STR_MENU_PRESETS">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#onCmdApplyDefaultPreset" text="%_STR_MENU_PRESETS_DEFAULT" />
-                      <MenuItem mnemonicParsing="false" onAction="#onCmdApplyStorePreset" text="%_STR_MENU_PRESETS_STORE" />
-                        <Menu fx:id="ctlPresetTemplatesMenu" mnemonicParsing="false" text="%_STR_MENU_PRESETS_TEMPLATE" />
+                        <Menu fx:id="ctlStorePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESETS_STORE" />
+                        <Menu fx:id="ctlTemplatePresetsMenu" mnemonicParsing="false" text="%_STR_MENU_PRESETS_TEMPLATE" />
                         <SeparatorMenuItem mnemonicParsing="false" />
-                        <MenuItem mnemonicParsing="false" onAction="#onCmdMangePresetTemplates" text="%_STR_MENU_PRESETS_MANAGE_TEMPLATES" />
+                        <MenuItem mnemonicParsing="false" onAction="#onCmdManagePresetTemplates" text="%_STR_MENU_PRESETS_MANAGE_TEMPLATES" />
                     </items>
                   </MenuButton>
                   <Pane HBox.hgrow="ALWAYS" />
                   <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdGenerate" text="%_STR_BUTTON_GENERATE" />
-                  <Button layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />
+                  <Button cancelButton="true" layoutX="554.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCancel" text="%_STR_BUTTON_CANCEL" />
                </children>
             </HBox>
          </children>

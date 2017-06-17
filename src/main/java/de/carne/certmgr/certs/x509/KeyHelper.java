@@ -26,6 +26,7 @@ import java.security.interfaces.RSAPublicKey;
 
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.check.Nullable;
 import de.carne.util.logging.Log;
 
 /**
@@ -38,6 +39,39 @@ public final class KeyHelper {
 	}
 
 	private static Log LOG = new Log();
+
+	/**
+	 * Get the public key's algorithm.
+	 *
+	 * @param publicKey The public key to get the algorithm for.
+	 * @return The public key's algorith or {@code null} if the key size is indeterminable.
+	 */
+	@Nullable
+	public static KeyPairAlgorithm getKeyAlg(PublicKey publicKey) {
+		return KeyPairAlgorithm.getDefaultSet(publicKey.getAlgorithm(), false).getDefault();
+	}
+
+	/**
+	 * Get the public key's key size.
+	 *
+	 * @param publicKey The public key to get the key size for.
+	 * @return The public key's key size or {@code null} if the key size is indeterminable.
+	 */
+	@Nullable
+	public static Integer getKeySize(PublicKey publicKey) {
+		Integer keySize = null;
+
+		if (publicKey instanceof RSAPublicKey) {
+			RSAPublicKey rsaPublicKey = (RSAPublicKey) publicKey;
+
+			keySize = rsaPublicKey.getModulus().bitLength();
+		} else if (publicKey instanceof ECPublicKey) {
+			ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
+
+			keySize = ecPublicKey.getParams().getCurve().getField().getFieldSize();
+		}
+		return keySize;
+	}
 
 	/**
 	 * Get the public key's string representation.

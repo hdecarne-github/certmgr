@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import javax.naming.InvalidNameException;
@@ -53,8 +54,6 @@ import de.carne.certmgr.jfx.dneditor.DNEditorController;
 import de.carne.certmgr.jfx.dneditor.DNEditorDialog;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.certmgr.jfx.store.CertChooserController;
-import de.carne.certmgr.jfx.store.CertChooserDialog;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
@@ -73,7 +72,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -138,7 +139,11 @@ public class CertOptionsController extends StageController {
 
 	@SuppressWarnings("null")
 	@FXML
-	Menu ctlPresetTemplatesMenu;
+	Menu ctlStoreTemplatesMenu;
+
+	@SuppressWarnings("null")
+	@FXML
+	Menu ctlTemplatePresetsMenu;
 
 	@SuppressWarnings("null")
 	@FXML
@@ -241,17 +246,13 @@ public class CertOptionsController extends StageController {
 		applyPreset(this.defaultPresetParam.get());
 	}
 
-	@SuppressWarnings("unused")
 	@FXML
 	void onCmdApplyStorePreset(ActionEvent evt) {
-		try {
-			CertChooserController certChooser = CertChooserDialog.load(this).init(this.storeParam.get(),
-					(entry) -> entry.hasCRT() || entry.hasCSR());
+		String aliasInput = Strings.safe(this.ctlAliasInput.getText());
+		UserCertStoreEntry storeEntry = (UserCertStoreEntry) ((MenuItem) evt.getSource()).getUserData();
+		CertOptionsPreset preset = new CertOptionsPreset(aliasInput, storeEntry);
 
-			certChooser.showAndWait();
-		} catch (Exception e) {
-			Alerts.unexpected(e).showAndWait();
-		}
+		applyPreset(preset);
 	}
 
 	@SuppressWarnings("unused")
@@ -262,7 +263,7 @@ public class CertOptionsController extends StageController {
 
 	@SuppressWarnings("unused")
 	@FXML
-	void onCmdMangePresetTemplates(ActionEvent evt) {
+	void onCmdManagePresetTemplates(ActionEvent evt) {
 
 	}
 
@@ -408,6 +409,9 @@ public class CertOptionsController extends StageController {
 				onCmdEditSubjectAlternativeName(evt);
 			} else if (extensionData instanceof CRLDistributionPointsExtensionData) {
 				onCmdEditCRLDistributionPoints(evt);
+			} else {
+				Alerts.message(AlertType.INFORMATION, CertOptionsI18N.formatSTR_MESSAGE_CANNOT_EDIT_EXTENSION(),
+						ButtonType.OK).showAndWait();
 			}
 		}
 	}
@@ -551,6 +555,8 @@ public class CertOptionsController extends StageController {
 		initKeyAlgOptions();
 		initGeneratorOptions();
 		this.defaultPresetParam.init(getCurrentPreset());
+		resetStorePresetsMenu();
+		resetTemplatePresetsMenu();
 		return this;
 	}
 
@@ -581,6 +587,49 @@ public class CertOptionsController extends StageController {
 		generatorOptions.addAll(CertGenerators.REGISTERED.providers());
 		generatorOptions.sort((o1, o2) -> o1.toString().compareTo(o2.toString()));
 		this.ctlGeneratorOption.setValue(CertGenerators.DEFAULT);
+	}
+
+	private void resetStorePresetsMenu() {
+		ObservableList<MenuItem> menuItems = this.ctlStorePresetsMenu.getItems();
+
+		menuItems.clear();
+		resetStorePresetMenuHelper(menuItems, this.storeParam.get().getRootEntries(), "");
+		if (menuItems.isEmpty()) {
+			MenuItem noneMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_PRESETS_NONE());
+
+			noneMenuItem.setDisable(true);
+			menuItems.add(noneMenuItem);
+		}
+	}
+
+	private void resetStorePresetMenuHelper(ObservableList<MenuItem> menuItems, Set<UserCertStoreEntry> storeEntries,
+			String indent) {
+		for (UserCertStoreEntry storeEntry : storeEntries) {
+			if (storeEntry.hasCRT() || storeEntry.hasCSR()) {
+				MenuItem storeEntryMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_STORE_PRESET(indent,
+						storeEntry.id().getAlias(), X500Names.toString(storeEntry.dn())));
+
+				storeEntryMenuItem.setUserData(storeEntry);
+				storeEntryMenuItem.setOnAction(this::onCmdApplyStorePreset);
+				menuItems.add(storeEntryMenuItem);
+
+				String nextIndent = (Strings.notEmpty(indent) ? "  " + indent : " \u21b3");
+
+				resetStorePresetMenuHelper(menuItems, storeEntry.issuedEntries(), nextIndent);
+			}
+		}
+	}
+
+	private void resetTemplatePresetsMenu() {
+		ObservableList<MenuItem> menuItems = this.ctlTemplatePresetsMenu.getItems();
+
+		menuItems.clear();
+		if (menuItems.isEmpty()) {
+			MenuItem noneMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_PRESETS_NONE());
+
+			noneMenuItem.setDisable(true);
+			menuItems.add(noneMenuItem);
+		}
 	}
 
 	private void resetSigAlgOptions(@Nullable CertGenerator generator) {
