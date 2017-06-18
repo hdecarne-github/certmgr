@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.DialogPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<DialogPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.certoptions.ManageTemplatesController">
+   <content>
+      <AnchorPane prefHeight="250.0" prefWidth="450.0">
+         <children>
+            <GridPane hgap="4.0" vgap="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints vgrow="NEVER" />
+                <RowConstraints vgrow="NEVER" />
+                  <RowConstraints vgrow="ALWAYS" />
+              </rowConstraints>
+               <children>
+                  <Label minHeight="34.0" text="%_STR_LABEL_ADD_CURRENT" wrapText="true" GridPane.columnSpan="2147483647" />
+                  <HBox alignment="CENTER_LEFT" spacing="4.0" GridPane.rowIndex="1">
+                     <children>
+                        <TextField fx:id="ctlTemplateInput" maxWidth="1.7976931348623157E308" onAction="#onAddOrApplyTemplate" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="cmdAddTemplate" mnemonicParsing="false" HBox.hgrow="NEVER">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../resources/imageAdd16.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="cmdApplyTemplate" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../resources/imageApply16.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="cmdDeleteTemplate" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../resources/imageDelete16.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="cmdMoveTemplateUp" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../resources/imageUp16.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="cmdMoveTemplateDown" layoutX="404.0" layoutY="13.0" mnemonicParsing="false" HBox.hgrow="NEVER">
+                           <graphic>
+                              <ImageView pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../resources/imageDown16.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+                  <ListView fx:id="ctlTemplates" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2" />
+               </children>
+            </GridPane>
+         </children>
+      </AnchorPane>
+   </content>
+   <buttonTypes>
+      <ButtonType fx:constant="APPLY" />
+      <ButtonType fx:constant="CANCEL" />
+   </buttonTypes>
+</DialogPane>
