@@ -160,7 +160,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		dialog.setTitle(StorePreferencesI18N.formatSTR_STAGE_TITLE());
 		this.ctlDefKeyAlgOption.valueProperty().addListener((p, o, n) -> onDefKeyAlgChanged(n));
 		this.ctlDefKeySizeOption.setConverter(new IntegerStringConverter());
-		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
+		addButtonEventFilter(ButtonType.APPLY, this::onApply);
 	}
 
 	/**
@@ -257,14 +257,12 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	}
 
 	private Path validateStoreHomeInput() throws ValidationException {
-		String nameInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlNameInput.getText()),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_NAME(a));
-		String pathInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlPathInput.getText()),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_PATH(a));
-		Path path = PathValidator.isDirectoryPath(pathInput,
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_INVALID_PATH(a));
-		Path storeHome = PathValidator.isPath(path, nameInput,
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_INVALID_NAME(a));
+		String nameInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlNameInput.getText()),
+				StorePreferencesI18N::formatSTR_MESSAGE_NO_NAME);
+		String pathInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlPathInput.getText()),
+				StorePreferencesI18N::formatSTR_MESSAGE_NO_PATH);
+		Path path = PathValidator.isDirectoryPath(pathInput, StorePreferencesI18N::formatSTR_MESSAGE_INVALID_PATH);
+		Path storeHome = PathValidator.isPath(path, nameInput, StorePreferencesI18N::formatSTR_MESSAGE_INVALID_NAME);
 
 		InputValidator.isTrue(!Files.exists(storeHome),
 				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_STORE_HOME_EXISTS(storeHome));
@@ -273,27 +271,27 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 
 	private CRTValidityPeriod validateDefCRTValidityInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlDefCRTValidityInput.getValue(),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_DEFCRTVALIDITY(a));
+				StorePreferencesI18N::formatSTR_MESSAGE_NO_DEFCRTVALIDITY);
 	}
 
 	private CRLUpdatePeriod validateDefCRLUpdateInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlDefCRLUpdateInput.getValue(),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_DEFCRLUPDATE(a));
+				StorePreferencesI18N::formatSTR_MESSAGE_NO_DEFCRLUPDATE);
 	}
 
 	private KeyPairAlgorithm validateDefKeyAlgInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlDefKeyAlgOption.getValue(),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_DEFKEYALG(a));
+				StorePreferencesI18N::formatSTR_MESSAGE_NO_DEFKEYALG);
 	}
 
 	private Integer validateDefKeySizeInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlDefKeySizeOption.getValue(),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_DEFKEYSIZE(a));
+				StorePreferencesI18N::formatSTR_MESSAGE_NO_DEFKEYSIZE);
 	}
 
 	private SignatureAlgorithm validateDefSigAlgInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlDefSigAlgOption.getValue(),
-				(a) -> StorePreferencesI18N.formatSTR_MESSAGE_NO_DEFSIGALG(a));
+				StorePreferencesI18N::formatSTR_MESSAGE_NO_DEFSIGALG);
 	}
 
 }

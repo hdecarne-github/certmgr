@@ -44,11 +44,22 @@ public final class KeyHelper {
 	 * Get the public key's algorithm.
 	 *
 	 * @param publicKey The public key to get the algorithm for.
-	 * @return The public key's algorith or {@code null} if the key size is indeterminable.
+	 * @return The public key's algorithm or {@code null} if the key size is indeterminable.
 	 */
 	@Nullable
 	public static KeyPairAlgorithm getKeyAlg(PublicKey publicKey) {
-		return KeyPairAlgorithm.getDefaultSet(publicKey.getAlgorithm(), false).getDefault();
+		return getKeyAlg(publicKey.getAlgorithm());
+	}
+
+	/**
+	 * Get the key pair algorithm for a specific algorithm name.
+	 *
+	 * @param algorithm The algorithm name to get the key pair algorithm for.
+	 * @return The public key's algorithm or {@code null} if the key size is indeterminable.
+	 */
+	@Nullable
+	public static KeyPairAlgorithm getKeyAlg(String algorithm) {
+		return KeyPairAlgorithm.getDefaultSet(algorithm, false).getDefault();
 	}
 
 	/**

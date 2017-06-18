@@ -251,7 +251,7 @@ public class CRLOptionsController extends StageController {
 
 	private Date validateAndGetLastUpdate() throws ValidationException {
 		LocalDate localLastUpdate = InputValidator.notNull(this.ctlLastUpdateInput.getValue(),
-				(a) -> CRLOptionsI18N.formatSTR_MESSAGE_NO_LASTUPDATE(a));
+				CRLOptionsI18N::formatSTR_MESSAGE_NO_LASTUPDATE);
 
 		return Date.from(localLastUpdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
@@ -269,8 +269,7 @@ public class CRLOptionsController extends StageController {
 	}
 
 	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
-		return InputValidator.notNull(this.ctlSigAlgOption.getValue(),
-				(a) -> CRLOptionsI18N.formatSTR_MESSAGE_NO_SIGALG(a));
+		return InputValidator.notNull(this.ctlSigAlgOption.getValue(), CRLOptionsI18N::formatSTR_MESSAGE_NO_SIGALG);
 	}
 
 	void updateCRL(UpdateCRLRequest updateRequest) throws IOException {

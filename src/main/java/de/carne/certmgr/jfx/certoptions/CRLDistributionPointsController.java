@@ -142,7 +142,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 		this.namesEditor.init(this.ctlNames).setAddCommand(this.cmdAddName).setApplyCommand(this.cmdApplyName)
 				.setDeleteCommand(this.cmdDeleteName).setMoveUpCommand(this.cmdMoveNameUp)
 				.setMoveDownCommand(this.cmdMoveNameDown);
-		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
+		addButtonEventFilter(ButtonType.APPLY, this::onApply);
 		this.ctlNameInput.requestFocus();
 	}
 
@@ -200,7 +200,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 			names.addName(name);
 			nameCount++;
 		}
-		InputValidator.isTrue(nameCount > 0, (a) -> CRLDistributionPointsI18N.formatSTR_MESSAGE_NO_NAMES(a));
+		InputValidator.isTrue(nameCount > 0, CRLDistributionPointsI18N::formatSTR_MESSAGE_NO_NAMES);
 		return new DistributionPoint(new DistributionPointName(names));
 	}
 

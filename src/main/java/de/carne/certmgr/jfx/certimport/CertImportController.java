@@ -539,24 +539,23 @@ public class CertImportController extends StageController {
 	}
 
 	private Path validateFileSourceInput() throws ValidationException {
-		String fileSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileSourceInput.getText()),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_FILE(a));
+		String fileSourceInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlFileSourceInput.getText()),
+				CertImportI18N::formatSTR_MESSAGE_NO_FILE);
 
-		return PathValidator.isRegularFilePath(fileSourceInput,
-				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
+		return PathValidator.isRegularFilePath(fileSourceInput, CertImportI18N::formatSTR_MESSAGE_INVALID_FILE);
 	}
 
 	private Path validateDirectorySourceInput() throws ValidationException {
-		String directorySourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDirectorySourceInput.getText()),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_DIRECTORY(a));
+		String directorySourceInput = InputValidator.notEmpty(
+				Strings.safeSafeTrim(this.ctlDirectorySourceInput.getText()),
+				CertImportI18N::formatSTR_MESSAGE_NO_DIRECTORY);
 
-		return PathValidator.isDirectoryPath(directorySourceInput,
-				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
+		return PathValidator.isDirectoryPath(directorySourceInput, CertImportI18N::formatSTR_MESSAGE_INVALID_DIRECTORY);
 	}
 
 	private URL validateURLSourceInput() throws ValidationException {
-		String urlSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlURLSourceInput.getText()),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_URL(a));
+		String urlSourceInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlURLSourceInput.getText()),
+				CertImportI18N::formatSTR_MESSAGE_NO_URL);
 		URL urlSource;
 
 		try {
@@ -569,11 +568,11 @@ public class CertImportController extends StageController {
 
 	private ServerParams validateServerSourceInput() throws ValidationException {
 		SSLPeer.Protocol protocol = InputValidator.notNull(this.ctlServerSourceProtocolInput.getValue(),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_SERVERPROTOCOL(a));
-		String serverSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlServerSourceInput.getText()),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_SERVER(a));
+				CertImportI18N::formatSTR_MESSAGE_NO_SERVERPROTOCOL);
+		String serverSourceInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlServerSourceInput.getText()),
+				CertImportI18N::formatSTR_MESSAGE_NO_SERVER);
 		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
-				(a) -> CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(a));
+				CertImportI18N::formatSTR_MESSAGE_INVALID_SERVER);
 		String host = serverSourceGroups[0];
 		String portInput = serverSourceGroups[1];
 		int port;
@@ -593,7 +592,7 @@ public class CertImportController extends StageController {
 
 	private PlatformKeyStore validatePlatformSourceInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlPlatformSourceInput.getValue(),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_NO_PLATFORMKEYSTORE(a));
+				CertImportI18N::formatSTR_MESSAGE_NO_PLATFORMKEYSTORE);
 	}
 
 	private Set<UserCertStoreEntry> validateImportSelection() throws ValidationException {
@@ -610,8 +609,7 @@ public class CertImportController extends StageController {
 				}
 			}
 		});
-		InputValidator.isTrue(!importSelection.isEmpty(),
-				(a) -> CertImportI18N.formatSTR_MESSAGE_EMPTY_IMPORT_SELECTION(a));
+		InputValidator.isTrue(!importSelection.isEmpty(), CertImportI18N::formatSTR_MESSAGE_EMPTY_IMPORT_SELECTION);
 		return importSelection;
 	}
 

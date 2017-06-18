@@ -99,8 +99,8 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	}
 
 	Rdn getRdnInput() {
-		String typeInput = Strings.safeTrim(Strings.safe(this.ctlTypeInput.getValue()));
-		String valueInput = Strings.safeTrim(Strings.safe(this.ctlValueInput.getText()));
+		String typeInput = Strings.safeSafeTrim(this.ctlTypeInput.getValue());
+		String valueInput = Strings.safeSafeTrim(this.ctlValueInput.getText());
 		Rdn rdn = null;
 
 		if (Strings.isEmpty(typeInput)) {
@@ -143,7 +143,7 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 		this.ctlTypeInput.getItems().addAll(X500Names.rdnTypes());
 		this.ctlTypeInput.getItems().sort((o1, o2) -> o1.compareTo(o2));
 		this.ctlTypeInput.requestFocus();
-		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
+		addButtonEventFilter(ButtonType.APPLY, this::onApply);
 	}
 
 	/**

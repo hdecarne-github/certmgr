@@ -61,6 +61,13 @@ class CertOptionsPreset {
 		this.dnInput = dnInput;
 	}
 
+	CertOptionsPreset(CertOptionsPreset preset) {
+		this(preset.aliasInput, preset.dnInput);
+		this.keyAlg = preset.keyAlg;
+		this.keySize = preset.keySize;
+		this.extensions.addAll(preset.extensions);
+	}
+
 	CertOptionsPreset(String aliasInput, UserCertStoreEntry storeEntry) {
 		this(aliasInput, X500Names.toString(storeEntry.dn()));
 		try {

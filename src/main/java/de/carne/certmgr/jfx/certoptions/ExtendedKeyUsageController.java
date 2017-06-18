@@ -71,7 +71,7 @@ public class ExtendedKeyUsageController extends DialogController<ExtendedKeyUsag
 	protected void setupDialog(Dialog<ExtendedKeyUsageExtensionData> dialog) {
 		dialog.setTitle(ExtendedKeyUsageI18N.formatSTR_STAGE_TITLE());
 		this.ctlUsages.disableProperty().bind(this.ctlAnyUsage.selectedProperty());
-		addButtonEventFilter(ButtonType.APPLY, (evt) -> onApply(evt));
+		addButtonEventFilter(ButtonType.APPLY, this::onApply);
 	}
 
 	/**

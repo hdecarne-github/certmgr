@@ -54,7 +54,14 @@ public abstract class X509ExtensionData extends ASN1Data implements AttributesPr
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static X509ExtensionData decode(String oid, boolean critical, byte[] data) throws IOException {
-		ASN1Primitive primitive = JcaX509ExtensionUtils.parseExtensionValue(data);
+		ASN1Primitive primitive;
+
+		try {
+			primitive = JcaX509ExtensionUtils.parseExtensionValue(data);
+		} catch (IllegalArgumentException e) {
+			throw new IOException(e.getLocalizedMessage(), e);
+		}
+
 		X509ExtensionData decoded;
 
 		switch (oid) {

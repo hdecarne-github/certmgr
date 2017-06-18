@@ -304,7 +304,7 @@ public class CertExportController extends StageController {
 
 	private CertWriter validateAndGetFormat() throws ValidationException {
 		CertWriter writer = InputValidator.notNull(this.ctlFormatOption.getValue(),
-				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_FORMAT(a));
+				CertExportI18N::formatSTR_MESSAGE_NO_FORMAT);
 
 		InputValidator.isTrue(this.ctlEncryptOption.isSelected() || !writer.isEncryptionRequired(),
 				(a) -> CertExportI18N.formatSTR_MESSAGE_ENCRYPTION_REQUIRED(writer.providerName()));
@@ -336,19 +336,20 @@ public class CertExportController extends StageController {
 	}
 
 	private Path validateFileDestinationInput() throws ValidationException {
-		String fileDestinationInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileDestinationInput.getText()),
-				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_FILE(a));
+		String fileDestinationInput = InputValidator.notEmpty(
+				Strings.safeSafeTrim(this.ctlFileDestinationInput.getText()),
+				CertExportI18N::formatSTR_MESSAGE_NO_FILE);
 
-		return PathValidator.isPath(fileDestinationInput, (a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_FILE(a));
+		return PathValidator.isPath(fileDestinationInput, CertExportI18N::formatSTR_MESSAGE_INVALID_FILE);
 	}
 
 	private Path validateDirectoryDestinationInput() throws ValidationException {
 		String directoryDestinationInput = InputValidator.notEmpty(
-				Strings.safeTrim(this.ctlDirectoryDestinationInput.getText()),
-				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_DIRECTORY(a));
+				Strings.safeSafeTrim(this.ctlDirectoryDestinationInput.getText()),
+				CertExportI18N::formatSTR_MESSAGE_NO_DIRECTORY);
 
 		return PathValidator.isDirectoryPath(directoryDestinationInput,
-				(a) -> CertExportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(a));
+				CertExportI18N::formatSTR_MESSAGE_INVALID_DIRECTORY);
 	}
 
 	void exportToFile(CertWriter format, Path file, CertObjectStore exportObjects, boolean encryptExport)

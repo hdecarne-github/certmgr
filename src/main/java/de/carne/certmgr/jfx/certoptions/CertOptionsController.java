@@ -17,20 +17,15 @@
 package de.carne.certmgr.jfx.certoptions;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.UserCertStore;
@@ -62,7 +57,6 @@ import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
-import de.carne.util.Exceptions;
 import de.carne.util.Late;
 import de.carne.util.Strings;
 import de.carne.util.validation.InputValidator;
@@ -94,10 +88,6 @@ import javafx.util.converter.IntegerStringConverter;
  * Certificate (CRT/CSR) creation dialog.
  */
 public class CertOptionsController extends StageController {
-
-	private static final String DEFAULT_DN = "CN={0},OU={1}";
-
-	private static final String DN_ALIAS_KEY = "CN";
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertOptionsController.class);
 
@@ -255,16 +245,27 @@ public class CertOptionsController extends StageController {
 		applyPreset(preset);
 	}
 
-	@SuppressWarnings("unused")
 	@FXML
 	void onCmdApplyTemplatePreset(ActionEvent evt) {
+		CertOptionsTemplates.Template template = (CertOptionsTemplates.Template) ((MenuItem) evt.getSource())
+				.getUserData();
+		String aliasInput = Strings.safe(this.ctlAliasInput.getText());
+		String serial = CertOptionsTemplates.defaultSerial();
 
+		applyPreset(template.merge(aliasInput, Check.nonNull(this.storeParam.get().storeName()), serial));
 	}
 
 	@SuppressWarnings("unused")
 	@FXML
 	void onCmdManagePresetTemplates(ActionEvent evt) {
+		try {
+			ManageTemplatesController manageTemplatesDialog = ManageTemplatesDialog.load(this).init(getCurrentPreset());
 
+			manageTemplatesDialog.showAndWait();
+			resetTemplatePresetsMenu();
+		} catch (IOException e) {
+			Alerts.unexpected(e).showAndWait();
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -459,29 +460,14 @@ public class CertOptionsController extends StageController {
 		close(false);
 	}
 
-	private void onAliasChanged(@Nullable String newAlias, @Nullable String oldAlias) {
-		try {
-			LdapName oldDN = new LdapName(Strings.safe(Strings.safeTrim(this.ctlDNInput.getText())));
-			List<Rdn> oldRdns = oldDN.getRdns();
-			String checkedOldAlias = Strings.safe(Strings.safeTrim(oldAlias));
-			List<Rdn> newRdns = new ArrayList<>(oldRdns.size());
+	private void onAliasChanged(@Nullable String oldAlias, @Nullable String newAlias) {
+		String checkedOldAlias = Strings.safeSafeTrim(oldAlias);
+		String checkedNewAlias = Strings.safeSafeTrim(newAlias);
+		String oldDNInput = Strings.safeSafeTrim(this.ctlDNInput.getText());
+		String newDNInput = CertOptionsTemplates.merge().aliasInput(checkedOldAlias, checkedNewAlias)
+				.applyToDNInput(oldDNInput);
 
-			for (Rdn oldRdn : oldRdns) {
-				String checkedNewAlias = Strings.safe(Strings.safeTrim(newAlias));
-				if (Strings.notEmpty(checkedNewAlias) && DN_ALIAS_KEY.equals(oldRdn.getType())
-						&& (Strings.isEmpty(checkedOldAlias) || checkedOldAlias.equals(oldRdn.getValue()))) {
-					newRdns.add(new Rdn(oldRdn.getType(), checkedNewAlias));
-				} else {
-					newRdns.add(oldRdn);
-				}
-			}
-
-			LdapName newDN = new LdapName(newRdns);
-
-			this.ctlDNInput.setText(newDN.toString());
-		} catch (InvalidNameException e) {
-			Exceptions.ignore(e);
-		}
+		this.ctlDNInput.setText(newDNInput);
 	}
 
 	private void onKeyAlgChanged(@Nullable KeyPairAlgorithm keyAlg) {
@@ -517,7 +503,7 @@ public class CertOptionsController extends StageController {
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
 		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
-		this.ctlAliasInput.textProperty().addListener((p, o, n) -> onAliasChanged(n, o));
+		this.ctlAliasInput.textProperty().addListener((p, o, n) -> onAliasChanged(o, n));
 		this.ctlKeyAlgOption.valueProperty().addListener((p, o, n) -> onKeyAlgChanged(n));
 		this.ctlKeySizeOption.setConverter(new IntegerStringConverter());
 		this.ctlGeneratorOption.valueProperty().addListener((p, o, n) -> onGeneratorChanged(n));
@@ -569,7 +555,11 @@ public class CertOptionsController extends StageController {
 		UserCertStoreEntryId entryId = store.generateEntryId(CertOptionsI18N.formatSTR_TEXT_ALIASHINT());
 
 		this.ctlAliasInput.setText(entryId.getAlias());
-		this.ctlDNInput.setText(MessageFormat.format(DEFAULT_DN, entryId.getAlias(), store.storeName()));
+
+		String serial = CertOptionsTemplates.defaultSerial();
+
+		this.ctlDNInput.setText(
+				CertOptionsTemplates.defaultDNInput(entryId.getAlias(), Check.nonNull(store.storeName()), serial));
 	}
 
 	private void initKeyAlgOptions() {
@@ -624,6 +614,16 @@ public class CertOptionsController extends StageController {
 		ObservableList<MenuItem> menuItems = this.ctlTemplatePresetsMenu.getItems();
 
 		menuItems.clear();
+
+		List<CertOptionsTemplates.Template> templates = CertOptionsTemplates.load();
+
+		for (CertOptionsTemplates.Template template : templates) {
+			MenuItem templateMenuItem = new MenuItem(template.getName());
+
+			templateMenuItem.setUserData(template);
+			templateMenuItem.setOnAction(this::onCmdApplyTemplatePreset);
+			menuItems.add(templateMenuItem);
+		}
 		if (menuItems.isEmpty()) {
 			MenuItem noneMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_PRESETS_NONE());
 
@@ -790,13 +790,13 @@ public class CertOptionsController extends StageController {
 	}
 
 	private String validateAndGetAlias() throws ValidationException {
-		return InputValidator.notEmpty(Strings.safeTrim(this.ctlAliasInput.getText()),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_ALIAS(a));
+		return InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlAliasInput.getText()),
+				CertOptionsI18N::formatSTR_MESSAGE_NO_ALIAS);
 	}
 
 	private X500Principal validateAndGetDN() throws ValidationException {
-		String dnInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDNInput.getText()),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_DN(a));
+		String dnInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlDNInput.getText()),
+				CertOptionsI18N::formatSTR_MESSAGE_NO_DN);
 		X500Principal dn;
 
 		try {
@@ -808,41 +808,37 @@ public class CertOptionsController extends StageController {
 	}
 
 	private KeyPairAlgorithm validateAndGetKeyAlg() throws ValidationException {
-		return InputValidator.notNull(this.ctlKeyAlgOption.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYALG(a));
+		return InputValidator.notNull(this.ctlKeyAlgOption.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_KEYALG);
 	}
 
 	private int validateAndGetKeySize() throws ValidationException {
-		return InputValidator
-				.notNull(this.ctlKeySizeOption.getValue(), (a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_KEYSIZE(a))
+		return InputValidator.notNull(this.ctlKeySizeOption.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_KEYSIZE)
 				.intValue();
 	}
 
 	private CertGenerator validateAndGetGenerator() throws ValidationException {
 		return InputValidator.notNull(this.ctlGeneratorOption.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_GENERATOR(a));
+				CertOptionsI18N::formatSTR_MESSAGE_NO_GENERATOR);
 	}
 
 	private Issuer validateAndGetIssuer() throws ValidationException {
-		return InputValidator.notNull(this.ctlIssuerInput.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_ISSUER(a));
+		return InputValidator.notNull(this.ctlIssuerInput.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_ISSUER);
 	}
 
 	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
-		return InputValidator.notNull(this.ctlSigAlgOption.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_SIGALG(a));
+		return InputValidator.notNull(this.ctlSigAlgOption.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_SIGALG);
 	}
 
 	private Date validateAndGetNotBefore() throws ValidationException {
 		LocalDate localNotBefore = InputValidator.notNull(this.ctlNotBeforeInput.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTBEFORE(a));
+				CertOptionsI18N::formatSTR_MESSAGE_NO_NOTBEFORE);
 
 		return Date.from(localNotBefore.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	private Date validateAndGetNotAfter(Date notBefore) throws ValidationException {
 		LocalDate localNotAfter = InputValidator.notNull(this.ctlNotAfterInput.getValue(),
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_NO_NOTAFTER(a));
+				CertOptionsI18N::formatSTR_MESSAGE_NO_NOTAFTER);
 		Date notAfter = Date.from(localNotAfter.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
 		InputValidator.isTrue(notAfter.compareTo(notBefore) > 0,

@@ -49,7 +49,7 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 		}
 
 		@Override
-		public BasicConstraintsPathLen fromString(String string) {
+		public BasicConstraintsPathLen fromString(@Nullable String string) {
 			String trimmedString = Strings.safeTrim(string);
 
 			return BasicConstraintsPathLen.valueOf(trimmedString != null ? new BigInteger(trimmedString) : null);
