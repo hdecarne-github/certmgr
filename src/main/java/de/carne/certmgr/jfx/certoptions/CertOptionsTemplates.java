@@ -30,9 +30,18 @@ import java.util.prefs.Preferences;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
+import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
+import de.carne.certmgr.certs.x509.DirectoryName;
+import de.carne.certmgr.certs.x509.DistributionPoint;
+import de.carne.certmgr.certs.x509.DistributionPointName;
+import de.carne.certmgr.certs.x509.GeneralName;
+import de.carne.certmgr.certs.x509.GeneralNames;
 import de.carne.certmgr.certs.x509.KeyHelper;
+import de.carne.certmgr.certs.x509.StringName;
+import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
@@ -81,16 +90,26 @@ final class CertOptionsTemplates {
 			return this;
 		}
 
+		public MergeParams storeName(String newStoreName) {
+			this.storeName = new String[] { null, newStoreName };
+			return this;
+		}
+
 		public MergeParams serial(String oldSerial, String newSerial) {
 			this.serial = new String[] { oldSerial, newSerial };
 			return this;
 		}
 
-		public String applyToDNInput(String dnInput) {
-			String mergedDNInput = dnInput;
+		public MergeParams serial(String newSerial) {
+			this.serial = new String[] { null, newSerial };
+			return this;
+		}
+
+		public String applyToDN(String dn) {
+			String mergedDNInput = dn;
 
 			try {
-				LdapName oldDN = new LdapName(Strings.safeSafeTrim(dnInput));
+				LdapName oldDN = new LdapName(Strings.safeSafeTrim(dn));
 				List<Rdn> oldRdns = oldDN.getRdns();
 				List<Rdn> newRdns = new ArrayList<>(oldRdns.size());
 
@@ -102,12 +121,18 @@ final class CertOptionsTemplates {
 						}
 					}
 					if (this.storeName.length == 2 && DN_STORE_KEY.equals(oldRdn.getType())) {
+						if (this.storeName[0] == null) {
+							this.storeName[0] = String.valueOf(oldRdn.getValue());
+						}
 						if (Objects.equals(this.storeName[0], oldRdn.getValue())) {
 							newRdns.add(new Rdn(oldRdn.getType(), this.storeName[1]));
 							continue;
 						}
 					}
 					if (this.serial.length == 2 && DN_SERIAL_KEY.equals(oldRdn.getType())) {
+						if (this.serial[0] == null) {
+							this.serial[0] = String.valueOf(oldRdn.getValue());
+						}
 						if (Objects.equals(this.serial[0], oldRdn.getValue())) {
 							newRdns.add(new Rdn(oldRdn.getType(), this.serial[1]));
 							continue;
@@ -123,6 +148,108 @@ final class CertOptionsTemplates {
 				Exceptions.ignore(e);
 			}
 			return mergedDNInput;
+		}
+
+		public CertOptionsPreset applyToPreset(CertOptionsPreset preset) {
+			String mergedDNInput = applyToDN(preset.dnInput());
+			CertOptionsPreset mergedPreset = new CertOptionsPreset(preset.aliasInput(), mergedDNInput);
+
+			mergedPreset.setKeyAlg(preset.getKeyAlg());
+			mergedPreset.setKeySize(preset.getKeySize());
+			for (X509ExtensionData extension : preset.getExtensions()) {
+				X509ExtensionData mergedExtension;
+
+				if (SubjectAlternativeNameExtensionData.OID.equals(extension.oid())) {
+					mergedExtension = applyToSubjectAlternativeNameExtension(
+							(SubjectAlternativeNameExtensionData) extension);
+				} else if (CRLDistributionPointsExtensionData.OID.equals(extension.oid())) {
+					mergedExtension = applyToCRLDistributionPointsExtension(
+							(CRLDistributionPointsExtensionData) extension);
+				} else {
+					mergedExtension = extension;
+				}
+				mergedPreset.addExtension(mergedExtension);
+			}
+			return mergedPreset;
+		}
+
+		private SubjectAlternativeNameExtensionData applyToSubjectAlternativeNameExtension(
+				SubjectAlternativeNameExtensionData extension) {
+			GeneralNames mergedNames = applyToGeneralNames(extension.getGeneralNames());
+
+			return new SubjectAlternativeNameExtensionData(extension.getCritical(), mergedNames);
+		}
+
+		private CRLDistributionPointsExtensionData applyToCRLDistributionPointsExtension(
+				CRLDistributionPointsExtensionData extension) {
+			CRLDistributionPointsExtensionData mergedExtension = new CRLDistributionPointsExtensionData(
+					extension.getCritical());
+
+			for (DistributionPoint dp : extension) {
+				DistributionPointName dpName = dp.getName();
+
+				if (dpName != null) {
+					GeneralNames dpFullName = dpName.getFullName();
+
+					if (dpFullName != null) {
+						GeneralNames mergedDPFullName = applyToGeneralNames(dpFullName);
+						DistributionPointName mergedDPName = new DistributionPointName(mergedDPFullName);
+						DistributionPoint mergedDP = new DistributionPoint(mergedDPName);
+
+						mergedDP.setReasons(dp.getReasons());
+						mergedExtension.addDistributionPoint(mergedDP);
+					}
+
+					X500Principal dpRelativeName = dpName.getRelativeName();
+
+					if (dpRelativeName != null) {
+						X500Principal mergedDPRelativeName = applyToX500Principal(dpRelativeName);
+						DistributionPointName mergedDPName = new DistributionPointName(mergedDPRelativeName);
+						DistributionPoint mergedDP = new DistributionPoint(mergedDPName);
+
+						mergedDP.setReasons(dp.getReasons());
+						mergedExtension.addDistributionPoint(mergedDP);
+					}
+				}
+
+				GeneralNames dpCRLIssuer = dp.getCRLIssuer();
+
+				if (dpCRLIssuer != null) {
+					GeneralNames mergedDPCRLIssuer = applyToGeneralNames(dpCRLIssuer);
+
+					DistributionPoint mergedDP = new DistributionPoint(mergedDPCRLIssuer);
+					mergedDP.setReasons(dp.getReasons());
+					mergedExtension.addDistributionPoint(mergedDP);
+				}
+			}
+			return mergedExtension;
+		}
+
+		private GeneralNames applyToGeneralNames(GeneralNames names) {
+			GeneralNames mergedNames = new GeneralNames();
+
+			for (GeneralName name : names) {
+				GeneralName mergedName;
+
+				if (name instanceof StringName) {
+					StringName stringName = (StringName) name;
+
+					mergedName = new StringName(name.getType(),
+							stringName.getNameString().replace(this.storeName[0], this.storeName[1]));
+				} else if (name instanceof DirectoryName) {
+					DirectoryName directoryName = (DirectoryName) name;
+
+					mergedName = new DirectoryName(applyToX500Principal(directoryName.getDirectoryName()));
+				} else {
+					mergedName = name;
+				}
+				mergedNames.addName(mergedName);
+			}
+			return mergedNames;
+		}
+
+		private X500Principal applyToX500Principal(X500Principal principal) {
+			return new X500Principal(applyToDN(principal.getName()));
 		}
 
 	}
@@ -161,13 +288,14 @@ final class CertOptionsTemplates {
 			this.name = name;
 		}
 
+		public CertOptionsPreset merge(String aliasInput, String storeName, String serial) {
+			return CertOptionsTemplates.merge().aliasInput(aliasInput(), aliasInput).storeName(storeName).serial(serial)
+					.applyToPreset(this);
+		}
+
 		@Override
 		public String toString() {
 			return this.name + " (" + dnInput() + ")";
-		}
-
-		public CertOptionsPreset merge(String aliasInput, String storeName, String serial) {
-			return this;
 		}
 
 	}

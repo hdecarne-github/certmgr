@@ -465,7 +465,7 @@ public class CertOptionsController extends StageController {
 		String checkedNewAlias = Strings.safeSafeTrim(newAlias);
 		String oldDNInput = Strings.safeSafeTrim(this.ctlDNInput.getText());
 		String newDNInput = CertOptionsTemplates.merge().aliasInput(checkedOldAlias, checkedNewAlias)
-				.applyToDNInput(oldDNInput);
+				.applyToDN(oldDNInput);
 
 		this.ctlDNInput.setText(newDNInput);
 	}
