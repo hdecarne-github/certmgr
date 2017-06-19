@@ -16,7 +16,13 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +54,7 @@ import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 import de.carne.util.prefs.BooleanPreference;
+import de.carne.util.prefs.PropertiesPreferencesFactory;
 
 /**
  * Class used for handling cert option defaults and templates.
@@ -304,26 +311,48 @@ final class CertOptionsTemplates {
 		List<Template> templates = new ArrayList<>();
 
 		try {
+			Preferences templateStore;
+
 			if (TEMPLATE_STORE_INITIALIZED.getBoolean(false)) {
-				String[] templateNodeNames = TEMPLATE_STORE.childrenNames();
-
-				Arrays.sort(templateNodeNames);
-				for (String templateNodeName : templateNodeNames) {
-					Preferences templateNode = TEMPLATE_STORE.node(templateNodeName);
-					@Nullable
-					Template template = loadTemplate(templateNode);
-
-					if (template != null) {
-						templates.add(template);
-					}
-				}
+				templateStore = TEMPLATE_STORE;
 			} else {
-
+				templateStore = PropertiesPreferencesFactory.customRoot(getStandardTemplatePath());
 			}
-		} catch (BackingStoreException e) {
+			String[] templateNodeNames = templateStore.childrenNames();
+
+			Arrays.sort(templateNodeNames);
+			for (String templateNodeName : templateNodeNames) {
+				Preferences templateNode = templateStore.node(templateNodeName);
+				@Nullable
+				Template template = loadTemplate(templateNode);
+
+				if (template != null) {
+					templates.add(template);
+				}
+			}
+		} catch (IOException | BackingStoreException e) {
 			Exceptions.warn(e);
 		}
 		return templates;
+	}
+
+	private static Path getStandardTemplatePath() throws IOException {
+		String standardTemplatesResourceName = CertOptionsTemplates.class.getSimpleName() + ".properties";
+		URL standardTemplatesURL = CertOptionsTemplates.class.getResource(standardTemplatesResourceName);
+
+		if (standardTemplatesURL == null) {
+			throw new FileNotFoundException(
+					"Unable to access standard template resource: " + standardTemplatesResourceName);
+		}
+
+		URI standardTemplatesURI;
+
+		try {
+			standardTemplatesURI = standardTemplatesURL.toURI();
+		} catch (URISyntaxException e) {
+			throw new IOException(e.getLocalizedMessage(), e);
+		}
+		return Paths.get(standardTemplatesURI);
 	}
 
 	@Nullable
@@ -391,7 +420,7 @@ final class CertOptionsTemplates {
 		int templateIndex = 0;
 
 		for (Template template : templates) {
-			Preferences templateNode = TEMPLATE_STORE.node(Integer.toString(templateIndex));
+			Preferences templateNode = TEMPLATE_STORE.node("template" + templateIndex);
 
 			storeTemplate(templateNode, template);
 			templateIndex++;
@@ -420,7 +449,7 @@ final class CertOptionsTemplates {
 		int extensionIndex = 0;
 
 		for (X509ExtensionData extension : template.getExtensions()) {
-			Preferences extensionNode = templateNode.node(Integer.toString(extensionIndex));
+			Preferences extensionNode = templateNode.node("extension" + extensionIndex);
 
 			extensionNode.put(Template.KEY_EXTENSION_OID, extension.oid());
 			extensionNode.putBoolean(Template.KEY_EXTENSION_CRITICAL, extension.getCritical());
