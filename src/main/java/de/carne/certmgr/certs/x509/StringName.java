@@ -66,4 +66,13 @@ public class StringName extends GeneralName {
 		return this.name;
 	}
 
+	/**
+	 * This name's {@link String} representation.
+	 *
+	 * @return This name's {@link String} representation.
+	 */
+	public String getNameString() {
+		return this.name;
+	}
+
 }

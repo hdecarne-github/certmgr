@@ -126,7 +126,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * @param reasons The reasons this distribution point is authoritative for. May be {@code null} to use this
 	 *        distribution point for all reasons.
 	 */
-	public void setReasons(ReasonFlags reasons) {
+	public void setReasons(@Nullable ReasonFlags reasons) {
 		this.reasons = reasons;
 	}
 

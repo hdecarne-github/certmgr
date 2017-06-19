@@ -24,12 +24,15 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.util.Arrays;
 
+import de.carne.check.Nullable;
+
 /**
  * General name of type IP Address.
  */
 public class IPAddressName extends GeneralName {
 
 	private final InetAddress address;
+	@Nullable
 	private final InetAddress netmask;
 
 	/**
@@ -38,7 +41,7 @@ public class IPAddressName extends GeneralName {
 	 * @param address The name's address.
 	 * @param netmask The name's network mask (may be {@code null}).
 	 */
-	public IPAddressName(InetAddress address, InetAddress netmask) {
+	public IPAddressName(InetAddress address, @Nullable InetAddress netmask) {
 		super(GeneralNameType.IP_ADDRESS);
 		this.address = address;
 		this.netmask = netmask;
@@ -94,6 +97,25 @@ public class IPAddressName extends GeneralName {
 			buffer.append('/').append(this.netmask.getHostAddress());
 		}
 		return buffer.toString();
+	}
+
+	/**
+	 * Get this name's address.
+	 * 
+	 * @return This name's address.
+	 */
+	public InetAddress getAddress() {
+		return this.address;
+	}
+
+	/**
+	 * Get this name's network mask.
+	 * 
+	 * @return This name's network mask (may be {@code null})..
+	 */
+	@Nullable
+	public InetAddress getNetmask() {
+		return this.netmask;
 	}
 
 }

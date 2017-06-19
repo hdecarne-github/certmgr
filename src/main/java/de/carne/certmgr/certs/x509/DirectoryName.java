@@ -64,4 +64,13 @@ public class DirectoryName extends GeneralName {
 		return X500Names.toString(this.name);
 	}
 
+	/**
+	 * Get the {@link X500Principal} represented by this name.
+	 *
+	 * @return The {@link X500Principal} represented by this name.
+	 */
+	public X500Principal getDirectoryName() {
+		return this.name;
+	}
+
 }

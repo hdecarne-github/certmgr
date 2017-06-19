@@ -65,4 +65,13 @@ public class RegisteredIDName extends GeneralName {
 		return OIDs.toString(this.oid);
 	}
 
+	/**
+	 * Get this name's OID.
+	 *
+	 * @return This name's OID.
+	 */
+	public String getNameOID() {
+		return this.oid;
+	}
+
 }

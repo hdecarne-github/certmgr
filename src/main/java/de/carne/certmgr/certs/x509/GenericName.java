@@ -63,4 +63,13 @@ public class GenericName extends GeneralName {
 		return Bytes.toString(this.nameBytes, Attributes.FORMAT_LIMIT_SHORT);
 	}
 
+	/**
+	 * Get this name's bytes.
+	 * 
+	 * @return This name's bytes.
+	 */
+	public byte[] getNameBytes() {
+		return this.nameBytes;
+	}
+
 }
