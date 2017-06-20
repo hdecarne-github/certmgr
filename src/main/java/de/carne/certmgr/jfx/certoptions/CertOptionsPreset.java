@@ -16,33 +16,15 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import java.io.IOException;
-import java.security.PublicKey;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
-import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.certmgr.certs.x509.AuthorityKeyIdentifierExtensionData;
-import de.carne.certmgr.certs.x509.KeyHelper;
-import de.carne.certmgr.certs.x509.SubjectKeyIdentifierExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.check.Nullable;
-import de.carne.util.Exceptions;
 
 class CertOptionsPreset {
-
-	private static final Set<String> INVALID_PRESET_EXTENSIONS = new HashSet<>();
-
-	static {
-		INVALID_PRESET_EXTENSIONS.add(SubjectKeyIdentifierExtensionData.OID);
-		INVALID_PRESET_EXTENSIONS.add(AuthorityKeyIdentifierExtensionData.OID);
-	}
 
 	private final String aliasInput;
 
@@ -66,47 +48,6 @@ class CertOptionsPreset {
 		this.keyAlg = preset.keyAlg;
 		this.keySize = preset.keySize;
 		this.extensions.addAll(preset.extensions);
-	}
-
-	CertOptionsPreset(String aliasInput, UserCertStoreEntry storeEntry) {
-		this(aliasInput, X500Names.toString(storeEntry.dn()));
-		try {
-			if (storeEntry.hasCRT()) {
-				X509Certificate crt = storeEntry.getCRT();
-				PublicKey publicKey = crt.getPublicKey();
-
-				this.keyAlg = KeyHelper.getKeyAlg(publicKey);
-				this.keySize = KeyHelper.getKeySize(publicKey);
-
-				Set<String> criticalExtensionOIDs = crt.getCriticalExtensionOIDs();
-
-				if (criticalExtensionOIDs != null) {
-					for (String criticalExtensionOID : criticalExtensionOIDs) {
-						if (!INVALID_PRESET_EXTENSIONS.contains(criticalExtensionOID)) {
-							X509ExtensionData criticalExtension = X509ExtensionData.decode(criticalExtensionOID, true,
-									crt.getExtensionValue(criticalExtensionOID));
-
-							this.extensions.add(criticalExtension);
-						}
-					}
-				}
-
-				Set<String> nonCriticalExtensionOIDs = crt.getNonCriticalExtensionOIDs();
-
-				if (nonCriticalExtensionOIDs != null) {
-					for (String nonCriticalExtensionOID : nonCriticalExtensionOIDs) {
-						if (!INVALID_PRESET_EXTENSIONS.contains(nonCriticalExtensionOID)) {
-							X509ExtensionData nonCriticalExtension = X509ExtensionData.decode(nonCriticalExtensionOID,
-									false, crt.getExtensionValue(nonCriticalExtensionOID));
-
-							this.extensions.add(nonCriticalExtension);
-						}
-					}
-				}
-			}
-		} catch (IOException e) {
-			Exceptions.warn(e);
-		}
 	}
 
 	public String aliasInput() {

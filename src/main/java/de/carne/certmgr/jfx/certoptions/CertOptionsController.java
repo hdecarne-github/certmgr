@@ -237,16 +237,7 @@ public class CertOptionsController extends StageController {
 	}
 
 	@FXML
-	void onCmdApplyStorePreset(ActionEvent evt) {
-		String aliasInput = Strings.safe(this.ctlAliasInput.getText());
-		UserCertStoreEntry storeEntry = (UserCertStoreEntry) ((MenuItem) evt.getSource()).getUserData();
-		CertOptionsPreset preset = new CertOptionsPreset(aliasInput, storeEntry);
-
-		applyPreset(preset);
-	}
-
-	@FXML
-	void onCmdApplyTemplatePreset(ActionEvent evt) {
+	void onCmdApplyTemplate(ActionEvent evt) {
 		CertOptionsTemplates.Template template = (CertOptionsTemplates.Template) ((MenuItem) evt.getSource())
 				.getUserData();
 		String aliasInput = Strings.safe(this.ctlAliasInput.getText());
@@ -599,8 +590,8 @@ public class CertOptionsController extends StageController {
 				MenuItem storeEntryMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_STORE_PRESET(indent,
 						storeEntry.id().getAlias(), X500Names.toString(storeEntry.dn())));
 
-				storeEntryMenuItem.setUserData(storeEntry);
-				storeEntryMenuItem.setOnAction(this::onCmdApplyStorePreset);
+				storeEntryMenuItem.setUserData(CertOptionsTemplates.wrap(storeEntry));
+				storeEntryMenuItem.setOnAction(this::onCmdApplyTemplate);
 				menuItems.add(storeEntryMenuItem);
 
 				String nextIndent = (Strings.notEmpty(indent) ? "  " + indent : " \u21b3");
@@ -621,7 +612,7 @@ public class CertOptionsController extends StageController {
 			MenuItem templateMenuItem = new MenuItem(template.getName());
 
 			templateMenuItem.setUserData(template);
-			templateMenuItem.setOnAction(this::onCmdApplyTemplatePreset);
+			templateMenuItem.setOnAction(this::onCmdApplyTemplate);
 			menuItems.add(templateMenuItem);
 		}
 		if (menuItems.isEmpty()) {

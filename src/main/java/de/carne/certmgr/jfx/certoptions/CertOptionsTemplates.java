@@ -23,13 +23,17 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.PublicKey;
+import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -38,7 +42,10 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
+import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
+import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.certmgr.certs.x509.AuthorityKeyIdentifierExtensionData;
 import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
 import de.carne.certmgr.certs.x509.DirectoryName;
 import de.carne.certmgr.certs.x509.DistributionPoint;
@@ -48,6 +55,7 @@ import de.carne.certmgr.certs.x509.GeneralNames;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.StringName;
 import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
+import de.carne.certmgr.certs.x509.SubjectKeyIdentifierExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
@@ -62,6 +70,13 @@ import de.carne.util.prefs.PropertiesPreferencesFactory;
 final class CertOptionsTemplates {
 
 	private static final Log LOG = new Log();
+
+	private static final Set<String> INVALID_PRESET_EXTENSIONS = new HashSet<>();
+
+	static {
+		INVALID_PRESET_EXTENSIONS.add(SubjectKeyIdentifierExtensionData.OID);
+		INVALID_PRESET_EXTENSIONS.add(AuthorityKeyIdentifierExtensionData.OID);
+	}
 
 	private CertOptionsTemplates() {
 		// Make sure this class is not instantiated from outside
@@ -79,7 +94,7 @@ final class CertOptionsTemplates {
 
 	private static final String DN_ALIAS_KEY = "CN";
 	private static final String DN_STORE_KEY = "OU";
-	private static final String DN_SERIAL_KEY = "SERIAL";
+	private static final String DN_SERIAL_KEY = "SERIALNUMBER";
 
 	static class MergeParams {
 
@@ -158,8 +173,9 @@ final class CertOptionsTemplates {
 		}
 
 		public CertOptionsPreset applyToPreset(CertOptionsPreset preset) {
+			String mergedAliasInput = (this.aliasInput.length == 2 ? this.aliasInput[1] : preset.aliasInput());
 			String mergedDNInput = applyToDN(preset.dnInput());
-			CertOptionsPreset mergedPreset = new CertOptionsPreset(preset.aliasInput(), mergedDNInput);
+			CertOptionsPreset mergedPreset = new CertOptionsPreset(mergedAliasInput, mergedDNInput);
 
 			mergedPreset.setKeyAlg(preset.getKeyAlg());
 			mergedPreset.setKeySize(preset.getKeySize());
@@ -305,6 +321,64 @@ final class CertOptionsTemplates {
 			return this.name + " (" + dnInput() + ")";
 		}
 
+	}
+
+	public static Template wrap(UserCertStoreEntry storeEntry) {
+		String dnInput = X500Names.toString(storeEntry.dn());
+		String aliasInput = dnInput;
+
+		try {
+			LdapName dn = new LdapName(aliasInput);
+			for (Rdn rdn : dn.getRdns()) {
+				if (DN_ALIAS_KEY.equals(rdn.getType())) {
+					aliasInput = String.valueOf(rdn.getValue());
+					break;
+				}
+			}
+		} catch (InvalidNameException e) {
+			Exceptions.ignore(e);
+		}
+
+		CertOptionsPreset preset = new CertOptionsPreset(aliasInput, dnInput);
+
+		try {
+			if (storeEntry.hasCRT()) {
+				X509Certificate crt = storeEntry.getCRT();
+				PublicKey publicKey = crt.getPublicKey();
+
+				preset.setKeyAlg(KeyHelper.getKeyAlg(publicKey));
+				preset.setKeySize(KeyHelper.getKeySize(publicKey));
+
+				Set<String> criticalExtensionOIDs = crt.getCriticalExtensionOIDs();
+
+				if (criticalExtensionOIDs != null) {
+					for (String criticalExtensionOID : criticalExtensionOIDs) {
+						if (!INVALID_PRESET_EXTENSIONS.contains(criticalExtensionOID)) {
+							X509ExtensionData criticalExtension = X509ExtensionData.decode(criticalExtensionOID, true,
+									crt.getExtensionValue(criticalExtensionOID));
+
+							preset.addExtension(criticalExtension);
+						}
+					}
+				}
+
+				Set<String> nonCriticalExtensionOIDs = crt.getNonCriticalExtensionOIDs();
+
+				if (nonCriticalExtensionOIDs != null) {
+					for (String nonCriticalExtensionOID : nonCriticalExtensionOIDs) {
+						if (!INVALID_PRESET_EXTENSIONS.contains(nonCriticalExtensionOID)) {
+							X509ExtensionData nonCriticalExtension = X509ExtensionData.decode(nonCriticalExtensionOID,
+									false, crt.getExtensionValue(nonCriticalExtensionOID));
+
+							preset.addExtension(nonCriticalExtension);
+						}
+					}
+				}
+			}
+		} catch (IOException e) {
+			Exceptions.warn(e);
+		}
+		return new Template(preset.aliasInput(), preset);
 	}
 
 	public static List<Template> load() {
