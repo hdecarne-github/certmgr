@@ -729,8 +729,18 @@ public class CertOptionsController extends StageController {
 	private void applyPreset(CertOptionsPreset preset) {
 		this.ctlAliasInput.setText(preset.aliasInput());
 		this.ctlDNInput.setText(preset.dnInput());
-		this.ctlKeyAlgOption.setValue(preset.getKeyAlg());
-		this.ctlKeySizeOption.setValue(preset.getKeySize());
+
+		KeyPairAlgorithm keyAlg = preset.getKeyAlg();
+
+		if (keyAlg != null) {
+			this.ctlKeyAlgOption.setValue(preset.getKeyAlg());
+		}
+
+		Integer keySize = preset.getKeySize();
+
+		if (keySize != null) {
+			this.ctlKeySizeOption.setValue(preset.getKeySize());
+		}
 		this.basicConstraintsExtension.set(null);
 		this.keyUsageExtension.set(null);
 		this.extendedKeyUsageExtension.set(null);
