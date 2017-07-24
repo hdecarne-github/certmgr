@@ -49,6 +49,7 @@ import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.storepreferences.StorePreferencesController;
 import de.carne.certmgr.jfx.storepreferences.StorePreferencesDialog;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
+import de.carne.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.aboutinfo.AboutInfoController;
@@ -521,7 +522,7 @@ public class StoreController extends StageController {
 		this.storeEntryViewHelper.get().update(this.storeProperty.get());
 	}
 
-	private void updateDetailsView(TreeItem<StoreEntryModel> selection) {
+	private void updateDetailsView(@Nullable TreeItem<StoreEntryModel> selection) {
 		TreeItem<AttributeModel> rootItem = null;
 
 		if (selection != null) {
