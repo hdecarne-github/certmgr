@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.store.StoreController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.carne.certmgr.jfx.store.StoreController">
    <children>
       <MenuBar VBox.vgrow="NEVER">
         <menus>
@@ -240,9 +240,9 @@
                <children>
                   <TreeTableView fx:id="ctlStoreEntryView" layoutX="48.0" layoutY="24.0" showRoot="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                      <TreeTableColumn fx:id="ctlStoreEntryViewId" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_ID" />
+                      <TreeTableColumn fx:id="ctlStoreEntryViewId" maxWidth="1.7976931348623157E308" prefWidth="160.0" text="%_STR_COL_ID" />
                       <TreeTableColumn fx:id="ctlStoreEntryViewName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_NAME" />
-                        <TreeTableColumn fx:id="ctlStoreEntryViewSerial" editable="false" maxWidth="1.7976931348623157E308" style="-fx-alignment: CENTER_RIGHT;" text="%_STR_COL_SERIAL" />
+                        <TreeTableColumn fx:id="ctlStoreEntryViewSerial" editable="false" maxWidth="1.7976931348623157E308" prefWidth="60.0" text="%_STR_COL_SERIAL" />
                         <TreeTableColumn fx:id="ctlStoreEntryViewExpires" editable="false" maxWidth="1.7976931348623157E308" prefWidth="120.0" text="%_STR_COL_EXPIRES" />
                     </columns>
                   </TreeTableView>
