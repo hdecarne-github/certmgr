@@ -44,6 +44,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.logging.Log;
 
@@ -140,7 +141,7 @@ public final class X509CRLHelper {
 	 * @return The generated CRL object.
 	 * @throws IOException if an error occurs during generation.
 	 */
-	public static X509CRL generateCRL(X509CRL currentCRL, Date lastUpdate, Date nextUpdate,
+	public static X509CRL generateCRL(@Nullable X509CRL currentCRL, Date lastUpdate, @Nullable Date nextUpdate,
 			Map<BigInteger, ReasonFlag> revokeEntries, X500Principal issuerDN, KeyPair issuerKey,
 			SignatureAlgorithm signatureAlgorithm) throws IOException {
 		LOG.info("CRL generation ''{0}'' started...", issuerDN);

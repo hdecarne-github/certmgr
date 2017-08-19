@@ -315,7 +315,9 @@ public final class UserCertStore {
 	public synchronized void updateEntryCRL(UserCertStoreEntry issuerEntry, UpdateCRLRequest request,
 			PasswordCallback password) throws IOException {
 		Entry storeEntry = this.storeEntries.get(issuerEntry.id());
-		X509CRL crl = X509CRLHelper.generateCRL(storeEntry.getCRL(), request.lastUpdate(), request.nextUpdate(),
+		X509CRL currentCRL = (storeEntry.hasCRL() ? storeEntry.getCRL() : null);
+
+		X509CRL crl = X509CRLHelper.generateCRL(currentCRL, request.lastUpdate(), request.nextUpdate(),
 				request.getRevokeEntries(), storeEntry.dn(), storeEntry.getKey(password), request.signatureAlgorithm());
 		CertObjectHolder<X509CRL> crlHolder = this.storeHandler.createCRL(storeEntry.id(), crl);
 

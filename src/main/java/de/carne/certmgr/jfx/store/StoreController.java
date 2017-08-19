@@ -18,6 +18,8 @@ package de.carne.certmgr.jfx.store;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.cert.X509CRL;
@@ -70,10 +72,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.input.Clipboard;
@@ -135,6 +139,18 @@ public class StoreController extends StageController {
 	@SuppressWarnings("null")
 	@FXML
 	CheckMenuItem cmdToggleLogView;
+
+	@SuppressWarnings("null")
+	@FXML
+	MenuItem cmdContextCopyEntry;
+
+	@SuppressWarnings("null")
+	@FXML
+	MenuItem cmdContextCopyEntryAttribute;
+
+	@SuppressWarnings("null")
+	@FXML
+	MenuItem cmdContextDeleteEntry;
 
 	@SuppressWarnings("null")
 	@FXML
@@ -279,6 +295,68 @@ public class StoreController extends StageController {
 				content.putFiles(entryFiles);
 				clipboard.setContent(content);
 			}
+		}
+	}
+
+	@SuppressWarnings("unused")
+	@FXML
+	void onCmdCopyEntryDN(ActionEvent evt) {
+		TreeItem<StoreEntryModel> selectedItem = this.ctlStoreEntryView.getSelectionModel().getSelectedItem();
+
+		if (selectedItem != null) {
+			Clipboard clipboard = Clipboard.getSystemClipboard();
+			ClipboardContent content = new ClipboardContent();
+
+			content.putString(selectedItem.getValue().getName());
+			clipboard.setContent(content);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	@FXML
+	void onCmdCopyEntryAttribute(ActionEvent evt) {
+		TreeItem<AttributeModel> selectedItem = this.ctlDetailsView.getSelectionModel().getSelectedItem();
+
+		if (selectedItem != null) {
+			Clipboard clipboard = Clipboard.getSystemClipboard();
+			ClipboardContent content = new ClipboardContent();
+
+			content.putString(selectedItem.getValue().toString());
+			clipboard.setContent(content);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	@FXML
+	void onCmdCopyEntryAttributes(ActionEvent evt) {
+		TreeItem<AttributeModel> rootItem = this.ctlDetailsView.getRoot();
+
+		if (rootItem != null) {
+			StringWriter buffer = new StringWriter();
+			PrintWriter writer = new PrintWriter(buffer);
+
+			for (TreeItem<AttributeModel> attributeItem : rootItem.getChildren()) {
+				copyEntryAttributesHelper(writer, attributeItem, "");
+			}
+
+			writer.flush();
+
+			Clipboard clipboard = Clipboard.getSystemClipboard();
+			ClipboardContent content = new ClipboardContent();
+
+			content.putString(buffer.toString());
+			clipboard.setContent(content);
+		}
+	}
+
+	private void copyEntryAttributesHelper(PrintWriter writer, TreeItem<AttributeModel> item, String indent) {
+		writer.print(indent);
+		writer.println(item.getValue());
+
+		String nextIndent = "  " + indent;
+
+		for (TreeItem<AttributeModel> childItem : item.getChildren()) {
+			copyEntryAttributesHelper(writer, childItem, nextIndent);
 		}
 	}
 
@@ -480,10 +558,50 @@ public class StoreController extends StageController {
 		this.cmdManageCRLButton.disableProperty().bind(this.cmdManageCRL.disableProperty());
 		this.cmdExportCertButton.disableProperty().bind(this.cmdExportCert.disableProperty());
 		this.cmdImportCertsButton.disableProperty().bind(this.cmdImportCerts.disableProperty());
+
+		ContextMenu storeEntryViewMenu = this.ctlStoreEntryView.getContextMenu();
+
+		this.ctlStoreEntryView.setContextMenu(null);
+		this.ctlStoreEntryView.setRowFactory(param -> {
+			ContextMenu menu = storeEntryViewMenu;
+
+			TreeTableRow<StoreEntryModel> row = new TreeTableRow<StoreEntryModel>() {
+
+				@Override
+				protected void updateItem(@Nullable StoreEntryModel item, boolean empty) {
+					super.updateItem(item, empty);
+					if (!empty) {
+						setContextMenu(menu);
+					}
+				}
+
+			};
+			return row;
+		});
 		this.ctlStoreEntryViewId.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
 		this.ctlStoreEntryViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlStoreEntryViewSerial.setCellValueFactory(new TreeItemPropertyValueFactory<>("serial"));
 		this.ctlStoreEntryViewExpires.setCellValueFactory(new TreeItemPropertyValueFactory<>("expires"));
+
+		ContextMenu detailsViewMenu = this.ctlDetailsView.getContextMenu();
+
+		this.ctlDetailsView.setContextMenu(null);
+		this.ctlDetailsView.setRowFactory(param -> {
+			ContextMenu menu = detailsViewMenu;
+
+			TreeTableRow<AttributeModel> row = new TreeTableRow<AttributeModel>() {
+
+				@Override
+				protected void updateItem(@Nullable AttributeModel item, boolean empty) {
+					super.updateItem(item, empty);
+					if (!empty) {
+						setContextMenu(menu);
+					}
+				}
+
+			};
+			return row;
+		});
 		this.ctlDetailsViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlDetailsViewValue.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));
 		this.ctlStoreEntryView.getSelectionModel().selectedItemProperty()
@@ -512,7 +630,7 @@ public class StoreController extends StageController {
 		}
 	}
 
-	private UserCertStoreEntry getSelectedStoreEntry() {
+	private @Nullable UserCertStoreEntry getSelectedStoreEntry() {
 		TreeItem<StoreEntryModel> selectedItem = this.ctlStoreEntryView.getSelectionModel().getSelectedItem();
 
 		return (selectedItem != null ? selectedItem.getValue().getEntry() : null);

@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -245,6 +246,38 @@
                         <TreeTableColumn fx:id="ctlStoreEntryViewSerial" editable="false" maxWidth="1.7976931348623157E308" prefWidth="60.0" text="%_STR_COL_SERIAL" />
                         <TreeTableColumn fx:id="ctlStoreEntryViewExpires" editable="false" maxWidth="1.7976931348623157E308" prefWidth="120.0" text="%_STR_COL_EXPIRES" />
                     </columns>
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#onCmdCopyEntry" text="%_STR_MENU_COPY_ENTRY">
+                                 <graphic>
+                                    <ImageView pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../resources/imageCopyEntry16.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </MenuItem>
+                              <MenuItem mnemonicParsing="false" onAction="#onCmdCopyEntryDN" text="%_STR_MENU_COPY_ENTRY_DN">
+                                 <graphic>
+                                    <ImageView pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../resources/imageCopyEntry16.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic></MenuItem>
+                              <MenuItem mnemonicParsing="false" onAction="#onCmdDeleteEntry" text="%_STR_MENU_DELETE_ENTRY">
+                                 <graphic>
+                                    <ImageView pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../resources/imageDeleteEntry16.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </MenuItem>
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
                   </TreeTableView>
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0">
@@ -254,6 +287,28 @@
                       <TreeTableColumn fx:id="ctlDetailsViewName" editable="false" maxWidth="1.7976931348623157E308" prefWidth="180.0" text="%_STR_COL_ATTRIBUTE" />
                       <TreeTableColumn fx:id="ctlDetailsViewValue" editable="false" maxWidth="1.7976931348623157E308" prefWidth="240.0" text="%_STR_COL_VALUE" />
                     </columns>
+                     <contextMenu>
+                        <ContextMenu>
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#onCmdCopyEntryAttribute" text="%_STR_MENU_COPY_ENTRY_ATTRIBUTE">
+                                 <graphic>
+                                    <ImageView pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../resources/imageCopyEntry16.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic></MenuItem>
+                              <MenuItem mnemonicParsing="false" onAction="#onCmdCopyEntryAttributes" text="%_STR_MENU_COPY_ENTRY_ATTRIBUTES">
+                                 <graphic>
+                                    <ImageView pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../resources/imageCopyEntry16.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic></MenuItem>
+                          </items>
+                        </ContextMenu>
+                     </contextMenu>
                   </TreeTableView>
                </children></AnchorPane>
         </items>

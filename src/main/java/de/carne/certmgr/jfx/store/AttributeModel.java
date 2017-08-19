@@ -17,6 +17,7 @@
 package de.carne.certmgr.jfx.store;
 
 import de.carne.certmgr.certs.x509.Attributes;
+import de.carne.check.Nullable;
 import de.carne.util.Strings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -42,9 +43,9 @@ public class AttributeModel {
 	 * Construct {@code AttributeValue}.
 	 *
 	 * @param name The attribute name.
-	 * @param value The attribute value.
+	 * @param value The attribute value (may be {@code null}).
 	 */
-	public AttributeModel(String name, String value) {
+	public AttributeModel(String name, @Nullable String value) {
 		this.nameProperty = new SimpleStringProperty(name);
 		this.valueProperty = new SimpleStringProperty(Strings.safe(value));
 	}
@@ -110,6 +111,21 @@ public class AttributeModel {
 	 */
 	public final StringProperty valueProperty() {
 		return this.valueProperty;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder buffer = new StringBuilder();
+
+		buffer.append(this.nameProperty.get());
+
+		String value = this.valueProperty.get();
+
+		if (Strings.notEmpty(value)) {
+			buffer.append(": ");
+			buffer.append(value);
+		}
+		return buffer.toString();
 	}
 
 }
