@@ -16,6 +16,8 @@
  */
 package de.carne.certmgr.certs.x509;
 
+import de.carne.check.Nullable;
+
 abstract class Enumeration<T> {
 
 	private final String name;
@@ -51,7 +53,7 @@ abstract class Enumeration<T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return this == obj || (obj instanceof KeyUsage && this.value.equals(((Enumeration<?>) obj).value));
 	}
 

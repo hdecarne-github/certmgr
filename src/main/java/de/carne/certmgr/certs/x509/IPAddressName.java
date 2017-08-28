@@ -22,6 +22,7 @@ import java.net.InetAddress;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.util.Arrays;
 
 import de.carne.check.Nullable;
@@ -84,8 +85,13 @@ public class IPAddressName extends GeneralName {
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		byte[] addressBytes = this.address.getAddress();
+		byte[] netmaskBytes = (this.netmask != null ? this.netmask.getAddress() : new byte[0]);
+		byte[] encodedBytes = new byte[addressBytes.length + netmaskBytes.length];
+
+		System.arraycopy(addressBytes, 0, encodedBytes, 0, addressBytes.length);
+		System.arraycopy(netmaskBytes, 0, encodedBytes, addressBytes.length, netmaskBytes.length);
+		return new DEROctetString(encodedBytes);
 	}
 
 	@Override
@@ -93,15 +99,18 @@ public class IPAddressName extends GeneralName {
 		StringBuilder buffer = new StringBuilder();
 
 		buffer.append(this.address.getHostAddress());
-		if (this.netmask != null) {
-			buffer.append('/').append(this.netmask.getHostAddress());
+
+		InetAddress checkedNetmask = this.netmask;
+
+		if (checkedNetmask != null) {
+			buffer.append('/').append(checkedNetmask.getHostAddress());
 		}
 		return buffer.toString();
 	}
 
 	/**
 	 * Get this name's address.
-	 * 
+	 *
 	 * @return This name's address.
 	 */
 	public InetAddress getAddress() {
@@ -110,7 +119,7 @@ public class IPAddressName extends GeneralName {
 
 	/**
 	 * Get this name's network mask.
-	 * 
+	 *
 	 * @return This name's network mask (may be {@code null})..
 	 */
 	@Nullable

@@ -49,6 +49,7 @@ public class CustomExtensionData extends X509ExtensionData {
 	 *
 	 * @return This extension's encoded data.
 	 */
+	@Override
 	public byte[] getEncoded() {
 		return this.encoded;
 	}

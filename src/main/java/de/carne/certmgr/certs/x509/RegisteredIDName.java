@@ -56,8 +56,7 @@ public class RegisteredIDName extends GeneralName {
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ASN1ObjectIdentifier(this.oid);
 	}
 
 	@Override

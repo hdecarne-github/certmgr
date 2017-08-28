@@ -184,7 +184,7 @@ public final class X509CRLHelper {
 		return crl;
 	}
 
-	private static BigInteger getNextCRLNumber(X509CRL crl) throws IOException {
+	private static BigInteger getNextCRLNumber(@Nullable X509CRL crl) throws IOException {
 		BigInteger nextCRLNumber = BigInteger.ONE;
 
 		if (crl != null) {

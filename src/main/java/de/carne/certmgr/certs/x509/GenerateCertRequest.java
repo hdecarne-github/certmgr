@@ -23,15 +23,20 @@ import javax.security.auth.x500.X500Principal;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.generator.Issuer;
+import de.carne.check.Nullable;
 
 /**
  * Parameter container for certificate generation.
  */
 public class GenerateCertRequest extends CertParams {
 
+	@Nullable
 	private Issuer issuer = null;
+	@Nullable
 	private SignatureAlgorithm signatureAlgorithm = null;
+	@Nullable
 	private Date notBefore = null;
+	@Nullable
 	private Date notAfter = null;
 
 	/**
@@ -59,6 +64,7 @@ public class GenerateCertRequest extends CertParams {
 	 *
 	 * @return The issuer to use for generation.
 	 */
+	@Nullable
 	public Issuer getIssuer() {
 		return this.issuer;
 	}
@@ -77,6 +83,7 @@ public class GenerateCertRequest extends CertParams {
 	 *
 	 * @return The signature algorithm to use for generation.
 	 */
+	@Nullable
 	public SignatureAlgorithm getSignatureAlgorithm() {
 		return this.signatureAlgorithm;
 	}
@@ -95,6 +102,7 @@ public class GenerateCertRequest extends CertParams {
 	 *
 	 * @return The validity begin date.
 	 */
+	@Nullable
 	public Date getNotBefore() {
 		return this.notBefore;
 	}
@@ -113,6 +121,7 @@ public class GenerateCertRequest extends CertParams {
 	 *
 	 * @return The validity end date.
 	 */
+	@Nullable
 	public Date getNotAfter() {
 		return this.notAfter;
 	}

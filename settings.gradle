@@ -1,8 +1,8 @@
 rootProject.name = 'de.carne.certmgr'
 
-if (new File(rootDir, '../java-default').exists()) {
+if (file(rootDir, '../java-default').exists()) {
 	includeBuild '../java-default'
 }	
-if (new File(rootDir, '../java-jfx').exists()) {
+if (file(rootDir, '../java-jfx').exists()) {
 	includeBuild '../java-jfx'
 }

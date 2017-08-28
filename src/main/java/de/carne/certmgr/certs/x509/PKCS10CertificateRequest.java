@@ -50,6 +50,7 @@ import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
+import de.carne.check.Nullable;
 import de.carne.util.logging.Log;
 
 /**
@@ -234,8 +235,7 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.csr.toASN1Structure();
 	}
 
 	@Override
@@ -265,7 +265,7 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 	}
 
 	@Override
-	public byte[] getExtensionValue(String oid) {
+	public byte[] getExtensionValue(@Nullable String oid) {
 		return this.criticalExtensions.getOrDefault(oid, this.nonCriticalExtensions.get(oid));
 	}
 
@@ -275,7 +275,7 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		return obj instanceof PKCS10CertificateRequest && this.csr.equals(((PKCS10CertificateRequest) obj).csr);
 	}
 
