@@ -294,6 +294,32 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	private int crlNumber = 1;
 
 	/**
+	 * Wrap a single store entry into a store.
+	 *
+	 * @param entry The entry to wrap.
+	 * @return The certificate store containing the submitted entry object.
+	 */
+	public static CertObjectStore wrap(Entry entry) {
+		CertObjectStore store = new CertObjectStore();
+
+		switch (entry.type()) {
+		case CRT:
+			store.addCRT(entry.alias(), entry.getCRT());
+			break;
+		case KEY:
+			store.addKey(entry.alias(), entry.getKey());
+			break;
+		case CSR:
+			store.addCSR(entry.alias(), entry.getCSR());
+			break;
+		case CRL:
+			store.addCRL(entry.alias(), entry.getCRL());
+			break;
+		}
+		return store;
+	}
+
+	/**
 	 * Add a CRT object to the store.
 	 *
 	 * @param crt The CRT object to add.

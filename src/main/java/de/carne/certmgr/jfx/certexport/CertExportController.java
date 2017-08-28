@@ -33,11 +33,15 @@ import de.carne.certmgr.certs.io.CertWriters;
 import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.jfx.password.PasswordDialog;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
+import de.carne.io.IOHelper;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.Late;
 import de.carne.util.Strings;
 import de.carne.util.prefs.PathPreference;
 import de.carne.util.validation.InputValidator;
@@ -70,7 +74,7 @@ public class CertExportController extends StageController {
 	private final PathPreference preferenceInitalDirectory = new PathPreference(this.preferences, "initialDirectory",
 			PathPreference.IS_DIRECTORY);
 
-	private UserCertStoreEntry exportEntry;
+	private Late<UserCertStoreEntry> exportEntryParam = new Late<>();
 
 	@SuppressWarnings("null")
 	@FXML
@@ -132,6 +136,7 @@ public class CertExportController extends StageController {
 	@FXML
 	CheckBox ctlExportChainRootOption;
 
+	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportKeyOption;
 
@@ -203,9 +208,9 @@ public class CertExportController extends StageController {
 						exportCSR, exportCRL, exportFormat, exportFile, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Path param, CertObjectStore exportObjects,
+					protected void export(CertWriter format, @Nullable Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
-						exportToFile(format, param, exportObjects, encryptExport);
+						exportToFile(format, Check.nonNull(param), exportObjects, encryptExport);
 					}
 
 				});
@@ -216,9 +221,9 @@ public class CertExportController extends StageController {
 						exportCSR, exportCRL, exportFormat, exportDirectory, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Path param, CertObjectStore exportObjects,
+					protected void export(CertWriter format, @Nullable Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
-						exportToDirectory(format, param, exportObjects, encryptExport);
+						exportToDirectory(format, Check.nonNull(param), exportObjects, encryptExport);
 					}
 
 				});
@@ -227,7 +232,7 @@ public class CertExportController extends StageController {
 						exportCSR, exportCRL, exportFormat, null, encrypt) {
 
 					@Override
-					protected void export(CertWriter format, Void param, CertObjectStore exportObjects,
+					protected void export(CertWriter format, @Nullable Void param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
 						exportToClipboard(format, exportObjects, encryptExport);
 					}
@@ -273,21 +278,21 @@ public class CertExportController extends StageController {
 	/**
 	 * Initialize dialog for certificate generation.
 	 *
-	 * @param exportEntryParam The store entry to export.
+	 * @param exportEntry The store entry to export.
 	 * @return This controller.
 	 */
-	public CertExportController init(UserCertStoreEntry exportEntryParam) {
-		this.exportEntry = exportEntryParam;
-		this.ctlCertField.setText(this.exportEntry.getName());
-		this.ctlExportCertOption.setDisable(!this.exportEntry.hasCRT());
-		this.ctlExportCertOption.setSelected(this.exportEntry.hasCRT());
-		this.ctlExportChainOption.setSelected(!this.exportEntry.isSelfSigned());
-		this.ctlExportKeyOption.setDisable(!this.exportEntry.hasKey());
-		this.ctlExportKeyOption.setSelected(this.exportEntry.hasKey());
-		this.ctlExportCSROption.setDisable(!this.exportEntry.hasCSR());
-		this.ctlExportCSROption.setSelected(this.exportEntry.hasCSR());
-		this.ctlExportCRLOption.setDisable(!this.exportEntry.hasCRL());
-		this.ctlExportCRLOption.setSelected(this.exportEntry.hasCRL());
+	public CertExportController init(UserCertStoreEntry exportEntry) {
+		this.exportEntryParam.init(exportEntry);
+		this.ctlCertField.setText(exportEntry.getName());
+		this.ctlExportCertOption.setDisable(!exportEntry.hasCRT());
+		this.ctlExportCertOption.setSelected(exportEntry.hasCRT());
+		this.ctlExportChainOption.setSelected(!exportEntry.isSelfSigned());
+		this.ctlExportKeyOption.setDisable(!exportEntry.hasKey());
+		this.ctlExportKeyOption.setSelected(exportEntry.hasKey());
+		this.ctlExportCSROption.setDisable(!exportEntry.hasCSR());
+		this.ctlExportCSROption.setSelected(exportEntry.hasCSR());
+		this.ctlExportCRLOption.setDisable(!exportEntry.hasCRL());
+		this.ctlExportCRLOption.setSelected(exportEntry.hasCRL());
 		return this;
 	}
 
@@ -366,7 +371,21 @@ public class CertExportController extends StageController {
 
 	void exportToDirectory(CertWriter format, Path directory, CertObjectStore exportObjects, boolean encryptExport)
 			throws IOException {
+		for (CertObjectStore.Entry exportObject : exportObjects) {
+			String filePattern = exportObject.alias() + "-%d" + format.fileExtension(exportObject.getClass());
+			Path file = IOHelper.createUniqueFile(directory, filePattern);
 
+			try (IOResource<OutputStream> out = IOResource.newOutputStream(file.toString(), file,
+					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+				if (encryptExport) {
+					format.writeEncryptedBinary(out, CertObjectStore.wrap(exportObject),
+							PasswordDialog.enterNewPassword(this));
+				} else {
+					format.writeBinary(out, CertObjectStore.wrap(exportObject));
+				}
+			}
+		}
+		// TODO
 	}
 
 	void exportToClipboard(CertWriter format, CertObjectStore exportObjects, boolean encryptExport) throws IOException {
@@ -394,12 +413,13 @@ public class CertExportController extends StageController {
 	CertObjectStore getExportObjectList(boolean exportCert, boolean exportChain, boolean exportChainRoot,
 			boolean exportKey, boolean exportCSR, boolean exportCRL) throws IOException {
 		CertObjectStore exportObjects = new CertObjectStore();
-		String exportEntryAlias = this.exportEntry.id().getAlias();
+		UserCertStoreEntry exportEntry = this.exportEntryParam.get();
+		String exportEntryAlias = exportEntry.id().getAlias();
 
 		if (exportCert) {
-			exportObjects.addCRT(exportEntryAlias, this.exportEntry.getCRT());
-			if (exportChain && !this.exportEntry.isSelfSigned()) {
-				UserCertStoreEntry issuer = this.exportEntry.issuer();
+			exportObjects.addCRT(exportEntryAlias, exportEntry.getCRT());
+			if (exportChain && !exportEntry.isSelfSigned()) {
+				UserCertStoreEntry issuer = exportEntry.issuer();
 
 				while (!issuer.isSelfSigned()) {
 					if (issuer.hasCRT()) {
@@ -413,13 +433,13 @@ public class CertExportController extends StageController {
 			}
 		}
 		if (exportKey) {
-			exportObjects.addKey(exportEntryAlias, this.exportEntry.getKey(PasswordDialog.enterPassword(this)));
+			exportObjects.addKey(exportEntryAlias, exportEntry.getKey(PasswordDialog.enterPassword(this)));
 		}
 		if (exportCSR) {
-			exportObjects.addCSR(exportEntryAlias, this.exportEntry.getCSR());
+			exportObjects.addCSR(exportEntryAlias, exportEntry.getCSR());
 		}
 		if (exportCRL) {
-			exportObjects.addCRL(exportEntryAlias, this.exportEntry.getCRL());
+			exportObjects.addCRL(exportEntryAlias, exportEntry.getCRL());
 		}
 		return exportObjects;
 	}
@@ -433,11 +453,13 @@ public class CertExportController extends StageController {
 		private final boolean exportCSR;
 		private final boolean exportCRL;
 		private final CertWriter exportFormat;
+		@Nullable
 		private final P exportParam;
 		private final boolean encrypt;
 
 		ExportTask(boolean exportCert, boolean exportChain, boolean exportChainRoot, boolean exportKey,
-				boolean exportCSR, boolean exportCRL, CertWriter exportFormat, P exportParam, boolean encrypt) {
+				boolean exportCSR, boolean exportCRL, CertWriter exportFormat, @Nullable P exportParam,
+				boolean encrypt) {
 			this.exportCert = exportCert;
 			this.exportChain = exportChain;
 			this.exportChainRoot = exportChainRoot;
@@ -449,10 +471,11 @@ public class CertExportController extends StageController {
 			this.encrypt = encrypt;
 		}
 
-		protected abstract void export(CertWriter format, P param, CertObjectStore exportObjects, boolean encryptExport)
-				throws IOException;
+		protected abstract void export(CertWriter format, @Nullable P param, CertObjectStore exportObjects,
+				boolean encryptExport) throws IOException;
 
 		@Override
+		@Nullable
 		protected Void call() throws Exception {
 			CertObjectStore exportObjects = getExportObjectList(this.exportCert, this.exportChain, this.exportChainRoot,
 					this.exportKey, this.exportCSR, this.exportCRL);
