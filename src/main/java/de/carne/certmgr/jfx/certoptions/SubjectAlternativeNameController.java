@@ -21,6 +21,7 @@ import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
 import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.jfx.resources.Images;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
@@ -49,17 +50,19 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	private final ListViewEditor<GeneralName> namesEditor = new ListViewEditor<GeneralName>() {
 
 		@Override
+		@Nullable
 		protected GeneralName getInput() {
 			return getGeneralNameInput();
 		}
 
 		@Override
-		protected void setInput(GeneralName input) {
+		protected void setInput(@Nullable GeneralName input) {
 			setGeneralNameInput(input);
 		}
 
 	};
 
+	@Nullable
 	private SubjectAlternativeNameExtensionData extensionDataResult = null;
 
 	@SuppressWarnings("null")
@@ -103,6 +106,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 		this.namesEditor.onAddAction(evt);
 	}
 
+	@Nullable
 	GeneralName getGeneralNameInput() {
 		GeneralName name = null;
 
@@ -114,7 +118,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 		return name;
 	}
 
-	void setGeneralNameInput(GeneralName name) {
+	void setGeneralNameInput(@Nullable GeneralName name) {
 		if (name != null) {
 			this.ctlNameTypeOption.setValue(name.getType());
 			this.ctlNameInput.setText(name.toValueString());
@@ -195,7 +199,8 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 	}
 
 	@Override
-	public SubjectAlternativeNameExtensionData call(ButtonType param) {
+	@Nullable
+	public SubjectAlternativeNameExtensionData call(@Nullable ButtonType param) {
 		return this.extensionDataResult;
 	}
 

@@ -55,7 +55,7 @@ public class GenerateCertRequest extends CertParams {
 	 *
 	 * @param issuer The issuer to use for generation.
 	 */
-	public void setIssuer(Issuer issuer) {
+	public void setIssuer(@Nullable Issuer issuer) {
 		this.issuer = issuer;
 	}
 

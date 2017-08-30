@@ -74,7 +74,7 @@ public class CertExportController extends StageController {
 	private final PathPreference preferenceInitalDirectory = new PathPreference(this.preferences, "initialDirectory",
 			PathPreference.IS_DIRECTORY);
 
-	private Late<UserCertStoreEntry> exportEntryParam = new Late<>();
+	private final Late<UserCertStoreEntry> exportEntryParam = new Late<>();
 
 	@SuppressWarnings("null")
 	@FXML

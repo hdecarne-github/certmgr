@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import de.carne.certmgr.certs.security.CRLUpdatePeriod;
 import de.carne.certmgr.util.Days;
+import de.carne.check.Check;
 import de.carne.util.DefaultSet;
 
 /**
@@ -52,7 +53,7 @@ public class CRLUpdatePeriodTest {
 		for (CRLUpdatePeriod crlUpdatePeriod : crlUpdatePeriods) {
 			System.out.println(crlUpdatePeriod);
 		}
-		Assert.assertEquals(days42, crlUpdatePeriods.getDefault().days());
+		Assert.assertEquals(days42, Check.nonNull(crlUpdatePeriods.getDefault()).days());
 	}
 
 }

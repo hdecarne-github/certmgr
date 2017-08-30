@@ -67,15 +67,18 @@ public final class PasswordDialog implements PasswordCallback {
 	}
 
 	@Override
+	@Nullable
 	public char[] queryPassword(String resource) {
 		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, null), false);
 	}
 
 	@Override
+	@Nullable
 	public char[] requeryPassword(String resource, Throwable cause) {
 		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, cause), true);
 	}
 
+	@Nullable
 	private char[] queryPasswordHelper(Supplier<PasswordResult> query, boolean requery) {
 		PasswordResult passwordResult;
 

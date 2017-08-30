@@ -29,11 +29,13 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.jfx.util.converter.CRLUpdatePeriodStringConverter;
 import de.carne.certmgr.jfx.util.converter.CRTValidityPeriodStringConverter;
 import de.carne.certmgr.util.Days;
+import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.util.Late;
 import de.carne.util.Strings;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.PathValidator;
@@ -55,13 +57,11 @@ import javafx.util.converter.IntegerStringConverter;
 public class StorePreferencesController extends DialogController<UserCertStore>
 		implements Callback<ButtonType, UserCertStore> {
 
-	@Nullable
-	private UserCertStore store = null;
+	private final Late<UserCertStore> storeParam = new Late<>();
 
-	@Nullable
-	private UserCertStorePreferences storePreferences = null;
+	private final Late<UserCertStorePreferences> storePreferencesParam = new Late<>();
 
-	private boolean expertMode = false;
+	private boolean expertModeParam = false;
 
 	@SuppressWarnings("null")
 	@FXML
@@ -110,25 +110,28 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		Integer keySizeDefaultHint = null;
 		String sigAlgDefaultHint = null;
 
-		if (this.storePreferences != null
-				&& keyAlg.algorithm().equals(this.storePreferences.defaultKeyPairAlgorithm.get())) {
-			keySizeDefaultHint = this.storePreferences.defaultKeySize.get();
-			sigAlgDefaultHint = this.storePreferences.defaultSignatureAlgorithm.get();
+		if (this.storePreferencesParam.isInitialized()) {
+			UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
+
+			if (keyAlg.algorithm().equals(storePreferences.defaultKeyPairAlgorithm.get())) {
+				keySizeDefaultHint = storePreferences.defaultKeySize.get();
+				sigAlgDefaultHint = storePreferences.defaultSignatureAlgorithm.get();
+			}
 		}
 		Controls.resetComboBoxOptions(this.ctlDefKeySizeOption, keyAlg.getStandardKeySizes(keySizeDefaultHint),
 				(o1, o2) -> o1.compareTo(o2));
 		Controls.resetComboBoxOptions(this.ctlDefSigAlgOption,
-				SignatureAlgorithm.getDefaultSet(keyAlg.algorithm(), sigAlgDefaultHint, this.expertMode),
+				SignatureAlgorithm.getDefaultSet(keyAlg.algorithm(), sigAlgDefaultHint, this.expertModeParam),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
 	private void onApply(ActionEvent evt) {
-		if (this.store == null) {
+		if (!this.storeParam.isInitialized()) {
 			try {
 				Path storeHome = validateStoreHomeInput();
 
-				this.store = UserCertStore.createStore(storeHome);
-				this.storePreferences = this.store.storePreferences();
+				this.storeParam.init(UserCertStore.createStore(storeHome));
+				this.storePreferencesParam.init(Check.nonNull(this.storeParam.get().storePreferences()));
 			} catch (ValidationException e) {
 				ValidationAlerts.error(e).showAndWait();
 				evt.consume();
@@ -137,14 +140,16 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				evt.consume();
 			}
 		}
-		if (this.storePreferences != null) {
+		if (this.storePreferencesParam.isInitialized()) {
 			try {
-				this.storePreferences.defaultCRTValidityPeriod.put(validateDefCRTValidityInput().days().count());
-				this.storePreferences.defaultCRLUpdatePeriod.put(validateDefCRLUpdateInput().days().count());
-				this.storePreferences.defaultKeyPairAlgorithm.put(validateDefKeyAlgInput().algorithm());
-				this.storePreferences.defaultKeySize.put(validateDefKeySizeInput());
-				this.storePreferences.defaultSignatureAlgorithm.put(validateDefSigAlgInput().algorithm());
-				this.storePreferences.sync();
+				UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
+
+				storePreferences.defaultCRTValidityPeriod.put(validateDefCRTValidityInput().days().count());
+				storePreferences.defaultCRLUpdatePeriod.put(validateDefCRLUpdateInput().days().count());
+				storePreferences.defaultKeyPairAlgorithm.put(validateDefKeyAlgInput().algorithm());
+				storePreferences.defaultKeySize.put(validateDefKeySizeInput());
+				storePreferences.defaultSignatureAlgorithm.put(validateDefSigAlgInput().algorithm());
+				storePreferences.sync();
 			} catch (ValidationException e) {
 				ValidationAlerts.error(e).showAndWait();
 				evt.consume();
@@ -166,12 +171,11 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	/**
 	 * Initialize dialog for creating a new store.
 	 *
-	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
-	public StorePreferencesController init(boolean expertModeParam) {
-		this.store = null;
-		this.expertMode = expertModeParam;
+	public StorePreferencesController init(boolean expertMode) {
+		this.expertModeParam = expertMode;
 		initExpertMode();
 		initDefCRTValidityPeriods();
 		initDefCRLUpdatePeriods();
@@ -183,16 +187,16 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	/**
 	 * Initialize dialog for editing an existing store's preferences.
 	 *
-	 * @param storeParam The store to edit the preferences for.
-	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
+	 * @param store The store to edit the preferences for.
+	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
-	public StorePreferencesController init(UserCertStore storeParam, boolean expertModeParam) {
-		this.store = storeParam;
-		this.storePreferences = this.store.storePreferences();
-		this.expertMode = expertModeParam;
+	public StorePreferencesController init(UserCertStore store, boolean expertMode) {
+		this.storeParam.init(store);
+		this.storePreferencesParam.init(Check.nonNull(store.storePreferences()));
+		this.expertModeParam = expertMode;
 
-		Path storeHome = this.store.storeHome();
+		Path storeHome = Check.nonNull(store.storeHome());
 
 		this.ctlNameInput.setText(storeHome.getFileName().toString());
 		this.ctlNameInput.setDisable(true);
@@ -207,24 +211,24 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	}
 
 	private void initExpertMode() {
-		this.ctlDefCRTValidityInput.setEditable(this.expertMode);
+		this.ctlDefCRTValidityInput.setEditable(this.expertModeParam);
 
 		CRTValidityPeriodStringConverter defCRTValidityConverter = new CRTValidityPeriodStringConverter();
 
 		defCRTValidityConverter.attach(this.ctlDefCRTValidityInput);
-		this.ctlDefCRLUpdateInput.setEditable(this.expertMode);
+		this.ctlDefCRLUpdateInput.setEditable(this.expertModeParam);
 
 		CRLUpdatePeriodStringConverter defCRLUpdateConverter = new CRLUpdatePeriodStringConverter();
 
 		defCRLUpdateConverter.attach(this.ctlDefCRLUpdateInput);
-		this.ctlDefKeySizeOption.setEditable(this.expertMode);
+		this.ctlDefKeySizeOption.setEditable(this.expertModeParam);
 	}
 
 	private void initDefCRTValidityPeriods() {
 		Days defaultHint = null;
 
-		if (this.storePreferences != null) {
-			defaultHint = new Days(this.storePreferences.defaultCRTValidityPeriod.getInt(0));
+		if (this.storePreferencesParam.isInitialized()) {
+			defaultHint = new Days(this.storePreferencesParam.get().defaultCRTValidityPeriod.getInt(0));
 		}
 		Controls.resetComboBoxOptions(this.ctlDefCRTValidityInput, CRTValidityPeriod.getDefaultSet(defaultHint),
 				(o1, o2) -> o1.days().compareTo(o2.days()));
@@ -233,8 +237,8 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefCRLUpdatePeriods() {
 		Days defaultHint = null;
 
-		if (this.storePreferences != null) {
-			defaultHint = new Days(this.storePreferences.defaultCRLUpdatePeriod.getInt(0));
+		if (this.storePreferencesParam.isInitialized()) {
+			defaultHint = new Days(this.storePreferencesParam.get().defaultCRLUpdatePeriod.getInt(0));
 		}
 		Controls.resetComboBoxOptions(this.ctlDefCRLUpdateInput, CRLUpdatePeriod.getDefaultSet(defaultHint),
 				(o1, o2) -> o1.days().compareTo(o2.days()));
@@ -243,17 +247,18 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefKeyAlgOptions() {
 		String defaultHint = null;
 
-		if (this.storePreferences != null) {
-			defaultHint = this.storePreferences.defaultKeyPairAlgorithm.get();
+		if (this.storePreferencesParam.isInitialized()) {
+			defaultHint = this.storePreferencesParam.get().defaultKeyPairAlgorithm.get();
 		}
 		Controls.resetComboBoxOptions(this.ctlDefKeyAlgOption,
-				KeyPairAlgorithm.getDefaultSet(defaultHint, this.expertMode),
+				KeyPairAlgorithm.getDefaultSet(defaultHint, this.expertModeParam),
 				(o1, o2) -> o1.toString().compareTo(o2.toString()));
 	}
 
 	@Override
+	@Nullable
 	public UserCertStore call(@Nullable ButtonType param) {
-		return this.store;
+		return this.storeParam.getIfInitialized();
 	}
 
 	private Path validateStoreHomeInput() throws ValidationException {

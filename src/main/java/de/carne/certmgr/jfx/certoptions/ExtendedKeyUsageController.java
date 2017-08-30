@@ -21,6 +21,7 @@ import java.util.Set;
 
 import de.carne.certmgr.certs.x509.ExtendedKeyUsage;
 import de.carne.certmgr.certs.x509.ExtendedKeyUsageExtensionData;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -38,6 +39,7 @@ import javafx.util.Callback;
 public class ExtendedKeyUsageController extends DialogController<ExtendedKeyUsageExtensionData>
 		implements Callback<ButtonType, ExtendedKeyUsageExtensionData> {
 
+	@Nullable
 	private ExtendedKeyUsageExtensionData extensionDataResult = null;
 
 	@SuppressWarnings("null")
@@ -117,7 +119,8 @@ public class ExtendedKeyUsageController extends DialogController<ExtendedKeyUsag
 	}
 
 	@Override
-	public ExtendedKeyUsageExtensionData call(ButtonType param) {
+	@Nullable
+	public ExtendedKeyUsageExtensionData call(@Nullable ButtonType param) {
 		return this.extensionDataResult;
 	}
 

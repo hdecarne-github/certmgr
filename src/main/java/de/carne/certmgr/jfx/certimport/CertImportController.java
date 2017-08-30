@@ -97,7 +97,7 @@ public class CertImportController extends StageController {
 			() -> new UserCertStoreTreeTableViewHelper<>(this.ctlImportEntryView,
 					(e) -> new ImportEntryModel(e, false)));
 
-	private Late<UserCertStore> importStoreParam = new Late<>();
+	private final Late<UserCertStore> importStoreParam = new Late<>();
 
 	@Nullable
 	private UserCertStore sourceStore = null;

@@ -52,17 +52,20 @@ import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.certs.x509.generator.CertGenerators;
 import de.carne.certmgr.certs.x509.generator.Issuer;
+import de.carne.check.Check;
 import de.carne.io.IOHelper;
 import de.carne.util.DefaultSet;
+import de.carne.util.Exceptions;
+import de.carne.util.Late;
 
 /**
  * Test {@link UserCertStore} class functionality.
  */
 public class UserCertStoreTest {
 
-	private static Path tempPath = null;
+	private static final Late<Path> tempPath = new Late<>();
 
-	private static Path testStorePath = null;
+	private static final Late<Path> testStorePath = new Late<>();
 
 	/**
 	 * Register BouncyCastle Provider.
@@ -79,10 +82,10 @@ public class UserCertStoreTest {
 	 */
 	@BeforeClass
 	public static void setupTempPath() throws IOException {
-		tempPath = Files.createTempDirectory(UserCertStoreTest.class.getSimpleName());
+		tempPath.init(Files.createTempDirectory(UserCertStoreTest.class.getSimpleName()));
 		System.out.println("Using temporary directory: " + tempPath);
-		testStorePath = IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath, null)
-				.resolve(TestCerts.TEST_STORE_NAME);
+		testStorePath.init(IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath.get(), null)
+				.resolve(TestCerts.TEST_STORE_NAME));
 	}
 
 	/**
@@ -92,7 +95,7 @@ public class UserCertStoreTest {
 	 */
 	@AfterClass
 	public static void deleteTempPath() throws Exception {
-		IOHelper.deleteDirectoryTree(tempPath);
+		IOHelper.deleteDirectoryTree(tempPath.get());
 	}
 
 	private static final String NAME_STORE1 = "store1";
@@ -102,7 +105,7 @@ public class UserCertStoreTest {
 	 */
 	@Test
 	public void testCreateAndOpenStore() {
-		Path storeHome = tempPath.resolve(NAME_STORE1);
+		Path storeHome = tempPath.get().resolve(NAME_STORE1);
 
 		try {
 			UserCertStore createdStore = UserCertStore.createStore(storeHome);
@@ -124,7 +127,7 @@ public class UserCertStoreTest {
 			UserCertStore.createStore(storeHome);
 			Assert.fail("Re-creating store succeeded, but should not");
 		} catch (FileAlreadyExistsException e) {
-			// Expected
+			Exceptions.ignore(e);
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -138,9 +141,9 @@ public class UserCertStoreTest {
 	}
 
 	private GenerateCertRequest basicRequest() {
-		KeyPairAlgorithm keyPairAlgorithm = KeyPairAlgorithm.getDefaultSet(null, false).getDefault();
+		KeyPairAlgorithm keyPairAlgorithm = Check.nonNull(KeyPairAlgorithm.getDefaultSet(null, false).getDefault());
 		GenerateCertRequest request = new GenerateCertRequest(X500Names.fromString("CN=TestCert"), keyPairAlgorithm,
-				keyPairAlgorithm.getStandardKeySizes(null).getDefault());
+				Check.nonNull(keyPairAlgorithm.getStandardKeySizes(null).getDefault()));
 
 		Date notBefore = new Date();
 		Date notAfter = new Date(notBefore.getTime() + 1000 * 60 * 24);
@@ -157,8 +160,9 @@ public class UserCertStoreTest {
 			request.setIssuer(generator.getIssuers(store, null).getDefault());
 		}
 		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_SIGNATURE_ALGORITHM)) {
-			request.setSignatureAlgorithm(generator
-					.getSignatureAlgorithms(request.getIssuer(), request.keyPairAlgorithm(), null, false).getDefault());
+			request.setSignatureAlgorithm(Check.nonNull(
+					generator.getSignatureAlgorithms(request.getIssuer(), request.keyPairAlgorithm(), null, false)
+							.getDefault()));
 		}
 		request.addExtension(new BasicConstraintsExtensionData(false, ca, null));
 		return request;
@@ -170,7 +174,7 @@ public class UserCertStoreTest {
 	@Test
 	public void testAccessStore() {
 		try {
-			UserCertStore store = UserCertStore.openStore(testStorePath);
+			UserCertStore store = UserCertStore.openStore(testStorePath.get());
 
 			Assert.assertEquals(12, store.size());
 			Assert.assertEquals(TestCerts.TEST_STORE_NAME, store.storeName());
@@ -178,7 +182,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
 			// Check preferences access
-			UserCertStorePreferences loadPreferences = store.storePreferences();
+			UserCertStorePreferences loadPreferences = Check.nonNull(store.storePreferences());
 
 			Assert.assertEquals(Integer.valueOf(365), loadPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(30), loadPreferences.defaultCRLUpdatePeriod.get());
@@ -186,7 +190,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(Integer.valueOf(521), loadPreferences.defaultKeySize.get());
 			Assert.assertEquals("SHA256WITHECDSA", loadPreferences.defaultSignatureAlgorithm.get());
 
-			UserCertStorePreferences setPreferences = store.storePreferences();
+			UserCertStorePreferences setPreferences = Check.nonNull(store.storePreferences());
 
 			setPreferences.defaultCRTValidityPeriod.putInt(180);
 			setPreferences.defaultCRLUpdatePeriod.putInt(7);
@@ -195,7 +199,7 @@ public class UserCertStoreTest {
 			setPreferences.defaultSignatureAlgorithm.put("SHA256WITHECDSA");
 			setPreferences.sync();
 
-			UserCertStorePreferences getPreferences = store.storePreferences();
+			UserCertStorePreferences getPreferences = Check.nonNull(store.storePreferences());
 
 			Assert.assertEquals(Integer.valueOf(180), getPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(7), getPreferences.defaultCRLUpdatePeriod.get());
@@ -204,8 +208,8 @@ public class UserCertStoreTest {
 			Assert.assertEquals("SHA256WITHECDSA", getPreferences.defaultSignatureAlgorithm.get());
 
 			// Import access (with already existing entries)
-			UserCertStore importStore = UserCertStore.createFromFiles(IOHelper.collectDirectoryFiles(testStorePath),
-					TestCerts.password());
+			UserCertStore importStore = UserCertStore
+					.createFromFiles(IOHelper.collectDirectoryFiles(testStorePath.get()), TestCerts.password());
 
 			for (UserCertStoreEntry importStoreEntry : importStore.getEntries()) {
 				store.importEntry(importStoreEntry, TestCerts.password(), "Imported");
@@ -311,7 +315,7 @@ public class UserCertStoreTest {
 	@Test
 	public void testFilesSourceStore() {
 		try {
-			List<Path> files = IOHelper.collectDirectoryFiles(testStorePath);
+			List<Path> files = IOHelper.collectDirectoryFiles(testStorePath.get());
 			UserCertStore importStore = UserCertStore.createFromFiles(files, TestCerts.password());
 
 			Assert.assertNotNull(importStore);

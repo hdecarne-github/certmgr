@@ -44,7 +44,7 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 	public static final StringConverter<BasicConstraintsPathLen> CONVERTER = new StringConverter<BasicConstraintsPathLen>() {
 
 		@Override
-		public String toString(BasicConstraintsPathLen object) {
+		public String toString(@Nullable BasicConstraintsPathLen object) {
 			return Objects.toString(object, "");
 		}
 
@@ -60,7 +60,7 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 	@Nullable
 	private final BigInteger pathLenConstraint;
 
-	private BasicConstraintsPathLen(BigInteger pathLenConstraint) {
+	private BasicConstraintsPathLen(@Nullable BigInteger pathLenConstraint) {
 		this.pathLenConstraint = pathLenConstraint;
 	}
 
@@ -68,24 +68,26 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 		return new BasicConstraintsPathLen(BigInteger.valueOf(pathLenConstraint));
 	}
 
-	public static BasicConstraintsPathLen valueOf(BigInteger pathLenConstraint) {
+	public static BasicConstraintsPathLen valueOf(@Nullable BigInteger pathLenConstraint) {
 		return (pathLenConstraint != null ? new BasicConstraintsPathLen(pathLenConstraint) : NO_CONSTRAINT);
 	}
 
-	public BigInteger value() {
+	public @Nullable BigInteger value() {
 		return this.pathLenConstraint;
 	}
 
 	@Override
 	public int compareTo(@Nullable BasicConstraintsPathLen o) {
 		BasicConstraintsPathLen checkedO = Check.nonNull(o);
+		BigInteger checkedPathLenConstraint = this.pathLenConstraint;
+		BigInteger checkedOPathLenConstraint = checkedO.pathLenConstraint;
 		int comparision;
 
-		if (this.pathLenConstraint == null) {
-			comparision = (checkedO.pathLenConstraint == null ? 0 : 1);
+		if (checkedPathLenConstraint == null) {
+			comparision = (checkedOPathLenConstraint == null ? 0 : 1);
 		} else {
-			comparision = (checkedO.pathLenConstraint != null
-					? this.pathLenConstraint.compareTo(checkedO.pathLenConstraint) : -1);
+			comparision = (checkedOPathLenConstraint != null
+					? checkedPathLenConstraint.compareTo(checkedOPathLenConstraint) : -1);
 		}
 		return comparision;
 	}

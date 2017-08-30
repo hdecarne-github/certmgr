@@ -19,8 +19,10 @@ package de.carne.certmgr.jfx.preferences;
 import java.util.prefs.BackingStoreException;
 
 import de.carne.certmgr.jfx.store.UserPreferences;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.util.Late;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -33,7 +35,7 @@ import javafx.util.Callback;
 public class PreferencesController extends DialogController<UserPreferences>
 		implements Callback<ButtonType, UserPreferences> {
 
-	private UserPreferences preferences = null;
+	private final Late<UserPreferences> preferencesParam = new Late<>();
 
 	@SuppressWarnings("null")
 	@FXML
@@ -47,24 +49,25 @@ public class PreferencesController extends DialogController<UserPreferences>
 	/**
 	 * Initialize the preferences edited by the dialog.
 	 *
-	 * @param preferencesParam The initial preferences.
+	 * @param preferences The initial preferences.
 	 * @return This controller.
 	 */
-	public PreferencesController init(UserPreferences preferencesParam) {
-		this.preferences = preferencesParam;
-		this.ctlExpertModeOption.setSelected(this.preferences.expertMode.getBoolean(false));
+	public PreferencesController init(UserPreferences preferences) {
+		this.preferencesParam.init(preferences);
+		this.ctlExpertModeOption.setSelected(preferences.expertMode.getBoolean(false));
 		return this;
 	}
 
 	@Override
-	public UserPreferences call(ButtonType param) {
+	@Nullable
+	public UserPreferences call(@Nullable ButtonType param) {
 		UserPreferences dialogResult = null;
 
-		if (ButtonType.APPLY.getButtonData() == param.getButtonData()) {
-			this.preferences.expertMode.put(this.ctlExpertModeOption.isSelected());
+		if (param != null && ButtonType.APPLY.getButtonData() == param.getButtonData()) {
+			this.preferencesParam.get().expertMode.put(this.ctlExpertModeOption.isSelected());
 			try {
-				this.preferences.sync();
-				dialogResult = this.preferences;
+				this.preferencesParam.get().sync();
+				dialogResult = this.preferencesParam.get();
 			} catch (BackingStoreException e) {
 				Alerts.unexpected(e).showAndWait();
 			}

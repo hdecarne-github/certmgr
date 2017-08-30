@@ -38,6 +38,7 @@ import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.test.Tests;
+import de.carne.util.Exceptions;
 
 /**
  * Test Certificate Readers and Writers.
@@ -98,6 +99,7 @@ public class CertReadersWritersTest {
 		try (IOResource<OutputStream> out = IOResource.newOutputStream(testPath.toString(), testPath)) {
 			writer.writeBinary(out, certObjects);
 		} catch (UnsupportedOperationException e) {
+			Exceptions.ignore(e);
 			Assert.assertTrue(writer.isEncryptionRequired());
 		}
 		try (IOResource<OutputStream> out = IOResource.newOutputStream(testPath.toString(), testPath)) {

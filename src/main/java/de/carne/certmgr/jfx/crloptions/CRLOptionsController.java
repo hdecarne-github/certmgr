@@ -32,11 +32,14 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.ReasonFlag;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.certmgr.jfx.password.PasswordDialog;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.util.DefaultSet;
+import de.carne.util.Late;
 import de.carne.util.validation.InputValidator;
 import de.carne.util.validation.ValidationException;
 import javafx.collections.FXCollections;
@@ -60,7 +63,7 @@ import javafx.stage.Stage;
  */
 public class CRLOptionsController extends StageController {
 
-	private UserCertStoreEntry issuerEntry = null;
+	private final Late<UserCertStoreEntry> issuerEntryParam = new Late<>();
 
 	@SuppressWarnings("null")
 	@FXML
@@ -147,16 +150,16 @@ public class CRLOptionsController extends StageController {
 	/**
 	 * Initialize the dialog for CRL options editing.
 	 *
-	 * @param issuerEntryParam The CRL issuer to edit the options for.
+	 * @param issuerEntry The CRL issuer to edit the options for.
 	 * @param expertModeParam Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 * @throws IOException if an I/O error occurs during initialization.
 	 */
-	public CRLOptionsController init(UserCertStoreEntry issuerEntryParam, boolean expertModeParam) throws IOException {
-		this.issuerEntry = issuerEntryParam;
-		this.ctlIssuerField.setText(this.issuerEntry.getName());
+	public CRLOptionsController init(UserCertStoreEntry issuerEntry, boolean expertModeParam) throws IOException {
+		this.issuerEntryParam.init(issuerEntry);
+		this.ctlIssuerField.setText(issuerEntry.getName());
 
-		UserCertStorePreferences preferences = this.issuerEntry.store().storePreferences();
+		UserCertStorePreferences preferences = Check.nonNull(issuerEntry.store().storePreferences());
 
 		initSigAlgOptions(preferences, expertModeParam);
 		initUpdateOptions(preferences);
@@ -180,7 +183,7 @@ public class CRLOptionsController extends StageController {
 	}
 
 	private void initSigAlgOptions(UserCertStorePreferences preferences, boolean expertMode) throws IOException {
-		String keyAlgName = this.issuerEntry.getPublicKey().getAlgorithm();
+		String keyAlgName = this.issuerEntryParam.get().getPublicKey().getAlgorithm();
 		DefaultSet<SignatureAlgorithm> keyAlgs = SignatureAlgorithm.getDefaultSet(keyAlgName,
 				preferences.defaultSignatureAlgorithm.get(), expertMode);
 
@@ -193,7 +196,7 @@ public class CRLOptionsController extends StageController {
 
 		this.ctlLastUpdateInput.setValue(lastUpdate);
 
-		CRLUpdatePeriod defaultUpdatePeriod = CRLUpdatePeriod.getDefaultSet(null).getDefault();
+		CRLUpdatePeriod defaultUpdatePeriod = Check.nonNull(CRLUpdatePeriod.getDefaultSet(null).getDefault());
 		LocalDate nextUpdate = lastUpdate
 				.plusDays(preferences.defaultCRLUpdatePeriod.getInt(defaultUpdatePeriod.days().count()));
 
@@ -203,14 +206,14 @@ public class CRLOptionsController extends StageController {
 	private void initEntries() throws IOException {
 		ObservableList<CRLEntryModel> entryItems = this.ctlEntryOptions.getItems();
 
-		for (UserCertStoreEntry issuedEntry : this.issuerEntry.issuedEntries()) {
+		for (UserCertStoreEntry issuedEntry : this.issuerEntryParam.get().issuedEntries()) {
 			BigInteger issuedSerial = issuedEntry.getCRT().getSerialNumber();
 			boolean revoked = false;
 			ReasonFlag reason = ReasonFlag.UNSPECIFIED;
 			Date date = null;
 
-			if (this.issuerEntry.hasCRL()) {
-				X509CRL crl = this.issuerEntry.getCRL();
+			if (this.issuerEntryParam.get().hasCRL()) {
+				X509CRL crl = this.issuerEntryParam.get().getCRL();
 				X509CRLEntry crlEntry = crl.getRevokedCertificate(issuedSerial);
 
 				if (crlEntry != null) {
@@ -256,6 +259,7 @@ public class CRLOptionsController extends StageController {
 		return Date.from(localLastUpdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
+	@Nullable
 	private Date validateAndGetNextUpdate(Date lastUpdate) throws ValidationException {
 		LocalDate localNextUpdate = this.ctlNextUpdateInput.getValue();
 		Date nextUpdate = (localNextUpdate != null
@@ -273,7 +277,7 @@ public class CRLOptionsController extends StageController {
 	}
 
 	void updateCRL(UpdateCRLRequest updateRequest) throws IOException {
-		this.issuerEntry.updateCRL(updateRequest, PasswordDialog.enterPassword(this));
+		this.issuerEntryParam.get().updateCRL(updateRequest, PasswordDialog.enterPassword(this));
 	}
 
 	private class UpdateCRLTask extends BackgroundTask<Void> {
@@ -285,6 +289,7 @@ public class CRLOptionsController extends StageController {
 		}
 
 		@Override
+		@Nullable
 		protected Void call() throws Exception {
 			updateCRL(this.updateRequest);
 			return null;

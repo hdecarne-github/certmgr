@@ -25,6 +25,14 @@ import de.carne.jfx.scene.control.DialogHelper;
  */
 abstract class PasswordController extends DialogController<PasswordResult> {
 
+	/**
+	 * Initialize {@code PasswordController}.
+	 * 
+	 * @param resource The resource to get the password for.
+	 * @param rememberPassword Whether the remember password option has been selected by the user.
+	 * @param passwordException The possible exception of a previous enter password attempt (may be {@code null}).
+	 * @return The initialized password controller.
+	 */
 	public PasswordController init(String resource, boolean rememberPassword, @Nullable Throwable passwordException) {
 		getUI().setHeaderText(getHeaderText(resource));
 		DialogHelper.setExceptionContent(getUI(), passwordException);

@@ -23,6 +23,7 @@ import javax.security.auth.x500.X500Principal;
 
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.jfx.resources.Images;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
@@ -48,17 +49,19 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	private final ListViewEditor<Rdn> rdnEntriesEditor = new ListViewEditor<Rdn>() {
 
 		@Override
+		@Nullable
 		protected Rdn getInput() {
 			return getRdnInput();
 		}
 
 		@Override
-		protected void setInput(Rdn input) {
+		protected void setInput(@Nullable Rdn input) {
 			setRdnInput(input);
 		}
 
 	};
 
+	@Nullable
 	private X500Principal dnResult = null;
 
 	@SuppressWarnings("null")
@@ -98,6 +101,7 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 		this.rdnEntriesEditor.onAddAction(evt);
 	}
 
+	@Nullable
 	Rdn getRdnInput() {
 		String typeInput = Strings.safeSafeTrim(this.ctlTypeInput.getValue());
 		String valueInput = Strings.safeSafeTrim(this.ctlValueInput.getText());
@@ -118,7 +122,7 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 		return rdn;
 	}
 
-	void setRdnInput(Rdn rdn) {
+	void setRdnInput(@Nullable Rdn rdn) {
 		if (rdn != null) {
 			this.ctlTypeInput.setValue(rdn.getType());
 			this.ctlValueInput.setText(rdn.getValue().toString());
@@ -176,7 +180,8 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 	}
 
 	@Override
-	public X500Principal call(ButtonType param) {
+	@Nullable
+	public X500Principal call(@Nullable ButtonType param) {
 		return this.dnResult;
 	}
 

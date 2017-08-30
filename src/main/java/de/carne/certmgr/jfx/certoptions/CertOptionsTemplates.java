@@ -442,6 +442,10 @@ final class CertOptionsTemplates {
 		String dnInput = templateNode.get(Template.KEY_DN, null);
 
 		if (Strings.notEmpty(name) && Strings.notEmpty(aliasInput) && Strings.notEmpty(dnInput)) {
+			assert name != null;
+			assert aliasInput != null;
+			assert dnInput != null;
+
 			template = new Template(name, new CertOptionsPreset(aliasInput, dnInput));
 
 			@Nullable
@@ -469,6 +473,8 @@ final class CertOptionsTemplates {
 					byte[] data = extensionNode.getByteArray(Template.KEY_EXTENSION_DATA, null);
 
 					if (Strings.notEmpty(oid) && data != null) {
+						assert oid != null;
+
 						template.addExtension(X509ExtensionData.decode(oid, criticial, data));
 					} else {
 						LOG.warning("Ignoring incomplete extension node ''{0}''", extensionNode.absolutePath());

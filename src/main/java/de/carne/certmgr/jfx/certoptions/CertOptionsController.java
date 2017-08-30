@@ -91,15 +91,16 @@ public class CertOptionsController extends StageController {
 
 	private final Preferences preferences = Preferences.systemNodeForPackage(CertOptionsController.class);
 
-	private Late<UserCertStore> storeParam = new Late<>();
+	private final Late<UserCertStore> storeParam = new Late<>();
 
-	private Late<UserCertStorePreferences> storePreferencesParam = new Late<>();
+	private final Late<UserCertStorePreferences> storePreferencesParam = new Late<>();
 
-	private Late<UserCertStoreEntry> storeEntryParam = new Late<>();
+	@Nullable
+	private UserCertStoreEntry storeEntryParam = null;
 
 	private boolean expertModeParam = false;
 
-	private Late<CertOptionsPreset> defaultPresetParam = new Late<>();
+	private final Late<CertOptionsPreset> defaultPresetParam = new Late<>();
 
 	private final ObjectProperty<BasicConstraintsExtensionData> basicConstraintsExtension = new SimpleObjectProperty<>(
 			null);
@@ -479,7 +480,7 @@ public class CertOptionsController extends StageController {
 
 	private void onGeneratorChanged(@Nullable CertGenerator generator) {
 		DefaultSet<Issuer> issuers = (generator != null
-				? generator.getIssuers(this.storeParam.get(), this.storeEntryParam.getIfInitialized()) : null);
+				? generator.getIssuers(this.storeParam.get(), this.storeEntryParam) : null);
 
 		Controls.resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(generator);
@@ -522,10 +523,11 @@ public class CertOptionsController extends StageController {
 	 * @param expertMode Whether to run in expert mode ({@code true}) or not ({@code false}).
 	 * @return This controller.
 	 */
-	public CertOptionsController init(UserCertStore store, UserCertStoreEntry issuerEntry, boolean expertMode) {
+	public CertOptionsController init(UserCertStore store, @Nullable UserCertStoreEntry issuerEntry,
+			boolean expertMode) {
 		this.storeParam.init(store);
 		this.storePreferencesParam.init(Check.nonNull(store.storePreferences()));
-		this.storeEntryParam.init(issuerEntry);
+		this.storeEntryParam = issuerEntry;
 		this.expertModeParam = expertMode;
 		initExpertMode();
 		initCertificateNames();

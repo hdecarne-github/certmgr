@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
+import de.carne.check.Nullable;
 
 /**
  * Parameter container for CRL updating.
@@ -31,6 +32,7 @@ public class UpdateCRLRequest {
 
 	private final Map<BigInteger, ReasonFlag> revokeMap = new HashMap<>();
 	private final Date lastUpdate;
+	@Nullable
 	private final Date nextUpdate;
 	private final SignatureAlgorithm signatureAlgorithm;
 
@@ -41,7 +43,7 @@ public class UpdateCRLRequest {
 	 * @param nextUpdate The CRL's next update date (may be {@code null}).
 	 * @param signatureAlgorithm The signature algorithm to use for CRL signing.
 	 */
-	public UpdateCRLRequest(Date lastUpdate, Date nextUpdate, SignatureAlgorithm signatureAlgorithm) {
+	public UpdateCRLRequest(Date lastUpdate, @Nullable Date nextUpdate, SignatureAlgorithm signatureAlgorithm) {
 		this.lastUpdate = lastUpdate;
 		this.nextUpdate = nextUpdate;
 		this.signatureAlgorithm = signatureAlgorithm;
@@ -78,8 +80,9 @@ public class UpdateCRLRequest {
 	/**
 	 * Get the CRL's next update date.
 	 *
-	 * @return The CRL's next update date.
+	 * @return The CRL's next update date or {@code null} if undefined.
 	 */
+	@Nullable
 	public Date nextUpdate() {
 		return this.nextUpdate;
 	}

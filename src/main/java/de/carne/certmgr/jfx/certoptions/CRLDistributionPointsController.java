@@ -23,6 +23,7 @@ import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
 import de.carne.certmgr.jfx.resources.Images;
+import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
@@ -51,17 +52,19 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 	private final ListViewEditor<GeneralName> namesEditor = new ListViewEditor<GeneralName>() {
 
 		@Override
+		@Nullable
 		protected GeneralName getInput() {
 			return getGeneralNameInput();
 		}
 
 		@Override
-		protected void setInput(GeneralName input) {
+		protected void setInput(@Nullable GeneralName input) {
 			setGeneralNameInput(input);
 		}
 
 	};
 
+	@Nullable
 	private CRLDistributionPointsExtensionData extensionDataResult = null;
 
 	@SuppressWarnings("null")
@@ -105,6 +108,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 		this.namesEditor.onAddAction(evt);
 	}
 
+	@Nullable
 	GeneralName getGeneralNameInput() {
 		GeneralName name = null;
 
@@ -116,7 +120,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 		return name;
 	}
 
-	void setGeneralNameInput(GeneralName name) {
+	void setGeneralNameInput(@Nullable GeneralName name) {
 		if (name != null) {
 			this.ctlNameTypeOption.setValue(name.getType());
 			this.ctlNameInput.setText(name.toValueString());
@@ -175,8 +179,12 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 			DistributionPointName distributionPointName = distributionPoint.getName();
 
 			if (distributionPointName != null) {
-				for (GeneralName name : distributionPointName.getFullName()) {
-					nameItems.add(name);
+				GeneralNames names = distributionPointName.getFullName();
+
+				if (names != null) {
+					for (GeneralName name : names) {
+						nameItems.add(name);
+					}
 				}
 				break;
 			}
@@ -205,7 +213,8 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 	}
 
 	@Override
-	public CRLDistributionPointsExtensionData call(ButtonType param) {
+	@Nullable
+	public CRLDistributionPointsExtensionData call(@Nullable ButtonType param) {
 		return this.extensionDataResult;
 	}
 
