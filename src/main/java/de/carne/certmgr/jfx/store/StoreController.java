@@ -372,6 +372,9 @@ public class StoreController extends StageController {
 			if (confirmation.isPresent() && confirmation.get().getButtonData() == ButtonData.OK_DONE) {
 				try {
 					this.storeProperty.get().deleteEntry(entry.id());
+					if (entry.equals(getSelectedStoreEntry())) {
+						this.ctlStoreEntryView.getSelectionModel().clearSelection();
+					}
 				} catch (IOException e) {
 					Alerts.unexpected(e).showAndWait();
 				}
