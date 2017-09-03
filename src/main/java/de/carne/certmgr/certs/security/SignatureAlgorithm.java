@@ -20,7 +20,6 @@ import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
 
-import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 
@@ -49,32 +48,32 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 			boolean expertMode) {
 		DefaultSet<SignatureAlgorithm> signatureAlgorithms = new DefaultSet<>();
 		DefaultSet<String> defaultNames = SecurityDefaults.getSignatureAlgorithmNames(keyPairAlgorithm);
+		@Nullable
+		String defaultName = (defaultHint != null ? defaultHint : defaultNames.getDefault());
 
-		if (!defaultNames.isEmpty()) {
-			String defaultName = (defaultHint != null ? defaultHint : Check.nonNull(defaultNames.getDefault()))
-					.toUpperCase();
+		if (defaultName != null) {
+			defaultName = defaultName.toUpperCase();
+		}
+		for (Provider provider : Security.getProviders()) {
+			for (Provider.Service service : provider.getServices()) {
+				if (!SERVICE_TYPE_SIGNATURE.equals(service.getType())) {
+					continue;
+				}
 
-			for (Provider provider : Security.getProviders()) {
-				for (Provider.Service service : provider.getServices()) {
-					if (!SERVICE_TYPE_SIGNATURE.equals(service.getType())) {
-						continue;
-					}
+				String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
 
-					String upperCaseAlgorithm = service.getAlgorithm().toUpperCase();
+				if (!expertMode && !upperCaseAlgorithm.equals(defaultName)
+						&& !defaultNames.contains(upperCaseAlgorithm)) {
+					continue;
+				}
 
-					if (!expertMode && !defaultName.equals(upperCaseAlgorithm)
-							&& !defaultNames.contains(upperCaseAlgorithm)) {
-						continue;
-					}
+				SignatureAlgorithm signatureAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
+						: new StandardKeyPairAlgorithm(service));
 
-					SignatureAlgorithm signatureAlgorithm = (expertMode ? new ExpertKeyPairAlgorithm(service)
-							: new StandardKeyPairAlgorithm(service));
-
-					if (upperCaseAlgorithm.equals(defaultName)) {
-						signatureAlgorithms.addDefault(signatureAlgorithm);
-					} else {
-						signatureAlgorithms.add(signatureAlgorithm);
-					}
+				if (upperCaseAlgorithm.equals(defaultName)) {
+					signatureAlgorithms.addDefault(signatureAlgorithm);
+				} else {
+					signatureAlgorithms.add(signatureAlgorithm);
 				}
 			}
 		}
