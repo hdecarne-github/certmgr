@@ -45,24 +45,24 @@ public class SignatureAlgorithmTest {
 	 */
 	@Test
 	public void testGetDefaultSet() {
-		for (KeyPairAlgorithm keyPairAlgorithm : KeyPairAlgorithm.getDefaultSet(null, false)) {
-			Set<SignatureAlgorithm> standardAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithm.algorithm(),
-					null, false);
-
-			System.out.println(keyPairAlgorithm.algorithm() + " standard algorithms:");
-			for (SignatureAlgorithm standardAlgorithm : standardAlgorithms) {
-				System.out.println(standardAlgorithm);
-			}
-			Assert.assertTrue(standardAlgorithms.size() > 0);
-		}
 		for (KeyPairAlgorithm keyPairAlgorithm : KeyPairAlgorithm.getDefaultSet(null, true)) {
 			Set<SignatureAlgorithm> expertAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithm.algorithm(),
 					null, true);
 
 			System.out.println(keyPairAlgorithm.algorithm() + " expert algorithms:");
 			for (SignatureAlgorithm expertAlgorithm : expertAlgorithms) {
-				System.out.println(expertAlgorithm);
+				System.out.println(keyPairAlgorithm.algorithm() + "/" + expertAlgorithm);
 			}
+		}
+		for (KeyPairAlgorithm keyPairAlgorithm : KeyPairAlgorithm.getDefaultSet(null, false)) {
+			Set<SignatureAlgorithm> standardAlgorithms = SignatureAlgorithm.getDefaultSet(keyPairAlgorithm.algorithm(),
+					null, false);
+
+			System.out.println(keyPairAlgorithm.algorithm() + " standard algorithms:");
+			for (SignatureAlgorithm standardAlgorithm : standardAlgorithms) {
+				System.out.println(keyPairAlgorithm.algorithm() + "/" + standardAlgorithm);
+			}
+			Assert.assertTrue(standardAlgorithms.size() > 0);
 		}
 	}
 
