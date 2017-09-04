@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.security.cert.CRLException;
 import java.security.cert.Certificate;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
@@ -588,7 +589,8 @@ public final class UserCertStore {
 
 		for (Entry entry : this.storeEntries.values()) {
 			if (crtDN.equals(entry.dn())) {
-				if (entry.hasPublicKey() && crtPublicKey.equals(entry.getPublicKey())) {
+				if (entry.hasPublicKey()
+						&& Arrays.equals(crtPublicKey.getEncoded(), entry.getPublicKey().getEncoded())) {
 					matchingEntry = entry;
 					break;
 				}
@@ -607,7 +609,7 @@ public final class UserCertStore {
 		Entry matchingEntry = null;
 
 		for (Entry entry : this.storeEntries.values()) {
-			if (entry.hasPublicKey() && publicKey.equals(entry.getPublicKey())) {
+			if (entry.hasPublicKey() && Arrays.equals(publicKey.getEncoded(), entry.getPublicKey().getEncoded())) {
 				matchingEntry = entry;
 				break;
 			}
@@ -626,7 +628,8 @@ public final class UserCertStore {
 		Entry matchingEntry = null;
 
 		for (Entry entry : this.storeEntries.values()) {
-			if (csrDN.equals(entry.dn()) && entry.hasPublicKey() && csrPublicKey.equals(entry.getPublicKey())) {
+			if (csrDN.equals(entry.dn()) && entry.hasPublicKey()
+					&& Arrays.equals(csrPublicKey.getEncoded(), entry.getPublicKey().getEncoded())) {
 				matchingEntry = entry;
 				break;
 			}
@@ -649,9 +652,13 @@ public final class UserCertStore {
 					matchingEntry = entry;
 					break;
 				}
-				if (entry.hasCRL() && entry.getCRL().equals(crl)) {
-					matchingEntry = entry;
-					break;
+				try {
+					if (entry.hasCRL() && Arrays.equals(entry.getCRL().getEncoded(), crl.getEncoded())) {
+						matchingEntry = entry;
+						break;
+					}
+				} catch (CRLException e) {
+					throw new CertProviderException(e);
 				}
 			}
 		}

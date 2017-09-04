@@ -18,7 +18,6 @@ package de.carne.certmgr.certs.security;
 
 import java.security.Provider;
 import java.security.Provider.Service;
-import java.security.Security;
 
 import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
@@ -54,7 +53,7 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 		if (defaultName != null) {
 			defaultName = defaultName.toUpperCase();
 		}
-		for (Provider provider : Security.getProviders()) {
+		for (Provider provider : SecurityDefaults.getProviders(expertMode)) {
 			for (Provider.Service service : provider.getServices()) {
 				if (!SERVICE_TYPE_SIGNATURE.equals(service.getType())) {
 					continue;

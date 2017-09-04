@@ -20,7 +20,6 @@ import java.security.GeneralSecurityException;
 import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
-import java.security.Security;
 
 import de.carne.check.Check;
 import de.carne.check.Nullable;
@@ -51,7 +50,7 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 		DefaultSet<String> defaultNames = SecurityDefaults.getKeyAlgorithmNames();
 		String defaultName = (defaultHint != null ? defaultHint : Check.nonNull(defaultNames.getDefault()));
 
-		for (Provider provider : Security.getProviders()) {
+		for (Provider provider : SecurityDefaults.getProviders(expertMode)) {
 			for (Provider.Service service : provider.getServices()) {
 				if (!SERVICE_TYPE_KEY_PAIR_GENERATOR.equals(service.getType())) {
 					continue;

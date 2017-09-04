@@ -16,9 +16,13 @@
  */
 package de.carne.certmgr.certs.security;
 
+import java.security.Provider;
+import java.security.Security;
 import java.time.Period;
 import java.util.Properties;
 import java.util.function.Function;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.carne.certmgr.util.Days;
 import de.carne.util.DefaultSet;
@@ -38,6 +42,11 @@ class SecurityDefaults {
 	private static final String KEY_CRT_VALIDITY_PERIOD = "crtValidity";
 	private static final String KEY_CRL_UPDATE_PERIOD = "crlUpdate";
 	private static final String KEY_PLATFORM_KEY_STORE = "platformKeyStore";
+
+	public static Provider[] getProviders(boolean expertMode) {
+		return (expertMode ? Security.getProviders()
+				: new Provider[] { Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) });
+	}
 
 	public static DefaultSet<String> getKeyAlgorithmNames() {
 		return getValues(KEY_KEY_ALGORITHM, (s) -> s);

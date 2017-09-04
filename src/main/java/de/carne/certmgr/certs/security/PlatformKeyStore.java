@@ -18,10 +18,9 @@ package de.carne.certmgr.certs.security;
 
 import java.security.Provider;
 import java.security.Provider.Service;
+import java.security.Security;
 
 import de.carne.util.DefaultSet;
-
-import java.security.Security;
 
 /**
  * Platform key store provisioning.
@@ -36,7 +35,7 @@ public class PlatformKeyStore extends AbstractAlgorithm {
 
 	/**
 	 * Get the available platform key stores.
-	 * 
+	 *
 	 * @return The available platform key stores.
 	 */
 	public static DefaultSet<PlatformKeyStore> getDefaultSet() {
