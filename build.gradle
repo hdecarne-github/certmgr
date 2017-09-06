@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+	compile('de.carne:java-default:5')
 	compile('de.carne:java-jfx:4')
 	compile('org.bouncycastle:bcpkix-jdk15on:1.58')
 

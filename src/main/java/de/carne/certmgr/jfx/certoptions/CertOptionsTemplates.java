@@ -18,11 +18,7 @@ package de.carne.certmgr.jfx.certoptions;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.text.DateFormat;
@@ -390,8 +386,9 @@ final class CertOptionsTemplates {
 			if (TEMPLATE_STORE_INITIALIZED.getBoolean(false)) {
 				templateStore = TEMPLATE_STORE;
 			} else {
-				templateStore = PropertiesPreferencesFactory.customRoot(getStandardTemplatePath());
+				templateStore = PropertiesPreferencesFactory.customRoot(getStandardTemplateUrl());
 			}
+
 			String[] templateNodeNames = templateStore.childrenNames();
 
 			Arrays.sort(templateNodeNames);
@@ -410,7 +407,7 @@ final class CertOptionsTemplates {
 		return templates;
 	}
 
-	private static Path getStandardTemplatePath() throws IOException {
+	private static URL getStandardTemplateUrl() throws IOException {
 		String standardTemplatesResourceName = CertOptionsTemplates.class.getSimpleName() + ".properties";
 		URL standardTemplatesURL = CertOptionsTemplates.class.getResource(standardTemplatesResourceName);
 
@@ -418,15 +415,7 @@ final class CertOptionsTemplates {
 			throw new FileNotFoundException(
 					"Unable to access standard template resource: " + standardTemplatesResourceName);
 		}
-
-		URI standardTemplatesURI;
-
-		try {
-			standardTemplatesURI = standardTemplatesURL.toURI();
-		} catch (URISyntaxException e) {
-			throw new IOException(e.getLocalizedMessage(), e);
-		}
-		return Paths.get(standardTemplatesURI);
+		return standardTemplatesURL;
 	}
 
 	@Nullable
