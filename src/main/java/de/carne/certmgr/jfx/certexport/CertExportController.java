@@ -385,7 +385,6 @@ public class CertExportController extends StageController {
 				}
 			}
 		}
-		// TODO
 	}
 
 	void exportToClipboard(CertWriter format, CertObjectStore exportObjects, boolean encryptExport) throws IOException {
