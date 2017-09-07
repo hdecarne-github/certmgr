@@ -52,8 +52,9 @@ public class StringName extends GeneralName {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static StringName decode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
-		return new StringName(type,
-				Strings.fromByteArray(decodePrimitive(primitive, ASN1OctetString.class).getOctets()));
+		ASN1Primitive object = decodeTagged(primitive, type.value());
+
+		return new StringName(type, Strings.fromByteArray(decodePrimitive(object, ASN1OctetString.class).getOctets()));
 	}
 
 	@Override

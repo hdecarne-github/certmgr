@@ -57,7 +57,8 @@ public class IPAddressName extends GeneralName {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static IPAddressName decode(ASN1Primitive primitive) throws IOException {
-		byte[] octets = decodePrimitive(primitive, ASN1OctetString.class).getOctets();
+		ASN1Primitive object = decodeTagged(primitive, GeneralNameType.IP_ADDRESS_TAG);
+		byte[] octets = decodePrimitive(object, ASN1OctetString.class).getOctets();
 		InetAddress address;
 		InetAddress netmask;
 

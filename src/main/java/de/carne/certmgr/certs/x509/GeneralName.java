@@ -53,31 +53,31 @@ public abstract class GeneralName extends ASN1Data {
 
 		switch (nameTypeTag) {
 		case GeneralNameType.OTHER_NAME_TAG:
-			name = OtherName.decode(taggedObject.getObject());
+			name = OtherName.decode(primitive);
 			break;
 		case GeneralNameType.RFC822_NAME_TAG:
-			name = StringName.decode(GeneralNameType.RFC822_NAME, taggedObject.getObject());
+			name = StringName.decode(GeneralNameType.RFC822_NAME, primitive);
 			break;
 		case GeneralNameType.DNS_NAME_TAG:
-			name = StringName.decode(GeneralNameType.DNS_NAME, taggedObject.getObject());
+			name = StringName.decode(GeneralNameType.DNS_NAME, primitive);
 			break;
 		case GeneralNameType.X400_ADDRESS_TAG:
-			name = GenericName.decode(GeneralNameType.X400_ADDRESS, taggedObject.getObject());
+			name = GenericName.decode(GeneralNameType.X400_ADDRESS, primitive);
 			break;
 		case GeneralNameType.DIRECTORY_NAME_TAG:
-			name = DirectoryName.decode(taggedObject.getObject());
+			name = DirectoryName.decode(primitive);
 			break;
 		case GeneralNameType.EDI_PARTY_NAME_TAG:
-			name = GenericName.decode(GeneralNameType.EDI_PARTY_NAME, taggedObject.getObject());
+			name = GenericName.decode(GeneralNameType.EDI_PARTY_NAME, primitive);
 			break;
 		case GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER_TAG:
-			name = StringName.decode(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, taggedObject.getObject());
+			name = StringName.decode(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, primitive);
 			break;
 		case GeneralNameType.IP_ADDRESS_TAG:
-			name = IPAddressName.decode(taggedObject.getObject());
+			name = IPAddressName.decode(primitive);
 			break;
 		case GeneralNameType.REGISTERED_ID_TAG:
-			name = RegisteredIDName.decode(taggedObject.getObject());
+			name = RegisteredIDName.decode(primitive);
 			break;
 		default:
 			throw new IOException("Unsupported general name type: " + nameTypeTag);

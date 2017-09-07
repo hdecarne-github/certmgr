@@ -24,6 +24,7 @@ import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DEROctetString;
 
 /**
@@ -68,6 +69,24 @@ public abstract class ASN1Data {
 			throw new IOException("Unxpected max sequence size " + sequenceSize + " (expected " + max + ")");
 		}
 		return decoded;
+	}
+
+	/**
+	 * Decode an ASN.1 tagged object.
+	 *
+	 * @param primitive The ASN.1 data object to decode from.
+	 * @param tagNo The expected object tag.
+	 * @return The decoded tagged object.
+	 * @throws IOException if an I/O error occurs during decoding.
+	 */
+	protected static ASN1Primitive decodeTagged(ASN1Primitive primitive, int tagNo) throws IOException {
+		ASN1TaggedObject taggedObject = decodePrimitive(primitive, ASN1TaggedObject.class);
+		int taggedObjectTagNo = taggedObject.getTagNo();
+
+		if (taggedObjectTagNo != tagNo) {
+			throw new IOException("Unexpected ASN.1 object tag " + taggedObjectTagNo + " (expected " + tagNo);
+		}
+		return taggedObject.getObject();
 	}
 
 	/**

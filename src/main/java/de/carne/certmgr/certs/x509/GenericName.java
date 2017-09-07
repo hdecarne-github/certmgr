@@ -51,7 +51,9 @@ public class GenericName extends GeneralName {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static GenericName decode(GeneralNameType type, ASN1Primitive primitive) throws IOException {
-		return new GenericName(type, primitive.getEncoded());
+		ASN1Primitive object = decodeTagged(primitive, type.value());
+
+		return new GenericName(type, object.getEncoded());
 	}
 
 	@Override

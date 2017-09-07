@@ -56,7 +56,8 @@ public class OtherName extends GeneralName {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static OtherName decode(ASN1Primitive primitive) throws IOException {
-		ASN1Primitive[] sequence = decodeSequence(primitive, 2, 2);
+		ASN1Primitive object = decodeTagged(primitive, GeneralNameType.OTHER_NAME_TAG);
+		ASN1Primitive[] sequence = decodeSequence(object, 2, 2);
 		String oid = decodePrimitive(sequence[0], ASN1ObjectIdentifier.class).getId();
 		byte[] nameBytes = sequence[1].getEncoded();
 

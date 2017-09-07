@@ -52,7 +52,9 @@ public class DirectoryName extends GeneralName {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static DirectoryName decode(ASN1Primitive primitive) throws IOException {
-		return new DirectoryName(new X500Principal(primitive.getEncoded()));
+		ASN1Primitive object = decodeTagged(primitive, GeneralNameType.DIRECTORY_NAME_TAG);
+
+		return new DirectoryName(new X500Principal(object.getEncoded()));
 	}
 
 	@Override
