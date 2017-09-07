@@ -23,6 +23,7 @@ import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.util.Arrays;
 
 import de.carne.check.Nullable;
@@ -91,7 +92,7 @@ public class IPAddressName extends GeneralName {
 
 		System.arraycopy(addressBytes, 0, encodedBytes, 0, addressBytes.length);
 		System.arraycopy(netmaskBytes, 0, encodedBytes, addressBytes.length, netmaskBytes.length);
-		return new DEROctetString(encodedBytes);
+		return new DERTaggedObject(false, getType().value(), new DEROctetString(encodedBytes));
 	}
 
 	@Override

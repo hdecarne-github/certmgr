@@ -23,6 +23,7 @@ import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERTaggedObject;
 
 import de.carne.certmgr.certs.asn1.OIDs;
 import de.carne.certmgr.util.Bytes;
@@ -68,7 +69,7 @@ public class OtherName extends GeneralName {
 
 		sequence.add(new ASN1ObjectIdentifier(this.oid));
 		sequence.add(ASN1Primitive.fromByteArray(this.nameBytes));
-		return new DERSequence(sequence);
+		return new DERTaggedObject(false, getType().value(), new DERSequence(sequence));
 	}
 
 	@Override
