@@ -21,6 +21,7 @@ import java.io.IOException;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DERTaggedObject;
 
 import de.carne.certmgr.certs.asn1.OIDs;
@@ -51,7 +52,8 @@ public class RegisteredIDName extends GeneralName {
 	 */
 	public static RegisteredIDName decode(ASN1Primitive primitive) throws IOException {
 		ASN1Primitive object = decodeTagged(primitive, GeneralNameType.REGISTERED_ID_TAG);
-		String oid = decodePrimitive(object, ASN1ObjectIdentifier.class).getId();
+		ASN1TaggedObject taggedObject = decodePrimitive(primitive, ASN1TaggedObject.class);
+		String oid = ASN1ObjectIdentifier.getInstance(taggedObject, false).getId();
 
 		return new RegisteredIDName(oid);
 	}

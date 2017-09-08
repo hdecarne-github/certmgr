@@ -59,7 +59,7 @@ public class DirectoryName extends GeneralName {
 
 	@Override
 	public ASN1Encodable encode() throws IOException {
-		return new DERTaggedObject(false, getType().value(), new X500Name(this.name.getName()));
+		return new DERTaggedObject(true, getType().value(), new X500Name(this.name.getName()));
 	}
 
 	@Override

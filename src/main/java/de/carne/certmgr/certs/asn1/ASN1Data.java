@@ -25,7 +25,6 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1TaggedObject;
-import org.bouncycastle.asn1.DEROctetString;
 
 /**
  * Base class for all data objects that support ASN.1 decoding and encoding.
@@ -127,7 +126,7 @@ public abstract class ASN1Data {
 	 * @throws IOException if an I/O error occurs during encoding.
 	 */
 	public byte[] getEncoded() throws IOException {
-		return new DEROctetString(encode().toASN1Primitive().getEncoded()).getEncoded();
+		return encode().toASN1Primitive().getEncoded();
 	}
 
 }

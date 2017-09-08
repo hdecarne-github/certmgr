@@ -23,6 +23,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DEROctetString;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +33,12 @@ import de.carne.certmgr.certs.x509.DistributionPoint;
 import de.carne.certmgr.certs.x509.DistributionPointName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
+import de.carne.certmgr.certs.x509.GenericName;
 import de.carne.certmgr.certs.x509.IPAddressName;
+import de.carne.certmgr.certs.x509.OtherName;
+import de.carne.certmgr.certs.x509.ReasonFlag;
+import de.carne.certmgr.certs.x509.ReasonFlags;
+import de.carne.certmgr.certs.x509.RegisteredIDName;
 import de.carne.certmgr.certs.x509.StringName;
 
 /**
@@ -41,25 +47,32 @@ import de.carne.certmgr.certs.x509.StringName;
 public class ASN1DataTest {
 
 	/**
-	 * Test encoding & decoding of {@link DistributionPoint} object.
+	 * Test encoding & decoding of {@link GeneralNames} object.
 	 */
 	@Test
 	public void testGeneralNames() {
 		try {
 			GeneralNames in = new GeneralNames();
-			StringName inNameA = new StringName(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER,
-					"https://localhost/test.crl");
-			DirectoryName inNameB = new DirectoryName(new X500Principal("CN=localhost"));
+			DirectoryName inNameA = new DirectoryName(new X500Principal("CN=localhost"));
+			GenericName inNameB = new GenericName(GeneralNameType.X400_ADDRESS,
+					new DEROctetString("test".getBytes()).getEncoded());
 			IPAddressName inNameC = new IPAddressName(InetAddress.getByName("127.0.0.1"),
 					InetAddress.getByName("255.255.255.255"));
+			OtherName inNameD = new OtherName("1.2.3.4", new DEROctetString("test".getBytes()).getEncoded());
+			RegisteredIDName inNameE = new RegisteredIDName("1.2.3.4");
+			StringName inNameF = new StringName(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER,
+					"https://localhost/test.crl");
 
 			in.addName(inNameA);
 			in.addName(inNameB);
 			in.addName(inNameC);
+			in.addName(inNameD);
+			in.addName(inNameE);
+			in.addName(inNameF);
 
-			byte[] inEncoded = in.encode().toASN1Primitive().getEncoded();
+			byte[] inEncoded = in.getEncoded();
 			GeneralNames out = GeneralNames.decode(decodeBytes(inEncoded));
-			byte[] outEncoded = out.encode().toASN1Primitive().getEncoded();
+			byte[] outEncoded = out.getEncoded();
 
 			Assert.assertArrayEquals(inEncoded, outEncoded);
 		} catch (IOException e) {
@@ -85,9 +98,9 @@ public class ASN1DataTest {
 
 			DistributionPointName in1Name = new DistributionPointName(in1FullName);
 			DistributionPoint in1 = new DistributionPoint(in1Name);
-			byte[] in1Encoded = in1.encode().toASN1Primitive().getEncoded();
+			byte[] in1Encoded = in1.getEncoded();
 			DistributionPoint out1 = DistributionPoint.decode(decodeBytes(in1Encoded));
-			byte[] out1Encoded = out1.encode().toASN1Primitive().getEncoded();
+			byte[] out1Encoded = out1.getEncoded();
 
 			Assert.assertArrayEquals(in1Encoded, out1Encoded);
 
@@ -106,6 +119,24 @@ public class ASN1DataTest {
 			byte[] out2Encoded = out2.encode().toASN1Primitive().getEncoded();
 
 			Assert.assertArrayEquals(in2Encoded, out2Encoded);
+		} catch (IOException e) {
+			e.printStackTrace();
+			Assert.fail(e.getLocalizedMessage());
+		}
+	}
+
+	/**
+	 * Test encoding & decoding of {@link ReasonFlags} object.
+	 */
+	@Test
+	public void testReasonFlags() {
+		try {
+			ReasonFlags in = new ReasonFlags(ReasonFlag.instances());
+			byte[] inEncoded = in.getEncoded();
+			ReasonFlags out = ReasonFlags.decode(decodeBytes(inEncoded));
+			byte[] outEncoded = out.getEncoded();
+
+			Assert.assertArrayEquals(inEncoded, outEncoded);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Assert.fail(e.getLocalizedMessage());
