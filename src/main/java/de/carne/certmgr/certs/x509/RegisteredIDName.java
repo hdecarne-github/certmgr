@@ -51,7 +51,8 @@ public class RegisteredIDName extends GeneralName {
 	 * @throws IOException if an I/O error occurs during decoding.
 	 */
 	public static RegisteredIDName decode(ASN1Primitive primitive) throws IOException {
-		ASN1Primitive object = decodeTagged(primitive, GeneralNameType.REGISTERED_ID_TAG);
+		decodeTagged(primitive, GeneralNameType.REGISTERED_ID_TAG);
+
 		ASN1TaggedObject taggedObject = decodePrimitive(primitive, ASN1TaggedObject.class);
 		String oid = ASN1ObjectIdentifier.getInstance(taggedObject, false).getId();
 
