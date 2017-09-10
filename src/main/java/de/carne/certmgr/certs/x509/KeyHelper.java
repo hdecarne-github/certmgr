@@ -17,12 +17,20 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
+
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
@@ -39,6 +47,39 @@ public final class KeyHelper {
 	}
 
 	private static Log LOG = new Log();
+
+	private static final JcaPEMKeyConverter PEM_KEY_CONVERTER = new JcaPEMKeyConverter();
+
+	/**
+	 * Rebuild the {@link KeyPair} associated with the submitted {@link PrivateKey}.
+	 *
+	 * @param privateKey The {@link PrivateKey} to rebuild the {@link KeyPair} for.
+	 * @return The rebuild {@link KeyPair}.
+	 * @throws IOException if an I/O error occurs during the rebuild.
+	 */
+	public static KeyPair rebuildKeyPair(PrivateKey privateKey) throws IOException {
+		StringWriter stringWriter = new StringWriter();
+
+		try (JcaPEMWriter pemWriter = new JcaPEMWriter(stringWriter)) {
+			pemWriter.writeObject(privateKey);
+			pemWriter.flush();
+		}
+
+		StringReader stringReader = new StringReader(stringWriter.toString());
+		Object pemObject;
+
+		try (PEMParser pemParser = new PEMParser(stringReader)) {
+			pemObject = pemParser.readObject();
+		}
+
+		if (!(pemObject instanceof PEMKeyPair)) {
+			throw new IOException("Unexpected pem object: " + pemObject);
+		}
+
+		PEMKeyPair pemKeyPair = (PEMKeyPair) pemObject;
+
+		return PEM_KEY_CONVERTER.getKeyPair(pemKeyPair);
+	}
 
 	/**
 	 * Get the public key's algorithm.

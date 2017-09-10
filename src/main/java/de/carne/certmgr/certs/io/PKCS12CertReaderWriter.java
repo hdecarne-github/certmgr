@@ -64,6 +64,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.check.Nullable;
 import de.carne.io.IOHelper;
 import de.carne.util.Strings;
@@ -133,10 +134,23 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 					if (safeBagValue instanceof X509CertificateHolder) {
 						certObjects.addCRT(convertCRT((X509CertificateHolder) safeBagValue));
 					} else if (safeBagValue instanceof PKCS8EncryptedPrivateKeyInfo) {
-						certObjects.addPrivateKey(convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
-								in.resource(), password));
+						PrivateKey privateKey = convertPrivateKey((PKCS8EncryptedPrivateKeyInfo) safeBagValue,
+								in.resource(), password);
+						try {
+							certObjects.addKey(KeyHelper.rebuildKeyPair(privateKey));
+						} catch (IOException e) {
+							LOG.warning(e, "Unable to rebuild key pair for private key of type ''{1}''",
+									privateKey.getClass().getName());
+						}
 					} else if (safeBagValue instanceof PrivateKeyInfo) {
-						certObjects.addPrivateKey(convertPrivateKey((PrivateKeyInfo) safeBagValue));
+						PrivateKey privateKey = convertPrivateKey((PrivateKeyInfo) safeBagValue);
+
+						try {
+							certObjects.addKey(KeyHelper.rebuildKeyPair(privateKey));
+						} catch (IOException e) {
+							LOG.warning(e, "Unable to rebuild key pair for private key of type ''{1}''",
+									privateKey.getClass().getName());
+						}
 					} else {
 						LOG.warning(CertIOI18N.STR_PKCS12_UNKNOWN_OBJECT, safeBagValue.getClass().getName());
 					}

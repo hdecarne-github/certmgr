@@ -16,37 +16,25 @@
  */
 package de.carne.certmgr.certs;
 
-import java.security.GeneralSecurityException;
+import java.io.IOException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.Security;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.cert.CRLException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.util.Exceptions;
-import de.carne.util.logging.Log;
+import de.carne.check.Check;
+import de.carne.check.Nullable;
 
 /**
  * Class used to collect/transfer individual certificate objects for reading and writing.
  */
 public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
-
-	private static final Log LOG = new Log(CertObjectStoreI18N.BUNDLE);
 
 	/**
 	 * This class represents a single certificate object.
@@ -56,11 +44,20 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 		private final String alias;
 		private final CertObjectType type;
 		private final Object object;
+		private final byte[] encoded;
 
-		Entry(String alias, CertObjectType type, Object object) {
+		Entry(Entry entry) {
+			this.alias = entry.alias;
+			this.type = entry.type;
+			this.object = entry.object;
+			this.encoded = entry.encoded;
+		}
+
+		Entry(String alias, CertObjectType type, Object object, byte[] encoded) {
 			this.alias = alias;
 			this.type = type;
 			this.object = object;
+			this.encoded = encoded;
 		}
 
 		/**
@@ -127,167 +124,34 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 		}
 
 		@Override
+		public int hashCode() {
+			return this.object.hashCode();
+		}
+
+		@Override
+		public boolean equals(@Nullable Object obj) {
+			boolean equals;
+
+			if (this == obj) {
+				equals = true;
+			} else if (!(obj instanceof Entry)) {
+				equals = false;
+			} else {
+				Entry entryObj = (Entry) obj;
+
+				equals = this.type == entryObj.type && Arrays.equals(this.encoded, entryObj.encoded);
+			}
+			return equals;
+		}
+
+		@Override
 		public String toString() {
 			return this.alias + ":" + this.type;
 		}
 
 	}
 
-	private static final Set<String> PREFERRED_DIGESTS = new HashSet<>(Arrays.asList("SHA1", "SHA256"));
-	private static final Pattern SIGNATURE_ALGORITHM_PATTERN = Pattern.compile("(.+)with(.+)",
-			Pattern.CASE_INSENSITIVE);
-	private static final byte[] SIGNATURE_TEST_BYTES = CertObjectStore.class.getName().getBytes();
-
-	private final Map<String, Signature> signatureCache = new HashMap<>();
-	private final Map<PrivateKey, byte[]> privateKeySignatures = new HashMap<>();
-
-	private boolean mergePrivateKey(String alias, PrivateKey privateKey) {
-		boolean merged = false;
-
-		try {
-			for (int entryIndex = 0; entryIndex < this.entries.size(); entryIndex++) {
-				Entry entry = this.entries.get(entryIndex);
-
-				if (entry.type() == CertObjectType.KEY) {
-					KeyPair entryKey = entry.getKey();
-
-					if (entryKey.getPrivate() == null && matchKeys(privateKey, entryKey.getPublic())) {
-						Entry mergedEntry = new Entry(entry.alias(), entry.type(),
-								new KeyPair(entryKey.getPublic(), privateKey));
-
-						this.entries.set(entryIndex, mergedEntry);
-						merged = true;
-						break;
-					}
-				}
-			}
-			if (!merged) {
-				for (Entry entry : this.entries) {
-					PublicKey entryPublicKey = null;
-
-					if (entry.type() == CertObjectType.CRT) {
-						entryPublicKey = entry.getCRT().getPublicKey();
-					} else if (entry.type() == CertObjectType.CSR) {
-						entryPublicKey = entry.getCSR().getPublicKey();
-					}
-					if (entryPublicKey != null && matchKeys(privateKey, entryPublicKey)) {
-						Entry mergedEntry = new Entry(alias, CertObjectType.KEY,
-								new KeyPair(entryPublicKey, privateKey));
-
-						this.entries.add(mergedEntry);
-						merged = true;
-						break;
-					}
-				}
-				if (!merged) {
-					Entry mergedEntry = new Entry(alias, CertObjectType.KEY, new KeyPair(null, privateKey));
-
-					this.entries.add(mergedEntry);
-					merged = true;
-				}
-			}
-		} catch (GeneralSecurityException e) {
-			LOG.warning(e, CertObjectStoreI18N.STR_MESSAGE_PRIVATE_KEY_FAILURE, alias);
-		}
-		return merged;
-	}
-
-	private boolean mergePublicKey(String alias, PublicKey publicKey, boolean mergeOnly) {
-		boolean merged = false;
-
-		try {
-			for (int entryIndex = 0; entryIndex < this.entries.size(); entryIndex++) {
-				Entry entry = this.entries.get(entryIndex);
-
-				if (entry.type() == CertObjectType.KEY) {
-					KeyPair entryKey = entry.getKey();
-
-					if (entryKey.getPublic() == null && matchKeys(entryKey.getPrivate(), publicKey)) {
-						Entry mergedEntry = new Entry(entry.alias(), entry.type(),
-								new KeyPair(publicKey, entryKey.getPrivate()));
-
-						this.entries.set(entryIndex, mergedEntry);
-						merged = true;
-						break;
-					}
-				}
-			}
-			if (!merged && !mergeOnly) {
-				Entry mergedEntry = new Entry(alias, CertObjectType.KEY, new KeyPair(publicKey, null));
-
-				this.entries.add(mergedEntry);
-				merged = true;
-			}
-		} catch (GeneralSecurityException e) {
-			LOG.warning(e, CertObjectStoreI18N.STR_MESSAGE_PUBLIC_KEY_FAILURE, alias);
-		}
-		return merged;
-	}
-
-	private boolean matchKeys(PrivateKey privateKey, PublicKey publicKey) throws GeneralSecurityException {
-		boolean match = false;
-
-		if (privateKey.getAlgorithm().equals(publicKey.getAlgorithm())) {
-			byte[] signatureBytes = getPrivateKeySignature(privateKey);
-			Signature signature = getSignatureInstance(privateKey.getAlgorithm());
-
-			signature.initVerify(publicKey);
-			signature.update(SIGNATURE_TEST_BYTES);
-			try {
-				match = signature.verify(signatureBytes);
-			} catch (SignatureException e) {
-				Exceptions.ignore(e);
-			}
-		}
-		return match;
-	}
-
-	private byte[] getPrivateKeySignature(PrivateKey privateKey) throws GeneralSecurityException {
-		byte[] signatureBytes = this.privateKeySignatures.get(privateKey);
-
-		if (signatureBytes == null) {
-			Signature signature = getSignatureInstance(privateKey.getAlgorithm());
-
-			signature.initSign(privateKey);
-			signature.update(SIGNATURE_TEST_BYTES);
-			signatureBytes = signature.sign();
-			this.privateKeySignatures.put(privateKey, signatureBytes);
-		}
-		return signatureBytes;
-	}
-
-	private Signature getSignatureInstance(String encryptionAlgorithm) throws GeneralSecurityException {
-		Signature signature = this.signatureCache.get(encryptionAlgorithm);
-
-		if (signature == null) {
-			Set<String> signatureAlgorithms = Security.getAlgorithms("Signature");
-			String signatureInstanceAlgorithm = null;
-
-			for (String signatureAlgorithm : signatureAlgorithms) {
-				Matcher matcher = SIGNATURE_ALGORITHM_PATTERN.matcher(signatureAlgorithm);
-
-				if (matcher.matches()) {
-					String digest = matcher.group(1).toUpperCase();
-					String encryptionSuffix = matcher.group(2).toUpperCase();
-
-					if (encryptionSuffix.startsWith(encryptionAlgorithm)) {
-						signatureInstanceAlgorithm = signatureAlgorithm;
-						if (PREFERRED_DIGESTS.contains(digest)) {
-							break;
-						}
-					}
-				}
-			}
-			if (signatureInstanceAlgorithm == null) {
-				throw new NoSuchAlgorithmException("No suitable signature algorihm found for: " + encryptionAlgorithm);
-			}
-			signature = Signature.getInstance(signatureInstanceAlgorithm);
-			this.signatureCache.put(encryptionAlgorithm, signature);
-		}
-		return signature;
-	}
-
-	private final List<Entry> entries = new ArrayList<>();
+	private final Set<Entry> entries = new HashSet<>();
 	private int crtNumber = 1;
 	private int keyNumber = 1;
 	private int csrNumber = 1;
@@ -302,20 +166,7 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	public static CertObjectStore wrap(Entry entry) {
 		CertObjectStore store = new CertObjectStore();
 
-		switch (entry.type()) {
-		case CRT:
-			store.addCRT(entry.alias(), entry.getCRT());
-			break;
-		case KEY:
-			store.addKey(entry.alias(), entry.getKey());
-			break;
-		case CSR:
-			store.addCSR(entry.alias(), entry.getCSR());
-			break;
-		case CRL:
-			store.addCRL(entry.alias(), entry.getCRL());
-			break;
-		}
+		store.entries.add(store.new Entry(entry));
 		return store;
 	}
 
@@ -323,8 +174,9 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 * Add a CRT object to the store.
 	 *
 	 * @param crt The CRT object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addCRT(X509Certificate crt) {
+	public void addCRT(X509Certificate crt) throws IOException {
 		addCRT("crt" + this.crtNumber, crt);
 		this.crtNumber++;
 	}
@@ -334,18 +186,23 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 *
 	 * @param alias The alias to use.
 	 * @param crt The CRT object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addCRT(String alias, X509Certificate crt) {
-		this.entries.add(new Entry(alias, CertObjectType.CRT, crt));
-		mergePublicKey(alias, crt.getPublicKey(), true);
+	public void addCRT(String alias, X509Certificate crt) throws IOException {
+		try {
+			this.entries.add(new Entry(alias, CertObjectType.CRT, crt, crt.getEncoded()));
+		} catch (CertificateEncodingException e) {
+			throw new IOException(e.getLocalizedMessage(), e);
+		}
 	}
 
 	/**
 	 * Add a Key object to the store.
 	 *
 	 * @param key The Key object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addKey(KeyPair key) {
+	public void addKey(KeyPair key) throws IOException {
 		addKey("key" + this.keyNumber, key);
 		this.keyNumber++;
 	}
@@ -355,59 +212,23 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 *
 	 * @param alias The alias to use.
 	 * @param key The Key object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addKey(String alias, KeyPair key) {
-		this.entries.add(new Entry(alias, CertObjectType.KEY, key));
-	}
-
-	/**
-	 * Add a Private Key object to the store.
-	 *
-	 * @param privateKey The Private Key object to add.
-	 */
-	public void addPrivateKey(PrivateKey privateKey) {
-		if (mergePrivateKey("key" + this.keyNumber, privateKey)) {
-			this.keyNumber++;
+	public void addKey(String alias, KeyPair key) throws IOException {
+		try {
+			this.entries.add(new Entry(alias, CertObjectType.KEY, key, Check.nonNull(key.getPrivate().getEncoded())));
+		} catch (NullPointerException e) {
+			throw new IOException("Failed to encode private key", e);
 		}
-	}
-
-	/**
-	 * Add a Private Key object to the store.
-	 *
-	 * @param alias The alias to use.
-	 * @param privateKey The Private Key object to add.
-	 */
-	public void addPrivateKey(String alias, PrivateKey privateKey) {
-		mergePrivateKey(alias, privateKey);
-	}
-
-	/**
-	 * Add a Public Key object to the store.
-	 *
-	 * @param publicKey The Public Key object to add.
-	 */
-	public void addPublicKey(PublicKey publicKey) {
-		if (mergePublicKey("key" + this.keyNumber, publicKey, false)) {
-			this.keyNumber++;
-		}
-	}
-
-	/**
-	 * Add a Public Key object to the store.
-	 *
-	 * @param alias The alias to use.
-	 * @param publicKey The Public Key object to add.
-	 */
-	public void addPublicKey(String alias, PublicKey publicKey) {
-		mergePublicKey("key" + this.keyNumber, publicKey, false);
 	}
 
 	/**
 	 * Add a CSR object to the store.
 	 *
 	 * @param csr The CSR object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addCSR(PKCS10CertificateRequest csr) {
+	public void addCSR(PKCS10CertificateRequest csr) throws IOException {
 		addCSR("csr" + this.csrNumber, csr);
 		this.csrNumber++;
 	}
@@ -417,18 +238,19 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 *
 	 * @param alias The alias to use.
 	 * @param csr The CSR object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addCSR(String alias, PKCS10CertificateRequest csr) {
-		this.entries.add(new Entry(alias, CertObjectType.CSR, csr));
-		mergePublicKey(alias, csr.getPublicKey(), true);
+	public void addCSR(String alias, PKCS10CertificateRequest csr) throws IOException {
+		this.entries.add(new Entry(alias, CertObjectType.CSR, csr, csr.getEncoded()));
 	}
 
 	/**
 	 * Add a CRL object to the store.
 	 *
 	 * @param crl The CRL object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addCRL(X509CRL crl) {
+	public void addCRL(X509CRL crl) throws IOException {
 		addCRL("crl" + this.crlNumber, crl);
 		this.crlNumber++;
 	}
@@ -438,9 +260,14 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 *
 	 * @param alias The alias to use.
 	 * @param crl The CRL object to add.
+	 * @throws IOException if an encoding error occurs.
 	 */
-	public void addCRL(String alias, X509CRL crl) {
-		this.entries.add(new Entry(alias, CertObjectType.CRL, crl));
+	public void addCRL(String alias, X509CRL crl) throws IOException {
+		try {
+			this.entries.add(new Entry(alias, CertObjectType.CRL, crl, crl.getEncoded()));
+		} catch (CRLException e) {
+			throw new IOException(e.getLocalizedMessage(), e);
+		}
 	}
 
 	/**
@@ -449,26 +276,12 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 * @return The number of certificate objects in this store.
 	 */
 	public int size() {
-		return this.entries.stream().filter((entry) -> filterIncompleteKeys(entry)).mapToInt((entry) -> 1).sum();
+		return this.entries.size();
 	}
 
 	@Override
 	public Iterator<Entry> iterator() {
-		return this.entries.stream().filter((entry) -> filterIncompleteKeys(entry)).iterator();
-	}
-
-	private static boolean filterIncompleteKeys(Entry entry) {
-		boolean filter = true;
-
-		if (entry.type() == CertObjectType.KEY) {
-			KeyPair key = entry.getKey();
-
-			if (key.getPrivate() == null || key.getPublic() == null) {
-				LOG.warning(CertObjectStoreI18N.STR_MESSAGE_INCOMPLETE_KEY, entry.alias());
-				filter = false;
-			}
-		}
-		return filter;
+		return this.entries.iterator();
 	}
 
 }

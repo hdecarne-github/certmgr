@@ -35,6 +35,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.util.ProviderMap;
 import de.carne.check.Nullable;
+import de.carne.util.Exceptions;
 
 /**
  * Utility class providing {@link CertReader} related functions.
@@ -127,9 +128,11 @@ public final class CertReaders {
 		for (CertReader reader : certReaders) {
 			try (IOResource<InputStream> in = new IOResource<>(url.openStream(), file.toString())) {
 				certObjects = reader.readBinary(in, password);
-				if (certObjects != null) {
-					break;
-				}
+			} catch (IOException e) {
+				Exceptions.ignore(e);
+			}
+			if (certObjects != null) {
+				break;
 			}
 		}
 		return certObjects;

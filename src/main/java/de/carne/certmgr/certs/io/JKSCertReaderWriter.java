@@ -39,6 +39,7 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
+import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.check.Nullable;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
@@ -214,7 +215,12 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 					if (aliasKey != null) {
 						if (aliasKey instanceof PrivateKey) {
-							certObjects.addPrivateKey((PrivateKey) aliasKey);
+							try {
+								certObjects.addKey(KeyHelper.rebuildKeyPair((PrivateKey) aliasKey));
+							} catch (IOException e) {
+								LOG.warning(e, "Unable to rebuild key pair for private key ''{0}'' of type ''{1}''",
+										alias, aliasKey.getClass().getName());
+							}
 						} else {
 							LOG.warning("Ignoring key of key store entry ''{0}'' due to unsupported type ''{1}''",
 									alias, aliasKey.getClass().getName());

@@ -100,13 +100,12 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 			ASN1Primitive derObject;
 
 			while ((derObject = derStream.readObject()) != null) {
-				if (certObjects == null) {
-					certObjects = new CertObjectStore();
-				}
-
 				X509Certificate crt = decodeCRT(derObject);
 
 				if (crt != null) {
+					if (certObjects == null) {
+						certObjects = new CertObjectStore();
+					}
 					certObjects.addCRT(crt);
 					continue;
 				}
@@ -114,6 +113,9 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 				PKCS10CertificateRequest csr = decodeCSR(derObject);
 
 				if (csr != null) {
+					if (certObjects == null) {
+						certObjects = new CertObjectStore();
+					}
 					certObjects.addCSR(csr);
 					continue;
 				}
@@ -121,6 +123,9 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 				X509CRL crl = decodeCRL(derObject);
 
 				if (crl != null) {
+					if (certObjects == null) {
+						certObjects = new CertObjectStore();
+					}
 					certObjects.addCRL(crl);
 					continue;
 				}
