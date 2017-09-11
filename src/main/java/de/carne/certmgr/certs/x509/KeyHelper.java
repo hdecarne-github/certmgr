@@ -51,6 +51,22 @@ public final class KeyHelper {
 	private static final JcaPEMKeyConverter PEM_KEY_CONVERTER = new JcaPEMKeyConverter();
 
 	/**
+	 * Encode a {@link PrivateKey}.
+	 *
+	 * @param privateKey The {@link PrivateKey} to encode.
+	 * @return The encoded key data.
+	 * @throws IOException if encoding is not supported.
+	 */
+	public static byte[] encodePrivateKey(PrivateKey privateKey) throws IOException {
+		byte[] encoded = privateKey.getEncoded();
+
+		if (encoded == null) {
+			throw new IOException("Unable to encode private key of type " + privateKey.getClass().getSimpleName());
+		}
+		return encoded;
+	}
+
+	/**
 	 * Rebuild the {@link KeyPair} associated with the submitted {@link PrivateKey}.
 	 *
 	 * @param privateKey The {@link PrivateKey} to rebuild the {@link KeyPair} for.

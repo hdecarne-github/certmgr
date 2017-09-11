@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.check.Check;
 import de.carne.check.Nullable;
 
 /**
@@ -215,11 +215,7 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 	 * @throws IOException if an encoding error occurs.
 	 */
 	public void addKey(String alias, KeyPair key) throws IOException {
-		try {
-			this.entries.add(new Entry(alias, CertObjectType.KEY, key, Check.nonNull(key.getPrivate().getEncoded())));
-		} catch (NullPointerException e) {
-			throw new IOException("Failed to encode private key", e);
-		}
+		this.entries.add(new Entry(alias, CertObjectType.KEY, key, KeyHelper.encodePrivateKey(key.getPrivate())));
 	}
 
 	/**

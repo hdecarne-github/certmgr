@@ -524,10 +524,11 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	private static KeyPair convertKey(PEMEncryptedKeyPair pemObject, String resource, PasswordCallback password)
 			throws IOException {
 		PEMKeyPair pemKeyPair = null;
-		char[] passwordChars = password.queryPassword(resource);
 		Throwable passwordException = null;
 
 		while (pemKeyPair == null) {
+			char[] passwordChars = password.queryPassword(resource);
+
 			if (passwordChars == null) {
 				throw new PasswordRequiredException(resource, passwordException);
 			}
@@ -538,7 +539,6 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 				pemKeyPair = pemObject.decryptKeyPair(pemDecryptorProvider);
 			} catch (EncryptionException e) {
 				passwordException = e;
-				passwordChars = password.requeryPassword(resource, e);
 			}
 		}
 		return convertKey(pemKeyPair);
