@@ -60,9 +60,13 @@ public class CertReadersWritersTest {
 	@Test
 	public void testReadersAndWriters() throws IOException {
 		for (CertReader reader : CertReaders.REGISTERED.providers()) {
-			URL testResourceURL = getClass().getResource(reader.providerName() + ".dat");
+			for (int resourceIndex = 1;; resourceIndex++) {
+				URL testResourceURL = getClass().getResource(reader.providerName() + "." + resourceIndex + ".dat");
 
-			if (testResourceURL != null) {
+				if (testResourceURL == null) {
+					break;
+				}
+
 				Path testPath = Files.createTempFile(getClass().getSimpleName(), null);
 
 				try {
@@ -89,6 +93,24 @@ public class CertReadersWritersTest {
 		CertObjectStore readCertObjects1 = CertReaders.readURL(testResourceURL, Tests.password());
 
 		Assert.assertNotNull(readCertObjects1);
+
+		for (CertObjectStore.Entry entry : readCertObjects1) {
+			switch (entry.type()) {
+			case CRT:
+				reader.fileExtension(entry.getCRT().getClass());
+				break;
+			case KEY:
+				reader.fileExtension(entry.getKey().getClass());
+				break;
+			case CSR:
+				reader.fileExtension(entry.getCSR().getClass());
+				break;
+			case CRL:
+				reader.fileExtension(entry.getCRL().getClass());
+				break;
+			}
+			reader.fileExtension(getClass());
+		}
 
 		CertObjectStore readCertObjects2;
 
