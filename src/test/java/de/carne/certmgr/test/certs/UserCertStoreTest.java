@@ -182,9 +182,9 @@ public class UserCertStoreTest {
 		try {
 			UserCertStore store = UserCertStore.openStore(testStorePath.get());
 
-			Assert.assertEquals(12, store.size());
+			Assert.assertEquals(11, store.size());
 			Assert.assertEquals(TestCerts.TEST_STORE_NAME, store.storeName());
-			Assert.assertEquals(12, store.getEntries().size());
+			Assert.assertEquals(11, store.getEntries().size());
 			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
 			// Check preferences access
@@ -193,7 +193,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(Integer.valueOf(365), loadPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(30), loadPreferences.defaultCRLUpdatePeriod.get());
 			Assert.assertEquals("EC", loadPreferences.defaultKeyPairAlgorithm.get());
-			Assert.assertEquals(Integer.valueOf(521), loadPreferences.defaultKeySize.get());
+			Assert.assertEquals(Integer.valueOf(384), loadPreferences.defaultKeySize.get());
 			Assert.assertEquals("SHA256WITHECDSA", loadPreferences.defaultSignatureAlgorithm.get());
 
 			UserCertStorePreferences setPreferences = Check.nonNull(store.storePreferences());
@@ -220,13 +220,11 @@ public class UserCertStoreTest {
 			for (UserCertStoreEntry importStoreEntry : importStore.getEntries()) {
 				store.importEntry(importStoreEntry, TestCerts.password(), "Imported");
 			}
-			Assert.assertEquals(12, store.size());
+			Assert.assertEquals(11, store.size());
 
 			// Revoke access
 			for (UserCertStoreEntry storeEntry : store.getEntries()) {
-				if (storeEntry.hasCRT() && !storeEntry.isSelfSigned()) {
-					Assert.assertFalse(storeEntry.isRevoked());
-
+				if (storeEntry.hasCRT() && !storeEntry.isSelfSigned() && !storeEntry.isRevoked()) {
 					UserCertStoreEntry issuerEntry = storeEntry.issuer();
 
 					if (issuerEntry.canIssue()) {
@@ -265,7 +263,7 @@ public class UserCertStoreTest {
 			for (UserCertStoreEntry importStoreEntry : importStore.getEntries()) {
 				store.importEntry(importStoreEntry, TestCerts.password(), "Imported");
 			}
-			Assert.assertEquals(12, store.size());
+			Assert.assertEquals(11, store.size());
 		} catch (IOException | BackingStoreException e) {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
