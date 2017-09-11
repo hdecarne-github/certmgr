@@ -42,11 +42,14 @@ import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.net.SSLPeer.Protocol;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.PlatformKeyStore;
+import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
+import de.carne.certmgr.certs.x509.ReasonFlag;
+import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
@@ -121,6 +124,7 @@ public class UserCertStoreTest {
 
 			Assert.assertEquals(2, createdStore.size());
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 		try {
@@ -129,6 +133,7 @@ public class UserCertStoreTest {
 		} catch (FileAlreadyExistsException e) {
 			Exceptions.ignore(e);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 		try {
@@ -136,6 +141,7 @@ public class UserCertStoreTest {
 
 			Assert.assertEquals(2, openendStore.size());
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
@@ -216,6 +222,34 @@ public class UserCertStoreTest {
 			}
 			Assert.assertEquals(12, store.size());
 
+			// Revoke access
+			for (UserCertStoreEntry storeEntry : store.getEntries()) {
+				if (storeEntry.hasCRT() && !storeEntry.isSelfSigned()) {
+					Assert.assertFalse(storeEntry.isRevoked());
+
+					UserCertStoreEntry issuerEntry = storeEntry.issuer();
+
+					if (issuerEntry.canIssue()) {
+						Date lastUpdate = new Date(System.currentTimeMillis());
+						Date nextUpdate = new Date(lastUpdate.getTime() + 1000);
+						SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm
+								.getDefaultSet(issuerEntry.getPublicKey().getAlgorithm(),
+										storeEntry.getCRT().getSigAlgName(), false)
+								.getDefault();
+
+						Assert.assertNotNull(signatureAlgorithm);
+
+						UpdateCRLRequest updateCRLRequest = new UpdateCRLRequest(lastUpdate, nextUpdate,
+								signatureAlgorithm);
+
+						updateCRLRequest.addRevokeEntry(storeEntry.getCRT().getSerialNumber(),
+								ReasonFlag.PRIVILEGE_WITHDRAWN);
+						issuerEntry.updateCRL(updateCRLRequest, TestCerts.password());
+						Assert.assertTrue(storeEntry.isRevoked());
+					}
+				}
+			}
+
 			// Delete access
 			List<UserCertStoreEntryId> deleteIds = new ArrayList<>();
 
@@ -233,6 +267,7 @@ public class UserCertStoreTest {
 			}
 			Assert.assertEquals(12, store.size());
 		} catch (IOException | BackingStoreException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
@@ -261,6 +296,7 @@ public class UserCertStoreTest {
 				entryCount = traverseStore(entry.issuedEntries());
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 		return entryCount;
@@ -305,6 +341,7 @@ public class UserCertStoreTest {
 				traverseStore(importStore.getEntries());
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
@@ -321,6 +358,7 @@ public class UserCertStoreTest {
 			Assert.assertNotNull(importStore);
 			Assert.assertTrue(importStore.size() > 0);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
@@ -343,6 +381,7 @@ public class UserCertStoreTest {
 			Assert.assertNotNull(importStore);
 			Assert.assertTrue(importStore.size() > 0);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 		try {
@@ -352,6 +391,7 @@ public class UserCertStoreTest {
 			Assert.assertNotNull(importStore);
 			Assert.assertTrue(importStore.size() > 0);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 		try {
@@ -361,6 +401,7 @@ public class UserCertStoreTest {
 			Assert.assertNotNull(importStore);
 			Assert.assertTrue(importStore.size() > 0);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 		try {
@@ -384,6 +425,7 @@ public class UserCertStoreTest {
 			Assert.assertNotNull(importStore);
 			Assert.assertTrue(importStore.size() > 0);
 		} catch (IOException e) {
+			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
 	}
