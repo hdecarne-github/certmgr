@@ -56,11 +56,15 @@ public class ASN1DataTest {
 			DirectoryName inNameA = new DirectoryName(new X500Principal("CN=localhost"));
 			GenericName inNameB = new GenericName(GeneralNameType.X400_ADDRESS,
 					new DEROctetString("test".getBytes()).getEncoded());
-			IPAddressName inNameC = new IPAddressName(InetAddress.getByName("127.0.0.1"),
+			IPAddressName inNameC = new IPAddressName(InetAddress.getByName("127.0.0.1"), null);
+			IPAddressName inNameD = new IPAddressName(InetAddress.getByName("127.0.0.1"),
 					InetAddress.getByName("255.255.255.255"));
-			OtherName inNameD = new OtherName("1.2.3.4", new DEROctetString("test".getBytes()).getEncoded());
-			RegisteredIDName inNameE = new RegisteredIDName("1.2.3.4");
-			StringName inNameF = new StringName(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER,
+			IPAddressName inNameE = new IPAddressName(InetAddress.getByName("::1"), null);
+			IPAddressName inNameF = new IPAddressName(InetAddress.getByName("::1"),
+					InetAddress.getByName("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"));
+			OtherName inNameG = new OtherName("1.2.3.4", new DEROctetString("test".getBytes()).getEncoded());
+			RegisteredIDName inNameH = new RegisteredIDName("1.2.3.4");
+			StringName inNameI = new StringName(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER,
 					"https://localhost/test.crl");
 
 			in.addName(inNameA);
@@ -69,6 +73,9 @@ public class ASN1DataTest {
 			in.addName(inNameD);
 			in.addName(inNameE);
 			in.addName(inNameF);
+			in.addName(inNameG);
+			in.addName(inNameH);
+			in.addName(inNameI);
 
 			byte[] inEncoded = in.getEncoded();
 			GeneralNames out = GeneralNames.decode(decodeBytes(inEncoded));
