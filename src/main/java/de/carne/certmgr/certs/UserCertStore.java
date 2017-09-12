@@ -468,32 +468,35 @@ public final class UserCertStore {
 			PasswordCallback newPassword, @Nullable String aliasHint) throws IOException {
 		Set<UserCertStoreEntry> mergedEntries = new HashSet<>();
 
-		// First merge CRT and CSR objects as they provide the entry's DN
-		for (CertObjectStore.Entry certObject : certObjects) {
-			UserCertStoreEntry mergedEntry = null;
+		try {
+			// First merge CRT and CSR objects as they provide the entry's DN
+			for (CertObjectStore.Entry certObject : certObjects) {
+				UserCertStoreEntry mergedEntry = null;
 
-			if (certObject.type() == CertObjectType.CRT) {
-				mergedEntry = mergeX509Certificate(certObject.getCRT(), aliasHint);
-			} else if (certObject.type() == CertObjectType.CSR) {
-				mergedEntry = mergePKCS10CertificateRequest(certObject.getCSR(), aliasHint);
+				if (certObject.type() == CertObjectType.CRT) {
+					mergedEntry = mergeX509Certificate(certObject.getCRT(), aliasHint);
+				} else if (certObject.type() == CertObjectType.CSR) {
+					mergedEntry = mergePKCS10CertificateRequest(certObject.getCSR(), aliasHint);
+				}
+				if (mergedEntry != null) {
+					mergedEntries.add(mergedEntry);
+				}
 			}
-			if (mergedEntry != null) {
-				mergedEntries.add(mergedEntry);
-			}
-		}
-		for (CertObjectStore.Entry certObject : certObjects) {
-			UserCertStoreEntry mergedEntry = null;
+			for (CertObjectStore.Entry certObject : certObjects) {
+				UserCertStoreEntry mergedEntry = null;
 
-			if (certObject.type() == CertObjectType.KEY) {
-				mergedEntry = mergeKey(certObject.getKey(), newPassword);
-			} else if (certObject.type() == CertObjectType.CRL) {
-				mergedEntry = mergeX509CRL(certObject.getCRL(), aliasHint);
+				if (certObject.type() == CertObjectType.KEY) {
+					mergedEntry = mergeKey(certObject.getKey(), newPassword);
+				} else if (certObject.type() == CertObjectType.CRL) {
+					mergedEntry = mergeX509CRL(certObject.getCRL(), aliasHint);
+				}
+				if (mergedEntry != null) {
+					mergedEntries.add(mergedEntry);
+				}
 			}
-			if (mergedEntry != null) {
-				mergedEntries.add(mergedEntry);
-			}
+		} finally {
+			resetIssuers();
 		}
-		resetIssuers();
 		return mergedEntries;
 	}
 
