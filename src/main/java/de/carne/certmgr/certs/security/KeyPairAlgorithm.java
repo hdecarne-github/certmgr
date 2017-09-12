@@ -21,7 +21,6 @@ import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
 
-import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.util.DefaultSet;
 
@@ -48,7 +47,9 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 	public static DefaultSet<KeyPairAlgorithm> getDefaultSet(@Nullable String defaultHint, boolean expertMode) {
 		DefaultSet<KeyPairAlgorithm> keyPairAlgorithms = new DefaultSet<>();
 		DefaultSet<String> defaultNames = SecurityDefaults.getKeyAlgorithmNames();
-		String defaultName = (defaultHint != null ? defaultHint : Check.nonNull(defaultNames.getDefault()));
+		@Nullable
+		String defaultName = (defaultHint != null && defaultNames.contains(defaultHint) ? defaultHint
+				: defaultNames.getDefault());
 
 		for (Provider provider : SecurityDefaults.getProviders(expertMode)) {
 			for (Provider.Service service : provider.getServices()) {
@@ -58,7 +59,7 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 
 				String algorithm = service.getAlgorithm();
 
-				if (!expertMode && !defaultName.equals(algorithm) && !defaultNames.contains(algorithm)) {
+				if (!expertMode && !defaultNames.contains(algorithm)) {
 					continue;
 				}
 
