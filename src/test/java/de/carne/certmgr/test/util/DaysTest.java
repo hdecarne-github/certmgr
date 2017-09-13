@@ -17,8 +17,10 @@
 package de.carne.certmgr.test.util;
 
 import java.time.Period;
+import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.carne.certmgr.util.Days;
@@ -28,6 +30,14 @@ import de.carne.certmgr.util.DaysI18N;
  * Test {@link Days} class functionality.
  */
 public class DaysTest {
+
+	/**
+	 * Tests expect the default {@link Locale} {@link Locale#US}.
+	 */
+	@BeforeClass
+	public static void initDefaultLocale() {
+		Locale.setDefault(Locale.US);
+	}
 
 	/**
 	 * Test {@link Days} functions.
