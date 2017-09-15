@@ -1,6 +1,3 @@
-## CertMgr
-Create and manage X.509 certificates.
-
 ![store view](certmgr1.png)
 
 ### About CertMgr
@@ -39,6 +36,12 @@ de.carne.certmgr.jar [--verbose|--debug] [store home]
 store home
 	The store home path to open.
 ```
+
+### HowTos
+
+ * [Create your own private CA](howtoLocalCA/)
+ * [Create and manage certificates of an external CA](howtoExternalCA/)
+ * [Import existing certificate objects](howtoImport/)
 
 ### Changelog:
 * 2017-09-14 (v1.0.0-beta1)
