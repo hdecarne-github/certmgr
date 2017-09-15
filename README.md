@@ -6,7 +6,7 @@
 
 Create and manage X.509 certificates.
 
-![store view](http://certmgr.carne.de/certmgr1.png)
+![store view](docs/certmgr1.png)
 
 ### About CertMgr
 The Certificate Manager application (CertMgr) supports the creation and management of X.509 certificates and their corresponding objects.
