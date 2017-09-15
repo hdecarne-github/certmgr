@@ -1,16 +1,13 @@
-## CertMgr
-
 [![Build Status](https://travis-ci.org/hdecarne/de.carne.certmgr.svg?branch=master)](https://travis-ci.org/hdecarne/de.carne.certmgr)
 [![codecov](https://codecov.io/gh/hdecarne/de.carne.certmgr/branch/master/graph/badge.svg)](https://codecov.io/gh/hdecarne/de.carne.certmgr)
 [![Downloads](https://img.shields.io/github/downloads/hdecarne/de.carne.certmgr/total.svg)](https://github.com/hdecarne/de.carne.certmgr/releases)
+## CertMgr
 
 Create and manage X.509 certificates.
 
-![store view](docs/certmgr1.png)
-
 ### About CertMgr
 The Certificate Manager application (CertMgr) supports the creation and management of X.509 certificates and their corresponding objects.
-
+![store view](docs/certmgr1.png)
 Certificates are organized in so called Certificate store. Such a store is actually a simple directory structure containing the individual certificate files.
 
 The application supports the following certificate operations:

@@ -1,8 +1,6 @@
-![store view](certmgr1.png)
-
 ### About CertMgr
 The Certificate Manager application (CertMgr) supports the creation and management of X.509 certificates and their corresponding objects.
-
+![store view](certmgr1.png)
 Certificates are organized in so called Certificate store. Such a store is actually a simple directory structure containing the individual certificate files.
 
 The application supports the following certificate operations:
