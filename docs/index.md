@@ -9,7 +9,7 @@ The application supports the following certificate operations:
  * Creation and management of **Certificate Revocation Lists** (CRL)
  * **Import and export** of certificates (in PEM, DER, PKCS#12 as well as JKS format)
 
-### Installation & usage:
+#### Installation & usage:
 A Java SE 8 Runtime Environment (JRE) is required to run CertMgr.
 
 Download the latest version from the project's [releases page](https://github.com/hdecarne/certmgr/releases/latest).
@@ -35,13 +35,13 @@ store home
 	The store home path to open.
 ```
 
-### HowTos
-
+#### HowTos
  * [Create your own private CA](howtoLocalCA/)
  * [Create and manage certificates of an external CA](howtoExternalCA/)
  * [Import existing certificate objects](howtoImport/)
+ * [Configure Apache to use your certificates](howtoApache/)
 
-### Changelog:
+#### Changelog:
 * 2017-09-14 (v1.0.0-beta1)
  * Initial release of new completely re-build version.
 * 2016-05-29 (latest release of 0.2.x branch)

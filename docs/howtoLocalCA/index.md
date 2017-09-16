@@ -58,4 +58,4 @@ Which certificate objects have to be exported and how depends on the actual usag
  * Export user certificate into a PKCS#12 file including private key for import into the OS' user certificate store. Afterwards the certificate will be available for user authentication in web browser, VPN clients, etc. .
  * Export server certificate, key as well as the accompanying certificate chain into separate PEM encoded files for Apache setup (see [Configure Apache to use your certificates](../howtoApache/)).
 
-[<< Back](..)
+[<< Index](..)
