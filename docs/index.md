@@ -43,6 +43,6 @@ store home
 
 #### Changelog:
 * 2017-09-14 (v1.0.0-beta1)
- * Initial release of new completely re-build version.
+  * Initial release of new completely re-build version.
 * 2016-05-29 (latest release of 0.2.x branch)
- * Various bug fixes and code cleanups.
+  * Various bug fixes and code cleanups.

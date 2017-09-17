@@ -93,7 +93,7 @@ To create the `SSLCARevocationFile` file perform an export on the **user certifi
 
 Please note that the CRL export is only possible after you have performed a first update of your CA's CRL (see the initially mentioned CA HowTos for further details).
 
-Settings the parameter `SSLVerifyClient` to `require` enables client certificate verification. The value of `SSLVerifyDepth` defines the maximum allowed length of the issuer chain. The value `2` enables the use of one intermediate certificate.
+Setting the parameter `SSLVerifyClient` to `require` enables client certificate verification. The value of `SSLVerifyDepth` defines the maximum allowed length of the issuer chain. The value `2` enables the use of one intermediate certificate.
 
 Now copy the created files to your server and adapt the Apache config parameters listed above according to your environment. After a restart the Apache server should now ask for a client  certificate.
 
