@@ -43,10 +43,10 @@ store home
 ```
 
 #### HowTos
- * [Create your own private CA](howtoLocalCA/)
- * [Create and manage certificates of an external CA](howtoExternalCA/)
- * [Import existing certificate objects](howtoImport/)
- * [Configure Apache to use your certificates](howtoApache/)
+ * [Create your own private CA](http://certmgr.carne.de/howtoLocalCA/)
+ * [Create and manage certificates of an external CA](http://certmgr.carne.de/howtoExternalCA/)
+ * [Import existing certificate objects](http://certmgr.carne.de/howtoImport/)
+ * [Configure Apache to use your certificates](http://certmgr.carne.de/howtoApache/)
 
 ## Changelog:
 * 2017-09-14 (v1.0.0-beta1)
