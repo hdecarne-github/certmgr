@@ -1,5 +1,5 @@
 ### Configure Apache to use your certificates
-This HowTo assumes that you either have created your own private CA (see [Create your own private CA](../howtoLocalCa/)) or have created certificates signed by an external CA (see [Create and manage certificates of an external CA](../howtoExternalCA)).
+This HowTo assumes that you either have created your own private CA (see [Create your own private CA](../howtoLocalCA/)) or have created certificates signed by an external CA (see [Create and manage certificates of an external CA](../howtoExternalCA)).
 
 #### Installing server certificate
 After following one of the HowTos above you now have have a server certificate in your certificate store.
