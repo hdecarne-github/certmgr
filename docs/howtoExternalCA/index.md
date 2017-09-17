@@ -6,7 +6,7 @@ The CertMgr application supports external CAs in a generic way by generating Cer
  * Only the CSR object is submitted to the external CA's provider (in a provider specific way, e.g. via a web form).
  * The provider performs the necessary checks and responds with a signed certificate. The latter can be imported into the certificate store.
 
-Please check the [Create your own private CA](../howtoPrivateCA/) for how a certificate store as well a certificate is created.
+Please check the [Create your own private CA](../howtoLocalCA/) for how a certificate store as well a certificate is created.
 
 #### Generate CSR
 To generate a CSR press the **Generate/Request new certificate** tool button or select the corresponding menu entry.

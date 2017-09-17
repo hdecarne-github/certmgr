@@ -42,6 +42,12 @@ store home
 	The store home path to open.
 ```
 
+#### HowTos
+ * [Create your own private CA](howtoLocalCA/)
+ * [Create and manage certificates of an external CA](howtoExternalCA/)
+ * [Import existing certificate objects](howtoImport/)
+ * [Configure Apache to use your certificates](howtoApache/)
+
 ## Changelog:
 * 2017-09-14 (v1.0.0-beta1)
   * Initial release of new completely re-build version.
