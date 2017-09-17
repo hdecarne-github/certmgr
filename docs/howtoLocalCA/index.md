@@ -10,7 +10,7 @@ The following steps create a simple demo CA to show the needed CertMgr functions
 #### Setup Certificate Store
 Press the **New store** tool button or select the corresponding menu entry to bring up the **Certificate store preferences** dialog:
 
-![new store](new_store.png)
+![new store](screen_new_store.png)
 
 Enter your domain name for the new store's name, as the store name will be used to derive the default names of your certificates. Select all other options according to your own needs and preferences.
 Except for store name and path all of these options can be modified afterwards using the same dialog.
@@ -18,7 +18,7 @@ Except for store name and path all of these options can be modified afterwards u
 #### Create Root Certificate
 Create the self-signed root certificate for your CA by pressing the **Generate/Request new certificate** tool button or selecting the corresponding menu entry.
 
-![root ca](root_ca.png)
+![root ca](screen_root_ca.png)
 
 Enter a suitable name for the root certificate and setup suitable defaults by applying the **RootCA preset template** (as shown in the screen above). Adapt the chosen defaults according to your own needs. Make sure to leave the Generator and Issuer options unchanged to create a self-signed root certificate. By pressing the **Generate** button and entering a password for the root certificate's private key this step will be finished.
 
@@ -31,27 +31,27 @@ Create intermediate certificates for a Server CA and a User CA by using the same
 
 The certificate store now contains the necessary CA certificates to issue the actual server and user certificates.
 
-![intermediate cas](intermediate_cas.png)
+![intermediate cas](screen_intermediate_cas.png)
 
 #### Generate Server certificate
 Create a server certificate by performing merely the same steps as above but use the Server CA certificate as the issuer and use the **Server preset template** for suitable certificate defaults. This preset creates an initial Subject Alternative Name extension. This extension has to be updated to contain the CN name as well as all other possible names. As for the intermediate certificates the created CRL Distribution Points extension has to be updated or removed.
 
-![server certficate](server_certificate.png)
+![server certficate](screen_server_certificate.png)
 
 #### Generate User certificate
 To create an user certificate use the User CA certificate as the issuer and the **User preset template**. Again adapt the pre-created Subject Alternative Name extension accordingly as well as the CRL Distribution Points extension.
 
-![server certificate](server_certificate.png)
+![server certificate](screen_server_certificate.png)
 
 #### Generate initial CRLs
 If you have chosen to maintain a CRL you need to create them initially. Press the **Manage Certificate Revocation List (CRL)** tool button or select the corresponding menu entry. In the upcoming dialog simply press the update button and sign the CRL by entering the CA's password.
 
-![crl](crl.png)
+![crl](screen_crl.png)
 
 #### Exporting the created certificate objects
 Use the **Export certificates** tool button or select the corresponding menu entry to invoke the export dialog for the currently selected certificate object.
 
-![export](export.png)
+![export](screen_export.png)
 
 Which certificate objects have to be exported and how depends on the actual usage scenario. The usual ones are:
 
