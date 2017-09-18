@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/hdecarne/de.carne.certmgr.svg?branch=master)](https://travis-ci.org/hdecarne/de.carne.certmgr)
-[![codecov](https://codecov.io/gh/hdecarne/de.carne.certmgr/branch/master/graph/badge.svg)](https://codecov.io/gh/hdecarne/de.carne.certmgr)
-[![Downloads](https://img.shields.io/github/downloads/hdecarne/de.carne.certmgr/total.svg)](https://github.com/hdecarne/de.carne.certmgr/releases)
+[![Build Status](https://travis-ci.org/hdecarne/certmgr.svg?branch=master)](https://travis-ci.org/hdecarne/certmgr)
+[![codecov](https://codecov.io/gh/hdecarne/certmgr/branch/master/graph/badge.svg)](https://codecov.io/gh/hdecarne/certmgr)
+[![Downloads](https://img.shields.io/github/downloads/hdecarne/certmgr/total.svg)](https://github.com/hdecarne/certmgr/releases)
 ## CertMgr
 
 Create and manage X.509 certificates.
@@ -25,13 +25,13 @@ Simply extract the downloaded archive to a folder of your choice.
 The archive contains a single executable Jar as well as a folder with the license information. Invoke the application by either double clicking the jar or invoke the command
 
 ```
-java -jar de.carne.certmgr.jar [command line arguments]
+java -jar certmgr.jar [command line arguments]
 ```
 
 in a terminal. The application command line supports the following options:
 
 ```
-de.carne.certmgr.jar [--verbose|--debug] [store home]
+certmgr.jar [--verbose|--debug] [store home]
 
 --verbose
 	Enable verbose logging.

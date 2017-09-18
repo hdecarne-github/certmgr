@@ -1,4 +1,4 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'de.carne.gradleplugins.java'
 apply plugin: 'jacoco'
 apply plugin: 'distribution'
@@ -24,19 +24,17 @@ repositories {
 }
 
 dependencies {
-	compile('de.carne:java-default:5')
-	compile('de.carne:java-jfx:5')
-	compile('org.bouncycastle:bcpkix-jdk15on:1.58')
-
-	testCompile('junit:junit:4.12')
+	implementation("de.carne:java-default:5")
+	implementation("de.carne:java-jfx:5")
+	implementation("org.bouncycastle:bcpkix-jdk15on:1.58")
+	testImplementation("junit:junit:4.12")
 }
 
 jacocoTestReport {
 	reports {
-		xml.enabled true
-		xml.destination file("${buildDir}/reports/jacoco/coverage.xml")
+		xml.enabled false
 		html.enabled true
-		html.destination file("${buildDir}/reports/jacoco")
+		html.destination file("${buildDir}/reports/jacocoHtml")
 		csv.enabled false
 	}
 }

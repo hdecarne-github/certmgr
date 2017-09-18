@@ -18,13 +18,13 @@ Simply extract the downloaded archive to a folder of your choice.
 The archive contains a single executable Jar as well as a folder with the license information. Invoke the application by either double clicking the jar or invoke the command
 
 ```
-java -jar de.carne.certmgr.jar [command line arguments]
+java -jar certmgr.jar [command line arguments]
 ```
 
 in a terminal. The application command line supports the following options:
 
 ```
-de.carne.certmgr.jar [--verbose|--debug] [store home]
+certmgr.jar [--verbose|--debug] [store home]
 
 --verbose
 	Enable verbose logging.
