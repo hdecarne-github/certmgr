@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.org/hdecarne/certmgr.svg?branch=master)](https://travis-ci.org/hdecarne/certmgr)
 [![codecov](https://codecov.io/gh/hdecarne/certmgr/branch/master/graph/badge.svg)](https://codecov.io/gh/hdecarne/certmgr)
 [![Downloads](https://img.shields.io/github/downloads/hdecarne/certmgr/total.svg)](https://github.com/hdecarne/certmgr/releases)
-## CertMgr
 
+## CertMgr
 Create and manage X.509 certificates.
 
 ### About CertMgr
-The Certificate Manager application (CertMgr) supports the creation and management of X.509 certificates and their corresponding objects.
+The Certificate Manager application supports the creation and management of X.509 certificates and their corresponding objects.
 ![store view](docs/certmgr1.png)
 Certificates are organized in so called Certificate store. Such a store is actually a simple directory structure containing the individual certificate files.
 
@@ -17,11 +17,14 @@ The application supports the following certificate operations:
  * **Import and export** of certificates (in PEM, DER, PKCS#12 as well as JKS format)
 
 ### Installation & usage:
-A Java SE 8 Runtime Environment (JRE) is required to run CertMgr.
+A Java SE 8 Runtime Environment (JRE) is required to install/run CertMgr.
 
 Download the latest version from the project's [releases page](https://github.com/hdecarne/certmgr/releases/latest).
 
-Simply extract the downloaded archive to a folder of your choice.
+![Install4j](docs/install4j_small.png) The provided installer/launcher packages have been created using the multi-platform installer builder
+[Install4J](https://www.ej-technologies.com/products/install4j/overview.html). Simply run the installer suitable for your platform to install the application and keep it up-to-date.
+
+If you downloaded one of the generic archives, simply extract it to a folder of your choice.
 The archive contains a single executable Jar as well as a folder with the license information. Invoke the application by either double clicking the jar or invoke the command
 
 ```

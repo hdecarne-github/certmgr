@@ -14,7 +14,10 @@ A Java SE 8 Runtime Environment (JRE) is required to run CertMgr.
 
 Download the latest version from the project's [releases page](https://github.com/hdecarne/certmgr/releases/latest).
 
-Simply extract the downloaded archive to a folder of your choice.
+![Install4j](install4j_small.png) The provided installer/launcher packages have been created using the multi-platform installer builder
+[Install4J](https://www.ej-technologies.com/products/install4j/overview.html). Simply run the installer suitable for your platform to install the application and keep it up-to-date.
+
+If you downloaded one of the generic archives, simply extract it to a folder of your choice.
 The archive contains a single executable Jar as well as a folder with the license information. Invoke the application by either double clicking the jar or invoke the command
 
 ```
