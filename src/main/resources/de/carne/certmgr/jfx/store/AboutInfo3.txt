@@ -1,4 +1,5 @@
 Additional Copyrights
+
 This program makes use of the Farm-Fresh icon set
 (http://www.fatcow.com/free-icons).
 
@@ -7,3 +8,6 @@ http://www.fatcow.com
 
 These icons are licensed under a Creative Commons Attribution
 3.0 License (http://creativecommons.org/licenses/by/3.0/us/).
+
+The Application (Lock) icon is licensed under the LGPL
+(https://www.gnu.org/licenses/lgpl.html).
