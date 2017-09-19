@@ -1,9 +1,3 @@
-apply plugin: 'java-library'
-apply plugin: 'de.carne.gradleplugins.java'
-apply plugin: 'jacoco'
-apply plugin: 'distribution'
-apply plugin: 'eclipse'
-
 buildscript {
 	repositories {
 		mavenLocal()
@@ -13,6 +7,12 @@ buildscript {
 		classpath("de.carne:java-gradleplugins:0.4.0")
 	}
 }
+
+apply plugin: 'java'
+apply plugin: 'de.carne.gradleplugins.java'
+apply plugin: 'jacoco'
+apply plugin: 'distribution'
+apply plugin: 'eclipse'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -24,10 +24,10 @@ repositories {
 }
 
 dependencies {
-	implementation("de.carne:java-default:5")
-	implementation("de.carne:java-jfx:5")
-	implementation("org.bouncycastle:bcpkix-jdk15on:1.58")
-	testImplementation("junit:junit:4.12")
+	compile("de.carne:java-default:5")
+	compile("de.carne:java-jfx:5")
+	compile("org.bouncycastle:bcpkix-jdk15on:1.58")
+	testCompile("junit:junit:4.12")
 }
 
 jacocoTestReport {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="7.0.2" transformSequenceNumber="7">
-  <directoryPresets config="." />
-  <application name="Certificate Manager" distributionSourceDir="" applicationId="6863-0001-6800-2736" mediaDir="${compiler:project.buildDir}/distributions" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:project.name}" publisher="" publisherWeb="http://certmgr.carne.de/" version="${compiler:project.version}" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <directoryPresets config="${compiler:project.buildDir}/libs/${compiler:project.name}-${compiler:project.version}.jar" />
+  <application name="Certificate Manager" distributionSourceDir="" applicationId="6863-0001-6800-2736" mediaDir="${compiler:i4jProjectBuildDir}/distributions" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:i4jProjectName}" publisher="" publisherWeb="http://certmgr.carne.de/" version="${compiler:i4jProjectVersion}" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages>
@@ -14,10 +14,10 @@
       <envVar name="JDK_HOME" />
     </searchSequence>
     <variables>
-      <variable name="project.name" value="certmgr" description="" category="" />
-      <variable name="project.version" value="1.0.0-beta1" description="" category="" />
-      <variable name="project.buildDir" value="${compiler:project.path}/build" description="" category="" />
-      <variable name="project.path" value="../../.." description="" category="" />
+      <variable name="i4jProjectName" value="certmgr" description="" category="" />
+      <variable name="i4jProjectVersion" value="1.0.0-beta1" description="" category="" />
+      <variable name="i4jProjectBuildDir" value="${compiler:i4jProjectBaseDir}/build" description="" category="" />
+      <variable name="i4jProjectBaseDir" value="../../.." description="" category="" />
     </variables>
     <mergedProjects />
     <codeSigning macEnabled="false" macPkcs12File="" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" />
@@ -29,16 +29,16 @@
       <mountPoint id="58" root="" location="" mode="755" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="58" file="${compiler:project.path}/src/main/dist" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="58" file="${compiler:i4jProjectBaseDir}/src/main/dist" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <fileEntry mountPoint="58" file="${compiler:project.buildDir}/libs/${compiler:project.name}-${compiler:project.version}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="58" file="${compiler:i4jProjectBuildDir}/libs/${compiler:i4jProjectName}-${compiler:i4jProjectVersion}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components />
   </files>
   <launchers>
-    <launcher name="certmgr" id="60" customizedId="" external="false" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="" useJavaMinVersionOverride="false" javaMinVersionOverride="" useJavaMaxVersionOverride="false" javaMaxVersionOverride="" checkUpdater="false" updateExecutionMode="unattendedProgress" unattendedUpdateTitle="${i18n:updater.WindowTitle(&quot;${compiler:sys.fullName}&quot;)}">
-      <executable name="certmgr" type="1" iconSet="true" iconFile="" executableDir="" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="true" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="java9+">
+    <launcher name="Default" id="60" customizedId="" external="false" excludeFromMenu="false" unixMode="755" unixAutoStart="true" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="" useJavaMinVersionOverride="false" javaMinVersionOverride="" useJavaMaxVersionOverride="false" javaMaxVersionOverride="" checkUpdater="false" updateExecutionMode="unattendedProgress" unattendedUpdateTitle="${i18n:updater.WindowTitle(&quot;${compiler:sys.fullName}&quot;)}">
+      <executable name="certmgr${compiler:i4jProjectName}" type="1" iconSet="true" iconFile="" executableDir="" redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="true" workingDirectory="." singleInstance="false" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="true" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="java9+">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
       <splashScreen show="false" width="0" height="0" bitmapFile="" textOverlay="false">
@@ -49,7 +49,7 @@
       </splashScreen>
       <java mainClass="de.carne.ApplicationLoader" mainMode="1" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
-          <archive location="${compiler:project.name}-${compiler:project.version}.jar" failOnError="false" />
+          <archive location="${compiler:i4jProjectName}-${compiler:i4jProjectVersion}.jar" failOnError="false" />
         </classPath>
         <modulePath />
         <nativeLibraryDirectories />
@@ -72,7 +72,7 @@
       </iconImageFiles>
     </launcher>
   </launchers>
-  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="https://www.carne.de/download/${compiler:sys.shortName}/updates.xml" useAutoUpdateBaseUrl="true" autoUpdateBaseUrl="https://github.com/hdecarne/certmgr/releases/download/${compiler:project.version}">
+  <installerGui installerType="1" addOnAppId="" suggestPreviousLocations="true" autoUpdateDescriptorUrl="https://www.carne.de/download/${compiler:i4jProjectName}/updates.xml" useAutoUpdateBaseUrl="true" autoUpdateBaseUrl="https://github.com/hdecarne/${compiler:i4jProjectName}/releases/download/${compiler:i4jProjectVersion}">
     <staticMembers script="" />
     <customCode />
     <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
