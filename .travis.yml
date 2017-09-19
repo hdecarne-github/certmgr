@@ -7,8 +7,7 @@ os:
   - linux
 
 script:
-  - ./gradlew check
-  - ./gradlew jacocoTestReport
+  - ./gradlew build jacocoTestReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
@@ -16,13 +15,6 @@ notifications:
   email:
     recipients:
       - hdecarne@gmail.com
-
-# Install latest JDK, as JavaFX depends on it
-sudo: false
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
 
 # See https://docs.travis-ci.com/user/languages/java/#Caching
 before_cache:
