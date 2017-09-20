@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import de.carne.OS;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertWriters;
@@ -398,7 +399,15 @@ public class CertExportController extends StageController {
 			}
 		}
 
-		String clipboardData = text.toString();
+		String textData = text.toString();
+
+		if (OS.IS_WINDOWS) {
+			// JavaFX on Windows doubles Windows "\r\n" line breaks
+			// We replace them Unix line breaks "\n" as a workaround.
+			textData = textData.replace("\r\n", "\n");
+		}
+
+		String clipboardData = textData;
 
 		PlatformHelper.runLater(() -> {
 			Clipboard clipboard = Clipboard.getSystemClipboard();
