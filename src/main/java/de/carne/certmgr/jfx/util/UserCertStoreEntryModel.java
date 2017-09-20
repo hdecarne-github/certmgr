@@ -152,6 +152,13 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 	}
 
 	/**
+	 * Update the Graphic property (according to the current entry state).
+	 */
+	public void updateGraphic() {
+		setGraphic(getEntryGraphic(this.entry));
+	}
+
+	/**
 	 * Get the HasCRT property value.
 	 *
 	 * @return The HasCRT property value.

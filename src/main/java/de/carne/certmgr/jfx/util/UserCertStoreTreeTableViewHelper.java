@@ -96,6 +96,8 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 				entryItem = new TreeItem<>(this.modelFactory.apply(entry));
 				entryItem.graphicProperty().bind(entryItem.getValue().graphicProperty());
 				items.add(entryItem);
+			} else {
+				entryItem.getValue().updateGraphic();
 			}
 			updateHelper(entryItem, entry.issuedEntries());
 		}
