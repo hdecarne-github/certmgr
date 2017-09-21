@@ -75,7 +75,7 @@ tasks.withType(Tar){
 }
 
 install4j {
-	installDir = file(install4jHome)
+	installDir = file(project.hasProperty("install4jHome") ? install4jHome : ".")
 }
 
 task distMedia(type: com.install4j.gradle.Install4jTask) {
