@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
 	compile("de.carne:java-default:5")
-	compile("de.carne:java-jfx:6-SNAPSHOT")
+	compile("de.carne:java-jfx:6")
 	compile("org.bouncycastle:bcpkix-jdk15on:1.58")
 	testCompile("junit:junit:4.12")
 }
@@ -81,7 +81,7 @@ install4j {
 task distMedia(type: com.install4j.gradle.Install4jTask) {
 	projectFile = file("src/main/install4j/certmgr.install4j")
 	variables = [
-		i4jProjectName: name,
+		i4jProjectName: project.name,
 		i4jProjectVersion: version,
 		i4jProjectBaseDir: projectDir,
 		i4jProjectBuildDir: buildDir
