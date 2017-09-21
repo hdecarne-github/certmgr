@@ -685,7 +685,7 @@ return console.askYesNo(message, true);
                 </void>
               </void>
               <void property="executableName">
-                <string>${compiler:sys.shortName}Updater</string>
+                <string>${compiler:sys.fullName} Updater</string>
               </void>
               <void property="useCustomIcon">
                 <boolean>true</boolean>
