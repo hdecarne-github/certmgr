@@ -6,7 +6,7 @@ buildscript {
 	}
 	dependencies {
 		classpath("de.carne:java-gradleplugins:0.4.0")
-		classpath("gradle.plugin.install4j.install4j:gradle_plugin:7.0.2")
+		classpath("gradle.plugin.install4j.install4j:gradle_plugin:7.0.3")
 	}
 }
 
@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
 	compile("de.carne:java-default:5")
-	compile("de.carne:java-jfx:6")
+	compile("de.carne:java-jfx:7")
 	compile("org.bouncycastle:bcpkix-jdk15on:1.58")
 	testCompile("junit:junit:4.12")
 }
