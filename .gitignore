@@ -1,5 +1,5 @@
 /.gradle/
-/.idea/
-/.settings/org.eclipse.jdt.core.prefs
 /build/
 /eclipse-build/
+/.project
+/.classpath
