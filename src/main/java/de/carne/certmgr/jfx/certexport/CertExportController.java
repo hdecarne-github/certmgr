@@ -424,6 +424,9 @@ public class CertExportController extends StageController {
 		UserCertStoreEntry exportEntry = this.exportEntryParam.get();
 		String exportEntryAlias = exportEntry.id().getAlias();
 
+		if (exportKey) {
+			exportObjects.addKey(exportEntryAlias, exportEntry.getKey(PasswordDialog.enterPassword(this)));
+		}
 		if (exportCert) {
 			exportObjects.addCRT(exportEntryAlias, exportEntry.getCRT());
 			if (exportChain && !exportEntry.isSelfSigned()) {
@@ -439,9 +442,6 @@ public class CertExportController extends StageController {
 					exportObjects.addCRT(issuer.id().getAlias(), issuer.getCRT());
 				}
 			}
-		}
-		if (exportKey) {
-			exportObjects.addKey(exportEntryAlias, exportEntry.getKey(PasswordDialog.enterPassword(this)));
 		}
 		if (exportCSR) {
 			exportObjects.addCSR(exportEntryAlias, exportEntry.getCSR());
