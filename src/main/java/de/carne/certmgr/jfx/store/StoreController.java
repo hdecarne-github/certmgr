@@ -75,13 +75,16 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -203,6 +206,38 @@ public class StoreController extends StageController {
 	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<StoreEntryModel, Date> ctlStoreEntryViewExpires;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipExternalCrt;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipPublicCrt;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipPrivateCrt;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipCsr;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipCrl;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipKey;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipRevokedCrt;
+
+	@SuppressWarnings("null")
+	@FXML
+	Label ctlStoreEntryTooltipInvalidCrt;
 
 	@SuppressWarnings("null")
 	@FXML
@@ -520,6 +555,51 @@ public class StoreController extends StageController {
 		}
 	}
 
+	@SuppressWarnings("unused")
+	@FXML
+	void onStoreViewItemMouseEntered(MouseEvent evt) {
+		@SuppressWarnings("unchecked")
+		TreeTableCell<StoreEntryModel, String> cell = (TreeTableCell<StoreEntryModel, String>) evt.getSource();
+		UserCertStoreEntry entry = cell.getTreeTableRow().getItem().getEntry();
+
+		this.ctlStoreEntryTooltipExternalCrt.setVisible(entry.isExternal());
+		if (entry.hasCRT()) {
+			if (entry.hasKey()) {
+				this.ctlStoreEntryTooltipPublicCrt.setVisible(false);
+				this.ctlStoreEntryTooltipPrivateCrt.setVisible(true);
+				this.ctlStoreEntryTooltipCsr.setVisible(false);
+				this.ctlStoreEntryTooltipCrl.setVisible(false);
+				this.ctlStoreEntryTooltipKey.setVisible(false);
+			} else {
+				this.ctlStoreEntryTooltipPublicCrt.setVisible(true);
+				this.ctlStoreEntryTooltipPrivateCrt.setVisible(false);
+				this.ctlStoreEntryTooltipCsr.setVisible(false);
+				this.ctlStoreEntryTooltipCrl.setVisible(false);
+				this.ctlStoreEntryTooltipKey.setVisible(false);
+			}
+		} else if (entry.hasCSR()) {
+			this.ctlStoreEntryTooltipPublicCrt.setVisible(false);
+			this.ctlStoreEntryTooltipPrivateCrt.setVisible(false);
+			this.ctlStoreEntryTooltipCsr.setVisible(true);
+			this.ctlStoreEntryTooltipCrl.setVisible(false);
+			this.ctlStoreEntryTooltipKey.setVisible(false);
+		} else if (entry.hasCRL()) {
+			this.ctlStoreEntryTooltipPublicCrt.setVisible(false);
+			this.ctlStoreEntryTooltipPrivateCrt.setVisible(false);
+			this.ctlStoreEntryTooltipCsr.setVisible(false);
+			this.ctlStoreEntryTooltipCrl.setVisible(true);
+			this.ctlStoreEntryTooltipKey.setVisible(false);
+		} else if (entry.hasKey()) {
+			this.ctlStoreEntryTooltipPublicCrt.setVisible(false);
+			this.ctlStoreEntryTooltipPrivateCrt.setVisible(false);
+			this.ctlStoreEntryTooltipCsr.setVisible(false);
+			this.ctlStoreEntryTooltipCrl.setVisible(false);
+			this.ctlStoreEntryTooltipKey.setVisible(true);
+		}
+		this.ctlStoreEntryTooltipRevokedCrt.setVisible(entry.isRevoked());
+		this.ctlStoreEntryTooltipInvalidCrt.setVisible(!entry.isValid());
+	}
+
 	private void onStoreViewSelectionChanged(TreeItem<StoreEntryModel> selection) {
 		updateDetailsView(selection);
 	}
@@ -568,7 +648,7 @@ public class StoreController extends StageController {
 		this.ctlStoreEntryView.setRowFactory(param -> {
 			ContextMenu menu = storeEntryViewMenu;
 
-			TreeTableRow<StoreEntryModel> row = new TreeTableRow<StoreEntryModel>() {
+			return new TreeTableRow<StoreEntryModel>() {
 
 				@Override
 				protected void updateItem(@Nullable StoreEntryModel item, boolean empty) {
@@ -579,7 +659,38 @@ public class StoreController extends StageController {
 				}
 
 			};
-			return row;
+		});
+
+		Tooltip storeEntryViewTooltip = this.ctlStoreEntryView.getTooltip();
+
+		this.ctlStoreEntryTooltipExternalCrt.managedProperty()
+				.bind(this.ctlStoreEntryTooltipExternalCrt.visibleProperty());
+		this.ctlStoreEntryTooltipPublicCrt.managedProperty().bind(this.ctlStoreEntryTooltipPublicCrt.visibleProperty());
+		this.ctlStoreEntryTooltipPrivateCrt.managedProperty()
+				.bind(this.ctlStoreEntryTooltipPrivateCrt.visibleProperty());
+		this.ctlStoreEntryTooltipCsr.managedProperty().bind(this.ctlStoreEntryTooltipCsr.visibleProperty());
+		this.ctlStoreEntryTooltipCrl.managedProperty().bind(this.ctlStoreEntryTooltipCrl.visibleProperty());
+		this.ctlStoreEntryTooltipKey.managedProperty().bind(this.ctlStoreEntryTooltipKey.visibleProperty());
+		this.ctlStoreEntryTooltipRevokedCrt.managedProperty()
+				.bind(this.ctlStoreEntryTooltipRevokedCrt.visibleProperty());
+		this.ctlStoreEntryTooltipInvalidCrt.managedProperty()
+				.bind(this.ctlStoreEntryTooltipInvalidCrt.visibleProperty());
+		this.ctlStoreEntryView.setTooltip(null);
+		this.ctlStoreEntryViewId.setCellFactory(param -> {
+
+			return new TreeTableCell<StoreEntryModel, String>() {
+				Tooltip tooltip = storeEntryViewTooltip;
+
+				@Override
+				protected void updateItem(@Nullable String item, boolean empty) {
+					if (!empty) {
+						setTooltip(this.tooltip);
+						setOnMouseEntered(StoreController.this::onStoreViewItemMouseEntered);
+						setText(item);
+					}
+				}
+
+			};
 		});
 		this.ctlStoreEntryViewId.setCellValueFactory(new TreeItemPropertyValueFactory<>("id"));
 		this.ctlStoreEntryViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
@@ -592,7 +703,7 @@ public class StoreController extends StageController {
 		this.ctlDetailsView.setRowFactory(param -> {
 			ContextMenu menu = detailsViewMenu;
 
-			TreeTableRow<AttributeModel> row = new TreeTableRow<AttributeModel>() {
+			return new TreeTableRow<AttributeModel>() {
 
 				@Override
 				protected void updateItem(@Nullable AttributeModel item, boolean empty) {
@@ -603,7 +714,6 @@ public class StoreController extends StageController {
 				}
 
 			};
-			return row;
 		});
 		this.ctlDetailsViewName.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
 		this.ctlDetailsViewValue.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));

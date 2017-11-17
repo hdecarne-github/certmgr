@@ -12,6 +12,7 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.control.TreeTableView?>
 <?import javafx.scene.image.Image?>
@@ -148,7 +149,10 @@
                         <Image url="@../resources/imageNewStore16.png" />
                      </image>
                   </ImageView>
-               </graphic></Button>
+               </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_NEW_STORE" />
+               </tooltip></Button>
             <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdOpenStore">
                <graphic>
                   <ImageView pickOnBounds="true" preserveRatio="true">
@@ -157,6 +161,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_OPEN_STORE" />
+               </tooltip>
             </Button>
             <Button fx:id="cmdStorePreferencesButton" layoutX="48.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdStorePreferences">
                <graphic>
@@ -166,6 +173,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_STORE_PREFERENCES" />
+               </tooltip>
             </Button>
             <Separator orientation="VERTICAL" />
             <Button fx:id="cmdCopyEntryButton" layoutX="48.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdCopyEntry">
@@ -176,6 +186,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_COPY_ENTRY" />
+               </tooltip>
             </Button>
             <Button fx:id="cmdDeleteEntryButton" layoutX="86.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdDeleteEntry">
                <graphic>
@@ -185,6 +198,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_DELETE_ENTRY" />
+               </tooltip>
             </Button>
             <Separator layoutX="248.0" layoutY="10.0" orientation="VERTICAL" />
             <Button fx:id="cmdNewCertButton" layoutX="124.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdNewCert">
@@ -195,6 +211,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_NEW_CERT" />
+               </tooltip>
             </Button>
             <Button fx:id="cmdRevokeCertButton" layoutX="162.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdRevokeCert">
                <graphic>
@@ -204,6 +223,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_REVOKE_CERT" />
+               </tooltip>
             </Button>
             <Button fx:id="cmdManageCRLButton" layoutX="200.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdManageCRL">
                <graphic>
@@ -213,6 +235,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_EDIT_CRL" />
+               </tooltip>
             </Button>
             <Separator layoutX="248.0" layoutY="10.0" orientation="VERTICAL" />
             <Button fx:id="cmdExportCertButton" layoutX="238.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdExportCert">
@@ -223,6 +248,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_EXPORT_CERT" />
+               </tooltip>
             </Button>
             <Button fx:id="cmdImportCertsButton" layoutX="276.0" layoutY="10.0" mnemonicParsing="false" onAction="#onCmdImportCerts">
                <graphic>
@@ -232,6 +260,9 @@
                      </image>
                   </ImageView>
                </graphic>
+               <tooltip>
+                  <Tooltip text="%_STR_MENU_IMPORT_CERTS" />
+               </tooltip>
             </Button>
         </items>
       </ToolBar>
@@ -278,6 +309,88 @@
                           </items>
                         </ContextMenu>
                      </contextMenu>
+                     <tooltip>
+                        <Tooltip>
+                           <graphic>
+                              <VBox>
+                                 <children>
+                                    <Label fx:id="ctlStoreEntryTooltipExternalCrt" text="%_STR_TTP_EXTERNAL_CRT">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imageExternalCRT16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="ctlStoreEntryTooltipPublicCrt" layoutX="10.0" layoutY="10.0" text="%_STR_TTP_PUBLIC_CRT">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imagePublicCRT16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="ctlStoreEntryTooltipPrivateCrt" layoutX="20.0" layoutY="20.0" text="%_STR_TTP_PRIVATE_CRT">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imagePrivateCRT16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="ctlStoreEntryTooltipCsr" layoutX="30.0" layoutY="30.0" text="%_STR_TTP_CSR">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imageCSR16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="ctlStoreEntryTooltipCrl" layoutX="40.0" layoutY="40.0" text="%_STR_TTP_CRL">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imageCRL16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="ctlStoreEntryTooltipKey" layoutX="50.0" layoutY="50.0" text="%_STR_TTP_KEY">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imageKey16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="ctlStoreEntryTooltipRevokedCrt" layoutX="60.0" layoutY="60.0" text="%_STR_TTP_REVOKED_CRT">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imageRevokedOverlay16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                    <Label fx:id="ctlStoreEntryTooltipInvalidCrt" layoutX="70.0" layoutY="70.0" text="%_STR_TTP_INVALID_CRT">
+                                       <graphic>
+                                          <ImageView pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../resources/imageInvalidOverlay16.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                           </graphic>
+                        </Tooltip>
+                     </tooltip>
                   </TreeTableView>
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0">
