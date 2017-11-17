@@ -655,6 +655,8 @@ public class StoreController extends StageController {
 					super.updateItem(item, empty);
 					if (!empty) {
 						setContextMenu(menu);
+					} else {
+						setContextMenu(null);
 					}
 				}
 
@@ -687,6 +689,10 @@ public class StoreController extends StageController {
 						setTooltip(this.tooltip);
 						setOnMouseEntered(StoreController.this::onStoreViewItemMouseEntered);
 						setText(item);
+					} else {
+						setTooltip(null);
+						setOnMouseEntered(null);
+						setText(null);
 					}
 				}
 
@@ -710,6 +716,8 @@ public class StoreController extends StageController {
 					super.updateItem(item, empty);
 					if (!empty) {
 						setContextMenu(menu);
+					} else {
+						setContextMenu(null);
 					}
 				}
 

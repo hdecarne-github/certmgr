@@ -61,16 +61,16 @@ public final class UserCertStoreTreeTableViewHelper<T extends UserCertStoreEntry
 	 * @param store The certificate store providing the data to display (may be {@code null}).
 	 */
 	public void update(@Nullable UserCertStore store) {
-		if (store != null) {
-			TreeItem<T> root = this.treeTableView.getRoot();
+		TreeItem<T> root = this.treeTableView.getRoot();
 
-			if (root == null) {
-				root = new TreeItem<>();
-				this.treeTableView.setRoot(root);
-			}
+		if (root == null) {
+			root = new TreeItem<>();
+			this.treeTableView.setRoot(root);
+		}
+		if (store != null) {
 			updateHelper(root, store.getRootEntries());
 		} else {
-			this.treeTableView.setRoot(null);
+			root.getChildren().clear();
 		}
 	}
 
