@@ -78,7 +78,7 @@ install4j {
 	installDir = file(project.hasProperty("install4jHome") ? install4jHome : ".")
 }
 
-task distMedia(type: com.install4j.gradle.Install4jTask) {
+task assembleMedia(type: com.install4j.gradle.Install4jTask) {
 	projectFile = file("src/main/install4j/certmgr.install4j")
 	variables = [
 		i4jProjectName: project.name,
@@ -88,7 +88,7 @@ task distMedia(type: com.install4j.gradle.Install4jTask) {
 	]
 }
 
-assembleDist.finalizedBy(distMedia)
+assembleDist.finalizedBy(assembleMedia)
 
 import org.gradle.plugins.ide.eclipse.model.AccessRule
 
