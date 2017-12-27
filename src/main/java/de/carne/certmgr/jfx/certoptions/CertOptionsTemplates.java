@@ -133,8 +133,8 @@ final class CertOptionsTemplates {
 
 				for (Rdn oldRdn : oldRdns) {
 					if (this.aliasInput.length == 2 && DN_ALIAS_KEY.equals(oldRdn.getType())) {
-						if (Objects.equals(this.aliasInput[0], oldRdn.getValue())) {
-							newRdns.add(new Rdn(oldRdn.getType(), this.aliasInput[1]));
+						if (isRdnMergeable(this.aliasInput[0], oldRdn)) {
+							newRdns.add(new Rdn(oldRdn.getType(), safeRdnValue(this.aliasInput[1])));
 							continue;
 						}
 					}
@@ -142,8 +142,8 @@ final class CertOptionsTemplates {
 						if (this.storeName[0] == null) {
 							this.storeName[0] = String.valueOf(oldRdn.getValue());
 						}
-						if (Objects.equals(this.storeName[0], oldRdn.getValue())) {
-							newRdns.add(new Rdn(oldRdn.getType(), this.storeName[1]));
+						if (isRdnMergeable(this.storeName[0], oldRdn)) {
+							newRdns.add(new Rdn(oldRdn.getType(), safeRdnValue(this.storeName[1])));
 							continue;
 						}
 					}
@@ -151,8 +151,8 @@ final class CertOptionsTemplates {
 						if (this.serial[0] == null) {
 							this.serial[0] = String.valueOf(oldRdn.getValue());
 						}
-						if (Objects.equals(this.serial[0], oldRdn.getValue())) {
-							newRdns.add(new Rdn(oldRdn.getType(), this.serial[1]));
+						if (isRdnMergeable(this.serial[0], oldRdn)) {
+							newRdns.add(new Rdn(oldRdn.getType(), safeRdnValue(this.serial[1])));
 							continue;
 						}
 					}
@@ -166,6 +166,14 @@ final class CertOptionsTemplates {
 				Exceptions.ignore(e);
 			}
 			return mergedDNInput;
+		}
+
+		private boolean isRdnMergeable(String oldValue, Rdn oldRdn) {
+			return Strings.isEmpty(oldValue) || Objects.equals(oldValue, oldRdn.getValue());
+		}
+
+		private String safeRdnValue(String newValue) {
+			return (Strings.notEmpty(newValue) ? newValue : "?");
 		}
 
 		public CertOptionsPreset applyToPreset(CertOptionsPreset preset) {
