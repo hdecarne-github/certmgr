@@ -86,7 +86,7 @@ public final class SSLPeer {
 	/**
 	 * The socket timeout to use in milliseconds.
 	 */
-	public static final int SOCKET_TIMEOUT = PropertiesHelper.getInt(SSLPeer.class, ".socket-timeout", 1000);
+	public static final int SOCKET_TIMEOUT = PropertiesHelper.getInt(SSLPeer.class, ".socket-timeout", 5000);
 
 	private static final TrustManager INSECURE_TRUST_MANAGER = new X509TrustManager() {
 
