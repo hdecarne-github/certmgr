@@ -23,8 +23,8 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import de.carne.certmgr.certs.x509.KeyHelper;
@@ -151,7 +151,7 @@ public final class CertObjectStore implements Iterable<CertObjectStore.Entry> {
 
 	}
 
-	private final Set<Entry> entries = new HashSet<>();
+	private final Set<Entry> entries = new LinkedHashSet<>();
 	private int crtNumber = 1;
 	private int keyNumber = 1;
 	private int csrNumber = 1;
