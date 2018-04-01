@@ -33,6 +33,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import de.carne.certmgr.certs.CertObjectStore;
+import de.carne.certmgr.certs.CertObjectType;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.PasswordRequiredException;
@@ -124,20 +125,16 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			List<X509Certificate> crtChain = new ArrayList<>(certObjects.size());
 
 			for (CertObjectStore.Entry certObject : certObjects) {
-				switch (certObject.type()) {
-				case CRT:
+				if (certObject.type() == CertObjectType.CRT) {
 					keyStore.setCertificateEntry(certObject.alias(), certObject.getCRT());
-					crtChain.add(certObject.getCRT());
-					break;
-				case KEY:
+					crtChain.add(0, certObject.getCRT());
+				}
+			}
+			for (CertObjectStore.Entry certObject : certObjects) {
+				if (certObject.type() == CertObjectType.KEY) {
 					keyStore.setKeyEntry(certObject.alias(), certObject.getKey().getPrivate(), passwordChars,
 							crtChain.toArray(new X509Certificate[crtChain.size()]));
 					crtChain.clear();
-					break;
-				case CSR:
-					break;
-				case CRL:
-					break;
 				}
 			}
 			keyStore.store(out.io(), passwordChars);
