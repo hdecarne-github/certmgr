@@ -14,6 +14,9 @@ GNU General Public License for more details.
 
 ![Install4j](http://certmgr.carne.de/install4j_small.png) The provided installer/launcher packages have been created using the multi-platform installer builder [Install4J](https://www.ej-technologies.com/products/install4j/overview.html).
 
+### v1.0.1 (2018-04-01)
+* Fix export order if exporting multiple objects to a single file.
+
 ### v1.0.0 (2017-12-27)
 * Fix automatic CN update in certificate options dialog in case of an empty name.
 
