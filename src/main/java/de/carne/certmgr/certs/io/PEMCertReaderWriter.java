@@ -48,8 +48,8 @@ import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
-import de.carne.util.PropertiesHelper;
 import de.carne.util.Strings;
+import de.carne.util.SystemProperties;
 import de.carne.util.logging.Log;
 
 /**
@@ -64,8 +64,8 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 */
 	public static final String PROVIDER_NAME = "PEM";
 
-	private static final String PEM_ENCRYPTION = Check
-			.nonNull(PropertiesHelper.get(PEMCertReaderWriter.class, "encryption", "AES-128-CBC"));
+	private static final String PEM_ENCRYPTION = Check.notNull(
+			SystemProperties.value(PEMCertReaderWriter.class.getPackage().getName() + ".encryption", "AES-128-CBC"));
 
 	private static final JcePEMEncryptorBuilder PEM_ENCRYPTOR_BUILDER = new JcePEMEncryptorBuilder(PEM_ENCRYPTION);
 
@@ -85,7 +85,7 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_PEM_EXTENSION_PATTERNS(), "|");
+		return Strings.split(CertIOI18N.formatSTR_PEM_EXTENSION_PATTERNS(), '|', true);
 	}
 
 	@Override

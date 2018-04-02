@@ -95,7 +95,7 @@ abstract class SSLProtocalHelper implements AutoCloseable {
 	}
 
 	private Socket getPlainSocket() throws IOException {
-		Socket checkedPlainSocket = Check.nonNull(this.plainSocket);
+		Socket checkedPlainSocket = Check.notNull(this.plainSocket);
 
 		if (this.outputStream == null && this.inputStream == null) {
 			checkedPlainSocket.setSoTimeout(SSLPeer.SOCKET_TIMEOUT);

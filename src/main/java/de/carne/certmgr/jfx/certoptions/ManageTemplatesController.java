@@ -25,10 +25,10 @@ import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
+import de.carne.jfx.util.validation.InputValidator;
+import de.carne.jfx.util.validation.ValidationException;
 import de.carne.util.Late;
 import de.carne.util.Strings;
-import de.carne.util.validation.InputValidator;
-import de.carne.util.validation.ValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -150,7 +150,7 @@ public class ManageTemplatesController extends DialogController<Void> implements
 	 * @return This controller.
 	 */
 	public ManageTemplatesController init(CertOptionsPreset preset) {
-		this.presetParam.init(preset);
+		this.presetParam.set(preset);
 		this.ctlTemplates.getItems().addAll(CertOptionsTemplates.load());
 		return this;
 	}
@@ -162,7 +162,7 @@ public class ManageTemplatesController extends DialogController<Void> implements
 	}
 
 	private String validateAndGetTemplateName() throws ValidationException {
-		return InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlTemplateInput.getText()),
+		return InputValidator.notEmpty(Strings.safeTrim(this.ctlTemplateInput.getText()),
 				ManageTemplatesI18N::formatSTR_MESSAGE_NO_NAME);
 	}
 

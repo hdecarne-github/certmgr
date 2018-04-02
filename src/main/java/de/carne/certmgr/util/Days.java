@@ -81,7 +81,7 @@ public class Days implements Comparable<Days> {
 
 	@Override
 	public int compareTo(@Nullable Days o) {
-		return count() - Check.nonNull(o).count();
+		return count() - Check.notNull(o).count();
 	}
 
 	@Override

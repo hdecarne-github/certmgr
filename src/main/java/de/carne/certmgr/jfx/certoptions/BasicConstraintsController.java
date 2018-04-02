@@ -23,9 +23,9 @@ import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.util.validation.InputValidator;
 import de.carne.jfx.util.validation.ValidationAlerts;
-import de.carne.util.validation.InputValidator;
-import de.carne.util.validation.ValidationException;
+import de.carne.jfx.util.validation.ValidationException;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -124,7 +124,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 
 		InputValidator.isTrue(pathLenConstraintValue == null || pathLenConstraintValue.compareTo(BigInteger.ZERO) >= 0,
 				BasicConstraintsI18N::formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT);
-		return Check.nonNull(pathLenConstraintValue);
+		return Check.notNull(pathLenConstraintValue);
 	}
 
 	@Override

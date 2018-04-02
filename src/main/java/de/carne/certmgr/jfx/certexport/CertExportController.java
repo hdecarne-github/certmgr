@@ -21,33 +21,36 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import de.carne.OS;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertWriters;
 import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.jfx.password.PasswordDialog;
+import de.carne.certmgr.util.PathPreference;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
-import de.carne.io.IOHelper;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.util.FileChooserHelper;
+import de.carne.jfx.util.validation.InputValidator;
+import de.carne.jfx.util.validation.PathValidator;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.jfx.util.validation.ValidationException;
+import de.carne.nio.file.attribute.FileAttributes;
+import de.carne.util.Exceptions;
 import de.carne.util.Late;
+import de.carne.util.Platform;
 import de.carne.util.Strings;
-import de.carne.util.prefs.PathPreference;
-import de.carne.util.validation.InputValidator;
-import de.carne.util.validation.PathValidator;
-import de.carne.util.validation.ValidationException;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -211,7 +214,7 @@ public class CertExportController extends StageController {
 					@Override
 					protected void export(CertWriter format, @Nullable Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
-						exportToFile(format, Check.nonNull(param), exportObjects, encryptExport);
+						exportToFile(format, Check.notNull(param), exportObjects, encryptExport);
 					}
 
 				});
@@ -224,7 +227,7 @@ public class CertExportController extends StageController {
 					@Override
 					protected void export(CertWriter format, @Nullable Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
-						exportToDirectory(format, Check.nonNull(param), exportObjects, encryptExport);
+						exportToDirectory(format, Check.notNull(param), exportObjects, encryptExport);
 					}
 
 				});
@@ -283,7 +286,7 @@ public class CertExportController extends StageController {
 	 * @return This controller.
 	 */
 	public CertExportController init(UserCertStoreEntry exportEntry) {
-		this.exportEntryParam.init(exportEntry);
+		this.exportEntryParam.set(exportEntry);
 		this.ctlCertField.setText(exportEntry.getName());
 		this.ctlExportCertOption.setDisable(!exportEntry.hasCRT());
 		this.ctlExportCertOption.setSelected(exportEntry.hasCRT());
@@ -342,8 +345,7 @@ public class CertExportController extends StageController {
 	}
 
 	private Path validateFileDestinationInput() throws ValidationException {
-		String fileDestinationInput = InputValidator.notEmpty(
-				Strings.safeSafeTrim(this.ctlFileDestinationInput.getText()),
+		String fileDestinationInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileDestinationInput.getText()),
 				CertExportI18N::formatSTR_MESSAGE_NO_FILE);
 
 		return PathValidator.isPath(fileDestinationInput, CertExportI18N::formatSTR_MESSAGE_INVALID_FILE);
@@ -351,7 +353,7 @@ public class CertExportController extends StageController {
 
 	private Path validateDirectoryDestinationInput() throws ValidationException {
 		String directoryDestinationInput = InputValidator.notEmpty(
-				Strings.safeSafeTrim(this.ctlDirectoryDestinationInput.getText()),
+				Strings.safeTrim(this.ctlDirectoryDestinationInput.getText()),
 				CertExportI18N::formatSTR_MESSAGE_NO_DIRECTORY);
 
 		return PathValidator.isDirectoryPath(directoryDestinationInput,
@@ -374,7 +376,7 @@ public class CertExportController extends StageController {
 			throws IOException {
 		for (CertObjectStore.Entry exportObject : exportObjects) {
 			String filePattern = exportObject.alias() + "-%d" + format.fileExtension(exportObject.getClass());
-			Path file = IOHelper.createUniqueFile(directory, filePattern);
+			Path file = createUniqueFile(directory, filePattern);
 
 			try (IOResource<OutputStream> out = IOResource.newOutputStream(file.toString(), file,
 					StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
@@ -386,6 +388,29 @@ public class CertExportController extends StageController {
 				}
 			}
 		}
+	}
+
+	private Path createUniqueFile(Path dir, String namePattern) throws IOException {
+		int nameIndex = 1;
+		Path lastTestName = null;
+		Path uniqueName = null;
+
+		while (uniqueName == null) {
+			Path testName = dir.resolve(String.format(namePattern, nameIndex));
+
+			if (testName.equals(lastTestName)) {
+				throw new IllegalArgumentException(namePattern);
+			}
+			lastTestName = testName;
+			try {
+				Files.createFile(testName, FileAttributes.userDirectoryDefault(dir));
+				uniqueName = testName;
+			} catch (FileAlreadyExistsException e) {
+				Exceptions.ignore(e);
+				nameIndex++;
+			}
+		}
+		return uniqueName;
 	}
 
 	void exportToClipboard(CertWriter format, CertObjectStore exportObjects, boolean encryptExport) throws IOException {
@@ -401,7 +426,7 @@ public class CertExportController extends StageController {
 
 		String textData = text.toString();
 
-		if (OS.IS_WINDOWS) {
+		if (Platform.IS_WINDOWS) {
 			// JavaFX on Windows doubles Windows "\r\n" line breaks
 			// We replace them Unix line breaks "\n" as a workaround.
 			textData = textData.replace("\r\n", "\n");

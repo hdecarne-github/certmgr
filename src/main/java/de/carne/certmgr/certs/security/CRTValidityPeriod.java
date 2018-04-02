@@ -19,7 +19,7 @@ package de.carne.certmgr.certs.security;
 import de.carne.certmgr.util.Days;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 
 /**
  * CRT Validity Period provisioning.
@@ -49,7 +49,7 @@ public class CRTValidityPeriod extends AbstractPeriod {
 		if (defaultHint != null) {
 			crlUpdatePeriods.addDefault(new CRTValidityPeriod(defaultHint));
 		} else {
-			crlUpdatePeriods.addDefault(new CRTValidityPeriod(Check.nonNull(defaultPeriods.getDefault())));
+			crlUpdatePeriods.addDefault(new CRTValidityPeriod(Check.notNull(defaultPeriods.getDefault())));
 		}
 		for (Days period : defaultPeriods) {
 			crlUpdatePeriods.add(new CRTValidityPeriod(period));

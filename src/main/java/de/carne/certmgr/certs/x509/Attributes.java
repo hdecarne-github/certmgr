@@ -51,11 +51,11 @@ public class Attributes {
 		@Override
 		public StringBuffer format(@Nullable Object obj, @Nullable StringBuffer toAppendTo,
 				@Nullable FieldPosition pos) {
-			StringBuffer formatBuffer = Check.nonNull(toAppendTo);
+			StringBuffer formatBuffer = Check.notNull(toAppendTo);
 
 			formatBuffer.append("0x");
 
-			BigInteger serial = (BigInteger) Check.nonNull(obj);
+			BigInteger serial = (BigInteger) Check.notNull(obj);
 
 			formatBuffer.append(serial.toString(16).toUpperCase());
 			return formatBuffer;

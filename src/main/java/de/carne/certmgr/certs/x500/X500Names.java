@@ -27,11 +27,9 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
-import org.bouncycastle.util.Strings;
-
-import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
-import de.carne.util.PropertiesHelper;
+import de.carne.util.Strings;
+import de.carne.util.SystemProperties;
 import de.carne.util.logging.Log;
 
 /**
@@ -47,8 +45,7 @@ public final class X500Names {
 
 	private static final String OIDS_RESOURCE = X500Names.class.getSimpleName() + ".properties";
 
-	@Nullable
-	private static final String OIDS_USER_FILE = PropertiesHelper.get(X500Names.class, "", null);
+	private static final String OIDS_USER_FILE = SystemProperties.value(X500Names.class.getPackage().getName(), "");
 
 	private static final Map<String, String> OIDS = new HashMap<>();
 
@@ -60,7 +57,7 @@ public final class X500Names {
 		} catch (IOException e) {
 			throw Exceptions.toRuntime(e);
 		}
-		if (OIDS_USER_FILE != null) {
+		if (Strings.notEmpty(OIDS_USER_FILE)) {
 			try (FileInputStream oidsStream = new FileInputStream(OIDS_USER_FILE)) {
 				readOIDs(oidsStream);
 			} catch (IOException e) {
@@ -75,7 +72,7 @@ public final class X500Names {
 		oids.load(in);
 		for (Map.Entry<Object, Object> oid : oids.entrySet()) {
 			String oidID = oid.getKey().toString();
-			String[] oidNames = Strings.split(oid.getValue().toString(), ',');
+			String[] oidNames = Strings.split(oid.getValue().toString(), ',', true);
 
 			OIDS.put(oidID, oidNames[0]);
 			for (String oidName : oidNames) {

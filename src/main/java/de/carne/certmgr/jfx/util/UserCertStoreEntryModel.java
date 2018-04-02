@@ -268,7 +268,7 @@ public class UserCertStoreEntryModel implements Comparable<UserCertStoreEntryMod
 
 	@Override
 	public int compareTo(@Nullable UserCertStoreEntryModel o) {
-		return this.nameProperty.get().compareTo(Check.nonNull(o).nameProperty.get());
+		return this.nameProperty.get().compareTo(Check.notNull(o).nameProperty.get());
 	}
 
 	@Override

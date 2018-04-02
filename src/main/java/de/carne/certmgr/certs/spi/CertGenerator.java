@@ -27,7 +27,7 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.generator.Issuer;
 import de.carne.check.Nullable;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 
 /**
  * Service provider interface for certificate signing.

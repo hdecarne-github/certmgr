@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
-import de.carne.util.PropertiesHelper;
+import de.carne.util.Strings;
+import de.carne.util.SystemProperties;
 import de.carne.util.logging.Log;
 
 /**
@@ -41,8 +41,7 @@ public final class OIDs {
 
 	private static final String OIDS_RESOURCE = OIDs.class.getSimpleName() + ".properties";
 
-	@Nullable
-	private static final String OIDS_USER_FILE = PropertiesHelper.get(OIDs.class, "", null);
+	private static final String OIDS_USER_FILE = SystemProperties.value(OIDs.class.getPackage().getName(), "");
 
 	private static final Map<String, String> OIDS = new HashMap<>();
 
@@ -52,7 +51,7 @@ public final class OIDs {
 		} catch (IOException e) {
 			throw Exceptions.toRuntime(e);
 		}
-		if (OIDS_USER_FILE != null) {
+		if (Strings.notEmpty(OIDS_USER_FILE)) {
 			try (FileInputStream oidsStream = new FileInputStream(OIDS_USER_FILE)) {
 				readOIDs(oidsStream);
 			} catch (IOException e) {

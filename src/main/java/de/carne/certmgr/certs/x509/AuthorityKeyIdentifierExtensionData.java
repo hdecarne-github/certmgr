@@ -70,7 +70,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 			@Nullable GeneralNames authorityCertIssuer, @Nullable BigInteger authorityCertSerialNumber) {
 		super(OID, critical);
 
-		Check.condition(keyIdentifier != null || (authorityCertIssuer != null && authorityCertSerialNumber != null));
+		Check.assertTrue(keyIdentifier != null || (authorityCertIssuer != null && authorityCertSerialNumber != null));
 
 		this.keyIdentifier = keyIdentifier;
 		this.authorityCertIssuer = authorityCertIssuer;

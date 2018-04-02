@@ -34,12 +34,12 @@ import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
+import de.carne.jfx.util.validation.InputValidator;
+import de.carne.jfx.util.validation.PathValidator;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.jfx.util.validation.ValidationException;
 import de.carne.util.Late;
 import de.carne.util.Strings;
-import de.carne.util.validation.InputValidator;
-import de.carne.util.validation.PathValidator;
-import de.carne.util.validation.ValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -110,7 +110,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		Integer keySizeDefaultHint = null;
 		String sigAlgDefaultHint = null;
 
-		if (this.storePreferencesParam.isInitialized()) {
+		if (this.storePreferencesParam.toOptional().isPresent()) {
 			UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
 
 			if (keyAlg.algorithm().equals(storePreferences.defaultKeyPairAlgorithm.get())) {
@@ -126,12 +126,12 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	}
 
 	private void onApply(ActionEvent evt) {
-		if (!this.storeParam.isInitialized()) {
+		if (!this.storeParam.toOptional().isPresent()) {
 			try {
 				Path storeHome = validateStoreHomeInput();
 
-				this.storeParam.init(UserCertStore.createStore(storeHome));
-				this.storePreferencesParam.init(Check.nonNull(this.storeParam.get().storePreferences()));
+				this.storeParam.set(UserCertStore.createStore(storeHome));
+				this.storePreferencesParam.set(Check.notNull(this.storeParam.get().storePreferences()));
 			} catch (ValidationException e) {
 				ValidationAlerts.error(e).showAndWait();
 				evt.consume();
@@ -140,7 +140,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				evt.consume();
 			}
 		}
-		if (this.storePreferencesParam.isInitialized()) {
+		if (this.storePreferencesParam.toOptional().isPresent()) {
 			try {
 				UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
 
@@ -192,11 +192,11 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	 * @return This controller.
 	 */
 	public StorePreferencesController init(UserCertStore store, boolean expertMode) {
-		this.storeParam.init(store);
-		this.storePreferencesParam.init(Check.nonNull(store.storePreferences()));
+		this.storeParam.set(store);
+		this.storePreferencesParam.set(Check.notNull(store.storePreferences()));
 		this.expertModeParam = expertMode;
 
-		Path storeHome = Check.nonNull(store.storeHome());
+		Path storeHome = Check.notNull(store.storeHome());
 
 		this.ctlNameInput.setText(storeHome.getFileName().toString());
 		this.ctlNameInput.setDisable(true);
@@ -227,7 +227,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefCRTValidityPeriods() {
 		Days defaultHint = null;
 
-		if (this.storePreferencesParam.isInitialized()) {
+		if (this.storePreferencesParam.toOptional().isPresent()) {
 			defaultHint = new Days(this.storePreferencesParam.get().defaultCRTValidityPeriod.getInt(0));
 		}
 		Controls.resetComboBoxOptions(this.ctlDefCRTValidityInput, CRTValidityPeriod.getDefaultSet(defaultHint),
@@ -237,7 +237,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefCRLUpdatePeriods() {
 		Days defaultHint = null;
 
-		if (this.storePreferencesParam.isInitialized()) {
+		if (this.storePreferencesParam.toOptional().isPresent()) {
 			defaultHint = new Days(this.storePreferencesParam.get().defaultCRLUpdatePeriod.getInt(0));
 		}
 		Controls.resetComboBoxOptions(this.ctlDefCRLUpdateInput, CRLUpdatePeriod.getDefaultSet(defaultHint),
@@ -247,7 +247,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefKeyAlgOptions() {
 		String defaultHint = null;
 
-		if (this.storePreferencesParam.isInitialized()) {
+		if (this.storePreferencesParam.toOptional().isPresent()) {
 			defaultHint = this.storePreferencesParam.get().defaultKeyPairAlgorithm.get();
 		}
 		Controls.resetComboBoxOptions(this.ctlDefKeyAlgOption,
@@ -258,13 +258,13 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	@Override
 	@Nullable
 	public UserCertStore call(@Nullable ButtonType param) {
-		return this.storeParam.getIfInitialized();
+		return this.storeParam.toOptional().orElse(null);
 	}
 
 	private Path validateStoreHomeInput() throws ValidationException {
-		String nameInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlNameInput.getText()),
+		String nameInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlNameInput.getText()),
 				StorePreferencesI18N::formatSTR_MESSAGE_NO_NAME);
-		String pathInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlPathInput.getText()),
+		String pathInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlPathInput.getText()),
 				StorePreferencesI18N::formatSTR_MESSAGE_NO_PATH);
 		Path path = PathValidator.isDirectoryPath(pathInput, StorePreferencesI18N::formatSTR_MESSAGE_INVALID_PATH);
 		Path storeHome = PathValidator.isPath(path, nameInput, StorePreferencesI18N::formatSTR_MESSAGE_INVALID_NAME);

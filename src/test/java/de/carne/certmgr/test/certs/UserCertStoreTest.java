@@ -17,9 +17,13 @@
 package de.carne.certmgr.test.certs;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
 import java.security.Security;
 import java.security.cert.X509Extension;
 import java.util.ArrayList;
@@ -27,6 +31,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.AfterClass;
@@ -56,8 +64,10 @@ import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.certs.x509.generator.CertGenerators;
 import de.carne.certmgr.certs.x509.generator.Issuer;
 import de.carne.check.Check;
-import de.carne.io.IOHelper;
-import de.carne.util.DefaultSet;
+import de.carne.check.Nullable;
+import de.carne.io.IOUtil;
+import de.carne.jfx.util.DefaultSet;
+import de.carne.nio.file.FileUtil;
 import de.carne.util.Exceptions;
 import de.carne.util.Late;
 
@@ -85,9 +95,9 @@ public class UserCertStoreTest {
 	 */
 	@BeforeClass
 	public static void setupTempPath() throws IOException {
-		tempPath.init(Files.createTempDirectory(UserCertStoreTest.class.getSimpleName()));
+		tempPath.set(Files.createTempDirectory(UserCertStoreTest.class.getSimpleName()));
 		System.out.println("Using temporary directory: " + tempPath);
-		testStorePath.init(IOHelper.createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath.get(), null)
+		testStorePath.set(createTempDirFromZIPResource(TestCerts.testStoreZIPURL(), tempPath.get(), null)
 				.resolve(TestCerts.TEST_STORE_NAME));
 	}
 
@@ -98,7 +108,7 @@ public class UserCertStoreTest {
 	 */
 	@AfterClass
 	public static void deleteTempPath() throws Exception {
-		IOHelper.deleteDirectoryTree(tempPath.get());
+		FileUtil.delete(tempPath.get());
 	}
 
 	private static final String NAME_STORE1 = "store1";
@@ -147,9 +157,9 @@ public class UserCertStoreTest {
 	}
 
 	private GenerateCertRequest basicRequest() {
-		KeyPairAlgorithm keyPairAlgorithm = Check.nonNull(KeyPairAlgorithm.getDefaultSet(null, false).getDefault());
+		KeyPairAlgorithm keyPairAlgorithm = Check.notNull(KeyPairAlgorithm.getDefaultSet(null, false).getDefault());
 		GenerateCertRequest request = new GenerateCertRequest(X500Names.fromString("CN=TestCert"), keyPairAlgorithm,
-				Check.nonNull(keyPairAlgorithm.getStandardKeySizes(null).getDefault()));
+				Check.notNull(keyPairAlgorithm.getStandardKeySizes(null).getDefault()));
 
 		Date notBefore = new Date();
 		Date notAfter = new Date(notBefore.getTime() + 1000 * 60 * 24);
@@ -166,7 +176,7 @@ public class UserCertStoreTest {
 			request.setIssuer(generator.getIssuers(store, null).getDefault());
 		}
 		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_SIGNATURE_ALGORITHM)) {
-			request.setSignatureAlgorithm(Check.nonNull(
+			request.setSignatureAlgorithm(Check.notNull(
 					generator.getSignatureAlgorithms(request.getIssuer(), request.keyPairAlgorithm(), null, false)
 							.getDefault()));
 		}
@@ -188,7 +198,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
 			// Check preferences access
-			UserCertStorePreferences loadPreferences = Check.nonNull(store.storePreferences());
+			UserCertStorePreferences loadPreferences = Check.notNull(store.storePreferences());
 
 			Assert.assertEquals(Integer.valueOf(365), loadPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(30), loadPreferences.defaultCRLUpdatePeriod.get());
@@ -196,7 +206,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(Integer.valueOf(384), loadPreferences.defaultKeySize.get());
 			Assert.assertEquals("SHA256WITHECDSA", loadPreferences.defaultSignatureAlgorithm.get());
 
-			UserCertStorePreferences setPreferences = Check.nonNull(store.storePreferences());
+			UserCertStorePreferences setPreferences = Check.notNull(store.storePreferences());
 
 			setPreferences.defaultCRTValidityPeriod.putInt(180);
 			setPreferences.defaultCRLUpdatePeriod.putInt(7);
@@ -205,7 +215,7 @@ public class UserCertStoreTest {
 			setPreferences.defaultSignatureAlgorithm.put("SHA256WITHECDSA");
 			setPreferences.sync();
 
-			UserCertStorePreferences getPreferences = Check.nonNull(store.storePreferences());
+			UserCertStorePreferences getPreferences = Check.notNull(store.storePreferences());
 
 			Assert.assertEquals(Integer.valueOf(180), getPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(7), getPreferences.defaultCRLUpdatePeriod.get());
@@ -214,8 +224,8 @@ public class UserCertStoreTest {
 			Assert.assertEquals("SHA256WITHECDSA", getPreferences.defaultSignatureAlgorithm.get());
 
 			// Import access (with already existing entries)
-			UserCertStore importStore = UserCertStore
-					.createFromFiles(IOHelper.collectDirectoryFiles(testStorePath.get()), TestCerts.password());
+			UserCertStore importStore = UserCertStore.createFromFiles(collectDirectoryFiles(testStorePath.get()),
+					TestCerts.password());
 
 			for (UserCertStoreEntry importStoreEntry : importStore.getEntries()) {
 				store.importEntry(importStoreEntry, TestCerts.password(), "Imported");
@@ -350,7 +360,7 @@ public class UserCertStoreTest {
 	@Test
 	public void testFilesSourceStore() {
 		try {
-			List<Path> files = IOHelper.collectDirectoryFiles(testStorePath.get());
+			List<Path> files = collectDirectoryFiles(testStorePath.get());
 			UserCertStore importStore = UserCertStore.createFromFiles(files, TestCerts.password());
 
 			Assert.assertNotNull(importStore);
@@ -426,6 +436,42 @@ public class UserCertStoreTest {
 			e.printStackTrace();
 			Assert.fail(e.getMessage());
 		}
+	}
+
+	private List<Path> collectDirectoryFiles(Path directory) throws IOException {
+		List<Path> files;
+
+		try (Stream<Path> filesStream = Files.walk(directory)) {
+			files = filesStream.filter(Files::isRegularFile).collect(Collectors.toList());
+		}
+		return files;
+	}
+
+	private static Path createTempDirFromZIPResource(URL resource, Path dir, @Nullable String prefix,
+			FileAttribute<?>... attrs) throws IOException {
+		return exportZIPResourceToDirectory(resource, Files.createTempDirectory(dir, prefix, attrs), attrs);
+	}
+
+	private static Path exportZIPResourceToDirectory(URL resource, Path dir, FileAttribute<?>... attrs)
+			throws IOException {
+		try (ZipInputStream in = new ZipInputStream(resource.openStream())) {
+			ZipEntry entry;
+
+			while ((entry = in.getNextEntry()) != null) {
+				Path entryPath = dir.resolve(entry.getName());
+
+				if (entry.isDirectory()) {
+					Files.createDirectories(entryPath, attrs);
+				} else {
+					Files.createDirectories(entryPath.getParent(), attrs);
+					try (OutputStream out = Files.newOutputStream(entryPath, StandardOpenOption.CREATE_NEW)) {
+						IOUtil.copyStream(out, in);
+					}
+				}
+				in.closeEntry();
+			}
+		}
+		return dir;
 	}
 
 }

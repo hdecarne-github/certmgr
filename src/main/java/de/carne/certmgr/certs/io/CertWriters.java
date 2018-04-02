@@ -37,6 +37,6 @@ public final class CertWriters {
 	/**
 	 * The default {@link CertWriter}.
 	 */
-	public static final CertWriter DEFAULT = Check.nonNull(REGISTERED.get(PEMCertReaderWriter.PROVIDER_NAME));
+	public static final CertWriter DEFAULT = Check.notNull(REGISTERED.get(PEMCertReaderWriter.PROVIDER_NAME));
 
 }

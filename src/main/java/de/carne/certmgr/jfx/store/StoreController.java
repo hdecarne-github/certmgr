@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +50,7 @@ import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.storepreferences.StorePreferencesController;
 import de.carne.certmgr.jfx.storepreferences.StorePreferencesDialog;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
+import de.carne.certmgr.util.PathPreference;
 import de.carne.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
@@ -59,10 +59,9 @@ import de.carne.jfx.scene.control.aboutinfo.AboutInfoDialog;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
-import de.carne.text.MemUnitFormat;
+import de.carne.util.Debug;
 import de.carne.util.Exceptions;
 import de.carne.util.Lazy;
-import de.carne.util.prefs.PathPreference;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -609,11 +608,10 @@ public class StoreController extends StageController {
 		long usedMemory = rt.totalMemory() - rt.freeMemory();
 		long maxMemory = rt.maxMemory();
 		double usageRatio = (usedMemory * 1.0) / maxMemory;
-		MemUnitFormat usedFormat = new MemUnitFormat(new DecimalFormat());
 		NumberFormat usageFormat = NumberFormat.getPercentInstance();
 
 		this.ctlHeapStatusLabel.setText(
-				StoreI18N.formatSTR_TEXT_HEAP_STATUS(usedFormat.format(usedMemory), usageFormat.format(usageRatio)));
+				StoreI18N.formatSTR_TEXT_HEAP_STATUS(Debug.formatUsedMemory(), usageFormat.format(usageRatio)));
 	}
 
 	@Override

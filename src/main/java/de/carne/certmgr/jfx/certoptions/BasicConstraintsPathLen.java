@@ -21,7 +21,7 @@ import java.util.Objects;
 
 import de.carne.check.Check;
 import de.carne.check.Nullable;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 import de.carne.util.Strings;
 import javafx.util.StringConverter;
 
@@ -78,7 +78,7 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 
 	@Override
 	public int compareTo(@Nullable BasicConstraintsPathLen o) {
-		BasicConstraintsPathLen checkedO = Check.nonNull(o);
+		BasicConstraintsPathLen checkedO = Check.notNull(o);
 		BigInteger checkedPathLenConstraint = this.pathLenConstraint;
 		BigInteger checkedOPathLenConstraint = checkedO.pathLenConstraint;
 		int comparision;

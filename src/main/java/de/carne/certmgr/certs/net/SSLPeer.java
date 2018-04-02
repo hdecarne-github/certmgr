@@ -36,7 +36,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import de.carne.check.Nullable;
-import de.carne.util.PropertiesHelper;
+import de.carne.util.SystemProperties;
 import de.carne.util.logging.Log;
 
 /**
@@ -86,7 +86,8 @@ public final class SSLPeer {
 	/**
 	 * The socket timeout to use in milliseconds.
 	 */
-	public static final int SOCKET_TIMEOUT = PropertiesHelper.getInt(SSLPeer.class, ".socket-timeout", 5000);
+	public static final int SOCKET_TIMEOUT = SystemProperties
+			.intValue(SSLPeer.class.getPackage().getName() + ".socket-timeout", 5000);
 
 	private static final TrustManager INSECURE_TRUST_MANAGER = new X509TrustManager() {
 

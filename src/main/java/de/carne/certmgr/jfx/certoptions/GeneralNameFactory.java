@@ -29,7 +29,7 @@ import de.carne.certmgr.certs.x509.DirectoryName;
 import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.StringName;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 import de.carne.util.Strings;
 
 final class GeneralNameFactory {

@@ -28,9 +28,9 @@ import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
 import de.carne.jfx.util.validation.ValidationAlerts;
+import de.carne.jfx.util.validation.ValidationException;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
-import de.carne.util.validation.ValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -103,8 +103,8 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 
 	@Nullable
 	Rdn getRdnInput() {
-		String typeInput = Strings.safeSafeTrim(this.ctlTypeInput.getValue());
-		String valueInput = Strings.safeSafeTrim(this.ctlValueInput.getText());
+		String typeInput = Strings.safeTrim(this.ctlTypeInput.getValue());
+		String valueInput = Strings.safeTrim(this.ctlValueInput.getText());
 		Rdn rdn = null;
 
 		if (Strings.isEmpty(typeInput)) {

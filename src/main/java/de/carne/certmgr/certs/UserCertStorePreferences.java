@@ -20,9 +20,9 @@ import java.nio.file.Path;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import de.carne.util.prefs.IntPreference;
-import de.carne.util.prefs.PropertiesPreferencesFactory;
-import de.carne.util.prefs.StringPreference;
+import de.carne.certmgr.util.IntPreference;
+import de.carne.certmgr.util.StringPreference;
+import de.carne.util.prefs.FilePreferencesFactory;
 
 /**
  * Utility class providing access to store preferences.
@@ -71,7 +71,7 @@ public final class UserCertStorePreferences {
 	public final StringPreference defaultSignatureAlgorithm;
 
 	UserCertStorePreferences(Path storeHome) {
-		this.preferences = PropertiesPreferencesFactory.customRoot(storeHome.resolve(PREFERENCES_FILENAME));
+		this.preferences = FilePreferencesFactory.customRoot(storeHome.resolve(PREFERENCES_FILENAME));
 
 		Preferences optionsNode = this.preferences.node(STORE_NODE);
 

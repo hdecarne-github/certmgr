@@ -20,15 +20,19 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.logging.LogRecord;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
@@ -40,23 +44,22 @@ import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
+import de.carne.certmgr.util.PathPreference;
 import de.carne.check.Nullable;
-import de.carne.io.IOHelper;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
+import de.carne.jfx.util.DefaultSet;
 import de.carne.jfx.util.FileChooserHelper;
+import de.carne.jfx.util.validation.InputValidator;
+import de.carne.jfx.util.validation.PathValidator;
 import de.carne.jfx.util.validation.ValidationAlerts;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.validation.ValidationException;
 import de.carne.util.Late;
 import de.carne.util.Lazy;
 import de.carne.util.Strings;
 import de.carne.util.logging.LogLevel;
-import de.carne.util.logging.LogMonitor;
-import de.carne.util.prefs.PathPreference;
-import de.carne.util.validation.InputValidator;
-import de.carne.util.validation.PathValidator;
-import de.carne.util.validation.ValidationException;
+import de.carne.util.logging.LogRecorder;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -302,11 +305,11 @@ public class CertImportController extends StageController {
 		this.sourceStore = store;
 		updateImportEntryView();
 
-		LogMonitor logMonitor = task.logMonitor();
+		List<LogRecord> logRecords = task.logRecords();
 
-		if (logMonitor.notEmpty()) {
-			Alerts.logs(AlertType.WARNING, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_LOGS(),
-					logMonitor.getRecords()).showAndWait();
+		if (!logRecords.isEmpty()) {
+			Alerts.logs(AlertType.WARNING, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_LOGS(), logRecords)
+					.showAndWait();
 		}
 	}
 
@@ -368,7 +371,7 @@ public class CertImportController extends StageController {
 	 * @return This controller.
 	 */
 	public CertImportController init(UserCertStore importStore) {
-		this.importStoreParam.init(importStore);
+		this.importStoreParam.set(importStore);
 		return this;
 	}
 
@@ -409,8 +412,11 @@ public class CertImportController extends StageController {
 
 				@Override
 				protected UserCertStore createStore(Path params) throws IOException {
-					List<Path> files = IOHelper.collectDirectoryFiles(params);
+					List<Path> files;
 
+					try (Stream<Path> filesStream = Files.walk(params)) {
+						files = filesStream.filter(Files::isRegularFile).collect(Collectors.toList());
+					}
 					return UserCertStore.createFromFiles(files,
 							PasswordDialog.enterPassword(CertImportController.this));
 				}
@@ -539,22 +545,21 @@ public class CertImportController extends StageController {
 	}
 
 	private Path validateFileSourceInput() throws ValidationException {
-		String fileSourceInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlFileSourceInput.getText()),
+		String fileSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileSourceInput.getText()),
 				CertImportI18N::formatSTR_MESSAGE_NO_FILE);
 
 		return PathValidator.isRegularFilePath(fileSourceInput, CertImportI18N::formatSTR_MESSAGE_INVALID_FILE);
 	}
 
 	private Path validateDirectorySourceInput() throws ValidationException {
-		String directorySourceInput = InputValidator.notEmpty(
-				Strings.safeSafeTrim(this.ctlDirectorySourceInput.getText()),
+		String directorySourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDirectorySourceInput.getText()),
 				CertImportI18N::formatSTR_MESSAGE_NO_DIRECTORY);
 
 		return PathValidator.isDirectoryPath(directorySourceInput, CertImportI18N::formatSTR_MESSAGE_INVALID_DIRECTORY);
 	}
 
 	private URL validateURLSourceInput() throws ValidationException {
-		String urlSourceInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlURLSourceInput.getText()),
+		String urlSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlURLSourceInput.getText()),
 				CertImportI18N::formatSTR_MESSAGE_NO_URL);
 		URL urlSource;
 
@@ -569,7 +574,7 @@ public class CertImportController extends StageController {
 	private ServerParams validateServerSourceInput() throws ValidationException {
 		SSLPeer.Protocol protocol = InputValidator.notNull(this.ctlServerSourceProtocolInput.getValue(),
 				CertImportI18N::formatSTR_MESSAGE_NO_SERVERPROTOCOL);
-		String serverSourceInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlServerSourceInput.getText()),
+		String serverSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlServerSourceInput.getText()),
 				CertImportI18N::formatSTR_MESSAGE_NO_SERVER);
 		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
 				CertImportI18N::formatSTR_MESSAGE_INVALID_SERVER);
@@ -623,7 +628,8 @@ public class CertImportController extends StageController {
 
 	private abstract class ReloadTask<P> extends BackgroundTask<UserCertStore> {
 
-		private final LogMonitor logMonitor = new LogMonitor(LogLevel.LEVEL_WARNING);
+		private final LogRecorder logRecorder = new LogRecorder(LogLevel.LEVEL_WARNING);
+		private final List<LogRecord> logRecords = new ArrayList<>();
 
 		private final P reloadParam;
 
@@ -631,17 +637,17 @@ public class CertImportController extends StageController {
 			this.reloadParam = reloadParam;
 		}
 
-		public LogMonitor logMonitor() {
-			return this.logMonitor;
+		public List<LogRecord> logRecords() {
+			return Collections.unmodifiableList(this.logRecords);
 		}
 
 		@Override
 		protected UserCertStore call() throws Exception {
 			UserCertStore store;
 
-			try (LogMonitor.Session session = this.logMonitor.start()
-					.includePackage(UserCertStore.class.getPackage())) {
+			try (LogRecorder.Session session = this.logRecorder.start(false)) {
 				store = createStore(this.reloadParam);
+				this.logRecords.addAll(session.getRecords());
 			}
 			return store;
 		}
@@ -652,14 +658,12 @@ public class CertImportController extends StageController {
 		protected void succeeded() {
 			super.succeeded();
 			onReloadTaskSucceeded(this, getValue());
-			this.logMonitor.close();
 		}
 
 		@Override
 		protected void failed() {
 			super.failed();
 			onReloadTaskFailed(getException());
-			this.logMonitor.close();
 		}
 
 	}

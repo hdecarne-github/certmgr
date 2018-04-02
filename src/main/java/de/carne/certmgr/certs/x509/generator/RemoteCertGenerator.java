@@ -29,7 +29,7 @@ import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.check.Nullable;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 
 /**
  * Generator service for CSR generation (for remote signing).

@@ -53,7 +53,7 @@ public class PreferencesController extends DialogController<UserPreferences>
 	 * @return This controller.
 	 */
 	public PreferencesController init(UserPreferences preferences) {
-		this.preferencesParam.init(preferences);
+		this.preferencesParam.set(preferences);
 		this.ctlExpertModeOption.setSelected(preferences.expertMode.getBoolean(false));
 		return this;
 	}

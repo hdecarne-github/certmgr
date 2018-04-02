@@ -65,7 +65,7 @@ public abstract class AbstractPeriodStringConverter<T extends AbstractPeriod> ex
 
 	@Override
 	public String toString(@Nullable T object) {
-		Days days = Check.nonNull(object).days();
+		Days days = Check.notNull(object).days();
 
 		return days.toLocalizedString() + " [" + days.toString() + "]";
 	}

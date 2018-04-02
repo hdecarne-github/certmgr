@@ -50,7 +50,7 @@ import de.carne.util.logging.Log;
  */
 public class JKSCertReaderWriter implements CertReader, CertWriter {
 
-	private static final Log LOG = new Log(CertIOI18N.BUNDLE);
+	private static final Log LOG = new Log(CertIOI18N.class.getName());
 
 	private static final String KEYSTORE_TYPE = "JKS";
 
@@ -71,7 +71,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_JKS_EXTENSION_PATTERNS(), "|");
+		return Strings.split(CertIOI18N.formatSTR_JKS_EXTENSION_PATTERNS(), '|', true);
 	}
 
 	@Override

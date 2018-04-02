@@ -37,11 +37,11 @@ import de.carne.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;
+import de.carne.jfx.util.DefaultSet;
+import de.carne.jfx.util.validation.InputValidator;
 import de.carne.jfx.util.validation.ValidationAlerts;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.validation.ValidationException;
 import de.carne.util.Late;
-import de.carne.util.validation.InputValidator;
-import de.carne.util.validation.ValidationException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -156,10 +156,10 @@ public class CRLOptionsController extends StageController {
 	 * @throws IOException if an I/O error occurs during initialization.
 	 */
 	public CRLOptionsController init(UserCertStoreEntry issuerEntry, boolean expertModeParam) throws IOException {
-		this.issuerEntryParam.init(issuerEntry);
+		this.issuerEntryParam.set(issuerEntry);
 		this.ctlIssuerField.setText(issuerEntry.getName());
 
-		UserCertStorePreferences preferences = Check.nonNull(issuerEntry.store().storePreferences());
+		UserCertStorePreferences preferences = Check.notNull(issuerEntry.store().storePreferences());
 
 		initSigAlgOptions(preferences, expertModeParam);
 		initUpdateOptions(preferences);
@@ -196,7 +196,7 @@ public class CRLOptionsController extends StageController {
 
 		this.ctlLastUpdateInput.setValue(lastUpdate);
 
-		CRLUpdatePeriod defaultUpdatePeriod = Check.nonNull(CRLUpdatePeriod.getDefaultSet(null).getDefault());
+		CRLUpdatePeriod defaultUpdatePeriod = Check.notNull(CRLUpdatePeriod.getDefaultSet(null).getDefault());
 		LocalDate nextUpdate = lastUpdate
 				.plusDays(preferences.defaultCRLUpdatePeriod.getInt(defaultUpdatePeriod.days().count()));
 
@@ -263,7 +263,8 @@ public class CRLOptionsController extends StageController {
 	private Date validateAndGetNextUpdate(Date lastUpdate) throws ValidationException {
 		LocalDate localNextUpdate = this.ctlNextUpdateInput.getValue();
 		Date nextUpdate = (localNextUpdate != null
-				? Date.from(localNextUpdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()) : null);
+				? Date.from(localNextUpdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
+				: null);
 
 		if (nextUpdate != null) {
 			InputValidator.isTrue(nextUpdate.compareTo(lastUpdate) > 0,

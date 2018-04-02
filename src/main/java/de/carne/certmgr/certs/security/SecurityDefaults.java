@@ -25,8 +25,8 @@ import java.util.function.Function;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.carne.certmgr.util.Days;
-import de.carne.util.DefaultSet;
-import de.carne.util.PropertiesHelper;
+import de.carne.certmgr.util.PropertiesHelper;
+import de.carne.jfx.util.DefaultSet;
 
 class SecurityDefaults {
 

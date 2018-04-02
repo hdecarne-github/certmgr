@@ -203,7 +203,7 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 
 	@Override
 	public int compareTo(@Nullable CRLEntryModel o) {
-		CRLEntryModel checkedO = Check.nonNull(o);
+		CRLEntryModel checkedO = Check.notNull(o);
 		int comparison = this.nameProperty.get().compareTo(checkedO.nameProperty.get());
 
 		if (comparison == 0) {

@@ -19,7 +19,7 @@ package de.carne.certmgr.jfx.store;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import de.carne.util.prefs.BooleanPreference;
+import de.carne.certmgr.util.BooleanPreference;
 
 /**
  * Utility class providing access to store UI preferences.

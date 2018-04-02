@@ -55,12 +55,12 @@ import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;
+import de.carne.jfx.util.DefaultSet;
+import de.carne.jfx.util.validation.InputValidator;
 import de.carne.jfx.util.validation.ValidationAlerts;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.validation.ValidationException;
 import de.carne.util.Late;
 import de.carne.util.Strings;
-import de.carne.util.validation.InputValidator;
-import de.carne.util.validation.ValidationException;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -244,7 +244,7 @@ public class CertOptionsController extends StageController {
 		String aliasInput = Strings.safe(this.ctlAliasInput.getText());
 		String serial = CertOptionsTemplates.defaultSerial();
 
-		applyPreset(template.merge(aliasInput, Check.nonNull(this.storeParam.get().storeName()), serial));
+		applyPreset(template.merge(aliasInput, Check.notNull(this.storeParam.get().storeName()), serial));
 	}
 
 	@SuppressWarnings("unused")
@@ -453,9 +453,9 @@ public class CertOptionsController extends StageController {
 	}
 
 	private void onAliasChanged(@Nullable String oldAlias, @Nullable String newAlias) {
-		String checkedOldAlias = Strings.safeSafeTrim(oldAlias);
-		String checkedNewAlias = Strings.safeSafeTrim(newAlias);
-		String oldDNInput = Strings.safeSafeTrim(this.ctlDNInput.getText());
+		String checkedOldAlias = Strings.safeTrim(oldAlias);
+		String checkedNewAlias = Strings.safeTrim(newAlias);
+		String oldDNInput = Strings.safeTrim(this.ctlDNInput.getText());
 		String newDNInput = CertOptionsTemplates.merge().aliasInput(checkedOldAlias, checkedNewAlias)
 				.applyToDN(oldDNInput);
 
@@ -480,7 +480,8 @@ public class CertOptionsController extends StageController {
 
 	private void onGeneratorChanged(@Nullable CertGenerator generator) {
 		DefaultSet<Issuer> issuers = (generator != null
-				? generator.getIssuers(this.storeParam.get(), this.storeEntryParam) : null);
+				? generator.getIssuers(this.storeParam.get(), this.storeEntryParam)
+				: null);
 
 		Controls.resetComboBoxOptions(this.ctlIssuerInput, issuers, (o1, o2) -> o1.compareTo(o2));
 		resetSigAlgOptions(generator);
@@ -525,15 +526,15 @@ public class CertOptionsController extends StageController {
 	 */
 	public CertOptionsController init(UserCertStore store, @Nullable UserCertStoreEntry issuerEntry,
 			boolean expertMode) {
-		this.storeParam.init(store);
-		this.storePreferencesParam.init(Check.nonNull(store.storePreferences()));
+		this.storeParam.set(store);
+		this.storePreferencesParam.set(Check.notNull(store.storePreferences()));
 		this.storeEntryParam = issuerEntry;
 		this.expertModeParam = expertMode;
 		initExpertMode();
 		initCertificateNames();
 		initKeyAlgOptions();
 		initGeneratorOptions();
-		this.defaultPresetParam.init(getCurrentPreset());
+		this.defaultPresetParam.set(getCurrentPreset());
 		resetStorePresetsMenu();
 		resetTemplatePresetsMenu();
 		return this;
@@ -552,7 +553,7 @@ public class CertOptionsController extends StageController {
 		String serial = CertOptionsTemplates.defaultSerial();
 
 		this.ctlDNInput.setText(
-				CertOptionsTemplates.defaultDNInput(entryId.getAlias(), Check.nonNull(store.storeName()), serial));
+				CertOptionsTemplates.defaultDNInput(entryId.getAlias(), Check.notNull(store.storeName()), serial));
 	}
 
 	private void initKeyAlgOptions() {
@@ -793,12 +794,12 @@ public class CertOptionsController extends StageController {
 	}
 
 	private String validateAndGetAlias() throws ValidationException {
-		return InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlAliasInput.getText()),
+		return InputValidator.notEmpty(Strings.safeTrim(this.ctlAliasInput.getText()),
 				CertOptionsI18N::formatSTR_MESSAGE_NO_ALIAS);
 	}
 
 	private X500Principal validateAndGetDN() throws ValidationException {
-		String dnInput = InputValidator.notEmpty(Strings.safeSafeTrim(this.ctlDNInput.getText()),
+		String dnInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDNInput.getText()),
 				CertOptionsI18N::formatSTR_MESSAGE_NO_DN);
 		X500Principal dn;
 

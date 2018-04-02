@@ -20,20 +20,25 @@ import java.security.Security;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import de.carne.Main;
+import de.carne.boot.ApplicationMain;
 import de.carne.certmgr.jfx.CertMgrApplication;
 import de.carne.util.logging.Log;
 
 /**
- * Application {@link Main} class.
+ * {@link ApplicationMain} class.
  */
-public class CertMgrMain implements Main {
+public class CertMgrMain implements ApplicationMain {
 
 	private static final Log LOG = new Log();
 
 	static {
 		LOG.info("Adding BouncyCastle security provider...");
 		Security.addProvider(new BouncyCastleProvider());
+	}
+
+	@Override
+	public String name() {
+		return "CertMgr";
 	}
 
 	@Override

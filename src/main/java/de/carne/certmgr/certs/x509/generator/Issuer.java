@@ -75,7 +75,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 
 	@Override
 	public int compareTo(@Nullable Issuer o) {
-		Issuer checkedO = Check.nonNull(o);
+		Issuer checkedO = Check.notNull(o);
 
 		if (!generator().equals(checkedO.generator())) {
 			throw new IllegalArgumentException();

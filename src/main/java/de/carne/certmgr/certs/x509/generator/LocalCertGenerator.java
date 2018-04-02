@@ -36,7 +36,7 @@ import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 import de.carne.util.Exceptions;
 
 /**
@@ -99,7 +99,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
 			} else {
 				try {
-					keyPairAlgorithmName = Check.nonNull(issuer.storeEntry()).getPublicKey().getAlgorithm();
+					keyPairAlgorithmName = Check.notNull(issuer.storeEntry()).getPublicKey().getAlgorithm();
 				} catch (IOException e) {
 					Exceptions.warn(e);
 				}
@@ -121,7 +121,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 		X500Principal dn = request.dn();
 
 		if (!this.selfSignedIssuer.equals(issuer)) {
-			UserCertStoreEntry issuerEntry = Check.nonNull(issuer.storeEntry());
+			UserCertStoreEntry issuerEntry = Check.notNull(issuer.storeEntry());
 
 			serial = getNextSerial(issuerEntry);
 			issuerDN = issuerEntry.dn();

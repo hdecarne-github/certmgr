@@ -33,6 +33,6 @@ public final class CertGenerators {
 	/**
 	 * The default {@link CertGenerator}.
 	 */
-	public static final CertGenerator DEFAULT = Check.nonNull(REGISTERED.get(LocalCertGenerator.PROVIDER_NAME));
+	public static final CertGenerator DEFAULT = Check.notNull(REGISTERED.get(LocalCertGenerator.PROVIDER_NAME));
 
 }

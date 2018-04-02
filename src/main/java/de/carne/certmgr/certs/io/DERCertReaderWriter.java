@@ -67,7 +67,7 @@ import de.carne.util.logging.Log;
  */
 public class DERCertReaderWriter extends JCAConversion implements CertReader, CertWriter {
 
-	private static final Log LOG = new Log(CertIOI18N.BUNDLE);
+	private static final Log LOG = new Log(CertIOI18N.class.getName());
 
 	private static final ASN1ObjectIdentifier OUTPUT_ENCRYPTOR_ALGORITHM = PKCSObjectIdentifiers.pbeWithSHAAnd3_KeyTripleDES_CBC;
 
@@ -95,7 +95,7 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_DER_EXTENSION_PATTERNS(), "|");
+		return Strings.split(CertIOI18N.formatSTR_DER_EXTENSION_PATTERNS(), '|', true);
 	}
 
 	@Override

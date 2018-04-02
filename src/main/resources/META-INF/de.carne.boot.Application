@@ -1,0 +1,5 @@
+de.carne.certmgr.CertMgrMain
+de.carne.boot.Application.bootstrapClasses = de.carne.util.logging
+java.util.logging.config.class=de.carne.util.logging.Config
+java.util.prefs.PreferencesFactory=de.carne.util.prefs.FilePreferencesFactory
+de.carne.util.prefs.FilePreferences = .de.carne.certmgr

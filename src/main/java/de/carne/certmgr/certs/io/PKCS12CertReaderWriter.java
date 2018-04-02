@@ -66,7 +66,7 @@ import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.check.Nullable;
-import de.carne.io.IOHelper;
+import de.carne.io.IOUtil;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
 
@@ -75,7 +75,7 @@ import de.carne.util.logging.Log;
  */
 public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
-	private static final Log LOG = new Log(CertIOI18N.BUNDLE);
+	private static final Log LOG = new Log(CertIOI18N.class.getName());
 
 	private static final JcePKCSPBEInputDecryptorProviderBuilder PKCS12_DECRYPTOR_PROVIDER_BUILDER = new JcePKCSPBEInputDecryptorProviderBuilder();
 
@@ -101,7 +101,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_PKCS12_EXTENSION_PATTERNS(), "|");
+		return Strings.split(CertIOI18N.formatSTR_PKCS12_EXTENSION_PATTERNS(), '|', true);
 	}
 
 	@Override
@@ -312,7 +312,7 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 		PKCS12PfxPdu pkcs12 = null;
 
 		try {
-			byte[] bytes = IOHelper.readBytes(in.io(), CertReader.READ_LIMIT);
+			byte[] bytes = IOUtil.readAllBytes(in.io(), CertReader.READ_LIMIT);
 
 			if (bytes.length > 0) {
 				pkcs12 = new PKCS12PfxPdu(bytes);

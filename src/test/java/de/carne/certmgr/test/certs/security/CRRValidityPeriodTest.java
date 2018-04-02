@@ -26,7 +26,7 @@ import org.junit.Test;
 import de.carne.certmgr.certs.security.CRTValidityPeriod;
 import de.carne.certmgr.util.Days;
 import de.carne.check.Check;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 
 /**
  * Test {@link CRTValidityPeriod} class functionality.
@@ -53,7 +53,7 @@ public class CRRValidityPeriodTest {
 		for (CRTValidityPeriod crlValidityPeriod : crtValidityPeriods) {
 			System.out.println(crlValidityPeriod);
 		}
-		Assert.assertEquals(days42, Check.nonNull(crtValidityPeriods.getDefault()).days());
+		Assert.assertEquals(days42, Check.notNull(crtValidityPeriods.getDefault()).days());
 	}
 
 }

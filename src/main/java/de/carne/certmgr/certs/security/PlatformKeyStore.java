@@ -20,7 +20,7 @@ import java.security.Provider;
 import java.security.Provider.Service;
 import java.security.Security;
 
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 
 /**
  * Platform key store provisioning.

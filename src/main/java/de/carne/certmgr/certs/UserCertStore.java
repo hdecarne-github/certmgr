@@ -52,7 +52,7 @@ import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
-import de.carne.nio.FileAttributes;
+import de.carne.nio.file.attribute.FileAttributes;
 import de.carne.util.logging.Log;
 
 /**
@@ -98,8 +98,7 @@ public final class UserCertStore {
 			throw new FileAlreadyExistsException("Store home path already exists: " + storeHome);
 		}
 
-		Path createdStoreHome = Files.createDirectories(storeHome,
-				FileAttributes.defaultUserDirectoryAttributes(storeHome));
+		Path createdStoreHome = Files.createDirectories(storeHome, FileAttributes.userDirectoryDefault(storeHome));
 
 		return openStore(createdStoreHome);
 	}
@@ -737,7 +736,7 @@ public final class UserCertStore {
 	}
 
 	Entry resolveIssuer(Entry entry) {
-		return Check.nonNull(this.issuerCache.get(entry));
+		return Check.notNull(this.issuerCache.get(entry));
 	}
 
 	private class Entry extends UserCertStoreEntry {

@@ -20,7 +20,7 @@ import java.security.Provider;
 import java.security.Provider.Service;
 
 import de.carne.check.Nullable;
-import de.carne.util.DefaultSet;
+import de.carne.jfx.util.DefaultSet;
 
 /**
  * Signature algorithm provisioning.

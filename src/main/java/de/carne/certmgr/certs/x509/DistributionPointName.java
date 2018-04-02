@@ -117,7 +117,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 			encoded = new DERTaggedObject(false, 0, this.fullName.encode());
 		} else {
 			encoded = new DERTaggedObject(false, 1,
-					ASN1Primitive.fromByteArray(Check.nonNull(this.nameRelativeToCRLIssuer).getEncoded()));
+					ASN1Primitive.fromByteArray(Check.notNull(this.nameRelativeToCRLIssuer).getEncoded()));
 		}
 		return encoded;
 	}
@@ -129,7 +129,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 		}
 		if (this.nameRelativeToCRLIssuer != null) {
 			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINTNAME_NAMERELATIVETOCRLISSUER(),
-					X500Names.toString(Check.nonNull(this.nameRelativeToCRLIssuer)));
+					X500Names.toString(Check.notNull(this.nameRelativeToCRLIssuer)));
 		}
 	}
 

@@ -25,7 +25,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.IOResource;
 import de.carne.check.Nullable;
-import de.carne.util.PropertiesHelper;
+import de.carne.util.SystemProperties;
 
 /**
  * Service provider interface for reading certificate objects from input data.
@@ -38,7 +38,8 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 * This property is used to avoid out of memory conditions when we try to read huge files with readers that require
 	 * all data to be read in advance.
 	 */
-	static final int READ_LIMIT = PropertiesHelper.getInt(CertReaders.class, ".readLimit", 1 << 20);
+	static final int READ_LIMIT = SystemProperties.intValue(CertReaders.class.getPackage().getName() + ".readLimit",
+			1 << 20);
 
 	/**
 	 * Read all available certificate objects.

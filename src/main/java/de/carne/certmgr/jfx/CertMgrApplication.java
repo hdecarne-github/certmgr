@@ -17,21 +17,22 @@
 package de.carne.certmgr.jfx;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.carne.ApplicationShutdownTask;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.logview.LogViewImages;
-import de.carne.util.cmdline.CmdLine;
+import de.carne.util.ShutdownHooks;
 import de.carne.util.cmdline.CmdLineException;
+import de.carne.util.cmdline.CmdLineProcessor;
 import de.carne.util.logging.Log;
-import de.carne.util.logging.LogConfig;
 import de.carne.util.logging.LogLevel;
+import de.carne.util.logging.Logs;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -66,7 +67,7 @@ public class CertMgrApplication extends Application {
 		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_ERROR, Images.ERROR16);
 		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_NOTICE, Images.NOTICE16);
 
-		StoreController store = StageController.loadPrimaryStage(Check.nonNull(primaryStage), StoreController.class);
+		StoreController store = StageController.loadPrimaryStage(Check.notNull(primaryStage), StoreController.class);
 
 		store.show();
 		if (defaultStoreHome != null) {
@@ -77,22 +78,22 @@ public class CertMgrApplication extends Application {
 	@Override
 	public void stop() throws Exception {
 		LOG.info("JavaFX GUI stopped");
-		ApplicationShutdownTask.trigger();
+		ShutdownHooks.trigger();
 	}
 
 	@Nullable
 	private File evalCmdLine() {
-		CmdLine cmdLine = new CmdLine(getParameters().getRaw());
+		CmdLineProcessor cmdLine = new CmdLineProcessor("certmgr", getParameters().getRaw());
 		List<String> defaultArgs = new ArrayList<>();
 
-		cmdLine.switchAction((s) -> LogConfig.applyConfig(LogConfig.CONFIG_VERBOSE)).arg("--verbose");
-		cmdLine.switchAction((s) -> LogConfig.applyConfig(LogConfig.CONFIG_DEBUG)).arg("--debug");
-		cmdLine.unnamedOptionAction((s) -> defaultArgs.add(s));
+		cmdLine.onSwitch((s) -> applyLogConfig(Logs.CONFIG_VERBOSE)).arg("--verbose");
+		cmdLine.onSwitch((s) -> applyLogConfig(Logs.CONFIG_DEBUG)).arg("--debug");
+		cmdLine.onUnnamedOption((s) -> defaultArgs.add(s));
 		try {
-			cmdLine.eval();
+			cmdLine.process();
 			LOG.info("Running command line ''{0}''", cmdLine);
 		} catch (CmdLineException e) {
-			LOG.warning(e, "Invalid argument usage for ''{0}'' in command line ''{0}''; ", e.getArg(), cmdLine);
+			LOG.warning(e, "Invalid command line ''{0}''; ", cmdLine);
 		}
 
 		File defaultStoreHome = null;
@@ -105,6 +106,14 @@ public class CertMgrApplication extends Application {
 			}
 		}
 		return defaultStoreHome;
+	}
+
+	private void applyLogConfig(String config) {
+		try {
+			Logs.readConfig(config);
+		} catch (IOException e) {
+			LOG.warning(e, "Failed to apply log configuraiton ''{0}''", config);
+		}
 	}
 
 }

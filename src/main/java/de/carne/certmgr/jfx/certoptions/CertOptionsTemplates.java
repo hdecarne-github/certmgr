@@ -18,6 +18,7 @@ package de.carne.certmgr.jfx.certoptions;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -53,12 +55,12 @@ import de.carne.certmgr.certs.x509.StringName;
 import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.SubjectKeyIdentifierExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
+import de.carne.certmgr.util.BooleanPreference;
 import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.logging.Log;
-import de.carne.util.prefs.BooleanPreference;
-import de.carne.util.prefs.PropertiesPreferencesFactory;
+import de.carne.util.prefs.FilePreferencesFactory;
 
 /**
  * Class used for handling cert option defaults and templates.
@@ -127,7 +129,7 @@ final class CertOptionsTemplates {
 			String mergedDNInput = dn;
 
 			try {
-				LdapName oldDN = new LdapName(Strings.safeSafeTrim(dn));
+				LdapName oldDN = new LdapName(Strings.safeTrim(dn));
 				List<Rdn> oldRdns = oldDN.getRdns();
 				List<Rdn> newRdns = new ArrayList<>(oldRdns.size());
 
@@ -394,7 +396,12 @@ final class CertOptionsTemplates {
 			if (TEMPLATE_STORE_INITIALIZED.getBoolean(false)) {
 				templateStore = TEMPLATE_STORE;
 			} else {
-				templateStore = PropertiesPreferencesFactory.customRoot(getStandardTemplateUrl());
+				try (InputStream standardTemplatesStream = getStandardTemplatesUrl().openStream()) {
+					Properties standardTemplates = new Properties();
+
+					standardTemplates.load(standardTemplatesStream);
+					templateStore = FilePreferencesFactory.customRoot(standardTemplates);
+				}
 			}
 
 			String[] templateNodeNames = templateStore.childrenNames();
@@ -415,7 +422,7 @@ final class CertOptionsTemplates {
 		return templates;
 	}
 
-	private static URL getStandardTemplateUrl() throws IOException {
+	private static URL getStandardTemplatesUrl() throws IOException {
 		String standardTemplatesResourceName = CertOptionsTemplates.class.getSimpleName() + ".properties";
 		URL standardTemplatesURL = CertOptionsTemplates.class.getResource(standardTemplatesResourceName);
 

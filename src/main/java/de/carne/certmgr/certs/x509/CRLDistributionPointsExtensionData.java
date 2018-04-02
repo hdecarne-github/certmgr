@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -100,7 +101,8 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 
 	@Override
 	public String toValueString() {
-		return Strings.join(this.distributionPoints, (o) -> toValueString(o), ", ", Attributes.FORMAT_LIMIT_LONG);
+		return Strings.join(this.distributionPoints.stream().map(this::toValueString).collect(Collectors.toList()),
+				", ", Attributes.FORMAT_LIMIT_LONG);
 	}
 
 	private String toValueString(DistributionPoint distributionPoint) {
@@ -114,7 +116,7 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 			if (fullName != null) {
 				valueString = Strings.join(fullName, ", ", Attributes.FORMAT_LIMIT_LONG);
 			} else {
-				valueString = Check.nonNull(name.getRelativeName()).toString();
+				valueString = Check.notNull(name.getRelativeName()).toString();
 			}
 		}
 		if (crlIssuer != null) {
