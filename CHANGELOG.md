@@ -14,6 +14,11 @@ GNU General Public License for more details.
 
 ![Install4j](http://certmgr.carne.de/install4j_small.png) The provided installer/launcher packages have been created using the multi-platform installer builder [Install4J](https://www.ej-technologies.com/products/install4j/overview.html).
 
+### v1.1.0 (2018-04-xx)
+* Make DER file reader more robust in case of non-DER input.
+* Perform uninstall during I4J based update to discard no longer used files. 
+* Update referenced libraries (and make application Java 9 compatible).
+
 ### v1.0.1 (2018-04-01)
 * Fix export order if exporting multiple objects to a single file.
 
