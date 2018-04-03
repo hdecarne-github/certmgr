@@ -49,10 +49,8 @@ jacocoTestReport {
 	}
 }
 
-import java.text.SimpleDateFormat
-
 jar {
-	def buildTimestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+	def buildTimestamp = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 	
 	manifest {
 		attributes(
