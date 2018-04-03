@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="7.0.2" transformSequenceNumber="7">
-  <directoryPresets config="." />
+<install4j version="7.0.4" transformSequenceNumber="7">
+  <directoryPresets config="${compiler:i4jProjectBuildDir}/libs/${compiler:sys.shortName}-${compiler:sys.version}.jar" />
   <application name="${compiler:i4jProjectFullName}" distributionSourceDir="" applicationId="6863-0001-6800-2736" mediaDir="${compiler:i4jProjectBuildDir}/distributions" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:i4jProjectName}" publisher="" publisherWeb="${compiler:i4jProjectUrl}" version="${compiler:i4jProjectVersion}" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -36,7 +36,7 @@
       <dirEntry mountPoint="58" file="${compiler:i4jProjectBaseDir}/src/main/dist" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="direct" subDirectory="" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <fileEntry mountPoint="58" file="${compiler:i4jProjectBuildDir}/libs/${compiler:sys.shortName}-${compiler:sys.version}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="58" file="${compiler:i4jProjectBuildDir}/libs/${compiler:sys.shortName}-boot-${compiler:sys.version}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components />
   </files>
@@ -51,9 +51,9 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="de.carne.ApplicationLoader" mainMode="1" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="de.carne.boot.Application" mainMode="1" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
-          <archive location="${compiler:i4jProjectName}-${compiler:i4jProjectVersion}.jar" failOnError="false" />
+          <archive location="${compiler:i4jProjectName}-boot-${compiler:i4jProjectVersion}.jar" failOnError="false" />
         </classPath>
         <modulePath />
         <nativeLibraryDirectories />
@@ -342,6 +342,14 @@ return console.askOkCancel(message, true);
             <preActivation />
             <postActivation />
             <actions>
+              <action name="" id="757" customizedId="" beanClass="com.install4j.runtime.beans.actions.UninstallPreviousAction" enabled="true" commentSet="false" comment="" actionElevationType="none" rollbackBarrier="false" rollbackBarrierExitCode="0" multiExec="false" failureStrategy="1" errorMessage="">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.actions.UninstallPreviousAction" />
+                  </java>
+                </serializedBean>
+                <condition />
+              </action>
               <action name="" id="17" customizedId="" beanClass="com.install4j.runtime.beans.actions.InstallFilesAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" rollbackBarrierExitCode="0" multiExec="false" failureStrategy="2" errorMessage="${i18n:FileCorrupted}">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
