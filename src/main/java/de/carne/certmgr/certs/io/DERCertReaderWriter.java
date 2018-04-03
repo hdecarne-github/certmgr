@@ -49,6 +49,7 @@ import org.bouncycastle.pkcs.PKCSException;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEOutputEncryptorBuilder;
 
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
@@ -60,7 +61,6 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
-import de.carne.util.logging.Log;
 
 /**
  * DER read/write support.

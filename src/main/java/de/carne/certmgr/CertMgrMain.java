@@ -21,8 +21,8 @@ import java.security.Security;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.carne.boot.ApplicationMain;
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.jfx.CertMgrApplication;
-import de.carne.util.logging.Log;
 
 /**
  * {@link ApplicationMain} class.

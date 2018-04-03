@@ -34,6 +34,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.carne.boot.logging.LogLevel;
+import de.carne.boot.logging.LogRecorder;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -58,8 +60,6 @@ import de.carne.jfx.util.validation.ValidationException;
 import de.carne.util.Late;
 import de.carne.util.Lazy;
 import de.carne.util.Strings;
-import de.carne.util.logging.LogLevel;
-import de.carne.util.logging.LogRecorder;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -31,10 +31,10 @@ import java.nio.charset.StandardCharsets;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import de.carne.boot.logging.Log;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
-import de.carne.util.logging.Log;
 
 abstract class SSLProtocalHelper implements AutoCloseable {
 

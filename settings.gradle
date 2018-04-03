@@ -1,1 +1,5 @@
 rootProject.name = 'certmgr'
+
+includeBuild '../java-boot'
+includeBuild '../java-default'
+includeBuild '../java-jfx'

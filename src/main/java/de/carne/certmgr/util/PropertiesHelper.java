@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import de.carne.boot.logging.Log;
 import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
-import de.carne.util.logging.Log;
 
 /**
  * Utility class providing {@link Properties} related functions.

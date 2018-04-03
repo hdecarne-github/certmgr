@@ -32,7 +32,6 @@ repositories {
 }
 
 dependencies {
-	compile("de.carne.common:java-boot:2.1.+")
 	compile("de.carne.common:java-default:8.3.+")
 	compile("de.carne:java-jfx:8.1.+")
 	compile("org.bouncycastle:bcpkix-jdk15on:1.59")
@@ -56,15 +55,24 @@ jar {
 	
 	manifest {
 		attributes(
-			'Main-Class': 'de.carne.ApplicationLoader',
-			'X-Version-ProjectId': project.name,
-			'X-Version-ProjectName' : project.name,
-			'X-Version-ProjectVersion': version,
-			'X-Version-ProjectBuild' : buildTimestamp
+			'X-Application-Name' : project.name,
+			'X-Application-Version': version,
+			'X-Application-Build' : buildTimestamp
 		)
 	}
+}
+
+task bootJar(type: Jar) {
+	appendix = 'boot'
+	entryCompression = ZipEntryCompression.STORED
+	from jar
 	from configurations.runtime.collect {
-		it.name.matches('(java-default-.*.jar)|(java-jfx-.*.jar)') ? zipTree(it).matching { exclude 'META-INF/**' } : it
+		it.name.matches('java-boot-.*.jar') ? zipTree(it) : it
+	}
+	manifest {
+		attributes(
+			'Main-Class': 'de.carne.boot.Application',
+		)
 	}
 }
 

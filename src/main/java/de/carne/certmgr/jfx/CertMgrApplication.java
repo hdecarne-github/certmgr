@@ -21,6 +21,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.carne.boot.logging.Log;
+import de.carne.boot.logging.LogLevel;
+import de.carne.boot.logging.Logs;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.store.StoreController;
 import de.carne.check.Check;
@@ -30,9 +33,6 @@ import de.carne.jfx.stage.logview.LogViewImages;
 import de.carne.util.ShutdownHooks;
 import de.carne.util.cmdline.CmdLineException;
 import de.carne.util.cmdline.CmdLineProcessor;
-import de.carne.util.logging.Log;
-import de.carne.util.logging.LogLevel;
-import de.carne.util.logging.Logs;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

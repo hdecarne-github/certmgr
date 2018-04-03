@@ -58,6 +58,7 @@ import org.bouncycastle.pkcs.bc.BcPKCS12PBEOutputEncryptorBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS12SafeBagBuilder;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
 
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.PasswordCallback;
@@ -68,7 +69,6 @@ import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.check.Nullable;
 import de.carne.io.IOUtil;
 import de.carne.util.Strings;
-import de.carne.util.logging.Log;
 
 /**
  * PKCS#12 read/write support.

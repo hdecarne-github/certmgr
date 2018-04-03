@@ -32,10 +32,10 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.check.Nullable;
-import de.carne.util.logging.Log;
 
 /**
  * Utility class providing security key related functions.

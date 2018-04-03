@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import de.carne.boot.logging.Log;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.SystemProperties;
-import de.carne.util.logging.Log;
 
 /**
  * Utility class providing ASN.1 Object Identifier (OID) related functions.

@@ -40,6 +40,7 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
@@ -59,7 +60,6 @@ import de.carne.certmgr.util.BooleanPreference;
 import de.carne.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
-import de.carne.util.logging.Log;
 import de.carne.util.prefs.FilePreferencesFactory;
 
 /**

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import de.carne.boot.Platform;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.io.CertWriters;
@@ -49,7 +50,6 @@ import de.carne.jfx.util.validation.ValidationException;
 import de.carne.nio.file.attribute.FileAttributes;
 import de.carne.util.Exceptions;
 import de.carne.util.Late;
-import de.carne.util.Platform;
 import de.carne.util.Strings;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;

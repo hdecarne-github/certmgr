@@ -39,6 +39,7 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.JKSCertReaderWriter;
 import de.carne.certmgr.certs.net.SSLPeer;
@@ -53,7 +54,6 @@ import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.nio.file.attribute.FileAttributes;
-import de.carne.util.logging.Log;
 
 /**
  * This class provides the actual certificate store functionality.

@@ -35,9 +35,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import de.carne.boot.logging.Log;
 import de.carne.check.Nullable;
 import de.carne.util.SystemProperties;
-import de.carne.util.logging.Log;
 
 /**
  * This class implements a dummy SSL/TLS client to retrieve certificate information from a SSL/TLS peer.

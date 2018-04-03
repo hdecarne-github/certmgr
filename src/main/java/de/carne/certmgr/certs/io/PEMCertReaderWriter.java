@@ -39,6 +39,7 @@ import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.NoPassword;
 import de.carne.certmgr.certs.PasswordCallback;
@@ -50,7 +51,6 @@ import de.carne.check.Check;
 import de.carne.check.Nullable;
 import de.carne.util.Strings;
 import de.carne.util.SystemProperties;
-import de.carne.util.logging.Log;
 
 /**
  * PEM read/write support.
@@ -527,7 +527,8 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 		Throwable passwordException = null;
 
 		while (pemKeyPair == null) {
-			char[] passwordChars = password.queryPassword(resource);
+			char[] passwordChars = (passwordException == null ? password.queryPassword(resource)
+					: password.requeryPassword(resource, passwordException));
 
 			if (passwordChars == null) {
 				throw new PasswordRequiredException(resource, passwordException);

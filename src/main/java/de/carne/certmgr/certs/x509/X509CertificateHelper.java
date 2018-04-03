@@ -39,11 +39,11 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
+import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.util.Exceptions;
-import de.carne.util.logging.Log;
 
 /**
  * Utility class providing {@link X509Certificate} related functions.
