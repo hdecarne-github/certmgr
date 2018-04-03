@@ -169,6 +169,10 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 				LOG.warning(CertIOI18N.STR_DER_UNKNOWN_OBJECT, derObject.getClass().getName());
 			}
+		} catch (ClassCastException e) {
+			// ASN1InputStream may cause this in case of non-DER data; simply ignore it and consider
+			// the file is not a DER stream
+			throw new CertProviderException(e);
 		}
 		return certObjects;
 	}
