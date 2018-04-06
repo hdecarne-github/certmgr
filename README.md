@@ -29,13 +29,13 @@ If you downloaded one of the generic archives, simply extract it to a folder of 
 The archive contains a single executable Jar as well as a folder with the license information. Invoke the application by either double clicking the jar or invoke the command
 
 ```
-java -jar certmgr.jar [command line arguments]
+java -jar certmgr-boot-<version> [command line arguments]
 ```
 
 in a terminal. The application command line supports the following options:
 
 ```
-certmgr.jar [--verbose|--debug] [store home]
+certmgr-boot-<version> [--verbose|--debug] [store home]
 
 --verbose
 	Enable verbose logging.

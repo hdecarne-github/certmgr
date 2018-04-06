@@ -22,13 +22,13 @@ If you downloaded one of the generic archives, simply extract it to a folder of 
 The archive contains a single executable Jar as well as a folder with the license information. Invoke the application by either double clicking the jar or invoke the command
 
 ```
-java -jar certmgr.jar [command line arguments]
+java -jar certmgr-boot-<version>.jar [command line arguments]
 ```
 
 in a terminal. The application command line supports the following options:
 
 ```
-certmgr.jar [--verbose|--debug] [store home]
+certmgr-boot-<version> [--verbose|--debug] [store home]
 
 --verbose
 	Enable verbose logging.
@@ -46,7 +46,4 @@ store home
  * [Configure Apache to use your certificates](howtoApache/)
 
 #### Changelog:
-* 2017-09-14 (v1.0.0-beta1)
-  * Initial release of new completely re-build version.
-* 2016-05-29 (latest release of 0.2.x branch)
-  * Various bug fixes and code cleanups.
+See [CHANGELOG.md](https://github.com/hdecarne/certmgr/blob/master/CHANGELOG.md).
