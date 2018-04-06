@@ -59,7 +59,7 @@ import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.boot.check.Nullable;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 import de.carne.util.Strings;
 
 /**

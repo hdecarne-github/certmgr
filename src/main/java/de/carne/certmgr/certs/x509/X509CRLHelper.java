@@ -46,7 +46,7 @@ import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.boot.check.Nullable;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 
 /**
  * Utility class providing {@link X509CRL} related functions.

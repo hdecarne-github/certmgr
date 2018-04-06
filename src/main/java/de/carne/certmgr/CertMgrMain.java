@@ -22,10 +22,10 @@ import java.security.Security;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import de.carne.boot.ApplicationMain;
+import de.carne.boot.Exceptions;
 import de.carne.boot.logging.Log;
 import de.carne.boot.logging.Logs;
 import de.carne.certmgr.jfx.CertMgrApplication;
-import de.carne.util.Exceptions;
 
 /**
  * {@link ApplicationMain} class.

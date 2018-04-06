@@ -19,7 +19,7 @@ package de.carne.certmgr.util;
 import java.util.prefs.Preferences;
 
 import de.carne.boot.check.Nullable;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 
 /**
  * Utility class providing access to a {@link Integer} preference.

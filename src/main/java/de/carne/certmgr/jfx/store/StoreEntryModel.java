@@ -27,7 +27,7 @@ import de.carne.certmgr.jfx.util.UserCertStoreEntryModel;
 import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.FormattedBigInteger;
 import de.carne.jfx.util.FormattedDate;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 

@@ -28,7 +28,7 @@ import java.util.Set;
 import javax.security.auth.x500.X500Principal;
 
 import de.carne.boot.logging.Log;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.SystemProperties;
 

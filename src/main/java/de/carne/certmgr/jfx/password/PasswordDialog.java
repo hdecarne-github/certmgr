@@ -24,7 +24,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;

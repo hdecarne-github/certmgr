@@ -35,7 +35,7 @@ import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.util.ProviderMap;
 import de.carne.boot.check.Nullable;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 
 /**
  * Utility class providing {@link CertReader} related functions.

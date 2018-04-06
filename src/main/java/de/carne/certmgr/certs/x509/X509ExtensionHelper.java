@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.security.cert.X509Extension;
 import java.util.Set;
 
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 
 /**
  * Utility class providing {@link X509Extension} related functions.

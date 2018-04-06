@@ -37,7 +37,7 @@ import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.boot.check.Check;
 import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 
 /**
  * Generator service for self-sustaining CA management.

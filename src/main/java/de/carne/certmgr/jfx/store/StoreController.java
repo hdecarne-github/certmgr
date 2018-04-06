@@ -60,7 +60,7 @@ import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
 import de.carne.util.Debug;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 import de.carne.util.Lazy;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

@@ -29,7 +29,7 @@ import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.jfx.util.validation.ValidationException;
-import de.carne.util.Exceptions;
+import de.carne.boot.Exceptions;
 import de.carne.util.Strings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
