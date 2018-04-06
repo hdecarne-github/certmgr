@@ -51,7 +51,7 @@
           <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
         </text>
       </splashScreen>
-      <java mainClass="de.carne.boot.Application" mainMode="1" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+      <java mainClass="de.carne.boot.Application" mainMode="1" vmParameters="-Dde.carne.boot.prefs.FilePreferences=.de.carne.certmgr" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="${compiler:i4jProjectName}-boot-${compiler:i4jProjectVersion}.jar" failOnError="false" />
         </classPath>

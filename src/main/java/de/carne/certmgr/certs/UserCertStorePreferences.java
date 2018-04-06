@@ -20,9 +20,9 @@ import java.nio.file.Path;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import de.carne.boot.prefs.FilePreferencesFactory;
 import de.carne.certmgr.util.IntPreference;
 import de.carne.certmgr.util.StringPreference;
-import de.carne.util.prefs.FilePreferencesFactory;
 
 /**
  * Utility class providing access to store preferences.
