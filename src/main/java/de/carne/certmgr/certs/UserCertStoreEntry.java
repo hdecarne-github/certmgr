@@ -32,7 +32,7 @@ import javax.security.auth.x500.X500Principal;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.util.Exceptions;
 
 /**

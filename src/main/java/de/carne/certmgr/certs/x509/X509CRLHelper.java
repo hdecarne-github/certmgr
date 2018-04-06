@@ -45,7 +45,7 @@ import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.util.Exceptions;
 
 /**

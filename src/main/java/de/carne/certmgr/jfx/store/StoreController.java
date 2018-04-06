@@ -51,7 +51,7 @@ import de.carne.certmgr.jfx.storepreferences.StorePreferencesController;
 import de.carne.certmgr.jfx.storepreferences.StorePreferencesDialog;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.util.PathPreference;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.aboutinfo.AboutInfoController;

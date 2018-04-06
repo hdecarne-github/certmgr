@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.certs.x509;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 abstract class Enumeration<T> {
 

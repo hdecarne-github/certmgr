@@ -26,7 +26,7 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.util.Arrays;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * General name of type IP Address.

@@ -32,9 +32,8 @@ repositories {
 }
 
 dependencies {
-	compile('de.carne.common:java-boot:2.2.0')
-	compile("de.carne.common:java-default:8.3.0")
-	compile("de.carne:java-jfx:8.1.0")
+	compile('de.carne.common:java-default:8.4.0-SNAPSHOT')
+	compile("de.carne:java-jfx:8.2.0-SNAPSHOT")
 	compile("org.bouncycastle:bcpkix-jdk15on:1.59")
 	testCompile("junit:junit:4.12")
 }
@@ -92,7 +91,7 @@ install4j {
 	installDir = file(project.hasProperty("install4jHome") ? install4jHome : ".")
 }
 
-task assembleMedia(type: com.install4j.gradle.Install4jTask) {
+task assembleMedia(type: com.install4j.gradle.Install4jTask, dependsOn: assembleDist) {
 	projectFile = file("src/main/install4j/certmgr.install4j")
 	variables = [
 		i4jProjectName: project.name,
@@ -100,11 +99,8 @@ task assembleMedia(type: com.install4j.gradle.Install4jTask) {
 		i4jProjectBaseDir: projectDir,
 		i4jProjectBuildDir: buildDir
 	]
+	quiet = true		
 }
-
-assembleDist.finalizedBy(assembleMedia)
-
-import org.gradle.plugins.ide.eclipse.model.AccessRule
 
 eclipse {
 	classpath {
@@ -114,7 +110,7 @@ eclipse {
 			whenMerged {
 				def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
 				
-				jre.accessRules.add(new AccessRule('0', 'javafx/**'))
+				jre.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule('0', 'javafx/**'))
 			}
 		}
 	}

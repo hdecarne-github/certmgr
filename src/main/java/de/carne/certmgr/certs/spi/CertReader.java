@@ -24,7 +24,7 @@ import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.IOResource;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.util.SystemProperties;
 
 /**

@@ -24,7 +24,7 @@ import java.util.Date;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.jfx.util.UserCertStoreEntryModel;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.FormattedBigInteger;
 import de.carne.jfx.util.FormattedDate;
 import de.carne.util.Exceptions;

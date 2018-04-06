@@ -26,7 +26,7 @@ import java.util.function.Function;
 
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;

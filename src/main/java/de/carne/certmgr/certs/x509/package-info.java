@@ -17,4 +17,4 @@
 @NonNullByDefault
 package de.carne.certmgr.certs.x509;
 
-import de.carne.check.NonNullByDefault;
+import de.carne.boot.check.NonNullByDefault;

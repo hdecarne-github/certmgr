@@ -18,8 +18,8 @@ package de.carne.certmgr.util;
 
 import java.time.Period;
 
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 
 /**
  * Utility class used to manage a period of days.

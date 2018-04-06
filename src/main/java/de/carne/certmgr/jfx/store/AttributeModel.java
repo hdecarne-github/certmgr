@@ -17,7 +17,7 @@
 package de.carne.certmgr.jfx.store;
 
 import de.carne.certmgr.certs.x509.Attributes;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.util.Strings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

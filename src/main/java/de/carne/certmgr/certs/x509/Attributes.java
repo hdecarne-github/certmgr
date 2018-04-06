@@ -28,8 +28,8 @@ import java.util.List;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 
 /**
  * This class provides a generic way to access the content/attributes of all kind of X.509 certificate objects.

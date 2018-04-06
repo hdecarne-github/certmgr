@@ -66,7 +66,7 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.KeyHelper;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.io.IOUtil;
 import de.carne.util.Strings;
 

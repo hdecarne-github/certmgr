@@ -27,8 +27,8 @@ import org.bouncycastle.asn1.DERTaggedObject;
 
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 
 /**
  * Distribution point name object.

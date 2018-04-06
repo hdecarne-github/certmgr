@@ -18,7 +18,7 @@ package de.carne.certmgr.certs.x509.generator;
 
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.util.ProviderMap;
-import de.carne.check.Check;
+import de.carne.boot.check.Check;
 
 /**
  * Utility class providing {@link CertGenerator} related functions.

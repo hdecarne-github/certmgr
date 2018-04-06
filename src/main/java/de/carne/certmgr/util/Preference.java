@@ -18,7 +18,7 @@ package de.carne.certmgr.util;
 
 import java.util.prefs.Preferences;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Generic base class for preference access.

@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import de.carne.certmgr.certs.PasswordCallback;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
 import de.carne.util.Exceptions;

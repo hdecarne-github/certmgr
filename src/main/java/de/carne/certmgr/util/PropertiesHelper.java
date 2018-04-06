@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import de.carne.boot.logging.Log;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.util.Exceptions;
 
 /**

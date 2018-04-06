@@ -21,7 +21,7 @@ import java.util.Set;
 
 import de.carne.certmgr.certs.x509.KeyUsage;
 import de.carne.certmgr.certs.x509.KeyUsageExtensionData;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

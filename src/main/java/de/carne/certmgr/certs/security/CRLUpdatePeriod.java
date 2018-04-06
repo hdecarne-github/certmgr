@@ -17,8 +17,8 @@
 package de.carne.certmgr.certs.security;
 
 import de.carne.certmgr.util.Days;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
 
 /**

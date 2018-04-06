@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.jfx.password;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;

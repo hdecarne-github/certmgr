@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;

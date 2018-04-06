@@ -24,7 +24,7 @@ import java.util.Set;
 
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.spi.NamedProvider;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Map like class providing access to named service providers of a specific type.

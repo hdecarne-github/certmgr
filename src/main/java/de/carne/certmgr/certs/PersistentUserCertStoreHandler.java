@@ -40,8 +40,8 @@ import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.io.PEMCertReaderWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.nio.file.attribute.FileAttributes;
 
 /**

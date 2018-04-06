@@ -19,8 +19,8 @@ package de.carne.certmgr.certs.x509.generator;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 
 /**
  * This class represents an available issuer for certificate signing.

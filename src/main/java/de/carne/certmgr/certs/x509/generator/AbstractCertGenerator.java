@@ -24,7 +24,7 @@ import java.util.Set;
 
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Abstract base class for {@link CertGenerator} implementations which provides the commonly used generation functions.

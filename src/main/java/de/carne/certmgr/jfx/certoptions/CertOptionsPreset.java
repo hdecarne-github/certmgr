@@ -22,7 +22,7 @@ import java.util.List;
 
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 class CertOptionsPreset {
 

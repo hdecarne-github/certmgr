@@ -47,7 +47,7 @@ import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.util.PathPreference;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;

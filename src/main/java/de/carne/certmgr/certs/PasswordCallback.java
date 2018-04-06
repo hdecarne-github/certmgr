@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.certs;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Callback interface used to query passwords on demand.

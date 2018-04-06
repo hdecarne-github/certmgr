@@ -51,8 +51,8 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.nio.file.attribute.FileAttributes;
 
 /**

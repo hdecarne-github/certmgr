@@ -32,8 +32,8 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import de.carne.boot.logging.Log;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.util.Exceptions;
 
 abstract class SSLProtocalHelper implements AutoCloseable {

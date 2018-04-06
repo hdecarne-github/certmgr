@@ -57,7 +57,7 @@ import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.SubjectKeyIdentifierExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.util.BooleanPreference;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.util.Exceptions;
 import de.carne.util.Strings;
 import de.carne.util.prefs.FilePreferencesFactory;

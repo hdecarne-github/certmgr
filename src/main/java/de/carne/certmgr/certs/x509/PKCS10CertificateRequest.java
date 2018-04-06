@@ -51,7 +51,7 @@ import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * This class represents a PKCS#10 Certificate Signing Request (CSR) object.

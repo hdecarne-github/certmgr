@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.jfx.password;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import javafx.scene.control.ButtonType;
 
 final class PasswordResult {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="7.0.4" transformSequenceNumber="7">
   <directoryPresets config="${compiler:i4jProjectBuildDir}/libs/${compiler:sys.shortName}-${compiler:sys.version}.jar" />
-  <application name="${compiler:i4jProjectFullName}" distributionSourceDir="" applicationId="6863-0001-6800-2736" mediaDir="${compiler:i4jProjectBuildDir}/distributions" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:i4jProjectName}" publisher="" publisherWeb="${compiler:i4jProjectUrl}" version="${compiler:i4jProjectVersion}" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="runtimeJre" jdkName="">
+  <application name="${compiler:i4jProjectFullName}" distributionSourceDir="" applicationId="6863-0001-6800-2736" mediaDir="${compiler:i4jProjectBuildDir}/distributions" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:i4jProjectName}" publisher="" publisherWeb="${compiler:i4jProjectUrl}" version="${compiler:i4jProjectVersion}" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages>
@@ -15,7 +15,7 @@
     </searchSequence>
     <variables>
       <variable name="i4jProjectName" value="certmgr" description="" category="" />
-      <variable name="i4jProjectVersion" value="1.0.0-beta1" description="" category="" />
+      <variable name="i4jProjectVersion" value="1.1.0" description="" category="" />
       <variable name="i4jProjectBuildDir" value="${compiler:i4jProjectBaseDir}/build" description="" category="" />
       <variable name="i4jProjectBaseDir" value="../../.." description="" category="" />
       <variable name="i4lProjectCopyright" value="Copyright © 2015-2018 Holger de Carne and contributors, All Rights Reserved." description="" category="" />
@@ -2184,7 +2184,7 @@ return true;</string>
         <customAttributes />
       </autoUpdate>
     </windows>
-    <macos name="macOS Single Bundle" id="494" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.fullName}" compressDmg="false" launcherId="60">
+    <macos name="macOS Single Bundle" id="494" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.fullName} ${compiler:sys.version}" compressDmg="false" launcherId="60">
       <excludedComponents />
       <includedDownloadableComponents />
       <excludedBeans />

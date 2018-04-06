@@ -21,7 +21,7 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 final class PersistentEntry {
 

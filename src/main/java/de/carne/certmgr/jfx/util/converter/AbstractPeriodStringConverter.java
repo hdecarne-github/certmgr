@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 
 import de.carne.certmgr.certs.security.AbstractPeriod;
 import de.carne.certmgr.util.Days;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.util.Strings;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;

@@ -34,8 +34,8 @@ import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
 import de.carne.util.Exceptions;
 

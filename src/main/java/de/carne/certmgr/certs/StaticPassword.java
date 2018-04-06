@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.certs;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * {@link PasswordCallback} implementation providing a static passwords.

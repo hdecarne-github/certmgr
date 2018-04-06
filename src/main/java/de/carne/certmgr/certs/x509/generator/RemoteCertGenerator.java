@@ -28,7 +28,7 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
 
 /**

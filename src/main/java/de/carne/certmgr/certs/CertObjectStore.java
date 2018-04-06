@@ -29,7 +29,7 @@ import java.util.Set;
 
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Class used to collect/transfer individual certificate objects for reading and writing.

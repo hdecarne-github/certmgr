@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Parameter container for CRL updating.

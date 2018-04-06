@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import de.carne.certmgr.certs.security.CRTValidityPeriod;
 import de.carne.certmgr.util.Days;
-import de.carne.check.Check;
+import de.carne.boot.check.Check;
 import de.carne.jfx.util.DefaultSet;
 
 /**

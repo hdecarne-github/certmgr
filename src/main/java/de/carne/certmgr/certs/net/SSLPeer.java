@@ -36,7 +36,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import de.carne.boot.logging.Log;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.util.SystemProperties;
 
 /**

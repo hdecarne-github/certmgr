@@ -23,7 +23,7 @@ import javax.security.auth.x500.X500Principal;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.generator.Issuer;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Parameter container for certificate generation.

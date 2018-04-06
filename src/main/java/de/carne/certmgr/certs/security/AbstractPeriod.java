@@ -17,7 +17,7 @@
 package de.carne.certmgr.certs.security;
 
 import de.carne.certmgr.util.Days;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Abstract base class for {@link Days} based objects.

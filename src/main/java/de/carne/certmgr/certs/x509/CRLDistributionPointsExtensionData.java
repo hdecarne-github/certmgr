@@ -27,7 +27,7 @@ import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERSequence;
 
-import de.carne.check.Check;
+import de.carne.boot.check.Check;
 import de.carne.util.Strings;
 
 /**

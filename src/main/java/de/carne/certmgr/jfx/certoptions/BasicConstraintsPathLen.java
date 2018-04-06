@@ -19,8 +19,8 @@ package de.carne.certmgr.jfx.certoptions;
 import java.math.BigInteger;
 import java.util.Objects;
 
-import de.carne.check.Check;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
 import de.carne.util.Strings;
 import javafx.util.StringConverter;

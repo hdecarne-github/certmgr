@@ -18,7 +18,7 @@ package de.carne.certmgr.certs;
 
 import java.io.IOException;
 
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 
 /**
  * Exception indicating that no valid password was given while accessing an encrypted resource.

@@ -23,7 +23,7 @@ import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.check.Nullable;
+import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
