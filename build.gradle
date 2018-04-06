@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
 	compile('de.carne.common:java-default:8.4.0')
-	compile("de.carne:java-jfx:8.2.0-SNAPSHOT")
+	compile("de.carne:java-jfx:8.2.0")
 	compile("org.bouncycastle:bcpkix-jdk15on:1.59")
 	testCompile("junit:junit:4.12")
 }
