@@ -22,13 +22,13 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
-	mavenLocal()
-	mavenCentral()
-	jcenter()
 	if(project.version.endsWith("-SNAPSHOT")) {
+		mavenLocal()
 		maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 		maven { url "https://oss.jfrog.org/libs-snapshot/" }
 	} 
+	jcenter()
+	mavenCentral()
 }
 
 dependencies {
