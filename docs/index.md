@@ -10,7 +10,7 @@ The application supports the following certificate operations:
  * **Import and export** of certificates (in PEM, DER, PKCS#12 as well as JKS format)
 
 #### Installation & usage:
-A Java SE 8 Runtime Environment (JRE) is required to run CertMgr.
+A Java SE 8 Runtime Environment (JRE 8u60 or higher) is required to run CertMgr.
 
 Download the latest version from the project's [releases page](https://github.com/hdecarne/certmgr/releases/latest).
 
