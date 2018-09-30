@@ -131,6 +131,12 @@ public class ExtendedKeyUsage extends Enumeration<String> {
 	 */
 	public static final ExtendedKeyUsage CAPWAP_WTP = new ExtendedKeyUsage("CAPWAP_WTP", "1.3.6.1.5.5.7.3.19");
 
+	/**
+	 * IPSEC_IKE_INTERMEDIATE
+	 */
+	public static final ExtendedKeyUsage IPSEC_IKE_INTERMEDIATE = new ExtendedKeyUsage("IPSEC_IKE_INTERMEDIATE",
+			"1.3.6.1.5.5.8.2.2");
+
 	private ExtendedKeyUsage(String name, String value) {
 		super(name, value);
 		registerInstance(this);
