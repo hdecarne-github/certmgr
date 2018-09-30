@@ -1,11 +1,10 @@
 ## Changelog:
-This is the initial release of the completely re-worked CertMgr application.
+This is a maintenance release of the CertMgr application.
 
-Main enhancements compared to the previous 0.2.x version are:
-* New GUI layout
-* More import/export options
-* Support for user defined certificate templates
-* Extended algorithm options via expert mode
+Main enhancements are:
+* Support for EKU "IP Security IKE Intermediate" (OID 1.3.6.1.5.5.8.2.2) 
+* BouncyCastle version bump 1.60
+* Minor technical updates (new update URL, ...)
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,6 +12,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 ![Install4j](http://certmgr.carne.de/install4j_small.png) The provided installer/launcher packages have been created using the multi-platform installer builder [Install4J](https://www.ej-technologies.com/products/install4j/overview.html).
+
+### v1.1.1 (2018-09-30)
+* Support for EKU "IP Security IKE Intermediate" (OID 1.3.6.1.5.5.8.2.2) 
+* BouncyCastle version bump 1.60
+* Mintor technical updates (new update URL, ...)
 
 ### v1.1.0 (2018-04-06)
 * Make DER file reader more robust in case of non-DER-input.
