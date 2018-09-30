@@ -19,8 +19,8 @@ package de.carne.certmgr.jfx.certoptions;
 import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
-import de.carne.certmgr.jfx.resources.Images;
 import de.carne.boot.check.Nullable;
+import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
@@ -63,31 +63,24 @@ public class ManageTemplatesController extends DialogController<Void> implements
 	@Nullable
 	private CertOptionsTemplates.Template templateEditorSelection = null;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlTemplateInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdAddTemplate;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdApplyTemplate;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdDeleteTemplate;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveTemplateUp;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveTemplateDown;
 
-	@SuppressWarnings("null")
 	@FXML
 	ListView<CertOptionsTemplates.Template> ctlTemplates;
 

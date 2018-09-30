@@ -39,11 +39,11 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
+import de.carne.boot.Exceptions;
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.boot.Exceptions;
 
 /**
  * Utility class providing {@link X509Certificate} related functions.
@@ -127,7 +127,8 @@ public final class X509CertificateHelper {
 		for (X509ExtensionData extensionData : extensions) {
 			String oid = extensionData.oid();
 
-			if (!oid.equals(Extension.subjectKeyIdentifier) && !oid.equals(Extension.authorityKeyIdentifier)) {
+			if (!oid.equals(Extension.subjectKeyIdentifier.getId())
+					&& !oid.equals(Extension.authorityKeyIdentifier.getId())) {
 				boolean critical = extensionData.getCritical();
 
 				crtBuilder.addExtension(new ASN1ObjectIdentifier(oid), critical, extensionData.encode());

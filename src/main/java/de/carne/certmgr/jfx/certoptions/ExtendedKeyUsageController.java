@@ -19,9 +19,9 @@ package de.carne.certmgr.jfx.certoptions;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.carne.boot.check.Nullable;
 import de.carne.certmgr.certs.x509.ExtendedKeyUsage;
 import de.carne.certmgr.certs.x509.ExtendedKeyUsageExtensionData;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -42,15 +42,12 @@ public class ExtendedKeyUsageController extends DialogController<ExtendedKeyUsag
 	@Nullable
 	private ExtendedKeyUsageExtensionData extensionDataResult = null;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCritical;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlAnyUsage;
 
-	@SuppressWarnings("null")
 	@FXML
 	ListView<ExtendedKeyUsage> ctlUsages;
 

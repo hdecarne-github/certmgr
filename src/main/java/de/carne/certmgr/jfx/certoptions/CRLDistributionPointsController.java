@@ -16,6 +16,7 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
+import de.carne.boot.check.Nullable;
 import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
 import de.carne.certmgr.certs.x509.DistributionPoint;
 import de.carne.certmgr.certs.x509.DistributionPointName;
@@ -23,7 +24,6 @@ import de.carne.certmgr.certs.x509.GeneralName;
 import de.carne.certmgr.certs.x509.GeneralNameType;
 import de.carne.certmgr.certs.x509.GeneralNames;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
@@ -67,39 +67,30 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 	@Nullable
 	private CRLDistributionPointsExtensionData extensionDataResult = null;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCritical;
 
-	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<GeneralNameType> ctlNameTypeOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlNameInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdAddName;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdApplyName;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdDeleteName;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveNameUp;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdMoveNameDown;
 
-	@SuppressWarnings("null")
 	@FXML
 	ListView<GeneralName> ctlNames;
 

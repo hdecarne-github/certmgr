@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.carne.boot.check.Nullable;
 import de.carne.boot.logging.LogLevel;
 import de.carne.boot.logging.LogRecorder;
 import de.carne.certmgr.certs.PasswordCallback;
@@ -47,7 +48,6 @@ import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.util.PathPreference;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.stage.StageController;
@@ -105,107 +105,81 @@ public class CertImportController extends StageController {
 	@Nullable
 	private UserCertStore sourceStore = null;
 
-	@SuppressWarnings("null")
 	@FXML
 	GridPane ctlControlPane;
 
-	@SuppressWarnings("null")
 	@FXML
 	VBox ctlProgressOverlay;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlFileSourceOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlFileSourceInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseFileSourceButton;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlDirectorySourceOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlDirectorySourceInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseDirectorySourceButton;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlURLSourceOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlURLSourceInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlServerSourceOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlServerSourceInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<SSLPeer.Protocol> ctlServerSourceProtocolInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlPlatformSourceOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<PlatformKeyStore> ctlPlatformSourceInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlClipboardSourceOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	ImageView ctlStatusImage;
 
-	@SuppressWarnings("null")
 	@FXML
 	Label ctlStatusMessage;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlSelectAllOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TreeTableView<ImportEntryModel> ctlImportEntryView;
 
-	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewSelected;
 
-	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, String> ctlImportEntryViewDN;
 
-	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCRT;
 
-	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewKey;
 
-	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCSR;
 
-	@SuppressWarnings("null")
 	@FXML
 	TreeTableColumn<ImportEntryModel, Boolean> ctlImportEntryViewCRL;
 

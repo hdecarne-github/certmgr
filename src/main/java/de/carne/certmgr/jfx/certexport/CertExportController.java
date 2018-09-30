@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import de.carne.boot.Exceptions;
 import de.carne.boot.check.Check;
 import de.carne.boot.check.Nullable;
 import de.carne.boot.platform.Platform;
@@ -48,7 +49,6 @@ import de.carne.jfx.util.validation.PathValidator;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.jfx.util.validation.ValidationException;
 import de.carne.nio.file.attribute.FileAttributes;
-import de.carne.boot.Exceptions;
 import de.carne.util.Late;
 import de.carne.util.Strings;
 import javafx.beans.binding.Bindings;
@@ -80,75 +80,57 @@ public class CertExportController extends StageController {
 
 	private final Late<UserCertStoreEntry> exportEntryParam = new Late<>();
 
-	@SuppressWarnings("null")
 	@FXML
 	GridPane ctlControlPane;
 
-	@SuppressWarnings("null")
 	@FXML
 	VBox ctlProgressOverlay;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlCertField;
 
-	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<CertWriter> ctlFormatOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlFileDestinationOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlFileDestinationInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseFileDestinationButton;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlDirectoryDestinationOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlDirectoryDestinationInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdChooseDirectoryDestinationButton;
 
-	@SuppressWarnings("null")
 	@FXML
 	RadioButton ctlClipboardDestinationOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlEncryptOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportCertOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportChainOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportChainRootOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportKeyOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportCSROption;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlExportCRLOption;
 

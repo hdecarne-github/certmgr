@@ -28,6 +28,8 @@ import java.util.prefs.Preferences;
 
 import javax.security.auth.x500.X500Principal;
 
+import de.carne.boot.check.Check;
+import de.carne.boot.check.Nullable;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStoreEntryId;
@@ -49,8 +51,6 @@ import de.carne.certmgr.jfx.dneditor.DNEditorController;
 import de.carne.certmgr.jfx.dneditor.DNEditorDialog;
 import de.carne.certmgr.jfx.password.PasswordDialog;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
@@ -116,103 +116,78 @@ public class CertOptionsController extends StageController {
 	private final ObjectProperty<CRLDistributionPointsExtensionData> crlDistributionPointsExtension = new SimpleObjectProperty<>(
 			null);
 
-	@SuppressWarnings("null")
 	@FXML
 	GridPane ctlControlPane;
 
-	@SuppressWarnings("null")
 	@FXML
 	VBox ctlProgressOverlay;
 
-	@SuppressWarnings("null")
 	@FXML
 	Menu ctlStorePresetsMenu;
 
-	@SuppressWarnings("null")
 	@FXML
 	Menu ctlStoreTemplatesMenu;
 
-	@SuppressWarnings("null")
 	@FXML
 	Menu ctlTemplatePresetsMenu;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlAliasInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	TextField ctlDNInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	ComboBox<KeyPairAlgorithm> ctlKeyAlgOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	ComboBox<Integer> ctlKeySizeOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	ChoiceBox<CertGenerator> ctlGeneratorOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	ComboBox<SignatureAlgorithm> ctlSigAlgOption;
 
-	@SuppressWarnings("null")
 	@FXML
 	DatePicker ctlNotBeforeInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	DatePicker ctlNotAfterInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	ComboBox<Issuer> ctlIssuerInput;
 
-	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddBasicConstraints;
 
-	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddKeyUsage;
 
-	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddExtendedKeyUsage;
 
-	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddSubjectAlternativeName;
 
-	@SuppressWarnings("null")
 	@FXML
 	MenuItem cmdAddCRLDistributionPoints;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdEditExtension;
 
-	@SuppressWarnings("null")
 	@FXML
 	Button cmdDeleteExtension;
 
-	@SuppressWarnings("null")
 	@FXML
 	TableView<ExtensionDataModel> ctlExtensionData;
 
-	@SuppressWarnings("null")
 	@FXML
 	TableColumn<ExtensionDataModel, Boolean> ctlExtensionDataCritical;
 
-	@SuppressWarnings("null")
 	@FXML
 	TableColumn<ExtensionDataModel, String> ctlExtensionDataName;
 
-	@SuppressWarnings("null")
 	@FXML
 	TableColumn<ExtensionDataModel, String> ctlExtensionDataValue;
 

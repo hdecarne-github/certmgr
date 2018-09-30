@@ -18,9 +18,9 @@ package de.carne.certmgr.jfx.certoptions;
 
 import java.math.BigInteger;
 
-import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.boot.check.Check;
 import de.carne.boot.check.Nullable;
+import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.util.validation.InputValidator;
@@ -44,15 +44,12 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 	@Nullable
 	private BasicConstraintsExtensionData extensionDataResult = null;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCritical;
 
-	@SuppressWarnings("null")
 	@FXML
 	CheckBox ctlCA;
 
-	@SuppressWarnings("null")
 	@FXML
 	ComboBox<BasicConstraintsPathLen> ctlPathLenConstraint;
 
