@@ -16,7 +16,7 @@ GNU General Public License for more details.
 ### v1.1.1 (2018-09-30)
 * Support for EKU "IP Security IKE Intermediate" (OID 1.3.6.1.5.5.8.2.2) 
 * BouncyCastle version bump 1.60
-* Mintor technical updates (new update URL, ...)
+* Minor technical updates (new update URL, ...)
 
 ### v1.1.0 (2018-04-06)
 * Make DER file reader more robust in case of non-DER-input.
