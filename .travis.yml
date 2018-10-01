@@ -6,6 +6,9 @@ jdk:
 os:
   - linux
 
+git:
+  depth: false  
+
 script:
   - ./gradlew build jacocoTestReport
 after_success:
@@ -16,7 +19,7 @@ notifications:
     recipients:
       - hdecarne@gmail.com
 
-# See https://docs.travis-ci.com/user/languages/java/#Caching
+# See https://docs.travis-ci.com/user/languages/java/#caching
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
