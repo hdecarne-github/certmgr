@@ -33,6 +33,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.Exceptions;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x509.Attributes;
@@ -51,7 +54,6 @@ import de.carne.certmgr.jfx.storepreferences.StorePreferencesController;
 import de.carne.certmgr.jfx.storepreferences.StorePreferencesDialog;
 import de.carne.certmgr.jfx.util.UserCertStoreTreeTableViewHelper;
 import de.carne.certmgr.util.PathPreference;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.aboutinfo.AboutInfoController;
@@ -60,7 +62,6 @@ import de.carne.jfx.stage.StageController;
 import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
 import de.carne.util.Debug;
-import de.carne.boot.Exceptions;
 import de.carne.util.Lazy;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

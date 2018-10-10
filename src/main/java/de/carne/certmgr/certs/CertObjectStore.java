@@ -27,9 +27,10 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.boot.check.Nullable;
 
 /**
  * Class used to collect/transfer individual certificate objects for reading and writing.

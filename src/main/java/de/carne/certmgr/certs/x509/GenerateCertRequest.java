@@ -20,10 +20,11 @@ import java.util.Date;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.generator.Issuer;
-import de.carne.boot.check.Nullable;
 
 /**
  * Parameter container for certificate generation.

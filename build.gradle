@@ -3,7 +3,7 @@ buildscript {
 		mavenLocal()
 		mavenCentral()
 		jcenter()
-		maven { url 'https://plugins.gradle.org/m2/' }
+		maven { url "https://plugins.gradle.org/m2/" }
 	}
 	dependencies {
 		classpath("de.carne:java-gradleplugins:0.4.0")
@@ -11,12 +11,12 @@ buildscript {
 	}
 }
 
-apply plugin: 'java'
-apply plugin: 'de.carne.gradleplugins.java'
-apply plugin: 'jacoco'
-apply plugin: 'distribution'
-apply plugin: 'com.install4j.gradle'
-apply plugin: 'eclipse'
+apply plugin: "java-library"
+apply plugin: "de.carne.gradleplugins.java"
+apply plugin: "jacoco"
+apply plugin: "distribution"
+apply plugin: "com.install4j.gradle"
+apply plugin: "eclipse"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -24,7 +24,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 repositories {
 	if(project.version.endsWith("-SNAPSHOT")) {
 		mavenLocal()
-		maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 		maven { url "https://oss.jfrog.org/libs-snapshot/" }
 	} 
 	jcenter()
@@ -32,10 +32,13 @@ repositories {
 }
 
 dependencies {
-	compile('de.carne.common:java-default:8.6.0')
-	compile("de.carne:java-jfx:8.2.1")
-	compile("org.bouncycastle:bcpkix-jdk15on:1.60")
-	testCompile("junit:junit:4.12")
+	configurations.runtime.exclude(group: "org.eclipse.jdt", module: "org.eclipse.jdt.annotation")
+	implementation(group: "de.carne.common", name: "java-default", version: "8.7.0-SNAPSHOT")
+	
+	implementation(group: "de.carne", name: "java-jfx", version: "8.3.0-SNAPSHOT")
+	implementation(group: "org.bouncycastle", name: "bcpkix-jdk15on", version: "1.60")
+
+	testImplementation(group: "junit", name: "junit", version: "4.12")
 }
 
 jacocoTestReport {
@@ -53,23 +56,23 @@ jar {
 	
 	manifest {
 		attributes(
-			'X-Application-Name' : project.name,
-			'X-Application-Version': version,
-			'X-Application-Build' : buildTimestamp
+			"X-Application-Name" : project.name,
+			"X-Application-Version": version,
+			"X-Application-Build" : buildTimestamp
 		)
 	}
 }
 
 task bootJar(type: Jar) {
-	appendix = 'boot'
+	appendix = "boot"
 	entryCompression = ZipEntryCompression.STORED
 	from jar
-	from configurations.runtime.collect {
-		it.name.matches('java-boot-.*.jar') ? zipTree(it) : it
+	from configurations.runtimeClasspath.collect {
+		it.name.matches("java-boot-.*.jar") ? zipTree(it) : it
 	}
 	manifest {
 		attributes(
-			'Main-Class': 'de.carne.boot.Application',
+			"Main-Class": "de.carne.boot.Application",
 		)
 	}
 }
@@ -84,7 +87,7 @@ distributions {
 
 tasks.withType(Tar){
 	compression = Compression.GZIP
-	extension = 'tar.gz'
+	extension = "tar.gz"
 }
 
 install4j {
@@ -108,9 +111,9 @@ eclipse {
 		downloadJavadoc = true
 		file {
 			whenMerged {
-				def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
+				def jre = entries.find { it.path.contains "org.eclipse.jdt.launching.JRE_CONTAINER" }
 				
-				jre.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule('0', 'javafx/**'))
+				jre.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule("0", "javafx/**"))
 			}
 		}
 	}

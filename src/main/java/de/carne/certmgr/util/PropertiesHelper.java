@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import de.carne.boot.logging.Log;
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.Exceptions;
+import de.carne.boot.logging.Log;
 
 /**
  * Utility class providing {@link Properties} related functions.

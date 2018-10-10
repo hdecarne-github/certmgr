@@ -31,11 +31,11 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
+import org.eclipse.jdt.annotation.Nullable;
 
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.KeyPairAlgorithm;
-import de.carne.boot.check.Nullable;
 
 /**
  * Utility class providing security key related functions.

@@ -19,7 +19,8 @@ package de.carne.certmgr.jfx.certoptions;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.x509.KeyUsage;
 import de.carne.certmgr.certs.x509.KeyUsageExtensionData;
 import de.carne.jfx.scene.control.DialogController;

@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.certs.x509;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 abstract class Enumeration<T> {
 

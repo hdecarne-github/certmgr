@@ -18,6 +18,8 @@ package de.carne.certmgr.certs.spi;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
@@ -26,7 +28,6 @@ import de.carne.certmgr.certs.security.KeyPairAlgorithm;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.generator.Issuer;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
 
 /**
@@ -81,7 +82,7 @@ public interface CertGenerator extends NamedProvider {
 	 *
 	 * @param store The store to use for issuer provisioning.
 	 * @param defaultHint The default to return (may be {@code null}). If the issuer representing this store entry is
-	 *        part of the default set, it is also set as the default.
+	 * part of the default set, it is also set as the default.
 	 * @return The available issuers (may be an empty set).
 	 */
 	DefaultSet<Issuer> getIssuers(UserCertStore store, @Nullable UserCertStoreEntry defaultHint);
@@ -92,9 +93,9 @@ public interface CertGenerator extends NamedProvider {
 	 * @param issuer The selected issuer (may be {@code null}).
 	 * @param keyPairAlgorithm The selected key pair algorithm (may be {@code null}).
 	 * @param defaultHint The default to return (may be {@code null}). If this algorithm is contained in the default
-	 *        set, it is also set as the default.
+	 * set, it is also set as the default.
 	 * @param expertMode Whether only standard algorithms are considered ({@code false}) or all algorithms available on
-	 *        the current platform ({@code true}).
+	 * the current platform ({@code true}).
 	 * @return The available signature algorithms
 	 */
 	DefaultSet<SignatureAlgorithm> getSignatureAlgorithms(@Nullable Issuer issuer,

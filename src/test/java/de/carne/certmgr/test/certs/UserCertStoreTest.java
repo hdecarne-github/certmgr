@@ -37,11 +37,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import de.carne.boot.Exceptions;
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.NoPassword;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -63,12 +66,9 @@ import de.carne.certmgr.certs.x509.X509CertificateHelper;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.certs.x509.generator.CertGenerators;
 import de.carne.certmgr.certs.x509.generator.Issuer;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.io.IOUtil;
 import de.carne.jfx.util.DefaultSet;
 import de.carne.nio.file.FileUtil;
-import de.carne.boot.Exceptions;
 import de.carne.util.Late;
 
 /**

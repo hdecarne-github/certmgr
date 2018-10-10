@@ -39,6 +39,9 @@ import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.check.Check;
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.JKSCertReaderWriter;
@@ -51,8 +54,6 @@ import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.certmgr.certs.x509.X509CRLHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.nio.file.attribute.FileAttributes;
 
 /**

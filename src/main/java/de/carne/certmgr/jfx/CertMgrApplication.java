@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.ShutdownHooks;
 import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.boot.logging.Log;
 import de.carne.boot.logging.LogLevel;
 import de.carne.boot.logging.Logs;

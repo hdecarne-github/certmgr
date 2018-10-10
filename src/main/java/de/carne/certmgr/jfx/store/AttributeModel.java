@@ -16,8 +16,9 @@
  */
 package de.carne.certmgr.jfx.store;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.x509.Attributes;
-import de.carne.boot.check.Nullable;
 import de.carne.util.Strings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

@@ -16,10 +16,11 @@
  */
 package de.carne.certmgr.jfx.util;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;

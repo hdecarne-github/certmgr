@@ -24,11 +24,11 @@ import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DERTaggedObject;
+import org.eclipse.jdt.annotation.Nullable;
 
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 
 /**
  * Distribution point name object.

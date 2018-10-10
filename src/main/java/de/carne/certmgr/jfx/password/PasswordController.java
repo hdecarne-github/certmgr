@@ -16,7 +16,8 @@
  */
 package de.carne.certmgr.jfx.password;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.DialogHelper;
 
@@ -27,7 +28,7 @@ abstract class PasswordController extends DialogController<PasswordResult> {
 
 	/**
 	 * Initialize {@code PasswordController}.
-	 * 
+	 *
 	 * @param resource The resource to get the password for.
 	 * @param rememberPassword Whether the remember password option has been selected by the user.
 	 * @param passwordException The possible exception of a previous enter password attempt (may be {@code null}).

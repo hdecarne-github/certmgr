@@ -17,4 +17,4 @@
 @NonNullByDefault
 package de.carne.certmgr.certs.asn1;
 
-import de.carne.boot.check.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNullByDefault;

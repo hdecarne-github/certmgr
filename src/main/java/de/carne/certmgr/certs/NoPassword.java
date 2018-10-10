@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.certs;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link PasswordCallback} implementation providing no passwords.
@@ -39,14 +39,12 @@ public class NoPassword implements PasswordCallback {
 	}
 
 	@Override
-	@Nullable
-	public char[] queryPassword(String resource) {
+	public char @Nullable [] queryPassword(String resource) {
 		return null;
 	}
 
 	@Override
-	@Nullable
-	public char[] requeryPassword(String resource, Throwable cause) {
+	public char @Nullable [] requeryPassword(String resource, Throwable cause) {
 		return null;
 	}
 

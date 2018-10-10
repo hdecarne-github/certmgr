@@ -34,7 +34,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.logging.LogLevel;
 import de.carne.boot.logging.LogRecorder;
 import de.carne.certmgr.certs.PasswordCallback;

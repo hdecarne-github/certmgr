@@ -19,7 +19,7 @@ package de.carne.certmgr.certs;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 interface CertObjectHolder<T> {
 

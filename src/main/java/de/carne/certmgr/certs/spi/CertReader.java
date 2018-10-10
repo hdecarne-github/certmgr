@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.IOResource;
-import de.carne.boot.check.Nullable;
 import de.carne.util.SystemProperties;
 
 /**
@@ -38,8 +39,7 @@ public interface CertReader extends NamedProvider, FileAccessProvider {
 	 * This property is used to avoid out of memory conditions when we try to read huge files with readers that require
 	 * all data to be read in advance.
 	 */
-	static final int READ_LIMIT = SystemProperties.intValue(CertReaders.class.getPackage().getName() + ".readLimit",
-			1 << 20);
+	int READ_LIMIT = SystemProperties.intValue(CertReaders.class.getPackage().getName() + ".readLimit", 1 << 20);
 
 	/**
 	 * Read all available certificate objects.

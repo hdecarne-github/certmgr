@@ -16,9 +16,10 @@
  */
 package de.carne.certmgr.certs.security;
 
-import de.carne.certmgr.util.Days;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
+import de.carne.certmgr.util.Days;
 import de.carne.jfx.util.DefaultSet;
 
 /**
@@ -39,7 +40,7 @@ public class CRLUpdatePeriod extends AbstractPeriod {
 	 * Get the standard CRL Update Periods.
 	 *
 	 * @param defaultHint The default to return (may be {@code null}). If this period is contained in the default set,
-	 *        it is also set as the default.
+	 * it is also set as the default.
 	 * @return The standard CRL Update Periods.
 	 */
 	public static DefaultSet<CRLUpdatePeriod> getDefaultSet(@Nullable Days defaultHint) {

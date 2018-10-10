@@ -22,9 +22,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
-import de.carne.boot.check.Nullable;
 
 /**
  * Abstract base class for {@link CertGenerator} implementations which provides the commonly used generation functions.

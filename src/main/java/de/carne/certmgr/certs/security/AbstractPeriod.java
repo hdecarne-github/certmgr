@@ -16,8 +16,9 @@
  */
 package de.carne.certmgr.certs.security;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.util.Days;
-import de.carne.boot.check.Nullable;
 
 /**
  * Abstract base class for {@link Days} based objects.

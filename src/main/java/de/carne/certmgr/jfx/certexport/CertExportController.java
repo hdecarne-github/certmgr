@@ -29,9 +29,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.Exceptions;
 import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.boot.platform.Platform;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;

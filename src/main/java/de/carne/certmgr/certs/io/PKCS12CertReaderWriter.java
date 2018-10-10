@@ -57,6 +57,7 @@ import org.bouncycastle.pkcs.bc.BcPKCS12MacCalculatorBuilder;
 import org.bouncycastle.pkcs.bc.BcPKCS12PBEOutputEncryptorBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS12SafeBagBuilder;
 import org.bouncycastle.pkcs.jcajce.JcePKCSPBEInputDecryptorProviderBuilder;
+import org.eclipse.jdt.annotation.Nullable;
 
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertObjectStore;
@@ -66,7 +67,6 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.KeyHelper;
-import de.carne.boot.check.Nullable;
 import de.carne.io.IOUtil;
 import de.carne.util.Strings;
 

@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.Exceptions;
 import de.carne.certmgr.certs.PasswordCallback;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.application.PlatformHelper;
 import de.carne.jfx.stage.StageController;
-import de.carne.boot.Exceptions;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -38,8 +39,7 @@ public final class PasswordDialog implements PasswordCallback {
 	private final StageController owner;
 	private final Class<? extends PasswordController> controllerClass;
 	private boolean cancelAll = false;
-	@Nullable
-	private char[] rememberedPassword = null;
+	private char @Nullable [] rememberedPassword = null;
 
 	private PasswordDialog(StageController owner, Class<? extends PasswordController> passwordController) {
 		this.owner = owner;
@@ -67,19 +67,16 @@ public final class PasswordDialog implements PasswordCallback {
 	}
 
 	@Override
-	@Nullable
-	public char[] queryPassword(String resource) {
+	public char @Nullable [] queryPassword(String resource) {
 		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, null), false);
 	}
 
 	@Override
-	@Nullable
-	public char[] requeryPassword(String resource, Throwable cause) {
+	public char @Nullable [] requeryPassword(String resource, Throwable cause) {
 		return queryPasswordHelper(() -> queryPasswordDialogHelper(resource, cause), true);
 	}
 
-	@Nullable
-	private char[] queryPasswordHelper(Supplier<PasswordResult> query, boolean requery) {
+	private char @Nullable [] queryPasswordHelper(Supplier<PasswordResult> query, boolean requery) {
 		PasswordResult passwordResult;
 
 		if (this.cancelAll) {

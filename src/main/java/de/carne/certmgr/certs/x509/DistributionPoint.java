@@ -24,10 +24,10 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERTaggedObject;
+import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
+import de.carne.certmgr.certs.asn1.ASN1Data;
 
 /**
  * Distribution point object.
@@ -124,7 +124,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * Set the reasons this distribution point is authoritative for.
 	 *
 	 * @param reasons The reasons this distribution point is authoritative for. May be {@code null} to use this
-	 *        distribution point for all reasons.
+	 * distribution point for all reasons.
 	 */
 	public void setReasons(@Nullable ReasonFlags reasons) {
 		this.reasons = reasons;
@@ -134,7 +134,7 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 	 * Get the reasons this distribution point is authoritative for.
 	 *
 	 * @return The reasons this distribution point is authoritative for or {@code null} if this distribution point is
-	 *         used for all reasons.
+	 * used for all reasons.
 	 */
 	@Nullable
 	public ReasonFlags getReasons() {

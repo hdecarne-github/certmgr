@@ -17,4 +17,4 @@
 @NonNullByDefault
 package de.carne.certmgr.certs.x509.generator;
 
-import de.carne.boot.check.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNullByDefault;

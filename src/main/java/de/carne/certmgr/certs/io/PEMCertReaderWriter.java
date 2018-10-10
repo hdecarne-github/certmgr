@@ -38,7 +38,9 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
 import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.eclipse.jdt.annotation.Nullable;
 
+import de.carne.boot.check.Check;
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.NoPassword;
@@ -47,8 +49,6 @@ import de.carne.certmgr.certs.PasswordRequiredException;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.util.Strings;
 import de.carne.util.SystemProperties;
 

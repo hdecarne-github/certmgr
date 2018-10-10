@@ -24,9 +24,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
-import de.carne.boot.check.Nullable;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableView;

@@ -16,7 +16,8 @@
  */
 package de.carne.certmgr.jfx.certoptions;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.x509.CRLDistributionPointsExtensionData;
 import de.carne.certmgr.certs.x509.DistributionPoint;
 import de.carne.certmgr.certs.x509.DistributionPointName;

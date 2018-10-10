@@ -19,6 +19,8 @@ package de.carne.certmgr.certs.x509.generator;
 import java.io.IOException;
 import java.security.KeyPair;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
@@ -28,7 +30,6 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
 
 /**

@@ -20,10 +20,11 @@ import java.time.Period;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.security.AbstractPeriod;
 import de.carne.certmgr.util.Days;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.util.Strings;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;

@@ -21,7 +21,8 @@ import java.security.KeyPairGenerator;
 import java.security.Provider;
 import java.security.Provider.Service;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.jfx.util.DefaultSet;
 
 /**
@@ -39,9 +40,9 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 	 * Get the available key pair algorithms.
 	 *
 	 * @param defaultHint The default to return (may be {@code null}). If this algorithm is contained in the default
-	 *        set, it is also set as the default.
+	 * set, it is also set as the default.
 	 * @param expertMode Whether only standard algorithms are considered ({@code false}) or all algorithms available on
-	 *        the current platform ({@code true}).
+	 * the current platform ({@code true}).
 	 * @return The available key pair algorithms
 	 */
 	public static DefaultSet<KeyPairAlgorithm> getDefaultSet(@Nullable String defaultHint, boolean expertMode) {
@@ -92,7 +93,7 @@ public abstract class KeyPairAlgorithm extends AbstractAlgorithm {
 	 * Get this algorithm's standard key sizes.
 	 *
 	 * @param defaultHint The default to return (may be {@code null}). If not yet part of the default set, this size is
-	 *        added to the set.
+	 * added to the set.
 	 * @return This algorithm's standard key sizes.
 	 */
 	public DefaultSet<Integer> getStandardKeySizes(@Nullable Integer defaultHint) {

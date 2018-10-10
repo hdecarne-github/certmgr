@@ -19,8 +19,9 @@ package de.carne.certmgr.jfx.certoptions;
 import java.math.BigInteger;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
 import de.carne.util.Strings;
 import javafx.util.StringConverter;
@@ -87,7 +88,8 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 			comparision = (checkedOPathLenConstraint == null ? 0 : 1);
 		} else {
 			comparision = (checkedOPathLenConstraint != null
-					? checkedPathLenConstraint.compareTo(checkedOPathLenConstraint) : -1);
+					? checkedPathLenConstraint.compareTo(checkedOPathLenConstraint)
+					: -1);
 		}
 		return comparision;
 	}

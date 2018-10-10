@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.CertObjectType;
@@ -42,7 +44,6 @@ import de.carne.certmgr.certs.security.PlatformKeyStore;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.certs.x509.KeyHelper;
-import de.carne.boot.check.Nullable;
 import de.carne.util.Strings;
 
 /**

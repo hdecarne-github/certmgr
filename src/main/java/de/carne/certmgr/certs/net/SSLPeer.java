@@ -35,8 +35,9 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.logging.Log;
-import de.carne.boot.check.Nullable;
 import de.carne.util.SystemProperties;
 
 /**

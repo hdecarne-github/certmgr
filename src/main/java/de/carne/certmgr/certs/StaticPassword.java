@@ -16,17 +16,16 @@
  */
 package de.carne.certmgr.certs;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link PasswordCallback} implementation providing a static passwords.
  */
 public class StaticPassword implements PasswordCallback {
 
-	@Nullable
-	private final char[] password;
+	private final char @Nullable [] password;
 
-	private StaticPassword(@Nullable char[] password) {
+	private StaticPassword(char @Nullable [] password) {
 		this.password = password;
 	}
 
@@ -36,19 +35,17 @@ public class StaticPassword implements PasswordCallback {
 	 * @param password The password to return.
 	 * @return {@code StaticPassword} instance.
 	 */
-	public static StaticPassword getInstance(@Nullable char[] password) {
+	public static StaticPassword getInstance(char @Nullable [] password) {
 		return new StaticPassword(password);
 	}
 
 	@Override
-	@Nullable
-	public char[] queryPassword(String resource) {
+	public char @Nullable [] queryPassword(String resource) {
 		return this.password;
 	}
 
 	@Override
-	@Nullable
-	public char[] requeryPassword(String resource, Throwable cause) {
+	public char @Nullable [] requeryPassword(String resource, Throwable cause) {
 		return null;
 	}
 

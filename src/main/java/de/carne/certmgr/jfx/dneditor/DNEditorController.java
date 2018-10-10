@@ -21,15 +21,16 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.Exceptions;
 import de.carne.certmgr.certs.x500.X500Names;
 import de.carne.certmgr.jfx.resources.Images;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.jfx.scene.control.ListViewEditor;
 import de.carne.jfx.scene.control.Tooltips;
 import de.carne.jfx.util.validation.ValidationAlerts;
 import de.carne.jfx.util.validation.ValidationException;
-import de.carne.boot.Exceptions;
 import de.carne.util.Strings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

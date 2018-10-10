@@ -16,7 +16,8 @@
  */
 package de.carne.certmgr.jfx.password;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import javafx.scene.control.ButtonType;
 
 final class PasswordResult {
@@ -25,12 +26,11 @@ final class PasswordResult {
 
 	private final ButtonType dialogResult;
 
-	@Nullable
-	private final char[] password;
+	private final char @Nullable [] password;
 
 	private final boolean rememberPassword;
 
-	PasswordResult(ButtonType dialogResult, @Nullable char[] password, boolean rememberPassword) {
+	PasswordResult(ButtonType dialogResult, char @Nullable [] password, boolean rememberPassword) {
 		this.dialogResult = dialogResult;
 		this.password = password;
 		this.rememberPassword = rememberPassword;
@@ -40,8 +40,7 @@ final class PasswordResult {
 		return this.dialogResult;
 	}
 
-	@Nullable
-	public char[] password() {
+	public char @Nullable [] password() {
 		return this.password;
 	}
 

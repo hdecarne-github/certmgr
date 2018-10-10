@@ -22,8 +22,9 @@ import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.x509.PKCS10CertificateRequest;
-import de.carne.boot.check.Nullable;
 
 /**
  * {@code UserCertStoreHandler} derived classes provide the actual certificate storage functions used by a certificate

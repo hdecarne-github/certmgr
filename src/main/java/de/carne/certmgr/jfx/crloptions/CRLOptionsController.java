@@ -25,6 +25,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.CRLUpdatePeriod;
@@ -32,8 +35,6 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x509.ReasonFlag;
 import de.carne.certmgr.certs.x509.UpdateCRLRequest;
 import de.carne.certmgr.jfx.password.PasswordDialog;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.stage.StageController;

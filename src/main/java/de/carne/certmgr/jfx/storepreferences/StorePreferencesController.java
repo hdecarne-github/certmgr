@@ -20,6 +20,9 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.CRLUpdatePeriod;
@@ -29,8 +32,6 @@ import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.jfx.util.converter.CRLUpdatePeriodStringConverter;
 import de.carne.certmgr.jfx.util.converter.CRTValidityPeriodStringConverter;
 import de.carne.certmgr.util.Days;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;

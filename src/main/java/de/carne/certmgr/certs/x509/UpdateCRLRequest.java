@@ -22,8 +22,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
-import de.carne.boot.check.Nullable;
 
 /**
  * Parameter container for CRL updating.

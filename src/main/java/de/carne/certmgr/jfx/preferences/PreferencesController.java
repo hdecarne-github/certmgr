@@ -18,8 +18,9 @@ package de.carne.certmgr.jfx.preferences;
 
 import java.util.prefs.BackingStoreException;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.jfx.store.UserPreferences;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
 import de.carne.util.Late;

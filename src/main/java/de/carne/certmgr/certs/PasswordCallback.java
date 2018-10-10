@@ -16,7 +16,7 @@
  */
 package de.carne.certmgr.certs;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Callback interface used to query passwords on demand.
@@ -29,8 +29,7 @@ public interface PasswordCallback {
 	 * @param resource The resource requiring the password.
 	 * @return The provided password, or {@code null} if the password query was cancelled.
 	 */
-	@Nullable
-	char[] queryPassword(String resource);
+	char @Nullable [] queryPassword(String resource);
 
 	/**
 	 * This function is called whenever a password is requested again after a previously provided password was rejected.
@@ -39,7 +38,6 @@ public interface PasswordCallback {
 	 * @param cause The optional cause why the previous password was rejected.
 	 * @return The provided password or {@code null} if the password query was cancelled.
 	 */
-	@Nullable
-	char[] requeryPassword(String resource, Throwable cause);
+	char @Nullable [] requeryPassword(String resource, Throwable cause);
 
 }

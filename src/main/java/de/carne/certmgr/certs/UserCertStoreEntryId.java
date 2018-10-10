@@ -18,7 +18,8 @@ package de.carne.certmgr.certs;
 
 import java.util.Objects;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.util.Strings;
 
 /**

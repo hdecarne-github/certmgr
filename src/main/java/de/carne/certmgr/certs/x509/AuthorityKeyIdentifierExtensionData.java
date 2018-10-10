@@ -28,10 +28,10 @@ import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERTaggedObject;
+import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.certmgr.util.Bytes;
 import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
+import de.carne.certmgr.util.Bytes;
 import de.carne.util.Strings;
 
 /**
@@ -49,8 +49,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 */
 	public static final boolean CRITICAL_DEFAULT = false;
 
-	@Nullable
-	private final byte[] keyIdentifier;
+	private final byte @Nullable [] keyIdentifier;
 
 	@Nullable
 	private final GeneralNames authorityCertIssuer;
@@ -66,7 +65,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 * @param authorityCertIssuer The issuer's certificate name.
 	 * @param authorityCertSerialNumber The issuer's certificate serial number.
 	 */
-	public AuthorityKeyIdentifierExtensionData(boolean critical, @Nullable byte[] keyIdentifier,
+	public AuthorityKeyIdentifierExtensionData(boolean critical, byte @Nullable [] keyIdentifier,
 			@Nullable GeneralNames authorityCertIssuer, @Nullable BigInteger authorityCertSerialNumber) {
 		super(OID, critical);
 
@@ -122,8 +121,7 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 	 *
 	 * @return The issuer's key identifier.
 	 */
-	@Nullable
-	public byte[] getKeyIdentifier() {
+	public byte @Nullable [] getKeyIdentifier() {
 		return this.keyIdentifier;
 	}
 

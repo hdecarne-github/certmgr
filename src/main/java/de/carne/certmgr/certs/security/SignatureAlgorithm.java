@@ -19,7 +19,8 @@ package de.carne.certmgr.certs.security;
 import java.security.Provider;
 import java.security.Provider.Service;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.jfx.util.DefaultSet;
 
 /**
@@ -38,9 +39,9 @@ public abstract class SignatureAlgorithm extends AbstractAlgorithm {
 	 *
 	 * @param keyPairAlgorithm The key pair algorithm to get the signature algorithms for.
 	 * @param defaultHint The default to return (may be {@code null}). If this algorithm is contained in the default
-	 *        set, it is also set as the default.
+	 * set, it is also set as the default.
 	 * @param expertMode Whether only standard algorithms are considered ({@code false}) or all algorithms available on
-	 *        the current platform ({@code true}).
+	 * the current platform ({@code true}).
 	 * @return The available signature algorithms
 	 */
 	public static DefaultSet<SignatureAlgorithm> getDefaultSet(String keyPairAlgorithm, @Nullable String defaultHint,

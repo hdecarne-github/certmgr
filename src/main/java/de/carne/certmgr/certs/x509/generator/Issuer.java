@@ -16,11 +16,12 @@
  */
 package de.carne.certmgr.certs.x509.generator;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 
 /**
  * This class represents an available issuer for certificate signing.
@@ -66,7 +67,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 	 * Get the {@link UserCertStoreEntry} represented by this issuer.
 	 *
 	 * @return The {@link UserCertStoreEntry} represented by this issuer, or {@code null} if this issuer does not
-	 *         represent an actual store entry.
+	 * represent an actual store entry.
 	 */
 	@Nullable
 	public UserCertStoreEntry storeEntry() {

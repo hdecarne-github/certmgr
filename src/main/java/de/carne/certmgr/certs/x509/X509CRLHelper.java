@@ -40,13 +40,13 @@ import org.bouncycastle.cert.jcajce.JcaX509v2CRLBuilder;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.eclipse.jdt.annotation.Nullable;
 
+import de.carne.boot.Exceptions;
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertProviderException;
 import de.carne.certmgr.certs.security.SignatureAlgorithm;
 import de.carne.certmgr.certs.x500.X500Names;
-import de.carne.boot.check.Nullable;
-import de.carne.boot.Exceptions;
 
 /**
  * Utility class providing {@link X509CRL} related functions.

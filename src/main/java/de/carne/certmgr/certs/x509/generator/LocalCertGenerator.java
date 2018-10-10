@@ -24,6 +24,10 @@ import java.util.Date;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.Exceptions;
+import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
@@ -34,10 +38,7 @@ import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x509.GenerateCertRequest;
 import de.carne.certmgr.certs.x509.KeyHelper;
 import de.carne.certmgr.certs.x509.X509CertificateHelper;
-import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.jfx.util.DefaultSet;
-import de.carne.boot.Exceptions;
 
 /**
  * Generator service for self-sustaining CA management.

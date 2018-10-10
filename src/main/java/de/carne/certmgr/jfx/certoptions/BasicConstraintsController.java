@@ -18,8 +18,9 @@ package de.carne.certmgr.jfx.certoptions;
 
 import java.math.BigInteger;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.check.Check;
-import de.carne.boot.check.Nullable;
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;

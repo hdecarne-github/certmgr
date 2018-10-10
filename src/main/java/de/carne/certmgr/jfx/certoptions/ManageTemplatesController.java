@@ -19,7 +19,8 @@ package de.carne.certmgr.jfx.certoptions;
 import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.certmgr.jfx.resources.Images;
 import de.carne.jfx.scene.control.Alerts;
 import de.carne.jfx.scene.control.DialogController;
@@ -46,13 +47,12 @@ public class ManageTemplatesController extends DialogController<Void> implements
 	private final ListViewEditor<CertOptionsTemplates.Template> templatesEditor = new ListViewEditor<CertOptionsTemplates.Template>() {
 
 		@Override
-		@Nullable
-		protected CertOptionsTemplates.Template getInput() {
+		protected CertOptionsTemplates.@Nullable Template getInput() {
 			return getTemplateInput();
 		}
 
 		@Override
-		protected void setInput(@Nullable CertOptionsTemplates.Template input) {
+		protected void setInput(CertOptionsTemplates.@Nullable Template input) {
 			setTemplateInput(input);
 		}
 
@@ -60,8 +60,7 @@ public class ManageTemplatesController extends DialogController<Void> implements
 
 	private final Late<CertOptionsPreset> presetParam = new Late<>();
 
-	@Nullable
-	private CertOptionsTemplates.Template templateEditorSelection = null;
+	private CertOptionsTemplates.@Nullable Template templateEditorSelection = null;
 
 	@FXML
 	TextField ctlTemplateInput;
@@ -93,8 +92,7 @@ public class ManageTemplatesController extends DialogController<Void> implements
 		}
 	}
 
-	@Nullable
-	CertOptionsTemplates.Template getTemplateInput() {
+	CertOptionsTemplates.@Nullable Template getTemplateInput() {
 		CertOptionsTemplates.Template template = this.templateEditorSelection;
 
 		try {
@@ -111,7 +109,7 @@ public class ManageTemplatesController extends DialogController<Void> implements
 		return template;
 	}
 
-	void setTemplateInput(@Nullable CertOptionsTemplates.Template template) {
+	void setTemplateInput(CertOptionsTemplates.@Nullable Template template) {
 		this.templateEditorSelection = template;
 		this.ctlTemplateInput
 				.setText(this.templateEditorSelection != null ? this.templateEditorSelection.getName() : "");

@@ -40,7 +40,9 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 
-import de.carne.boot.check.Nullable;
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.Exceptions;
 import de.carne.boot.logging.Log;
 import de.carne.boot.prefs.FilePreferencesFactory;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -59,7 +61,6 @@ import de.carne.certmgr.certs.x509.SubjectAlternativeNameExtensionData;
 import de.carne.certmgr.certs.x509.SubjectKeyIdentifierExtensionData;
 import de.carne.certmgr.certs.x509.X509ExtensionData;
 import de.carne.certmgr.util.BooleanPreference;
-import de.carne.boot.Exceptions;
 import de.carne.util.Strings;
 
 /**
@@ -473,8 +474,7 @@ final class CertOptionsTemplates {
 					@Nullable
 					String oid = extensionNode.get(Template.KEY_EXTENSION_OID, null);
 					boolean criticial = extensionNode.getBoolean(Template.KEY_EXTENSION_CRITICAL, false);
-					@Nullable
-					byte[] data = extensionNode.getByteArray(Template.KEY_EXTENSION_DATA, null);
+					byte @Nullable [] data = extensionNode.getByteArray(Template.KEY_EXTENSION_DATA, null);
 
 					if (Strings.notEmpty(oid) && data != null) {
 						assert oid != null;

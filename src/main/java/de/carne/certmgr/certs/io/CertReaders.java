@@ -30,12 +30,13 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import org.eclipse.jdt.annotation.Nullable;
+
+import de.carne.boot.Exceptions;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.spi.CertReader;
 import de.carne.certmgr.util.ProviderMap;
-import de.carne.boot.check.Nullable;
-import de.carne.boot.Exceptions;
 
 /**
  * Utility class providing {@link CertReader} related functions.

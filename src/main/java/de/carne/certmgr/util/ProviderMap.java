@@ -22,9 +22,10 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.spi.NamedProvider;
-import de.carne.boot.check.Nullable;
 
 /**
  * Map like class providing access to named service providers of a specific type.
