@@ -19,10 +19,10 @@ package de.carne.certmgr.jfx.storepreferences;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.CRLUpdatePeriod;
@@ -132,7 +132,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				Path storeHome = validateStoreHomeInput();
 
 				this.storeParam.set(UserCertStore.createStore(storeHome));
-				this.storePreferencesParam.set(Check.notNull(this.storeParam.get().storePreferences()));
+				this.storePreferencesParam.set(Objects.requireNonNull(this.storeParam.get().storePreferences()));
 			} catch (ValidationException e) {
 				ValidationAlerts.error(e).showAndWait();
 				evt.consume();
@@ -194,10 +194,10 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	 */
 	public StorePreferencesController init(UserCertStore store, boolean expertMode) {
 		this.storeParam.set(store);
-		this.storePreferencesParam.set(Check.notNull(store.storePreferences()));
+		this.storePreferencesParam.set(Objects.requireNonNull(store.storePreferences()));
 		this.expertModeParam = expertMode;
 
-		Path storeHome = Check.notNull(store.storeHome());
+		Path storeHome = Objects.requireNonNull(store.storeHome());
 
 		this.ctlNameInput.setText(storeHome.getFileName().toString());
 		this.ctlNameInput.setDisable(true);

@@ -79,7 +79,7 @@ class BasicConstraintsPathLen implements Comparable<BasicConstraintsPathLen> {
 
 	@Override
 	public int compareTo(@Nullable BasicConstraintsPathLen o) {
-		BasicConstraintsPathLen checkedO = Check.notNull(o);
+		BasicConstraintsPathLen checkedO = Objects.requireNonNull(o);
 		BigInteger checkedPathLenConstraint = this.pathLenConstraint;
 		BigInteger checkedOPathLenConstraint = checkedO.pathLenConstraint;
 		int comparision;

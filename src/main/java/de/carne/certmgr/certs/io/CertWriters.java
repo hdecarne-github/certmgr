@@ -16,9 +16,10 @@
  */
 package de.carne.certmgr.certs.io;
 
+import java.util.Objects;
+
 import de.carne.certmgr.certs.spi.CertWriter;
 import de.carne.certmgr.util.ProviderMap;
-import de.carne.boot.check.Check;
 
 /**
  * Utility class providing {@link CertWriter} related functions.
@@ -37,6 +38,6 @@ public final class CertWriters {
 	/**
 	 * The default {@link CertWriter}.
 	 */
-	public static final CertWriter DEFAULT = Check.notNull(REGISTERED.get(PEMCertReaderWriter.PROVIDER_NAME));
+	public static final CertWriter DEFAULT = Objects.requireNonNull(REGISTERED.get(PEMCertReaderWriter.PROVIDER_NAME));
 
 }

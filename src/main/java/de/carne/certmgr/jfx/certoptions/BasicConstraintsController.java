@@ -17,10 +17,10 @@
 package de.carne.certmgr.jfx.certoptions;
 
 import java.math.BigInteger;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.x509.BasicConstraintsExtensionData;
 import de.carne.jfx.scene.control.Controls;
 import de.carne.jfx.scene.control.DialogController;
@@ -122,7 +122,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 
 		InputValidator.isTrue(pathLenConstraintValue == null || pathLenConstraintValue.compareTo(BigInteger.ZERO) >= 0,
 				BasicConstraintsI18N::formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT);
-		return Check.notNull(pathLenConstraintValue);
+		return Objects.requireNonNull(pathLenConstraintValue);
 	}
 
 	@Override

@@ -17,10 +17,9 @@
 package de.carne.certmgr.util;
 
 import java.time.Period;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
-
-import de.carne.boot.check.Check;
 
 /**
  * Utility class used to manage a period of days.
@@ -82,7 +81,7 @@ public class Days implements Comparable<Days> {
 
 	@Override
 	public int compareTo(@Nullable Days o) {
-		return count() - Check.notNull(o).count();
+		return count() - Objects.requireNonNull(o).count();
 	}
 
 	@Override

@@ -33,12 +33,12 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.io.IOResource;
 import de.carne.certmgr.certs.io.PEMCertReaderWriter;
@@ -124,7 +124,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	@Override
 	public CertObjectHolder<X509Certificate> createCRT(UserCertStoreEntryId id, X509Certificate crt)
 			throws IOException {
-		String alias = Check.notNull(id.getAlias());
+		String alias = Objects.requireNonNull(id.getAlias());
 		Path crtPath = entryPath(DIR_CRT, alias, EXTENSION_CRT);
 
 		Files.createDirectories(crtPath.getParent(), FileAttributes.userDirectoryDefault(storeHome()));
@@ -138,7 +138,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	@Override
 	public SecureCertObjectHolder<KeyPair> createKey(UserCertStoreEntryId id, KeyPair key, PasswordCallback newPassword)
 			throws IOException {
-		String alias = Check.notNull(id.getAlias());
+		String alias = Objects.requireNonNull(id.getAlias());
 		Path keyPath = entryPath(DIR_KEY, alias, EXTENSION_KEY);
 
 		Files.createDirectories(keyPath.getParent(), FileAttributes.userDirectoryDefault(storeHome()));
@@ -152,7 +152,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	@Override
 	public CertObjectHolder<PKCS10CertificateRequest> createCSR(UserCertStoreEntryId id, PKCS10CertificateRequest csr)
 			throws IOException {
-		String alias = Check.notNull(id.getAlias());
+		String alias = Objects.requireNonNull(id.getAlias());
 		Path csrPath = entryPath(DIR_CSR, alias, EXTENSION_CSR);
 
 		Files.createDirectories(csrPath.getParent(), FileAttributes.userDirectoryDefault(storeHome()));
@@ -165,7 +165,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 	@Override
 	public CertObjectHolder<X509CRL> createCRL(UserCertStoreEntryId id, X509CRL crl) throws IOException {
-		String alias = Check.notNull(id.getAlias());
+		String alias = Objects.requireNonNull(id.getAlias());
 		Path crlPath = entryPath(DIR_CRL, alias, EXTENSION_CRL);
 
 		Files.createDirectories(crlPath.getParent(), FileAttributes.userDirectoryDefault(storeHome()));
@@ -313,7 +313,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 			FileTime pathFileTime = Files.getLastModifiedTime(this.path);
 
 			if (object == null || !this.cachedFileTime.equals(pathFileTime)) {
-				try (IOResource<InputStream> in = IOResource.newInputStream(Check.notNull(this.id.getAlias()),
+				try (IOResource<InputStream> in = IOResource.newInputStream(Objects.requireNonNull(this.id.getAlias()),
 						this.path, StandardOpenOption.READ)) {
 					object = read(in);
 				}
@@ -345,7 +345,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 
 		@Override
 		public T get() throws IOException {
-			throw new PasswordRequiredException(Check.notNull(this.id.getAlias()));
+			throw new PasswordRequiredException(Objects.requireNonNull(this.id.getAlias()));
 		}
 
 		@Override
@@ -357,8 +357,8 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 		public T get(PasswordCallback password) throws IOException {
 			T object;
 
-			try (IOResource<InputStream> in = IOResource.newInputStream(Check.notNull(this.id.getAlias()), this.path,
-					StandardOpenOption.READ)) {
+			try (IOResource<InputStream> in = IOResource.newInputStream(Objects.requireNonNull(this.id.getAlias()),
+					this.path, StandardOpenOption.READ)) {
 				object = read(in, password);
 			}
 			return object;
@@ -371,11 +371,11 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentCRTEntry extends PersistentCertObjectHolder<X509Certificate> {
 
 		PersistentCRTEntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_CRT, Check.notNull(id.getAlias()), EXTENSION_CRT));
+			super(id, entryPath(DIR_CRT, Objects.requireNonNull(id.getAlias()), EXTENSION_CRT));
 		}
 
 		PersistentCRTEntry(UserCertStoreEntryId id, X509Certificate crt, FileTime crtFileTime) {
-			super(id, entryPath(DIR_CRT, Check.notNull(id.getAlias()), EXTENSION_CRT), crt, crtFileTime);
+			super(id, entryPath(DIR_CRT, Objects.requireNonNull(id.getAlias()), EXTENSION_CRT), crt, crtFileTime);
 		}
 
 		@Override
@@ -388,7 +388,7 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentKeyEntry extends PersistentSecureCertObjectHolder<KeyPair> {
 
 		PersistentKeyEntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_KEY, Check.notNull(id.getAlias()), EXTENSION_KEY));
+			super(id, entryPath(DIR_KEY, Objects.requireNonNull(id.getAlias()), EXTENSION_KEY));
 		}
 
 		@Override
@@ -401,11 +401,11 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentCSREntry extends PersistentCertObjectHolder<PKCS10CertificateRequest> {
 
 		PersistentCSREntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_CSR, Check.notNull(id.getAlias()), EXTENSION_CSR));
+			super(id, entryPath(DIR_CSR, Objects.requireNonNull(id.getAlias()), EXTENSION_CSR));
 		}
 
 		PersistentCSREntry(UserCertStoreEntryId id, PKCS10CertificateRequest csr, FileTime csrFileTime) {
-			super(id, entryPath(DIR_CSR, Check.notNull(id.getAlias()), EXTENSION_CSR), csr, csrFileTime);
+			super(id, entryPath(DIR_CSR, Objects.requireNonNull(id.getAlias()), EXTENSION_CSR), csr, csrFileTime);
 		}
 
 		@Override
@@ -418,11 +418,11 @@ class PersistentUserCertStoreHandler extends UserCertStoreHandler {
 	private class PersistentCRLEntry extends PersistentCertObjectHolder<X509CRL> {
 
 		PersistentCRLEntry(UserCertStoreEntryId id) {
-			super(id, entryPath(DIR_CRL, Check.notNull(id.getAlias()), EXTENSION_CRL));
+			super(id, entryPath(DIR_CRL, Objects.requireNonNull(id.getAlias()), EXTENSION_CRL));
 		}
 
 		PersistentCRLEntry(UserCertStoreEntryId id, X509CRL crl, FileTime crlFileTime) {
-			super(id, entryPath(DIR_CRL, Check.notNull(id.getAlias()), EXTENSION_CRL), crl, crlFileTime);
+			super(id, entryPath(DIR_CRL, Objects.requireNonNull(id.getAlias()), EXTENSION_CRL), crl, crlFileTime);
 		}
 
 		@Override

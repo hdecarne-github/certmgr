@@ -21,13 +21,13 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.security.auth.x500.X500Principal;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 import de.carne.boot.Exceptions;
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.PasswordCallback;
 import de.carne.certmgr.certs.UserCertStore;
@@ -100,7 +100,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 				keyPairAlgorithmName = keyPairAlgorithm.algorithm();
 			} else {
 				try {
-					keyPairAlgorithmName = Check.notNull(issuer.storeEntry()).getPublicKey().getAlgorithm();
+					keyPairAlgorithmName = Objects.requireNonNull(issuer.storeEntry()).getPublicKey().getAlgorithm();
 				} catch (IOException e) {
 					Exceptions.warn(e);
 				}
@@ -122,7 +122,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 		X500Principal dn = request.dn();
 
 		if (!this.selfSignedIssuer.equals(issuer)) {
-			UserCertStoreEntry issuerEntry = Check.notNull(issuer.storeEntry());
+			UserCertStoreEntry issuerEntry = Objects.requireNonNull(issuer.storeEntry());
 
 			serial = getNextSerial(issuerEntry);
 			issuerDN = issuerEntry.dn();

@@ -24,10 +24,10 @@ import java.security.cert.X509CRLEntry;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStorePreferences;
 import de.carne.certmgr.certs.security.CRLUpdatePeriod;
@@ -160,7 +160,7 @@ public class CRLOptionsController extends StageController {
 		this.issuerEntryParam.set(issuerEntry);
 		this.ctlIssuerField.setText(issuerEntry.getName());
 
-		UserCertStorePreferences preferences = Check.notNull(issuerEntry.store().storePreferences());
+		UserCertStorePreferences preferences = Objects.requireNonNull(issuerEntry.store().storePreferences());
 
 		initSigAlgOptions(preferences, expertModeParam);
 		initUpdateOptions(preferences);
@@ -197,7 +197,7 @@ public class CRLOptionsController extends StageController {
 
 		this.ctlLastUpdateInput.setValue(lastUpdate);
 
-		CRLUpdatePeriod defaultUpdatePeriod = Check.notNull(CRLUpdatePeriod.getDefaultSet(null).getDefault());
+		CRLUpdatePeriod defaultUpdatePeriod = Objects.requireNonNull(CRLUpdatePeriod.getDefaultSet(null).getDefault());
 		LocalDate nextUpdate = lastUpdate
 				.plusDays(preferences.defaultCRLUpdatePeriod.getInt(defaultUpdatePeriod.days().count()));
 

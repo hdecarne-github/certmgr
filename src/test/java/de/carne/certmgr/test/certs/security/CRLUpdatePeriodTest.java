@@ -17,6 +17,7 @@
 package de.carne.certmgr.test.certs.security;
 
 import java.security.Security;
+import java.util.Objects;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
@@ -25,7 +26,6 @@ import org.junit.Test;
 
 import de.carne.certmgr.certs.security.CRLUpdatePeriod;
 import de.carne.certmgr.util.Days;
-import de.carne.boot.check.Check;
 import de.carne.jfx.util.DefaultSet;
 
 /**
@@ -53,7 +53,7 @@ public class CRLUpdatePeriodTest {
 		for (CRLUpdatePeriod crlUpdatePeriod : crlUpdatePeriods) {
 			System.out.println(crlUpdatePeriod);
 		}
-		Assert.assertEquals(days42, Check.notNull(crlUpdatePeriods.getDefault()).days());
+		Assert.assertEquals(days42, Objects.requireNonNull(crlUpdatePeriods.getDefault()).days());
 	}
 
 }

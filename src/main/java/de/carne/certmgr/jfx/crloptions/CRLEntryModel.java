@@ -18,10 +18,10 @@ package de.carne.certmgr.jfx.crloptions;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.x509.Attributes;
 import de.carne.certmgr.certs.x509.ReasonFlag;
@@ -204,7 +204,7 @@ public class CRLEntryModel implements Comparable<CRLEntryModel> {
 
 	@Override
 	public int compareTo(@Nullable CRLEntryModel o) {
-		CRLEntryModel checkedO = Check.notNull(o);
+		CRLEntryModel checkedO = Objects.requireNonNull(o);
 		int comparison = this.nameProperty.get().compareTo(checkedO.nameProperty.get());
 
 		if (comparison == 0) {

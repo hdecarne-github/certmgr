@@ -16,9 +16,10 @@
  */
 package de.carne.certmgr.certs.x509.generator;
 
+import java.util.Objects;
+
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.util.ProviderMap;
-import de.carne.boot.check.Check;
 
 /**
  * Utility class providing {@link CertGenerator} related functions.
@@ -33,6 +34,7 @@ public final class CertGenerators {
 	/**
 	 * The default {@link CertGenerator}.
 	 */
-	public static final CertGenerator DEFAULT = Check.notNull(REGISTERED.get(LocalCertGenerator.PROVIDER_NAME));
+	public static final CertGenerator DEFAULT = Objects
+			.requireNonNull(REGISTERED.get(LocalCertGenerator.PROVIDER_NAME));
 
 }

@@ -20,11 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 import de.carne.boot.ShutdownHooks;
-import de.carne.boot.check.Check;
 import de.carne.boot.logging.Log;
 import de.carne.boot.logging.LogLevel;
 import de.carne.boot.logging.Logs;
@@ -68,7 +68,8 @@ public class CertMgrApplication extends Application {
 		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_ERROR, Images.ERROR16);
 		LogViewImages.LEVEL_IMAGES.registerImage(LogLevel.LEVEL_NOTICE, Images.NOTICE16);
 
-		StoreController store = StageController.loadPrimaryStage(Check.notNull(primaryStage), StoreController.class);
+		StoreController store = StageController.loadPrimaryStage(Objects.requireNonNull(primaryStage),
+				StoreController.class);
 
 		store.show();
 		if (defaultStoreHome != null) {

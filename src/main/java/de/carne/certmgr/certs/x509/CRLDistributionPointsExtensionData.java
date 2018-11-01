@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -27,7 +28,6 @@ import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERSequence;
 
-import de.carne.boot.check.Check;
 import de.carne.util.Strings;
 
 /**
@@ -116,7 +116,7 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 			if (fullName != null) {
 				valueString = Strings.join(fullName, ", ", Attributes.FORMAT_LIMIT_LONG);
 			} else {
-				valueString = Check.notNull(name.getRelativeName()).toString();
+				valueString = Objects.requireNonNull(name.getRelativeName()).toString();
 			}
 		}
 		if (crlIssuer != null) {

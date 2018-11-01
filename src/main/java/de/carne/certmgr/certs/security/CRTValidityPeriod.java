@@ -16,9 +16,10 @@
  */
 package de.carne.certmgr.certs.security;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.util.Days;
 import de.carne.jfx.util.DefaultSet;
 
@@ -50,7 +51,7 @@ public class CRTValidityPeriod extends AbstractPeriod {
 		if (defaultHint != null) {
 			crlUpdatePeriods.addDefault(new CRTValidityPeriod(defaultHint));
 		} else {
-			crlUpdatePeriods.addDefault(new CRTValidityPeriod(Check.notNull(defaultPeriods.getDefault())));
+			crlUpdatePeriods.addDefault(new CRTValidityPeriod(Objects.requireNonNull(defaultPeriods.getDefault())));
 		}
 		for (Days period : defaultPeriods) {
 			crlUpdatePeriods.add(new CRTValidityPeriod(period));

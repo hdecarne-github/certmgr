@@ -27,12 +27,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 import org.eclipse.jdt.annotation.Nullable;
 
 import de.carne.boot.Exceptions;
-import de.carne.boot.check.Check;
 import de.carne.boot.platform.Platform;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -197,7 +197,7 @@ public class CertExportController extends StageController {
 					@Override
 					protected void export(CertWriter format, @Nullable Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
-						exportToFile(format, Check.notNull(param), exportObjects, encryptExport);
+						exportToFile(format, Objects.requireNonNull(param), exportObjects, encryptExport);
 					}
 
 				});
@@ -210,7 +210,7 @@ public class CertExportController extends StageController {
 					@Override
 					protected void export(CertWriter format, @Nullable Path param, CertObjectStore exportObjects,
 							boolean encryptExport) throws IOException {
-						exportToDirectory(format, Check.notNull(param), exportObjects, encryptExport);
+						exportToDirectory(format, Objects.requireNonNull(param), exportObjects, encryptExport);
 					}
 
 				});

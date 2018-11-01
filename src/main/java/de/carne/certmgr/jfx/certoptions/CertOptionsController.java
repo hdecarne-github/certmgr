@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.prefs.Preferences;
@@ -30,7 +31,6 @@ import javax.security.auth.x500.X500Principal;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.UserCertStoreEntryId;
@@ -220,7 +220,7 @@ public class CertOptionsController extends StageController {
 		String aliasInput = Strings.safe(this.ctlAliasInput.getText());
 		String serial = CertOptionsTemplates.defaultSerial();
 
-		applyPreset(template.merge(aliasInput, Check.notNull(this.storeParam.get().storeName()), serial));
+		applyPreset(template.merge(aliasInput, Objects.requireNonNull(this.storeParam.get().storeName()), serial));
 	}
 
 	@SuppressWarnings("unused")
@@ -503,7 +503,7 @@ public class CertOptionsController extends StageController {
 	public CertOptionsController init(UserCertStore store, @Nullable UserCertStoreEntry issuerEntry,
 			boolean expertMode) {
 		this.storeParam.set(store);
-		this.storePreferencesParam.set(Check.notNull(store.storePreferences()));
+		this.storePreferencesParam.set(Objects.requireNonNull(store.storePreferences()));
 		this.storeEntryParam = issuerEntry;
 		this.expertModeParam = expertMode;
 		initExpertMode();
@@ -528,8 +528,8 @@ public class CertOptionsController extends StageController {
 
 		String serial = CertOptionsTemplates.defaultSerial();
 
-		this.ctlDNInput.setText(
-				CertOptionsTemplates.defaultDNInput(entryId.getAlias(), Check.notNull(store.storeName()), serial));
+		this.ctlDNInput.setText(CertOptionsTemplates.defaultDNInput(entryId.getAlias(),
+				Objects.requireNonNull(store.storeName()), serial));
 	}
 
 	private void initKeyAlgOptions() {

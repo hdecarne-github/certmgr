@@ -16,9 +16,10 @@
  */
 package de.carne.certmgr.certs.x509.generator;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.UserCertStoreEntry;
 import de.carne.certmgr.certs.spi.CertGenerator;
 import de.carne.certmgr.certs.x500.X500Names;
@@ -76,7 +77,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 
 	@Override
 	public int compareTo(@Nullable Issuer o) {
-		Issuer checkedO = Check.notNull(o);
+		Issuer checkedO = Objects.requireNonNull(o);
 
 		if (!generator().equals(checkedO.generator())) {
 			throw new IllegalArgumentException();

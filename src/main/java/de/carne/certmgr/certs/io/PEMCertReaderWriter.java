@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
+import java.util.Objects;
 
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -40,7 +41,6 @@ import org.bouncycastle.openssl.jcajce.JcePEMEncryptorBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.CertObjectStore;
 import de.carne.certmgr.certs.NoPassword;
@@ -64,7 +64,7 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 	 */
 	public static final String PROVIDER_NAME = "PEM";
 
-	private static final String PEM_ENCRYPTION = Check.notNull(
+	private static final String PEM_ENCRYPTION = Objects.requireNonNull(
 			SystemProperties.value(PEMCertReaderWriter.class.getPackage().getName() + ".encryption", "AES-128-CBC"));
 
 	private static final JcePEMEncryptorBuilder PEM_ENCRYPTOR_BUILDER = new JcePEMEncryptorBuilder(PEM_ENCRYPTION);

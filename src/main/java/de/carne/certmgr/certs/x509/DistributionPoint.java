@@ -17,6 +17,7 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1EncodableVector;
@@ -26,7 +27,6 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERTaggedObject;
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 
 /**
@@ -163,10 +163,12 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 			attributes.add(this.name);
 		}
 		if (this.reasons != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_REASONS()).add(Check.notNull(this.reasons));
+			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_REASONS())
+					.add(Objects.requireNonNull(this.reasons));
 		}
 		if (this.crlIssuer != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_CRLISSUER()).add(Check.notNull(this.crlIssuer));
+			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_CRLISSUER())
+					.add(Objects.requireNonNull(this.crlIssuer));
 		}
 	}
 

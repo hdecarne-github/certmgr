@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -52,11 +53,11 @@ public class Attributes {
 		@Override
 		public StringBuffer format(@Nullable Object obj, @Nullable StringBuffer toAppendTo,
 				@Nullable FieldPosition pos) {
-			StringBuffer formatBuffer = Check.notNull(toAppendTo);
+			StringBuffer formatBuffer = Objects.requireNonNull(toAppendTo);
 
 			formatBuffer.append("0x");
 
-			BigInteger serial = (BigInteger) Check.notNull(obj);
+			BigInteger serial = (BigInteger) Objects.requireNonNull(obj);
 
 			formatBuffer.append(serial.toString(16).toUpperCase());
 			return formatBuffer;

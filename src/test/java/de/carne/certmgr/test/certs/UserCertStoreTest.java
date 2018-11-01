@@ -29,6 +29,7 @@ import java.security.cert.X509Extension;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.prefs.BackingStoreException;
 import java.util.stream.Collectors;
@@ -44,7 +45,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.carne.boot.Exceptions;
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.NoPassword;
 import de.carne.certmgr.certs.UserCertStore;
 import de.carne.certmgr.certs.UserCertStoreEntry;
@@ -157,9 +157,10 @@ public class UserCertStoreTest {
 	}
 
 	private GenerateCertRequest basicRequest() {
-		KeyPairAlgorithm keyPairAlgorithm = Check.notNull(KeyPairAlgorithm.getDefaultSet(null, false).getDefault());
+		KeyPairAlgorithm keyPairAlgorithm = Objects
+				.requireNonNull(KeyPairAlgorithm.getDefaultSet(null, false).getDefault());
 		GenerateCertRequest request = new GenerateCertRequest(X500Names.fromString("CN=TestCert"), keyPairAlgorithm,
-				Check.notNull(keyPairAlgorithm.getStandardKeySizes(null).getDefault()));
+				Objects.requireNonNull(keyPairAlgorithm.getStandardKeySizes(null).getDefault()));
 
 		Date notBefore = new Date();
 		Date notAfter = new Date(notBefore.getTime() + 1000 * 60 * 24);
@@ -176,7 +177,7 @@ public class UserCertStoreTest {
 			request.setIssuer(generator.getIssuers(store, null).getDefault());
 		}
 		if (generator.hasFeature(CertGenerator.Feature.CUSTOM_SIGNATURE_ALGORITHM)) {
-			request.setSignatureAlgorithm(Check.notNull(
+			request.setSignatureAlgorithm(Objects.requireNonNull(
 					generator.getSignatureAlgorithms(request.getIssuer(), request.keyPairAlgorithm(), null, false)
 							.getDefault()));
 		}
@@ -198,7 +199,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(1, traverseStore(store.getRootEntries()));
 
 			// Check preferences access
-			UserCertStorePreferences loadPreferences = Check.notNull(store.storePreferences());
+			UserCertStorePreferences loadPreferences = Objects.requireNonNull(store.storePreferences());
 
 			Assert.assertEquals(Integer.valueOf(365), loadPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(30), loadPreferences.defaultCRLUpdatePeriod.get());
@@ -206,7 +207,7 @@ public class UserCertStoreTest {
 			Assert.assertEquals(Integer.valueOf(384), loadPreferences.defaultKeySize.get());
 			Assert.assertEquals("SHA256WITHECDSA", loadPreferences.defaultSignatureAlgorithm.get());
 
-			UserCertStorePreferences setPreferences = Check.notNull(store.storePreferences());
+			UserCertStorePreferences setPreferences = Objects.requireNonNull(store.storePreferences());
 
 			setPreferences.defaultCRTValidityPeriod.putInt(180);
 			setPreferences.defaultCRLUpdatePeriod.putInt(7);
@@ -215,7 +216,7 @@ public class UserCertStoreTest {
 			setPreferences.defaultSignatureAlgorithm.put("SHA256WITHECDSA");
 			setPreferences.sync();
 
-			UserCertStorePreferences getPreferences = Check.notNull(store.storePreferences());
+			UserCertStorePreferences getPreferences = Objects.requireNonNull(store.storePreferences());
 
 			Assert.assertEquals(Integer.valueOf(180), getPreferences.defaultCRTValidityPeriod.get());
 			Assert.assertEquals(Integer.valueOf(7), getPreferences.defaultCRLUpdatePeriod.get());

@@ -17,6 +17,7 @@
 package de.carne.certmgr.certs.x509;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -26,7 +27,6 @@ import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DERTaggedObject;
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.asn1.ASN1Data;
 import de.carne.certmgr.certs.x500.X500Names;
 
@@ -117,7 +117,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 			encoded = new DERTaggedObject(false, 0, this.fullName.encode());
 		} else {
 			encoded = new DERTaggedObject(false, 1,
-					ASN1Primitive.fromByteArray(Check.notNull(this.nameRelativeToCRLIssuer).getEncoded()));
+					ASN1Primitive.fromByteArray(Objects.requireNonNull(this.nameRelativeToCRLIssuer).getEncoded()));
 		}
 		return encoded;
 	}
@@ -129,7 +129,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 		}
 		if (this.nameRelativeToCRLIssuer != null) {
 			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINTNAME_NAMERELATIVETOCRLISSUER(),
-					X500Names.toString(Check.notNull(this.nameRelativeToCRLIssuer)));
+					X500Names.toString(Objects.requireNonNull(this.nameRelativeToCRLIssuer)));
 		}
 	}
 

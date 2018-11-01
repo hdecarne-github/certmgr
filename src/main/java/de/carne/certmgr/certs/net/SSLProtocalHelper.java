@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -34,7 +35,6 @@ import javax.net.ssl.SSLSocketFactory;
 import org.eclipse.jdt.annotation.Nullable;
 
 import de.carne.boot.Exceptions;
-import de.carne.boot.check.Check;
 import de.carne.boot.logging.Log;
 
 abstract class SSLProtocalHelper implements AutoCloseable {
@@ -96,7 +96,7 @@ abstract class SSLProtocalHelper implements AutoCloseable {
 	}
 
 	private Socket getPlainSocket() throws IOException {
-		Socket checkedPlainSocket = Check.notNull(this.plainSocket);
+		Socket checkedPlainSocket = Objects.requireNonNull(this.plainSocket);
 
 		if (this.outputStream == null && this.inputStream == null) {
 			checkedPlainSocket.setSoTimeout(SSLPeer.SOCKET_TIMEOUT);

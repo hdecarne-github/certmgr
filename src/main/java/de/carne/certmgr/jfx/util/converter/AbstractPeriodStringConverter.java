@@ -17,12 +17,12 @@
 package de.carne.certmgr.jfx.util.converter;
 
 import java.time.Period;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.certmgr.certs.security.AbstractPeriod;
 import de.carne.certmgr.util.Days;
 import de.carne.util.Strings;
@@ -66,7 +66,7 @@ public abstract class AbstractPeriodStringConverter<T extends AbstractPeriod> ex
 
 	@Override
 	public String toString(@Nullable T object) {
-		Days days = Check.notNull(object).days();
+		Days days = Objects.requireNonNull(object).days();
 
 		return days.toLocalizedString() + " [" + days.toString() + "]";
 	}

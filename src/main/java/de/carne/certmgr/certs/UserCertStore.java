@@ -35,13 +35,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
 import org.eclipse.jdt.annotation.Nullable;
 
-import de.carne.boot.check.Check;
 import de.carne.boot.logging.Log;
 import de.carne.certmgr.certs.io.CertReaders;
 import de.carne.certmgr.certs.io.JKSCertReaderWriter;
@@ -737,7 +737,7 @@ public final class UserCertStore {
 	}
 
 	Entry resolveIssuer(Entry entry) {
-		return Check.notNull(this.issuerCache.get(entry));
+		return Objects.requireNonNull(this.issuerCache.get(entry));
 	}
 
 	private class Entry extends UserCertStoreEntry {
