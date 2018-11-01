@@ -111,9 +111,20 @@ eclipse {
 		downloadJavadoc = true
 		file {
 			whenMerged {
-				def jre = entries.find { it.path.contains "org.eclipse.jdt.launching.JRE_CONTAINER" }
-				
-				jre.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule("0", "javafx/**"))
+				def eeaPath = project.findProperty("eclipse.eeaPath");
+				 
+				entries.forEach {
+					if(it.path.startsWith("org.eclipse.jdt.launching.JRE_CONTAINER")) {
+						it.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule("0", "javafx/**"))
+						if(eeaPath != null) {
+							it.entryAttributes.put("annotationpath", eeaPath)
+						}
+					} else if(it.path.contains("/caches/modules-2/")) {
+						if(eeaPath != null) {
+							it.entryAttributes.put("annotationpath", eeaPath)
+						}
+					}
+				}
 			}
 		}
 	}
