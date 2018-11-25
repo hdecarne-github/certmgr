@@ -1,5 +1,8 @@
 language: java
 
+env:
+  JAVA_OPTS="-Xmx2g -Dfile.encoding=UTF-8"
+
 jdk:
   - oraclejdk8
 
