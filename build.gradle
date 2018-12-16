@@ -7,7 +7,7 @@ buildscript {
 	}
 	dependencies {
 		classpath("de.carne:java-gradleplugins:0.4.0")
-		classpath("gradle.plugin.install4j.install4j:gradle_plugin:7.0.7")
+		classpath("gradle.plugin.install4j.install4j:gradle_plugin:7.0.8")
 	}
 }
 
@@ -100,8 +100,15 @@ task assembleMedia(type: com.install4j.gradle.Install4jTask, dependsOn: assemble
 		i4jProjectName: project.name,
 		i4jProjectVersion: version,
 		i4jProjectBaseDir: projectDir,
-		i4jProjectBuildDir: buildDir
+		i4jProjectBuildDir: buildDir,
+		i4jProjectSigningDir: file(project.hasProperty("install4jSigningHome") ? install4jSigningHome : ".")
 	]
+	if(project.hasProperty("install4jSigningPassword")) {
+		disableSigning = false
+		macKeystorePassword = install4jSigningPassword
+	} else {
+		disableSigning = true
+	}
 	quiet = true		
 }
 

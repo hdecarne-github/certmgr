@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="7.0.7" transformSequenceNumber="7">
+<install4j version="7.0.8" transformSequenceNumber="7">
   <directoryPresets config="${compiler:i4jProjectBuildDir}/libs/${compiler:sys.shortName}-${compiler:sys.version}.jar" />
   <application name="${compiler:i4jProjectFullName}" distributionSourceDir="" applicationId="6863-0001-6800-2736" mediaDir="${compiler:i4jProjectBuildDir}/distributions" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_${compiler:sys.version}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="${compiler:i4jProjectName}" publisher="" publisherWeb="${compiler:i4jProjectUrl}" version="${compiler:i4jProjectVersion}" allPathsRelative="true" backupOnSave="false" autoSave="false" convertDotsToUnderscores="true" macSignature="????" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" javaMaxVersion="" allowBetaVM="false" jdkMode="jdk" jdkName="JDK 1.8">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
@@ -22,9 +22,10 @@
       <variable name="i4jProjectDescription" value="X.509 Certificate Management Application" description="" category="" />
       <variable name="i4jProjectUrl" value="http://certmgr.carne.de" description="" category="" />
       <variable name="i4jProjectFullName" value="Certificate Manager" description="" category="" />
+      <variable name="i4jProjectSigningDir" value="." description="" category="" />
     </variables>
     <mergedProjects />
-    <codeSigning macEnabled="false" macPkcs12File="" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" windowsPkcs11Library="" windowsPkcs11Slot="">
+    <codeSigning macEnabled="true" macPkcs12File="${compiler:i4jProjectSigningDir}/Developer_ID_Application.pkcs12" windowsEnabled="false" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="" windowsPkcs11Library="" windowsPkcs11Slot="">
       <windowsKeystoreIdentifier issuer="" serial="" subject="" />
       <windowsPkcs11Identifier issuer="" serial="" subject="" />
     </codeSigning>
