@@ -18,7 +18,7 @@
       <variable name="i4jProjectVersion" value="1.1.0" description="" category="" />
       <variable name="i4jProjectBuildDir" value="${compiler:i4jProjectBaseDir}/build" description="" category="" />
       <variable name="i4jProjectBaseDir" value="../../.." description="" category="" />
-      <variable name="i4lProjectCopyright" value="Copyright © 2015-2018 Holger de Carne and contributors, All Rights Reserved." description="" category="" />
+      <variable name="i4lProjectCopyright" value="Copyright © 2015-2019 Holger de Carne and contributors, All Rights Reserved." description="" category="" />
       <variable name="i4jProjectDescription" value="X.509 Certificate Management Application" description="" category="" />
       <variable name="i4jProjectUrl" value="http://certmgr.carne.de" description="" category="" />
       <variable name="i4jProjectFullName" value="Certificate Manager" description="" category="" />
