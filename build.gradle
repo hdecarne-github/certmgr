@@ -33,7 +33,7 @@ repositories {
 
 dependencies {
 	configurations.runtime.exclude(group: "org.eclipse.jdt", module: "org.eclipse.jdt.annotation")
-	implementation(group: "de.carne.common", name: "java-default", version: "8.7.0-SNAPSHOT")
+	implementation(group: "de.carne.common", name: "java-default", version: "8.7.0")
 	
 	implementation(group: "de.carne", name: "java-jfx", version: "8.3.0-SNAPSHOT")
 	implementation(group: "org.bouncycastle", name: "bcpkix-jdk15on", version: "1.60")
