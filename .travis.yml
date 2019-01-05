@@ -12,7 +12,7 @@ os:
 git:
   depth: false  
 
-install: ./gradlew --refresh-dependencies clean assemble
+install: ./gradlew --refresh-dependencies --stacktrace clean assemble testClasses
 
 script: ./gradlew --stacktrace build
 
