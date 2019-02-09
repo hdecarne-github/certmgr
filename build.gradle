@@ -56,9 +56,9 @@ jar {
 	
 	manifest {
 		attributes(
-			"X-Application-Name" : project.name,
-			"X-Application-Version": version,
-			"X-Application-Build" : buildTimestamp
+			"X-Module-Name" : project.name,
+			"X-Module-Version": version,
+			"X-Module-Build" : buildTimestamp
 		)
 	}
 }
