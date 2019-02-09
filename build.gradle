@@ -32,13 +32,13 @@ repositories {
 }
 
 dependencies {
-	configurations.runtime.exclude(group: "org.eclipse.jdt", module: "org.eclipse.jdt.annotation")
-	implementation(group: "de.carne.common", name: "java-default", version: "8.7.0")
+	compileOnly(group: "org.eclipse.jdt", name: "org.eclipse.jdt.annotation", version: project.annotationVersion)
+	testCompileOnly(group: "org.eclipse.jdt", name: "org.eclipse.jdt.annotation", version: project.annotationVersion)
 	
-	implementation(group: "de.carne", name: "java-jfx", version: "8.3.0")
-	implementation(group: "org.bouncycastle", name: "bcpkix-jdk15on", version: "1.60")
+	implementation(group: "de.carne", name: "java-jfx", version: project.javaJfxVersion)
+	implementation(group: "org.bouncycastle", name: "bcpkix-jdk15on", version: project.bouncycastleVersion)
 
-	testImplementation(group: "junit", name: "junit", version: "4.12")
+	testImplementation(group: "junit", name: "junit", version: project.junitVersion)
 }
 
 jacocoTestReport {
