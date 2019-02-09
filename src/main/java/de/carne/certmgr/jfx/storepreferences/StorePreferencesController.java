@@ -111,7 +111,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		Integer keySizeDefaultHint = null;
 		String sigAlgDefaultHint = null;
 
-		if (this.storePreferencesParam.toOptional().isPresent()) {
+		if (this.storePreferencesParam.getOptional().isPresent()) {
 			UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
 
 			if (keyAlg.algorithm().equals(storePreferences.defaultKeyPairAlgorithm.get())) {
@@ -127,7 +127,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	}
 
 	private void onApply(ActionEvent evt) {
-		if (!this.storeParam.toOptional().isPresent()) {
+		if (!this.storeParam.getOptional().isPresent()) {
 			try {
 				Path storeHome = validateStoreHomeInput();
 
@@ -141,7 +141,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 				evt.consume();
 			}
 		}
-		if (this.storePreferencesParam.toOptional().isPresent()) {
+		if (this.storePreferencesParam.getOptional().isPresent()) {
 			try {
 				UserCertStorePreferences storePreferences = this.storePreferencesParam.get();
 
@@ -228,7 +228,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefCRTValidityPeriods() {
 		Days defaultHint = null;
 
-		if (this.storePreferencesParam.toOptional().isPresent()) {
+		if (this.storePreferencesParam.getOptional().isPresent()) {
 			defaultHint = new Days(this.storePreferencesParam.get().defaultCRTValidityPeriod.getInt(0));
 		}
 		Controls.resetComboBoxOptions(this.ctlDefCRTValidityInput, CRTValidityPeriod.getDefaultSet(defaultHint),
@@ -238,7 +238,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefCRLUpdatePeriods() {
 		Days defaultHint = null;
 
-		if (this.storePreferencesParam.toOptional().isPresent()) {
+		if (this.storePreferencesParam.getOptional().isPresent()) {
 			defaultHint = new Days(this.storePreferencesParam.get().defaultCRLUpdatePeriod.getInt(0));
 		}
 		Controls.resetComboBoxOptions(this.ctlDefCRLUpdateInput, CRLUpdatePeriod.getDefaultSet(defaultHint),
@@ -248,7 +248,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	private void initDefKeyAlgOptions() {
 		String defaultHint = null;
 
-		if (this.storePreferencesParam.toOptional().isPresent()) {
+		if (this.storePreferencesParam.getOptional().isPresent()) {
 			defaultHint = this.storePreferencesParam.get().defaultKeyPairAlgorithm.get();
 		}
 		Controls.resetComboBoxOptions(this.ctlDefKeyAlgOption,
@@ -259,7 +259,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 	@Override
 	@Nullable
 	public UserCertStore call(@Nullable ButtonType param) {
-		return this.storeParam.toOptional().orElse(null);
+		return this.storeParam.getOptional().orElse(null);
 	}
 
 	private Path validateStoreHomeInput() throws ValidationException {
