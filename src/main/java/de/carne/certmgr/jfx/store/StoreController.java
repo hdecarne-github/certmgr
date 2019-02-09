@@ -63,6 +63,7 @@ import de.carne.jfx.stage.Windows;
 import de.carne.jfx.stage.logview.LogViewController;
 import de.carne.util.Debug;
 import de.carne.util.Lazy;
+import de.carne.util.ManifestInfos;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -546,6 +547,7 @@ public class StoreController extends StageController {
 		try {
 			AboutInfoController aboutInfo = AboutInfoDialog.load(this).setLogo(Images.STORE32);
 
+			aboutInfo.setModuleInfo(new ManifestInfos("certmgr"));
 			aboutInfo.addInfo(getClass().getResource("AboutInfo1.txt"));
 			aboutInfo.addInfo(getClass().getResource("AboutInfo2.txt"));
 			aboutInfo.addInfo(getClass().getResource("AboutInfo3.txt"));
@@ -558,8 +560,8 @@ public class StoreController extends StageController {
 	@SuppressWarnings("unused")
 	@FXML
 	void onStoreViewItemMouseEntered(MouseEvent evt) {
-		@SuppressWarnings("unchecked")
-		TreeTableCell<StoreEntryModel, String> cell = (TreeTableCell<StoreEntryModel, String>) evt.getSource();
+		@SuppressWarnings("unchecked") TreeTableCell<StoreEntryModel, String> cell = (TreeTableCell<StoreEntryModel, String>) evt
+				.getSource();
 		UserCertStoreEntry entry = cell.getTreeTableRow().getItem().getEntry();
 
 		this.ctlStoreEntryTooltipExternalCrt.setVisible(entry.isExternal());
