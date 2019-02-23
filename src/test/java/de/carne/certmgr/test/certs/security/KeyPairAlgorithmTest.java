@@ -77,26 +77,30 @@ public class KeyPairAlgorithmTest {
 		Assert.assertTrue(algorithms.contains(algorithms.getDefault()));
 		for (KeyPairAlgorithm algorithm : algorithms) {
 			System.out.println("Algorithm: " + algorithm);
-			try {
-				KeyPairGenerator generator = algorithm.getInstance();
-				DefaultSet<Integer> keySizes = algorithm.getStandardKeySizes(null);
+			if (!algorithm.algorithm().startsWith("OID.")) {
+				try {
+					KeyPairGenerator generator = algorithm.getInstance();
+					DefaultSet<Integer> keySizes = algorithm.getStandardKeySizes(null);
 
-				if (keySizes.size() > 0) {
-					Integer defaultKeySize = keySizes.getDefault();
+					if (keySizes.size() > 0) {
+						Integer defaultKeySize = keySizes.getDefault();
 
-					Assert.assertTrue(keySizes.contains(defaultKeySize));
-					for (Integer keySize : keySizes) {
-						System.out.println("Key size: " + keySize);
-						try {
-							generator.initialize(keySize);
-						} catch (InvalidParameterException e) {
-							Assert.fail("Cannot get initialize algorithm '" + algorithm + "' with key size " + keySize
-									+ ": " + e.getMessage());
+						Assert.assertTrue(keySizes.contains(defaultKeySize));
+						for (Integer keySize : keySizes) {
+							System.out.println("Key size: " + keySize);
+							try {
+								generator.initialize(keySize);
+							} catch (InvalidParameterException e) {
+								Assert.fail("Cannot get initialize algorithm '" + algorithm + "' with key size "
+										+ keySize + ": " + e.getMessage());
+							}
 						}
 					}
+				} catch (GeneralSecurityException e) {
+					Assert.fail("Cannot get instance for algorithm '" + algorithm + "': " + e.getMessage());
 				}
-			} catch (GeneralSecurityException e) {
-				Assert.fail("Cannot get instance for algorithm '" + algorithm + "': " + e.getMessage());
+			} else {
+				System.out.println("<not tested>");
 			}
 		}
 	}
