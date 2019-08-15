@@ -9,6 +9,8 @@ jdk:
 os:
   - linux
 
+dist: trusty
+
 git:
   depth: false  
 
