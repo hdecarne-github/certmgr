@@ -131,7 +131,7 @@ public class CRLDistributionPointsExtensionData extends X509ExtensionData implem
 		int nameIndex = 0;
 
 		for (DistributionPoint distributionPoint : this.distributionPoints) {
-			extensionAttributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT(nameIndex), null).add(distributionPoint);
+			extensionAttributes.add(AttributesI18N.strDistributionpoint(nameIndex), null).add(distributionPoint);
 			nameIndex++;
 		}
 		return extensionAttributes;

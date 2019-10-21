@@ -145,7 +145,7 @@ public class CertExportController extends StageController {
 		if (writer != null) {
 			extensionFilters.add(new ExtensionFilter(writer.fileType(), writer.fileExtensionPatterns()));
 		}
-		extensionFilters.add(FileChooserHelper.filterFromString(CertExportI18N.formatSTR_FILTER_ALLFILES()));
+		extensionFilters.add(FileChooserHelper.filterFromString(CertExportI18N.strFilterAllfiles()));
 		chooser.getExtensionFilters().addAll(extensionFilters);
 		chooser.setSelectedExtensionFilter(extensionFilters.get(0));
 		chooser.setInitialDirectory(this.preferenceInitalDirectory.getValueAsFile());
@@ -239,7 +239,7 @@ public class CertExportController extends StageController {
 
 	@Override
 	protected void setupStage(Stage stage) {
-		stage.setTitle(CertExportI18N.formatSTR_STAGE_TITLE());
+		stage.setTitle(CertExportI18N.strStageTitle());
 		this.ctlFileDestinationInput.disableProperty()
 				.bind(Bindings.not(this.ctlFileDestinationOption.selectedProperty()));
 		this.cmdChooseFileDestinationButton.disableProperty()
@@ -295,13 +295,12 @@ public class CertExportController extends StageController {
 	}
 
 	private CertWriter validateAndGetFormat() throws ValidationException {
-		CertWriter writer = InputValidator.notNull(this.ctlFormatOption.getValue(),
-				CertExportI18N::formatSTR_MESSAGE_NO_FORMAT);
+		CertWriter writer = InputValidator.notNull(this.ctlFormatOption.getValue(), CertExportI18N::strMessageNoFormat);
 
 		InputValidator.isTrue(this.ctlEncryptOption.isSelected() || !writer.isEncryptionRequired(),
-				(a) -> CertExportI18N.formatSTR_MESSAGE_ENCRYPTION_REQUIRED(writer.providerName()));
+				a -> CertExportI18N.strMessageEncryptionRequired(writer.providerName()));
 		InputValidator.isTrue(!this.ctlClipboardDestinationOption.isSelected() || writer.isCharWriter(),
-				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_CHARACTER_FORMAT(writer.providerName()));
+				a -> CertExportI18N.strMessageNoCharacterFormat(writer.providerName()));
 
 		int exportObjectCount = 0;
 
@@ -322,25 +321,22 @@ public class CertExportController extends StageController {
 		if (this.ctlExportCRLOption.isSelected()) {
 			exportObjectCount++;
 		}
-		InputValidator.isTrue(exportObjectCount > 0,
-				(a) -> CertExportI18N.formatSTR_MESSAGE_NO_EXPORT(writer.providerName()));
+		InputValidator.isTrue(exportObjectCount > 0, a -> CertExportI18N.strMessageNoExport(writer.providerName()));
 		return writer;
 	}
 
 	private Path validateFileDestinationInput() throws ValidationException {
 		String fileDestinationInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileDestinationInput.getText()),
-				CertExportI18N::formatSTR_MESSAGE_NO_FILE);
+				CertExportI18N::strMessageNoFile);
 
-		return PathValidator.isPath(fileDestinationInput, CertExportI18N::formatSTR_MESSAGE_INVALID_FILE);
+		return PathValidator.isPath(fileDestinationInput, CertExportI18N::strMessageInvalidFile);
 	}
 
 	private Path validateDirectoryDestinationInput() throws ValidationException {
 		String directoryDestinationInput = InputValidator.notEmpty(
-				Strings.safeTrim(this.ctlDirectoryDestinationInput.getText()),
-				CertExportI18N::formatSTR_MESSAGE_NO_DIRECTORY);
+				Strings.safeTrim(this.ctlDirectoryDestinationInput.getText()), CertExportI18N::strMessageNoDirectory);
 
-		return PathValidator.isDirectoryPath(directoryDestinationInput,
-				CertExportI18N::formatSTR_MESSAGE_INVALID_DIRECTORY);
+		return PathValidator.isDirectoryPath(directoryDestinationInput, CertExportI18N::strMessageInvalidDirectory);
 	}
 
 	void exportToFile(CertWriter format, Path file, CertObjectStore exportObjects, boolean encryptExport)
@@ -399,7 +395,7 @@ public class CertExportController extends StageController {
 	void exportToClipboard(CertWriter format, CertObjectStore exportObjects, boolean encryptExport) throws IOException {
 		StringWriter text = new StringWriter();
 
-		try (IOResource<Writer> out = new IOResource<>(text, CertExportI18N.formatSTR_TEXT_CLIPBOARD())) {
+		try (IOResource<Writer> out = new IOResource<>(text, CertExportI18N.strTextClipboard())) {
 			if (encryptExport) {
 				format.writeEncryptedString(out, exportObjects, PasswordDialog.enterNewPassword(this));
 			} else {

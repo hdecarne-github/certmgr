@@ -131,7 +131,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 
 	@Override
 	protected void setupDialog(Dialog<SubjectAlternativeNameExtensionData> dialog) {
-		dialog.setTitle(SubjectAlternativeNameI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(SubjectAlternativeNameI18N.strStageTitle());
 		this.namesEditor.init(this.ctlNames).setAddCommand(this.cmdAddName).setApplyCommand(this.cmdApplyName)
 				.setDeleteCommand(this.cmdDeleteName).setMoveUpCommand(this.cmdMoveNameUp)
 				.setMoveDownCommand(this.cmdMoveNameDown);
@@ -186,7 +186,7 @@ public class SubjectAlternativeNameController extends DialogController<SubjectAl
 			names.addName(name);
 			nameCount++;
 		}
-		InputValidator.isTrue(nameCount > 0, SubjectAlternativeNameI18N::formatSTR_MESSAGE_NO_NAMES);
+		InputValidator.isTrue(nameCount > 0, SubjectAlternativeNameI18N::strMessageNoNames);
 		return names;
 	}
 

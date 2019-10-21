@@ -240,11 +240,11 @@ public class PKCS10CertificateRequest extends ASN1Data implements X509Extension,
 
 	@Override
 	public Attributes toAttributes() {
-		Attributes csrAttributes = new Attributes(AttributesI18N.formatSTR_CSR());
+		Attributes csrAttributes = new Attributes(AttributesI18N.strCsr());
 
-		csrAttributes.add(AttributesI18N.formatSTR_CSR_SIGALG(), getSigAlgName());
-		csrAttributes.add(AttributesI18N.formatSTR_CSR_SUBJECTDN(), X500Names.toString(getSubjectX500Principal()));
-		csrAttributes.add(AttributesI18N.formatSTR_CSR_PUBLICKEY(), KeyHelper.toString(getPublicKey()));
+		csrAttributes.add(AttributesI18N.strCsrSigalg(), getSigAlgName());
+		csrAttributes.add(AttributesI18N.strCsrSubjectdn(), X500Names.toString(getSubjectX500Principal()));
+		csrAttributes.add(AttributesI18N.strCsrPublickey(), KeyHelper.toString(getPublicKey()));
 		X509ExtensionHelper.addAttributes(csrAttributes, this);
 		return csrAttributes;
 	}

@@ -163,12 +163,10 @@ public class DistributionPoint extends ASN1Data implements AttributesContent {
 			attributes.add(this.name);
 		}
 		if (this.reasons != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_REASONS())
-					.add(Objects.requireNonNull(this.reasons));
+			attributes.add(AttributesI18N.strDistributionpointReasons()).add(Objects.requireNonNull(this.reasons));
 		}
 		if (this.crlIssuer != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINT_CRLISSUER())
-					.add(Objects.requireNonNull(this.crlIssuer));
+			attributes.add(AttributesI18N.strDistributionpointCrlissuer()).add(Objects.requireNonNull(this.crlIssuer));
 		}
 	}
 

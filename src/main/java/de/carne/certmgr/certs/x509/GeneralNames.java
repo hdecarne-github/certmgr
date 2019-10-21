@@ -81,7 +81,7 @@ public class GeneralNames extends ASN1Data implements Iterable<GeneralName>, Att
 		int nameIndex = 0;
 
 		for (GeneralName name : this.names) {
-			attributes.add(AttributesI18N.formatSTR_GENERALNAME(nameIndex), name.toString());
+			attributes.add(AttributesI18N.strGeneralname(nameIndex), name.toString());
 			nameIndex++;
 		}
 	}

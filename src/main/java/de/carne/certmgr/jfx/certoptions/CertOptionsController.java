@@ -379,8 +379,8 @@ public class CertOptionsController extends StageController {
 			} else if (extensionData instanceof CRLDistributionPointsExtensionData) {
 				onCmdEditCRLDistributionPoints(evt);
 			} else {
-				Alerts.message(AlertType.INFORMATION, CertOptionsI18N.formatSTR_MESSAGE_CANNOT_EDIT_EXTENSION(),
-						ButtonType.OK).showAndWait();
+				Alerts.message(AlertType.INFORMATION, CertOptionsI18N.strMessageCannotEditExtension(), ButtonType.OK)
+						.showAndWait();
 			}
 		}
 	}
@@ -471,7 +471,7 @@ public class CertOptionsController extends StageController {
 	@Override
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.NEWCERT32, Images.NEWCERT16));
-		stage.setTitle(CertOptionsI18N.formatSTR_STAGE_TITLE());
+		stage.setTitle(CertOptionsI18N.strStageTitle());
 		this.ctlAliasInput.textProperty().addListener((p, o, n) -> onAliasChanged(o, n));
 		this.ctlKeyAlgOption.valueProperty().addListener((p, o, n) -> onKeyAlgChanged(n));
 		this.ctlKeySizeOption.setConverter(new IntegerStringConverter());
@@ -522,7 +522,7 @@ public class CertOptionsController extends StageController {
 
 	private void initCertificateNames() {
 		UserCertStore store = this.storeParam.get();
-		UserCertStoreEntryId entryId = store.generateEntryId(CertOptionsI18N.formatSTR_TEXT_ALIASHINT());
+		UserCertStoreEntryId entryId = store.generateEntryId(CertOptionsI18N.strTextAliashint());
 
 		this.ctlAliasInput.setText(entryId.getAlias());
 
@@ -555,7 +555,7 @@ public class CertOptionsController extends StageController {
 		menuItems.clear();
 		resetStorePresetMenuHelper(menuItems, this.storeParam.get().getRootEntries(), "");
 		if (menuItems.isEmpty()) {
-			MenuItem noneMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_PRESETS_NONE());
+			MenuItem noneMenuItem = new MenuItem(CertOptionsI18N.strMenuPresetsNone());
 
 			noneMenuItem.setDisable(true);
 			menuItems.add(noneMenuItem);
@@ -566,7 +566,7 @@ public class CertOptionsController extends StageController {
 			String indent) {
 		for (UserCertStoreEntry storeEntry : storeEntries) {
 			if (storeEntry.hasCRT() || storeEntry.hasCSR()) {
-				MenuItem storeEntryMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_STORE_PRESET(indent,
+				MenuItem storeEntryMenuItem = new MenuItem(CertOptionsI18N.strMenuStorePreset(indent,
 						storeEntry.id().getAlias(), X500Names.toString(storeEntry.dn())));
 
 				storeEntryMenuItem.setUserData(CertOptionsTemplates.wrap(storeEntry));
@@ -595,7 +595,7 @@ public class CertOptionsController extends StageController {
 			menuItems.add(templateMenuItem);
 		}
 		if (menuItems.isEmpty()) {
-			MenuItem noneMenuItem = new MenuItem(CertOptionsI18N.formatSTR_MENU_PRESETS_NONE());
+			MenuItem noneMenuItem = new MenuItem(CertOptionsI18N.strMenuPresetsNone());
 
 			noneMenuItem.setDisable(true);
 			menuItems.add(noneMenuItem);
@@ -771,58 +771,57 @@ public class CertOptionsController extends StageController {
 
 	private String validateAndGetAlias() throws ValidationException {
 		return InputValidator.notEmpty(Strings.safeTrim(this.ctlAliasInput.getText()),
-				CertOptionsI18N::formatSTR_MESSAGE_NO_ALIAS);
+				CertOptionsI18N::strMessageNoAlias);
 	}
 
 	private X500Principal validateAndGetDN() throws ValidationException {
 		String dnInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDNInput.getText()),
-				CertOptionsI18N::formatSTR_MESSAGE_NO_DN);
+				CertOptionsI18N::strMessageNoDn);
 		X500Principal dn;
 
 		try {
 			dn = X500Names.fromString(dnInput);
 		} catch (IllegalArgumentException e) {
-			throw new ValidationException(CertOptionsI18N.formatSTR_MESSAGE_INVALID_DN(dnInput), e);
+			throw new ValidationException(CertOptionsI18N.strMessageInvalidDn(dnInput), e);
 		}
 		return dn;
 	}
 
 	private KeyPairAlgorithm validateAndGetKeyAlg() throws ValidationException {
-		return InputValidator.notNull(this.ctlKeyAlgOption.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_KEYALG);
+		return InputValidator.notNull(this.ctlKeyAlgOption.getValue(), CertOptionsI18N::strMessageNoKeyalg);
 	}
 
 	private int validateAndGetKeySize() throws ValidationException {
-		return InputValidator.notNull(this.ctlKeySizeOption.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_KEYSIZE)
+		return InputValidator.notNull(this.ctlKeySizeOption.getValue(), CertOptionsI18N::strMessageNoKeysize)
 				.intValue();
 	}
 
 	private CertGenerator validateAndGetGenerator() throws ValidationException {
-		return InputValidator.notNull(this.ctlGeneratorOption.getValue(),
-				CertOptionsI18N::formatSTR_MESSAGE_NO_GENERATOR);
+		return InputValidator.notNull(this.ctlGeneratorOption.getValue(), CertOptionsI18N::strMessageNoGenerator);
 	}
 
 	private Issuer validateAndGetIssuer() throws ValidationException {
-		return InputValidator.notNull(this.ctlIssuerInput.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_ISSUER);
+		return InputValidator.notNull(this.ctlIssuerInput.getValue(), CertOptionsI18N::strMessageNoIssuer);
 	}
 
 	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
-		return InputValidator.notNull(this.ctlSigAlgOption.getValue(), CertOptionsI18N::formatSTR_MESSAGE_NO_SIGALG);
+		return InputValidator.notNull(this.ctlSigAlgOption.getValue(), CertOptionsI18N::strMessageNoSigalg);
 	}
 
 	private Date validateAndGetNotBefore() throws ValidationException {
 		LocalDate localNotBefore = InputValidator.notNull(this.ctlNotBeforeInput.getValue(),
-				CertOptionsI18N::formatSTR_MESSAGE_NO_NOTBEFORE);
+				CertOptionsI18N::strMessageNoNotbefore);
 
 		return Date.from(localNotBefore.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
 
 	private Date validateAndGetNotAfter(Date notBefore) throws ValidationException {
 		LocalDate localNotAfter = InputValidator.notNull(this.ctlNotAfterInput.getValue(),
-				CertOptionsI18N::formatSTR_MESSAGE_NO_NOTAFTER);
+				CertOptionsI18N::strMessageNoNotafter);
 		Date notAfter = Date.from(localNotAfter.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
 		InputValidator.isTrue(notAfter.compareTo(notBefore) > 0,
-				(a) -> CertOptionsI18N.formatSTR_MESSAGE_INVALID_VALIDITY(notBefore, notAfter));
+				a -> CertOptionsI18N.strMessageInvalidValidity(notBefore, notAfter));
 		return notAfter;
 	}
 

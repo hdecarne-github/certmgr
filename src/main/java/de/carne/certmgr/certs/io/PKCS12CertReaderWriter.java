@@ -96,12 +96,12 @@ public class PKCS12CertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public String fileType() {
-		return CertIOI18N.formatSTR_PKCS12_TYPE();
+		return CertIOI18N.strPkcs12Type();
 	}
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_PKCS12_EXTENSION_PATTERNS(), '|', true);
+		return Strings.split(CertIOI18N.strPkcs12ExtensionPatterns(), '|', true);
 	}
 
 	@Override

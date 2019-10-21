@@ -197,20 +197,20 @@ public class AuthorityKeyIdentifierExtensionData extends X509ExtensionData {
 		byte[] checkedKeyIdentifier = this.keyIdentifier;
 
 		if (checkedKeyIdentifier != null) {
-			extensionAttributes.add(AttributesI18N.formatSTR_KEYIDENTIFIER(), Bytes.toString(checkedKeyIdentifier));
+			extensionAttributes.add(AttributesI18N.strKeyidentifier(), Bytes.toString(checkedKeyIdentifier));
 		}
 
 		GeneralNames checkedAuthorityCertIssuer = this.authorityCertIssuer;
 
 		if (checkedAuthorityCertIssuer != null) {
-			extensionAttributes.add(AttributesI18N.formatSTR_AUTHORITY_CERT_ISSUER());
+			extensionAttributes.add(AttributesI18N.strAuthorityCertIssuer());
 			checkedAuthorityCertIssuer.addToAttributes(extensionAttributes);
 		}
 
 		BigInteger checkedAuthorityCertSerialNumber = this.authorityCertSerialNumber;
 
 		if (checkedAuthorityCertSerialNumber != null) {
-			extensionAttributes.add(AttributesI18N.formatSTR_AUTHORITY_CERT_SERIAL_NUMBER(),
+			extensionAttributes.add(AttributesI18N.strAuthorityCertSerialNumber(),
 					checkedAuthorityCertSerialNumber.toString());
 		}
 		return extensionAttributes;

@@ -72,7 +72,7 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 
 	@Override
 	protected void setupDialog(Dialog<BasicConstraintsExtensionData> dialog) {
-		dialog.setTitle(BasicConstraintsI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(BasicConstraintsI18N.strStageTitle());
 		this.ctlPathLenConstraint.disableProperty().bind(Bindings.not(this.ctlCA.selectedProperty()));
 		this.ctlPathLenConstraint.setConverter(BasicConstraintsPathLen.CONVERTER);
 		addButtonEventFilter(ButtonType.APPLY, this::onApply);
@@ -117,11 +117,11 @@ public class BasicConstraintsController extends DialogController<BasicConstraint
 
 	private BigInteger valdiateAndGetPathLenConstraint() throws ValidationException {
 		BasicConstraintsPathLen pathLenConstraint = InputValidator.notNull(this.ctlPathLenConstraint.getValue(),
-				BasicConstraintsI18N::formatSTR_MESSAGE_NO_PATH_LEN_CONSTRAINT);
+				BasicConstraintsI18N::strMessageNoPathLenConstraint);
 		BigInteger pathLenConstraintValue = pathLenConstraint.value();
 
 		InputValidator.isTrue(pathLenConstraintValue == null || pathLenConstraintValue.compareTo(BigInteger.ZERO) >= 0,
-				BasicConstraintsI18N::formatSTR_MESSAGE_INVALID_PATH_LEN_CONSTRAINT);
+				BasicConstraintsI18N::strMessageInvalidPathLenConstraint);
 		return Objects.requireNonNull(pathLenConstraintValue);
 	}
 

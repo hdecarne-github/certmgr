@@ -134,7 +134,7 @@ public class CRLOptionsController extends StageController {
 
 	@Override
 	protected void setupStage(Stage stage) {
-		stage.setTitle(CRLOptionsI18N.formatSTR_STAGE_TITLE());
+		stage.setTitle(CRLOptionsI18N.strStageTitle());
 		this.ctlEntryOptionRevoked.setCellFactory(CheckBoxTableCell.forTableColumn(this.ctlEntryOptionRevoked));
 		this.ctlEntryOptionRevoked.setCellValueFactory(new PropertyValueFactory<>("revoked"));
 		this.ctlEntryOptionName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -255,7 +255,7 @@ public class CRLOptionsController extends StageController {
 
 	private Date validateAndGetLastUpdate() throws ValidationException {
 		LocalDate localLastUpdate = InputValidator.notNull(this.ctlLastUpdateInput.getValue(),
-				CRLOptionsI18N::formatSTR_MESSAGE_NO_LASTUPDATE);
+				CRLOptionsI18N::strMessageNoLastupdate);
 
 		return Date.from(localLastUpdate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
@@ -269,13 +269,13 @@ public class CRLOptionsController extends StageController {
 
 		if (nextUpdate != null) {
 			InputValidator.isTrue(nextUpdate.compareTo(lastUpdate) > 0,
-					(a) -> CRLOptionsI18N.formatSTR_MESSAGE_INVALID_UPDATEDATES(lastUpdate, nextUpdate));
+					a -> CRLOptionsI18N.strMessageInvalidUpdatedates(lastUpdate, nextUpdate));
 		}
 		return nextUpdate;
 	}
 
 	private SignatureAlgorithm validateAndGetSigAlg() throws ValidationException {
-		return InputValidator.notNull(this.ctlSigAlgOption.getValue(), CRLOptionsI18N::formatSTR_MESSAGE_NO_SIGALG);
+		return InputValidator.notNull(this.ctlSigAlgOption.getValue(), CRLOptionsI18N::strMessageNoSigalg);
 	}
 
 	void updateCRL(UpdateCRLRequest updateRequest) throws IOException {

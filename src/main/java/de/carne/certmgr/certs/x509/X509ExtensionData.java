@@ -133,8 +133,8 @@ public abstract class X509ExtensionData extends ASN1Data implements AttributesPr
 	public Attributes toAttributes() {
 		String extensionName = OIDs.toString(this.oid);
 
-		return new Attributes(AttributesI18N.formatSTR_EXTENSION(extensionName), (this.critical
-				? AttributesI18N.formatSTR_EXTENSION_CRITICAL() : AttributesI18N.formatSTR_EXTENSION_NONCRITICAL()));
+		return new Attributes(AttributesI18N.strExtension(extensionName),
+				(this.critical ? AttributesI18N.strExtensionCritical() : AttributesI18N.strExtensionNoncritical()));
 	}
 
 	@Override

@@ -63,16 +63,16 @@ public final class X509CertificateHelper {
 	 * @return The CRT object's attributes.
 	 */
 	public static Attributes toAttributes(X509Certificate crt) {
-		Attributes crtAttributes = new Attributes(AttributesI18N.formatSTR_CRT());
+		Attributes crtAttributes = new Attributes(AttributesI18N.strCrt());
 
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_VERSION(), Integer.toString(crt.getVersion()));
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_SERIALNUMBER(), crt.getSerialNumber().toString());
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_SIGALG(), crt.getSigAlgName());
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_ISSUERDN(), X500Names.toString(crt.getIssuerX500Principal()));
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_NOTBEFORE(), Attributes.printShortDate(crt.getNotBefore()));
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_NOTAFTER(), Attributes.printShortDate(crt.getNotAfter()));
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_SUBJECTDN(), X500Names.toString(crt.getSubjectX500Principal()));
-		crtAttributes.add(AttributesI18N.formatSTR_CRT_PUBLICKEY(), KeyHelper.toString(crt.getPublicKey()));
+		crtAttributes.add(AttributesI18N.strCrtVersion(), Integer.toString(crt.getVersion()));
+		crtAttributes.add(AttributesI18N.strCrtSerialnumber(), crt.getSerialNumber().toString());
+		crtAttributes.add(AttributesI18N.strCrtSigalg(), crt.getSigAlgName());
+		crtAttributes.add(AttributesI18N.strCrtIssuerdn(), X500Names.toString(crt.getIssuerX500Principal()));
+		crtAttributes.add(AttributesI18N.strCrtNotbefore(), Attributes.printShortDate(crt.getNotBefore()));
+		crtAttributes.add(AttributesI18N.strCrtNotafter(), Attributes.printShortDate(crt.getNotAfter()));
+		crtAttributes.add(AttributesI18N.strCrtSubjectdn(), X500Names.toString(crt.getSubjectX500Principal()));
+		crtAttributes.add(AttributesI18N.strCrtPublickey(), KeyHelper.toString(crt.getPublicKey()));
 		X509ExtensionHelper.addAttributes(crtAttributes, crt);
 		return crtAttributes;
 	}

@@ -110,7 +110,7 @@ public class Days implements Comparable<Days> {
 		int years = this.period.getYears();
 
 		if (years != 0) {
-			buffer.append(DaysI18N.formatSTR_YEARS(years));
+			buffer.append(DaysI18N.strYears(years));
 		}
 
 		int months = this.period.getMonths();
@@ -119,7 +119,7 @@ public class Days implements Comparable<Days> {
 			if (buffer.length() > 0) {
 				buffer.append(' ');
 			}
-			buffer.append(DaysI18N.formatSTR_MONTHS(months));
+			buffer.append(DaysI18N.strMonths(months));
 		}
 
 		int days = this.period.getDays();
@@ -128,7 +128,7 @@ public class Days implements Comparable<Days> {
 			if (buffer.length() > 0) {
 				buffer.append(' ');
 			}
-			buffer.append(DaysI18N.formatSTR_DAYS(days));
+			buffer.append(DaysI18N.strDays(days));
 		}
 		return buffer.toString();
 	}

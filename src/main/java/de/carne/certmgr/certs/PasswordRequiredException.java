@@ -50,7 +50,7 @@ public class PasswordRequiredException extends IOException {
 	}
 
 	private static String formatMessage(String resource) {
-		return UserCertStoreI18N.formatSTR_MESSAGE_PASSWORD_REQUIRED(resource);
+		return UserCertStoreI18N.strMessagePasswordRequired(resource);
 	}
 
 }

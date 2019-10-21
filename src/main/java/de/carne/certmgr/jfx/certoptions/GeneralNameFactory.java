@@ -65,7 +65,7 @@ final class GeneralNameFactory {
 		Function<String, GeneralName> nameFunction = FACTORY_FUNCTIONS.get(type);
 
 		if (nameFunction == null) {
-			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_UNSUPPORTED_TYPE(type.name()));
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.strMessageUnsupportedType(type.name()));
 		}
 		return nameFunction.apply(name);
 	}
@@ -74,7 +74,7 @@ final class GeneralNameFactory {
 		String rfc822Name = Strings.safe(name).trim();
 
 		if (Strings.isEmpty(rfc822Name)) {
-			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_RFC822_NAME());
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.strMessageNoRfc822Name());
 		}
 		return new StringName(GeneralNameType.RFC822_NAME, rfc822Name);
 	}
@@ -83,7 +83,7 @@ final class GeneralNameFactory {
 		String dnsName = Strings.safe(name).trim();
 
 		if (Strings.isEmpty(dnsName)) {
-			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_DNS_NAME());
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.strMessageNoDnsName());
 		}
 		return new StringName(GeneralNameType.DNS_NAME, dnsName);
 	}
@@ -92,7 +92,7 @@ final class GeneralNameFactory {
 		String directoryNameString = Strings.safe(name).trim();
 
 		if (Strings.isEmpty(directoryNameString)) {
-			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_DIRECTORY_NAME());
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.strMessageNoDirectoryName());
 		}
 
 		X500Principal directoryNameX500;
@@ -100,8 +100,9 @@ final class GeneralNameFactory {
 		try {
 			directoryNameX500 = X500Names.fromString(directoryNameString);
 		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException(GeneralNameFactoryI18N
-					.formatSTR_MESSAGE_INVALID_DIRECTORY_NAME(directoryNameString, e.getLocalizedMessage()), e);
+			throw new IllegalArgumentException(
+					GeneralNameFactoryI18N.strMessageInvalidDirectoryName(directoryNameString, e.getLocalizedMessage()),
+					e);
 		}
 		return new DirectoryName(directoryNameX500);
 	}
@@ -110,13 +111,13 @@ final class GeneralNameFactory {
 		String uriName = Strings.safe(name).trim();
 
 		if (Strings.isEmpty(uriName)) {
-			throw new IllegalArgumentException(GeneralNameFactoryI18N.formatSTR_MESSAGE_NO_URI_NAME());
+			throw new IllegalArgumentException(GeneralNameFactoryI18N.strMessageNoUriName());
 		}
 		try {
 			new URI(uriName);
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(
-					GeneralNameFactoryI18N.formatSTR_MESSAGE_INVALID_URI_NAME(uriName, e.getLocalizedMessage()), e);
+					GeneralNameFactoryI18N.strMessageInvalidUriName(uriName, e.getLocalizedMessage()), e);
 		}
 		return new StringName(GeneralNameType.UNIFORM_RESOURCE_IDENTIFIER, uriName);
 	}

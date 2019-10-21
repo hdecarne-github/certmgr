@@ -80,12 +80,12 @@ public class PEMCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	public String fileType() {
-		return CertIOI18N.formatSTR_PEM_TYPE();
+		return CertIOI18N.strPemType();
 	}
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_PEM_EXTENSION_PATTERNS(), '|', true);
+		return Strings.split(CertIOI18N.strPemExtensionPatterns(), '|', true);
 	}
 
 	@Override

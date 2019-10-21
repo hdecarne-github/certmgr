@@ -90,12 +90,12 @@ public class DERCertReaderWriter extends JCAConversion implements CertReader, Ce
 
 	@Override
 	public String fileType() {
-		return CertIOI18N.formatSTR_DER_TYPE();
+		return CertIOI18N.strDerType();
 	}
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_DER_EXTENSION_PATTERNS(), '|', true);
+		return Strings.split(CertIOI18N.strDerExtensionPatterns(), '|', true);
 	}
 
 	@Override

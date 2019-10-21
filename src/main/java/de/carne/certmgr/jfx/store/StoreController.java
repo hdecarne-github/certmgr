@@ -273,7 +273,7 @@ public class StoreController extends StageController {
 
 				this.storeProperty.set(store);
 				updateStoreEntryView();
-				this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_TEXT_STORE_STATUS(store.storeHome()));
+				this.ctlStoreStatusLabel.setText(StoreI18N.strTextStoreStatus(store.storeHome()));
 			}
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
@@ -403,7 +403,7 @@ public class StoreController extends StageController {
 
 		if (entry != null) {
 			Optional<ButtonType> confirmation = Alerts
-					.message(AlertType.CONFIRMATION, StoreI18N.formatSTR_MESSAGE_CONFIRM_DELETE(entry)).showAndWait();
+					.message(AlertType.CONFIRMATION, StoreI18N.strMessageConfirmDelete(entry)).showAndWait();
 
 			if (confirmation.isPresent() && confirmation.get().getButtonData() == ButtonData.OK_DONE) {
 				try {
@@ -457,8 +457,8 @@ public class StoreController extends StageController {
 					Alerts.unexpected(e).showAndWait();
 				}
 			} else {
-				Alerts.message(AlertType.WARNING, StoreI18N.formatSTR_MESSAGE_CANNOT_REVOKE_CRT(issuerEntry),
-						ButtonType.OK).showAndWait();
+				Alerts.message(AlertType.WARNING, StoreI18N.strMessageCannotRevokeCrt(issuerEntry), ButtonType.OK)
+						.showAndWait();
 			}
 		}
 	}
@@ -480,8 +480,8 @@ public class StoreController extends StageController {
 					Alerts.unexpected(e).showAndWait();
 				}
 			} else {
-				Alerts.message(AlertType.WARNING, StoreI18N.formatSTR_MESSAGE_CANNOT_MANAGE_CRL(issuerEntry),
-						ButtonType.OK).showAndWait();
+				Alerts.message(AlertType.WARNING, StoreI18N.strMessageCannotManageCrl(issuerEntry), ButtonType.OK)
+						.showAndWait();
 			}
 		}
 	}
@@ -613,14 +613,14 @@ public class StoreController extends StageController {
 		double usageRatio = (usedMemory * 1.0) / maxMemory;
 		NumberFormat usageFormat = NumberFormat.getPercentInstance();
 
-		this.ctlHeapStatusLabel.setText(
-				StoreI18N.formatSTR_TEXT_HEAP_STATUS(Debug.formatUsedMemory(), usageFormat.format(usageRatio)));
+		this.ctlHeapStatusLabel
+				.setText(StoreI18N.strTextHeapStatus(Debug.formatUsedMemory(), usageFormat.format(usageRatio)));
 	}
 
 	@Override
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(Images.STORE32, Images.STORE16);
-		stage.setTitle(StoreI18N.formatSTR_STAGE_TITLE());
+		stage.setTitle(StoreI18N.strStageTitle());
 		this.cmdStorePreferences.disableProperty().bind(this.storeProperty.isNull());
 		this.cmdCopyEntry.disableProperty()
 				.bind(this.ctlStoreEntryView.getSelectionModel().selectedItemProperty().isNull());
@@ -746,7 +746,7 @@ public class StoreController extends StageController {
 		try {
 			this.storeProperty.set(UserCertStore.openStore(storeHome.toPath()));
 			updateStoreEntryView();
-			this.ctlStoreStatusLabel.setText(StoreI18N.formatSTR_TEXT_STORE_STATUS(storeHome));
+			this.ctlStoreStatusLabel.setText(StoreI18N.strTextStoreStatus(storeHome));
 		} catch (IOException e) {
 			Alerts.unexpected(e).showAndWait();
 		}
@@ -811,8 +811,8 @@ public class StoreController extends StageController {
 
 		for (Attributes child : attributeChildren) {
 			if (childIndex >= DETAILS_VIEW_ATTRIBUTE_LIMIT) {
-				attributeItem.getChildren().add(new TreeItem<>(
-						new AttributeModel(StoreI18N.formatSTR_TEXT_DETAILS_OMITTED(childCount - childIndex))));
+				attributeItem.getChildren().add(
+						new TreeItem<>(new AttributeModel(StoreI18N.strTextDetailsOmitted(childCount - childIndex))));
 				break;
 			}
 			updateDetailsViewHelper(attributeItem, child, false);

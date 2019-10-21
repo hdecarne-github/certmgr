@@ -56,7 +56,7 @@ public class RemoteCertGenerator extends AbstractCertGenerator {
 
 	@Override
 	public String getDescription() {
-		return CertGeneratorI18N.formatSTR_REMOTE_DESCRIPTION();
+		return CertGeneratorI18N.strRemoteDescription();
 	}
 
 	@Override

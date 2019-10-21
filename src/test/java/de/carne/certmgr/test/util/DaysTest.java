@@ -44,7 +44,7 @@ public class DaysTest {
 	 */
 	@Test
 	public void testDays() {
-		DaysI18N.formatSTR_DAYS(0);
+		DaysI18N.strDays(0);
 
 		Days t0Days = new Days(0);
 		Days t1Day = new Days(1);

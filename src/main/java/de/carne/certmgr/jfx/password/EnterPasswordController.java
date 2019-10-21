@@ -40,10 +40,10 @@ public class EnterPasswordController extends PasswordController {
 
 	@Override
 	protected void setupDialog(Dialog<PasswordResult> dialog) {
-		dialog.setTitle(EnterPasswordI18N.formatSTR_STAGE_TITLE());
-		((Button) lookupButton(ButtonType.YES)).setText(EnterPasswordI18N.formatSTR_TEXT_OK());
-		((Button) lookupButton(ButtonType.NO)).setText(EnterPasswordI18N.formatSTR_TEXT_CANCEL());
-		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterPasswordI18N.formatSTR_TEXT_CANCELALL());
+		dialog.setTitle(EnterPasswordI18N.strStageTitle());
+		((Button) lookupButton(ButtonType.YES)).setText(EnterPasswordI18N.strTextOk());
+		((Button) lookupButton(ButtonType.NO)).setText(EnterPasswordI18N.strTextCancel());
+		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterPasswordI18N.strTextCancelall());
 		this.ctlPasswordInput.requestFocus();
 	}
 
@@ -55,7 +55,7 @@ public class EnterPasswordController extends PasswordController {
 
 	@Override
 	protected String getHeaderText(String resource) {
-		return EnterPasswordI18N.formatSTR_LABEL_ENTER_PASSWORD_HEADER(resource);
+		return EnterPasswordI18N.strLabelEnterPasswordHeader(resource);
 	}
 
 	@Override

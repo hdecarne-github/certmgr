@@ -128,7 +128,7 @@ public class DistributionPointName extends ASN1Data implements AttributesContent
 			attributes.add(this.fullName);
 		}
 		if (this.nameRelativeToCRLIssuer != null) {
-			attributes.add(AttributesI18N.formatSTR_DISTRIBUTIONPOINTNAME_NAMERELATIVETOCRLISSUER(),
+			attributes.add(AttributesI18N.strDistributionpointnameNamerelativetocrlissuer(),
 					X500Names.toString(Objects.requireNonNull(this.nameRelativeToCRLIssuer)));
 		}
 	}

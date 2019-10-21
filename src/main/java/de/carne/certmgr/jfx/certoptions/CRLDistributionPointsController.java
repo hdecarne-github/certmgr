@@ -134,7 +134,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 
 	@Override
 	protected void setupDialog(Dialog<CRLDistributionPointsExtensionData> dialog) {
-		dialog.setTitle(CRLDistributionPointsI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(CRLDistributionPointsI18N.strStageTitle());
 		this.namesEditor.init(this.ctlNames).setAddCommand(this.cmdAddName).setApplyCommand(this.cmdApplyName)
 				.setDeleteCommand(this.cmdDeleteName).setMoveUpCommand(this.cmdMoveNameUp)
 				.setMoveDownCommand(this.cmdMoveNameDown);
@@ -200,7 +200,7 @@ public class CRLDistributionPointsController extends DialogController<CRLDistrib
 			names.addName(name);
 			nameCount++;
 		}
-		InputValidator.isTrue(nameCount > 0, CRLDistributionPointsI18N::formatSTR_MESSAGE_NO_NAMES);
+		InputValidator.isTrue(nameCount > 0, CRLDistributionPointsI18N::strMessageNoNames);
 		return new DistributionPoint(new DistributionPointName(names));
 	}
 

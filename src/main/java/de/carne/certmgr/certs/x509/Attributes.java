@@ -153,10 +153,10 @@ public class Attributes {
 	 * @return The store entry's attributes.
 	 */
 	public static Attributes toAttributes(UserCertStoreEntry entry) {
-		Attributes entryAttributes = new Attributes(AttributesI18N.formatSTR_ENTRY());
+		Attributes entryAttributes = new Attributes(AttributesI18N.strEntry());
 
-		entryAttributes.add(AttributesI18N.formatSTR_ENTRY_ID(), entry.id().toString());
-		entryAttributes.add(AttributesI18N.formatSTR_ENTRY_DN(), X500Names.toString(entry.dn()));
+		entryAttributes.add(AttributesI18N.strEntryId(), entry.id().toString());
+		entryAttributes.add(AttributesI18N.strEntryDn(), X500Names.toString(entry.dn()));
 		return entryAttributes;
 	}
 

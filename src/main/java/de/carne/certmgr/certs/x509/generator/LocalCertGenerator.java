@@ -50,7 +50,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 	 */
 	public static final String PROVIDER_NAME = "LOCAL";
 
-	private final Issuer selfSignedIssuer = new LocalIssuer(CertGeneratorI18N.formatSTR_SELFSIGNED_NAME());
+	private final Issuer selfSignedIssuer = new LocalIssuer(CertGeneratorI18N.strSelfsignedName());
 
 	/**
 	 * Construct {@code LocalCertGenerator}.
@@ -66,7 +66,7 @@ public class LocalCertGenerator extends AbstractCertGenerator {
 
 	@Override
 	public String getDescription() {
-		return CertGeneratorI18N.formatSTR_LOCAL_DESCRIPTION();
+		return CertGeneratorI18N.strLocalDescription();
 	}
 
 	@Override

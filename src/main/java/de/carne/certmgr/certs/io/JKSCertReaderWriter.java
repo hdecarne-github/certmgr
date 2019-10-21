@@ -67,12 +67,12 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	@Override
 	public String fileType() {
-		return CertIOI18N.formatSTR_JKS_TYPE();
+		return CertIOI18N.strJksType();
 	}
 
 	@Override
 	public String[] fileExtensionPatterns() {
-		return Strings.split(CertIOI18N.formatSTR_JKS_EXTENSION_PATTERNS(), '|', true);
+		return Strings.split(CertIOI18N.strJksExtensionPatterns(), '|', true);
 	}
 
 	@Override

@@ -77,7 +77,7 @@ public class CustomExtensionData extends X509ExtensionData {
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.add(AttributesI18N.formatSTR_EXTENSION_DATA(this.encoded.length), toValueString());
+		extensionAttributes.add(AttributesI18N.strExtensionData(this.encoded.length), toValueString());
 		return extensionAttributes;
 	}
 

@@ -42,7 +42,7 @@ public abstract class Issuer implements Comparable<Issuer> {
 	 */
 	protected Issuer(UserCertStoreEntry storeEntry) {
 		this.storeEntry = storeEntry;
-		this.name = CertGeneratorI18N.formatSTR_STOREENTRY_NAME(storeEntry.id().getAlias(),
+		this.name = CertGeneratorI18N.strStoreentryName(storeEntry.id().getAlias(),
 				X500Names.toString(storeEntry.dn()));
 	}
 

@@ -66,13 +66,13 @@ public final class X509CRLHelper {
 	 * @return The CRL object's attributes.
 	 */
 	public static Attributes toAttributes(X509CRL crl) {
-		Attributes crlAttributes = new Attributes(AttributesI18N.formatSTR_CRL());
+		Attributes crlAttributes = new Attributes(AttributesI18N.strCrl());
 
-		crlAttributes.add(AttributesI18N.formatSTR_CRL_VERSION(), Integer.toString(crl.getVersion()));
-		crlAttributes.add(AttributesI18N.formatSTR_CRL_THISUPDATE(), Attributes.printShortDate(crl.getThisUpdate()));
-		crlAttributes.add(AttributesI18N.formatSTR_CRL_NEXTUPDATE(), Attributes.printShortDate(crl.getNextUpdate()));
-		crlAttributes.add(AttributesI18N.formatSTR_CRL_SIGALG(), crl.getSigAlgName());
-		crlAttributes.add(AttributesI18N.formatSTR_CRL_ISSUERDN(), X500Names.toString(crl.getIssuerX500Principal()));
+		crlAttributes.add(AttributesI18N.strCrlVersion(), Integer.toString(crl.getVersion()));
+		crlAttributes.add(AttributesI18N.strCrlThisupdate(), Attributes.printShortDate(crl.getThisUpdate()));
+		crlAttributes.add(AttributesI18N.strCrlNextupdate(), Attributes.printShortDate(crl.getNextUpdate()));
+		crlAttributes.add(AttributesI18N.strCrlSigalg(), crl.getSigAlgName());
+		crlAttributes.add(AttributesI18N.strCrlIssuerdn(), X500Names.toString(crl.getIssuerX500Principal()));
 		X509ExtensionHelper.addAttributes(crlAttributes, crl);
 
 		Set<? extends X509CRLEntry> crlEntries = crl.getRevokedCertificates();
@@ -84,19 +84,17 @@ public final class X509CRLHelper {
 				BigInteger serial = crlEntry.getSerialNumber();
 				X500Principal issuer = crlEntry.getCertificateIssuer();
 				String entrySerial = (issuer != null
-						? AttributesI18N.formatSTR_CRL_ENTRY_SERIAL_INDIRECT(Attributes.printSerial(serial), issuer)
-						: AttributesI18N.formatSTR_CRL_ENTRY_SERIAL(Attributes.printSerial(serial)));
-				Attributes crlEntryAttributes = crlAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY(entryIndex),
-						entrySerial);
+						? AttributesI18N.strCrlEntrySerialIndirect(Attributes.printSerial(serial), issuer)
+						: AttributesI18N.strCrlEntrySerial(Attributes.printSerial(serial)));
+				Attributes crlEntryAttributes = crlAttributes.add(AttributesI18N.strCrlEntry(entryIndex), entrySerial);
 				Date revocationDate = crlEntry.getRevocationDate();
 
-				crlEntryAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY_DATE(),
-						Attributes.printShortDate(revocationDate));
+				crlEntryAttributes.add(AttributesI18N.strCrlEntryDate(), Attributes.printShortDate(revocationDate));
 
 				CRLReason revocationReason = crlEntry.getRevocationReason();
 
 				if (revocationReason != null) {
-					crlEntryAttributes.add(AttributesI18N.formatSTR_CRL_ENTRY_REASON(),
+					crlEntryAttributes.add(AttributesI18N.strCrlEntryReason(),
 							ReasonFlag.fromCRLReason(revocationReason).name());
 				}
 				X509ExtensionHelper.addAttributes(crlEntryAttributes, crlEntry);

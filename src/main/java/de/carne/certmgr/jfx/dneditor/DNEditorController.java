@@ -109,14 +109,14 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 		Rdn rdn = null;
 
 		if (Strings.isEmpty(typeInput)) {
-			Tooltips.show(this.ctlTypeInput, DNEditorI18N.formatSTR_MESSAGE_NO_TYPE(), Images.WARNING16);
+			Tooltips.show(this.ctlTypeInput, DNEditorI18N.strMessageNoType(), Images.WARNING16);
 		} else if (Strings.isEmpty(valueInput)) {
-			Tooltips.show(this.ctlValueInput, DNEditorI18N.formatSTR_MESSAGE_NO_VALUE(), Images.WARNING16);
+			Tooltips.show(this.ctlValueInput, DNEditorI18N.strMessageNoValue(), Images.WARNING16);
 		} else {
 			try {
 				rdn = new Rdn(typeInput, valueInput);
 			} catch (InvalidNameException e) {
-				Tooltips.show(this.ctlValueInput, DNEditorI18N.formatSTR_MESSAGE_INVALID_RDN(e.getLocalizedMessage()),
+				Tooltips.show(this.ctlValueInput, DNEditorI18N.strMessageInvalidRdn(e.getLocalizedMessage()),
 						Images.WARNING16);
 			}
 		}
@@ -141,7 +141,7 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 
 	@Override
 	protected void setupDialog(Dialog<X500Principal> dialog) {
-		dialog.setTitle(DNEditorI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(DNEditorI18N.strStageTitle());
 		this.rdnEntriesEditor.init(this.ctlRdnEntries).setAddCommand(this.cmdAddRdn).setApplyCommand(this.cmdApplyRdn)
 				.setDeleteCommand(this.cmdDeleteRdn).setMoveUpCommand(this.cmdMoveRdnUp)
 				.setMoveDownCommand(this.cmdMoveRdnDown);
@@ -175,7 +175,7 @@ public class DNEditorController extends DialogController<X500Principal> implemen
 		try {
 			x500DN = X500Names.fromString(ldapDN.toString());
 		} catch (IllegalArgumentException e) {
-			throw new ValidationException(DNEditorI18N.formatSTR_MESSAGE_INVALID_DN(e.getLocalizedMessage()), e);
+			throw new ValidationException(DNEditorI18N.strMessageInvalidDn(e.getLocalizedMessage()), e);
 		}
 		return x500DN;
 	}

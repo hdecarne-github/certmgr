@@ -88,7 +88,7 @@ final class CertOptionsTemplates {
 	}
 
 	public static String defaultDNInput(String aliasInput, String storeName, String serial) {
-		return CertOptionsTemplatesI18N.formatSTR_DEFAULT_DN(aliasInput, storeName, serial);
+		return CertOptionsTemplatesI18N.strDefaultDn(aliasInput, storeName, serial);
 	}
 
 	private static final String DN_ALIAS_KEY = "CN";
@@ -410,8 +410,7 @@ final class CertOptionsTemplates {
 			Arrays.sort(templateNodeNames);
 			for (String templateNodeName : templateNodeNames) {
 				Preferences templateNode = templateStore.node(templateNodeName);
-				@Nullable
-				Template template = loadTemplate(templateNode);
+				@Nullable Template template = loadTemplate(templateNode);
 
 				if (template != null) {
 					templates.add(template);
@@ -436,15 +435,11 @@ final class CertOptionsTemplates {
 
 	@Nullable
 	private static Template loadTemplate(Preferences templateNode) {
-		@Nullable
-		Template template = null;
+		@Nullable Template template = null;
 
-		@Nullable
-		String name = templateNode.get(Template.KEY_NAME, null);
-		@Nullable
-		String aliasInput = templateNode.get(Template.KEY_ALIAS, null);
-		@Nullable
-		String dnInput = templateNode.get(Template.KEY_DN, null);
+		@Nullable String name = templateNode.get(Template.KEY_NAME, null);
+		@Nullable String aliasInput = templateNode.get(Template.KEY_ALIAS, null);
+		@Nullable String dnInput = templateNode.get(Template.KEY_DN, null);
 
 		if (Strings.notEmpty(name) && Strings.notEmpty(aliasInput) && Strings.notEmpty(dnInput)) {
 			assert name != null;
@@ -453,8 +448,7 @@ final class CertOptionsTemplates {
 
 			template = new Template(name, new CertOptionsPreset(aliasInput, dnInput));
 
-			@Nullable
-			String keyAlg = templateNode.get(Template.KEY_KEYALG, null);
+			@Nullable String keyAlg = templateNode.get(Template.KEY_KEYALG, null);
 
 			if (keyAlg != null) {
 				template.setKeyAlg(KeyHelper.getKeyAlg(keyAlg));
@@ -471,8 +465,7 @@ final class CertOptionsTemplates {
 
 				for (String extensionNodeName : extensionNodeNames) {
 					Preferences extensionNode = templateNode.node(extensionNodeName);
-					@Nullable
-					String oid = extensionNode.get(Template.KEY_EXTENSION_OID, null);
+					@Nullable String oid = extensionNode.get(Template.KEY_EXTENSION_OID, null);
 					boolean criticial = extensionNode.getBoolean(Template.KEY_EXTENSION_CRITICAL, false);
 					byte @Nullable [] data = extensionNode.getByteArray(Template.KEY_EXTENSION_DATA, null);
 

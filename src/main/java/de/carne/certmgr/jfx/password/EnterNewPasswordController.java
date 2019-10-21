@@ -45,25 +45,24 @@ public class EnterNewPasswordController extends PasswordController {
 		String passwordInput2 = this.ctlPasswordInput2.getText();
 
 		if (!Objects.equals(passwordInput1, passwordInput2)) {
-			Tooltips.show(this.ctlPasswordInput2, EnterNewPasswordI18N.formatSTR_MESSAGE_PASSWORD_MISMATCH(),
-					Images.WARNING16);
+			Tooltips.show(this.ctlPasswordInput2, EnterNewPasswordI18N.strMessagePasswordMismatch(), Images.WARNING16);
 			evt.consume();
 		}
 	}
 
 	@Override
 	protected void setupDialog(Dialog<PasswordResult> dialog) {
-		dialog.setTitle(EnterNewPasswordI18N.formatSTR_STAGE_TITLE());
-		((Button) lookupButton(ButtonType.YES)).setText(EnterNewPasswordI18N.formatSTR_TEXT_OK());
-		((Button) lookupButton(ButtonType.NO)).setText(EnterNewPasswordI18N.formatSTR_TEXT_CANCEL());
-		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterNewPasswordI18N.formatSTR_TEXT_CANCELALL());
+		dialog.setTitle(EnterNewPasswordI18N.strStageTitle());
+		((Button) lookupButton(ButtonType.YES)).setText(EnterNewPasswordI18N.strTextOk());
+		((Button) lookupButton(ButtonType.NO)).setText(EnterNewPasswordI18N.strTextCancel());
+		((Button) lookupButton(ButtonType.CANCEL)).setText(EnterNewPasswordI18N.strTextCancelall());
 		addButtonEventFilter(ButtonType.YES, this::onOk);
 		this.ctlPasswordInput1.requestFocus();
 	}
 
 	@Override
 	protected String getHeaderText(String resource) {
-		return EnterNewPasswordI18N.formatSTR_LABEL_ENTER_NEWPASSWORD_HEADER(resource);
+		return EnterNewPasswordI18N.strLabelEnterNewpasswordHeader(resource);
 	}
 
 	@Override

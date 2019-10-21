@@ -44,7 +44,7 @@ public class PreferencesController extends DialogController<UserPreferences>
 
 	@Override
 	protected void setupDialog(Dialog<UserPreferences> dialog) {
-		dialog.setTitle(PreferencesI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(PreferencesI18N.strStageTitle());
 	}
 
 	/**

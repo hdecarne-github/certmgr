@@ -91,7 +91,7 @@ public class SubjectKeyIdentifierExtensionData extends X509ExtensionData {
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.add(AttributesI18N.formatSTR_KEYIDENTIFIER(), toValueString());
+		extensionAttributes.add(AttributesI18N.strKeyidentifier(), toValueString());
 		return extensionAttributes;
 	}
 

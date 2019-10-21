@@ -190,7 +190,7 @@ public class CertImportController extends StageController {
 		FileChooser chooser = new FileChooser();
 		List<ExtensionFilter> extensionFilters = new ArrayList<>();
 
-		extensionFilters.add(FileChooserHelper.filterFromString(CertImportI18N.formatSTR_FILTER_ALLFILES()));
+		extensionFilters.add(FileChooserHelper.filterFromString(CertImportI18N.strFilterAllfiles()));
 		for (CertReader reader : CertReaders.REGISTERED.providers()) {
 			extensionFilters.add(new ExtensionFilter(reader.fileType(), reader.fileExtensionPatterns()));
 		}
@@ -283,19 +283,18 @@ public class CertImportController extends StageController {
 		List<LogRecord> logRecords = task.logRecords();
 
 		if (!logRecords.isEmpty()) {
-			Alerts.logs(AlertType.WARNING, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_LOGS(), logRecords)
-					.showAndWait();
+			Alerts.logs(AlertType.WARNING, CertImportI18N.strMessageCreateStoreLogs(), logRecords).showAndWait();
 		}
 	}
 
 	void onReloadTaskFailed(Throwable e) {
-		Alerts.error(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e).showAndWait();
+		Alerts.error(AlertType.ERROR, CertImportI18N.strMessageCreateStoreError(), e).showAndWait();
 	}
 
 	@Override
 	protected void setupStage(Stage stage) {
 		stage.getIcons().addAll(PlatformHelper.stageIcons(Images.IMPORT32, Images.IMPORT16));
-		stage.setTitle(CertImportI18N.formatSTR_STAGE_TITLE());
+		stage.setTitle(CertImportI18N.strStageTitle());
 		this.ctlFileSourceInput.disableProperty().bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
 		this.cmdChooseFileSourceButton.disableProperty()
 				.bind(Bindings.not(this.ctlFileSourceOption.selectedProperty()));
@@ -491,7 +490,7 @@ public class CertImportController extends StageController {
 
 					@Override
 					protected UserCertStore createStore(String params) throws IOException {
-						return UserCertStore.createFromData(params, CertImportI18N.formatSTR_TEXT_CLIPBOARD(),
+						return UserCertStore.createFromData(params, CertImportI18N.strTextClipboard(),
 								PasswordDialog.enterPassword(CertImportController.this));
 					}
 
@@ -500,7 +499,7 @@ public class CertImportController extends StageController {
 		} catch (
 
 		IOException e) {
-			Alerts.error(AlertType.ERROR, CertImportI18N.formatSTR_MESSAGE_CREATE_STORE_ERROR(), e);
+			Alerts.error(AlertType.ERROR, CertImportI18N.strMessageCreateStoreError(), e);
 		}
 	}
 
@@ -510,10 +509,10 @@ public class CertImportController extends StageController {
 		UserCertStore checkedSourceStore = this.sourceStore;
 
 		if (checkedSourceStore != null) {
-			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NEW_STORE(checkedSourceStore.size()));
+			this.ctlStatusMessage.setText(CertImportI18N.strStatusNewStore(checkedSourceStore.size()));
 			this.ctlStatusImage.setImage(Images.OK16);
 		} else {
-			this.ctlStatusMessage.setText(CertImportI18N.formatSTR_STATUS_NO_STORE());
+			this.ctlStatusMessage.setText(CertImportI18N.strStatusNoStore());
 			this.ctlStatusImage.setImage(Images.WARNING16);
 		}
 		this.ctlSelectAllOption.setSelected(false);
@@ -521,38 +520,38 @@ public class CertImportController extends StageController {
 
 	private Path validateFileSourceInput() throws ValidationException {
 		String fileSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlFileSourceInput.getText()),
-				CertImportI18N::formatSTR_MESSAGE_NO_FILE);
+				CertImportI18N::strMessageNoFile);
 
-		return PathValidator.isRegularFilePath(fileSourceInput, CertImportI18N::formatSTR_MESSAGE_INVALID_FILE);
+		return PathValidator.isRegularFilePath(fileSourceInput, CertImportI18N::strMessageInvalidFile);
 	}
 
 	private Path validateDirectorySourceInput() throws ValidationException {
 		String directorySourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlDirectorySourceInput.getText()),
-				CertImportI18N::formatSTR_MESSAGE_NO_DIRECTORY);
+				CertImportI18N::strMessageNoDirectory);
 
-		return PathValidator.isDirectoryPath(directorySourceInput, CertImportI18N::formatSTR_MESSAGE_INVALID_DIRECTORY);
+		return PathValidator.isDirectoryPath(directorySourceInput, CertImportI18N::strMessageInvalidDirectory);
 	}
 
 	private URL validateURLSourceInput() throws ValidationException {
 		String urlSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlURLSourceInput.getText()),
-				CertImportI18N::formatSTR_MESSAGE_NO_URL);
+				CertImportI18N::strMessageNoUrl);
 		URL urlSource;
 
 		try {
 			urlSource = new URL(urlSourceInput);
 		} catch (MalformedURLException e) {
-			throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_DIRECTORY(urlSourceInput), e);
+			throw new ValidationException(CertImportI18N.strMessageInvalidDirectory(urlSourceInput), e);
 		}
 		return urlSource;
 	}
 
 	private ServerParams validateServerSourceInput() throws ValidationException {
 		SSLPeer.Protocol protocol = InputValidator.notNull(this.ctlServerSourceProtocolInput.getValue(),
-				CertImportI18N::formatSTR_MESSAGE_NO_SERVERPROTOCOL);
+				CertImportI18N::strMessageNoServerprotocol);
 		String serverSourceInput = InputValidator.notEmpty(Strings.safeTrim(this.ctlServerSourceInput.getText()),
-				CertImportI18N::formatSTR_MESSAGE_NO_SERVER);
+				CertImportI18N::strMessageNoServer);
 		String[] serverSourceGroups = InputValidator.matches(serverSourceInput, SERVER_INPUT_PATTERN,
-				CertImportI18N::formatSTR_MESSAGE_INVALID_SERVER);
+				CertImportI18N::strMessageInvalidServer);
 		String host = serverSourceGroups[0];
 		String portInput = serverSourceGroups[1];
 		int port;
@@ -561,7 +560,7 @@ public class CertImportController extends StageController {
 			try {
 				port = Integer.valueOf(portInput).intValue();
 			} catch (NumberFormatException e) {
-				throw new ValidationException(CertImportI18N.formatSTR_MESSAGE_INVALID_SERVER(serverSourceInput), e);
+				throw new ValidationException(CertImportI18N.strMessageInvalidServer(serverSourceInput), e);
 			}
 		} else {
 			port = protocol.defaultPort();
@@ -572,7 +571,7 @@ public class CertImportController extends StageController {
 
 	private PlatformKeyStore validatePlatformSourceInput() throws ValidationException {
 		return InputValidator.notNull(this.ctlPlatformSourceInput.getValue(),
-				CertImportI18N::formatSTR_MESSAGE_NO_PLATFORMKEYSTORE);
+				CertImportI18N::strMessageNoPlatformkeystore);
 	}
 
 	private Set<UserCertStoreEntry> validateImportSelection() throws ValidationException {
@@ -589,7 +588,7 @@ public class CertImportController extends StageController {
 				}
 			}
 		});
-		InputValidator.isTrue(!importSelection.isEmpty(), CertImportI18N::formatSTR_MESSAGE_EMPTY_IMPORT_SELECTION);
+		InputValidator.isTrue(!importSelection.isEmpty(), CertImportI18N::strMessageEmptyImportSelection);
 		return importSelection;
 	}
 
@@ -649,7 +648,7 @@ public class CertImportController extends StageController {
 		UserCertStore importStore = this.importStoreParam.get();
 
 		for (UserCertStoreEntry importEntry : importSelection) {
-			importStore.importEntry(importEntry, newPassword, CertImportI18N.formatSTR_TEXT_ALIASHINT());
+			importStore.importEntry(importEntry, newPassword, CertImportI18N.strTextAliashint());
 		}
 	}
 

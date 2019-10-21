@@ -126,7 +126,7 @@ public class ManageTemplatesController extends DialogController<Void> implements
 
 	@Override
 	protected void setupDialog(Dialog<Void> dialog) {
-		dialog.setTitle(ManageTemplatesI18N.formatSTR_STAGE_TITLE());
+		dialog.setTitle(ManageTemplatesI18N.strStageTitle());
 		this.templatesEditor.init(this.ctlTemplates).setAddCommand(this.cmdAddTemplate)
 				.setApplyCommand(this.cmdApplyTemplate).setDeleteCommand(this.cmdDeleteTemplate)
 				.setMoveUpCommand(this.cmdMoveTemplateUp).setMoveDownCommand(this.cmdMoveTemplateDown);
@@ -154,7 +154,7 @@ public class ManageTemplatesController extends DialogController<Void> implements
 
 	private String validateAndGetTemplateName() throws ValidationException {
 		return InputValidator.notEmpty(Strings.safeTrim(this.ctlTemplateInput.getText()),
-				ManageTemplatesI18N::formatSTR_MESSAGE_NO_NAME);
+				ManageTemplatesI18N::strMessageNoName);
 	}
 
 }

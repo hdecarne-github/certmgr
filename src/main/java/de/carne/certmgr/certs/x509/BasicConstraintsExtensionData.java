@@ -141,21 +141,21 @@ public class BasicConstraintsExtensionData extends X509ExtensionData {
 
 	@Override
 	public String toValueString() {
-		return AttributesI18N.formatSTR_BC_VALUE(this.ca);
+		return AttributesI18N.strBcValue(this.ca);
 	}
 
 	@Override
 	public Attributes toAttributes() {
 		Attributes extensionAttributes = super.toAttributes();
 
-		extensionAttributes.add(AttributesI18N.formatSTR_BC_CA(), Boolean.toString(this.ca));
+		extensionAttributes.add(AttributesI18N.strBcCa(), Boolean.toString(this.ca));
 
 		BigInteger checkedPathLenConstraint = this.pathLenConstraint;
 
 		if (checkedPathLenConstraint != null) {
 			int pathLenConstraintValue = checkedPathLenConstraint.intValue();
 
-			extensionAttributes.add(AttributesI18N.formatSTR_BC_PATHLENCONSTRAINT(),
+			extensionAttributes.add(AttributesI18N.strBcPathlenconstraint(),
 					(pathLenConstraintValue >= 0 ? Integer.toString(pathLenConstraintValue) : "\u221E"));
 		}
 		return extensionAttributes;
