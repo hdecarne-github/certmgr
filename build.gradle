@@ -96,7 +96,7 @@ distributions {
 
 tasks.withType(Tar){
 	compression = Compression.GZIP
-	extension = "tar.gz"
+	archiveExtension = "tar.gz"
 }
 
 install4j {
