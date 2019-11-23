@@ -22,10 +22,8 @@ after_success: bash <(curl -s https://codecov.io/bash)
 
 notifications:
   email: false 
-  slack:
-    rooms:
-      - secure: sOZRirlPyI6rI53TUoZBeKYAJqaD4jYKJmo7VaT4R1TO7Rq/LzfYOYIV2f+rsCwDHRsu2EtO7w24ksKXaRDp/4RFQkiNllV/GFtxU0oKGckEFbJcGZM1KBNCxzNFzoliPYmCh8PyEMtvzXfMIUEflHARlRRyC8/2ihWaa9Z5j3qKk1pKN3RGeMVV7qG6JEMNbbfbmrb+b7nWPvkSOIeq+4RA9Eb8G2QLKZIHuO3hxwVcsfPvg1SBtMSXZgJlGHt9fnDZJATlD3ThGJyOWG1Pk05JYOqEZMWVNIbZ8M+vsZMR0rKTePDFA4YK06V+60fnBbcdzhth/aKOLIemsn+P5mOaQqb0gBY8dgFT/FMrnXsjvc9cIYH8F1Nd2fevkS2J2ieRF7o4cgq05bxhdEQBijJKfv9RJBa0JqRzKovhSg/feMCmF3J/GEjSTvPzam3xJOhbTzfZU5jB8U+YUOnyq1yk2szJ0CH+ctikLZ9k3FHtQDSsZyTpHI8A+HMO9EQezh/1fw53BBlUNeDN5plFjgJeaDp/orCDt/XQuYAAurv0jcNl8QGK6FYUYM+/2OYXUR+6f2BS3QSrjUdOi/jWmgeuHB8xpuDgyHZ0VJ9MN74GmLRB6oFCoho6MWKB7+6pNp06WqMN47aMZRFWJuDazFArf3R3wDmI952k5vJO/b4=
-    on_success: change
+  webhooks: https://outlook.office.com/webhook/27c453a8-ba7e-434b-aa1c-3f3518bae970@204cfc34-134c-421b-9da1-8d11960a08c0/TravisCI/19103ea0fa0047e09b0b5f8e6dbca64b/0dcdd7a9-8645-426a-9076-b0b12401d765
+  on_success: change
 
 # See https://docs.travis-ci.com/user/languages/java/#caching
 before_cache:
