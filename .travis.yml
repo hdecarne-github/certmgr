@@ -21,7 +21,7 @@ script: ./gradlew --stacktrace build
 after_success: bash <(curl -s https://codecov.io/bash)
 
 notifications:
-  email: false 
+  email: false
   webhooks: https://outlook.office.com/webhook/27c453a8-ba7e-434b-aa1c-3f3518bae970@204cfc34-134c-421b-9da1-8d11960a08c0/TravisCI/19103ea0fa0047e09b0b5f8e6dbca64b/0dcdd7a9-8645-426a-9076-b0b12401d765
   on_success: change
 
