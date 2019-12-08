@@ -1,5 +1,5 @@
 plugins {
-	id "de.carne.java-tools" version "0.7.2" apply false
+	id "de.carne.java-tools" version "0.7.3" apply false
 	id "com.install4j.gradle" version "8.0.2" apply false
 }
 
