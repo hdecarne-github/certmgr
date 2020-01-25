@@ -63,9 +63,17 @@ jacocoTestReport {
 jar {
 	manifest {
 		attributes(
-			'X-Module-Name' : project.name,
+			'Automatic-Module-Name': automaticModuleName,
+			'Created-By': "Gradle ${gradle.gradleVersion} (${System.properties['os.name']}:${System.properties['os.arch']}:${System.properties['os.version']})",
+			'Build-Jdk' : System.properties['java.version'],
+			'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(new Date()),
+			'X-Compile-Target-JDK': targetCompatibility,
+			'X-Compile-Source-JDK': sourceCompatibility,
+			'X-Module-Id': project.name,
+			'X-Module-Name': "CertMgr",
 			'X-Module-Version': project.version,
-			'X-Module-Build' : new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
+			'X-Module-DocURL': projectUrl,
+			'X-Module-License': projectLicenseUrl
 		)
 	}
 }
