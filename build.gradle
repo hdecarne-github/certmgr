@@ -61,13 +61,11 @@ jacocoTestReport {
 }
 
 jar {
-	def buildTimestamp = new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-	
 	manifest {
 		attributes(
-			"X-Module-Name" : project.name,
-			"X-Module-Version": project.version,
-			"X-Module-Build" : buildTimestamp
+			'X-Module-Name' : project.name,
+			'X-Module-Version': project.version,
+			'X-Module-Build' : new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
 		)
 	}
 }
@@ -81,7 +79,7 @@ task bootJar(type: Jar) {
 	}
 	manifest {
 		attributes(
-			"Main-Class": "de.carne.boot.Application",
+			'Main-Class': "de.carne.boot.Application",
 		)
 	}
 }
