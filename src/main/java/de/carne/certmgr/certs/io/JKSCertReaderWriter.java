@@ -53,7 +53,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 
 	private static final Log LOG = new Log(CertIOI18N.class.getName());
 
-	private static final String KEYSTORE_TYPE = "JKS";
+	private static final String KEYSTORE_TYPE_JKS = "JKS";
 
 	/**
 	 * Provider name.
@@ -85,7 +85,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	public CertObjectStore readBinary(IOResource<InputStream> in, PasswordCallback password) throws IOException {
 		LOG.debug("Trying to read KeyStore objects from file: ''{0}''...", in);
 
-		return readKeyStore(KEYSTORE_TYPE, in.io(), in.resource(), password);
+		return readKeyStore(KEYSTORE_TYPE_JKS, in.io(), in.resource(), password);
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			throw new PasswordRequiredException(out.resource());
 		}
 		try {
-			KeyStore keyStore = KeyStore.getInstance(KEYSTORE_TYPE);
+			KeyStore keyStore = KeyStore.getInstance(KEYSTORE_TYPE_JKS);
 
 			keyStore.load(null, null);
 
@@ -249,7 +249,7 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 	private static KeyStore loadKeyStore(String keyStoreType, @Nullable InputStream inputStream, String resource,
 			PasswordCallback password) throws GeneralSecurityException, IOException {
 		KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-		char[] passwordChars = null;
+		char[] passwordChars = password.queryPassword(resource);
 		Throwable passwordException = null;
 
 		do {
@@ -265,11 +265,8 @@ public class JKSCertReaderWriter implements CertReader, CertWriter {
 			}
 			if (passwordException != null) {
 				passwordChars = password.requeryPassword(resource, passwordException);
-				if (passwordChars == null) {
-					throw new PasswordRequiredException(resource, passwordException);
-				}
 			}
-		} while (passwordException != null);
+		} while (passwordChars != null && passwordException != null);
 		return keyStore;
 	}
 

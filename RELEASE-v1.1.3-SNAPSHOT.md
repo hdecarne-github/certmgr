@@ -2,6 +2,7 @@
 This is a maintenance release of the CertMgr application.
 
 Main changes are:
+* Handle password protected key stores properly
 * BouncyCastle version bump 1.64
 
 This program is distributed in the hope that it will be useful,

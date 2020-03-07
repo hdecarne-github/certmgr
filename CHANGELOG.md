@@ -12,7 +12,8 @@ GNU General Public License for more details.
 
 ![Install4j](http://certmgr.carne.de/install4j_small.png) The provided installer/launcher packages have been created using the multi-platform installer builder [Install4J](https://www.ej-technologies.com/products/install4j/overview.html).
 
-### v1.1.3 (2020-03-xx)
+### v1.1.3 (2020-03-07)
+* Handle password protected key stores properly
 * BouncyCastle version bump 1.64
 
 ### v1.1.2 (2019-02-23)
