@@ -16,7 +16,7 @@ git:
 
 install: ./gradlew --refresh-dependencies --stacktrace clean assemble testClasses
 
-script: ./gradlew --stacktrace build
+script: ./gradlew --stacktrace build jacocoTestReport
 
 after_success: bash <(curl -s https://codecov.io/bash)
 
