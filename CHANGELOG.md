@@ -12,6 +12,9 @@ GNU General Public License for more details.
 
 ![Install4j](http://certmgr.carne.de/install4j_small.png) The provided installer/launcher packages have been created using the multi-platform installer builder [Install4J](https://www.ej-technologies.com/products/install4j/overview.html).
 
+### v1.1.3 (2020-03-xx)
+* BouncyCastle version bump 1.64
+
 ### v1.1.2 (2019-02-23)
 * Removal of ExtendedKeyUsage attribute from RootCA template to create RFC 5280 compliant certificates chains by default (Preventing: openssl-1.1.0+ validation error "error (26): unsupported certificate purpose")
 * BouncyCastle version bump 1.61

@@ -1,5 +1,5 @@
 plugins {
-	id "de.carne.java-tools" version "0.8.1" apply false
+	id "de.carne.java-tools" version "0.8.2" apply false
 	id "com.install4j.gradle" version "8.0.4" apply false
 }
 
@@ -28,7 +28,21 @@ javatools {
 		genDir = file("${buildDir}/generated/main/java")
 		lineSeparator = "\n"
 	}
+	githubRelease {
+		enabled = true
+		releaseAssets = fileTree(".") {
+			include("**/certmgr-*.tar.gz")
+			include("**/certmgr-*.zip")
+			include("**/certmgr_macos_*.dmg")
+			include("**/certmgr_windows-x32_*.exe")
+			include("**/certmgr_windows-x64_*.exe")
+		}
+		overwrite = true
+		githubToken = project.findProperty('githubToken')
+		ignoreDirty = true
+	}
 }
+draftGitHubRelease.dependsOn(":assembleMedia")
 
 repositories {
 	if(project.version.endsWith("-SNAPSHOT")) {
