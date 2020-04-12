@@ -1,6 +1,6 @@
 plugins {
 	id "de.carne.java-tools" version "0.8.2" apply false
-	id "com.install4j.gradle" version "8.0.4" apply false
+	id "com.install4j.gradle" version "8.0.5" apply false
 }
 
 apply plugin: "java-library"
