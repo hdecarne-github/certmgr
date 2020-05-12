@@ -10,6 +10,8 @@ apply plugin: "distribution"
 apply plugin: "com.install4j.gradle"
 apply plugin: "eclipse"
 
+defaultTasks "classes", "testClasses"
+
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
