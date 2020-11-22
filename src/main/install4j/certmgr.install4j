@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="8.0.1" transformSequenceNumber="8">
+<install4j version="8.0.7" transformSequenceNumber="8">
   <directoryPresets config="${compiler:i4jProjectBuildDir}/libs/${compiler:sys.shortName}-${compiler:sys.version}.jar" />
-  <application name="${compiler:i4jProjectFullName}" applicationId="6863-0001-6800-2736" mediaDir="${compiler:i4jProjectBuildDir}/distributions" shortName="${compiler:i4jProjectName}" publisherWeb="${compiler:i4jProjectUrl}" version="${compiler:i4jProjectVersion}" allPathsRelative="true" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" jdkMode="jdk" jdkName="JDK 1.8">
+  <application name="${compiler:i4jProjectFullName}" applicationId="6863-0001-6800-2736" mediaDir="${compiler:i4jProjectBuildDir}/distributions" shortName="${compiler:i4jProjectName}" publisherWeb="${compiler:i4jProjectUrl}" version="${compiler:i4jProjectVersion}" allPathsRelative="true" macVolumeId="8caddfd136c560fa" javaMinVersion="1.8" javaMaxVersion="1.8" jdkMode="jdk" jdkName="JDK 1.8">
     <languages>
       <additionalLanguages>
         <language id="de" />
