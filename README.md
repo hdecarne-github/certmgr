@@ -1,6 +1,6 @@
+[![Downloads](https://img.shields.io/github/downloads/hdecarne/certmgr/total.svg)](https://github.com/hdecarne/certmgr/releases)
 [![Build Status](https://travis-ci.com/hdecarne/certmgr.svg?branch=master)](https://travis-ci.com/hdecarne/certmgr)
 [![codecov](https://codecov.io/gh/hdecarne/certmgr/branch/master/graph/badge.svg)](https://codecov.io/gh/hdecarne/certmgr)
-[![Downloads](https://img.shields.io/github/downloads/hdecarne/certmgr/total.svg)](https://github.com/hdecarne/certmgr/releases)
 
 ## CertMgr
 Create and manage X.509 certificates.
