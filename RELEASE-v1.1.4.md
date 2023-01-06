@@ -2,8 +2,8 @@
 This is a maintenance release of the CertMgr application.
 
 Main changes are:
-* Handle password protected key stores properly
-* BouncyCastle version bump 1.64
+* Fix layout issue in Store Properties dialog.
+* BouncyCastle version bump 1.70
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
