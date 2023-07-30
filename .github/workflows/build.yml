@@ -1,0 +1,67 @@
+name: build
+
+on:
+  - push
+
+jobs:
+  build:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
+          check-latest: true
+      - name: Set up Caching for Linux
+        if: runner.os == 'Linux'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Set up Caching for macOS
+        if: runner.os == 'macOS'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/Library/Caches/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Set up Caching for Windows
+        if: runner.os == 'Windows'
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~\AppData\Local\go-build
+            ~\go\pkg\mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Set up CI
+        run: |
+          go install github.com/letsencrypt/pebble/v2/...@v2.4.0
+      - name: Set up CI for Linux
+        if: runner.os == 'Linux'
+        run: |
+          $(go env GOPATH)/bin/pebble -config ./pkg/certs/acme/testdata/pebble-config.json > /dev/null 2>&1 &
+      - name: Run Build
+        run: make build test
+      - name: Run SonarQube
+        uses: sonarsource/sonarcloud-github-action@master

@@ -1,4 +1,0 @@
-de.carne.certmgr.certs.io.DERCertReaderWriter
-de.carne.certmgr.certs.io.JKSCertReaderWriter
-de.carne.certmgr.certs.io.PEMCertReaderWriter
-de.carne.certmgr.certs.io.PKCS12CertReaderWriter
