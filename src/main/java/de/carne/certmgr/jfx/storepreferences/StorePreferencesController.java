@@ -182,6 +182,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		initDefCRLUpdatePeriods();
 		initDefKeyAlgOptions();
 		((Button) lookupButton(ButtonType.APPLY)).setText(StorePreferencesI18N.strTextCreate());
+		this.ctlNameInput.requestFocus();
 		return this;
 	}
 
@@ -208,6 +209,7 @@ public class StorePreferencesController extends DialogController<UserCertStore>
 		initDefCRTValidityPeriods();
 		initDefCRLUpdatePeriods();
 		initDefKeyAlgOptions();
+		this.ctlDefCRTValidityInput.requestFocus();
 		return this;
 	}
 
