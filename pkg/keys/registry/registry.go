@@ -3,6 +3,7 @@
 // This software may be modified and distributed under the terms
 // of the MIT license.  See the LICENSE file for details.
 
+// Package registry provides generic access to all key providers.
 package registry
 
 import (
@@ -16,15 +17,18 @@ var providerNames = []string{}
 var providerStandardKeys = make(map[string]func() []keys.KeyPairFactory, 0)
 var standardKeys = make(map[string]keys.KeyPairFactory, 0)
 
+// KeyProviders returns the known key providers (ECDSA, ED25519, RSA).
 func KeyProviders() []string {
 	names := providerNames
 	return names
 }
 
+// StandardKeys returns the standard keys for the given key provider.
 func StandardKeys(name string) []keys.KeyPairFactory {
 	return providerStandardKeys[name]()
 }
 
+// StandardKey returns the key pair factory corresponding to the given key pair factory name.
 func StandardKey(name string) keys.KeyPairFactory {
 	return standardKeys[name]
 }
