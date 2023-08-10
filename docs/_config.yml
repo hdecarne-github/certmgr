@@ -1,8 +1,7 @@
 title: CertMgr
 description: Create and manage X.509 certificates
-google_analytics: 
 show_downloads: false
-theme: jekyll-theme-modernist
+theme: minima
 
-gems:
-  - jekyll-mentions
+plugins:
+  - jekyll-sitemap
