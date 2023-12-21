@@ -67,7 +67,7 @@ dist: build
 	tar czvf build/dist/$(GOPROJECT)-$(GOOS)-$(GOARCH)-$(GOMODULE_VERSION).tar.gz -C build/bin .
 
 .PHONY: check
-check: deps
+check: build
 	@echo "Testing artifacts..."
 ifeq (1, $(WEB))
 	# cd internal/web && $(NPM) $(NPMOPTS) run test
