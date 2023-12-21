@@ -1,0 +1,11 @@
+debug: true
+verbose: true
+ansi: false
+
+server:
+  server_url: "http://localhost:10509"
+  state_path: "./lib"
+  acme_config: "acme.yaml"
+
+cli:
+  server_url: "http://localhost:10509"

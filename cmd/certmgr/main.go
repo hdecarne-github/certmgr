@@ -6,9 +6,9 @@
 package main
 
 import (
-	"github.com/hdecarne-github/certmgr/internal/certmgr"
+	"github.com/hdecarne-github/certmgr"
 )
 
 func main() {
-	_ = certmgr.Run(nil)
+	_ = certmgr.Run(certmgr.NewDefaultRunner())
 }

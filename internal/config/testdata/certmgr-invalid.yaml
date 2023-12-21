@@ -1,0 +1,11 @@
+debug: invalid
+verbose: invalid
+ansi: invalid
+
+server:
+  server_url: false
+  state_path: false
+  acme_config: false
+
+cli:
+  server_url: false
