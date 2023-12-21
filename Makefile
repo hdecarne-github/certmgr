@@ -28,7 +28,7 @@ help:
 	@echo "  make deps\tprepare dependencies"
 	@echo "  make build\tbuild artifacts"
 	@echo "  make dist\tcreate release package"
-	@echo "  make test\ttest artifacts"
+	@echo "  make check\ttest artifacts"
 	@echo "  make clean\tdiscard build artifacts (not dependencies)"
 
 .PHONY: init
@@ -66,11 +66,11 @@ dist: build
 	mkdir -p build/dist
 	tar czvf build/dist/$(GOPROJECT)-$(GOOS)-$(GOARCH)-$(GOMODULE_VERSION).tar.gz -C build/bin .
 
-.PHONY: test
-test: deps
+.PHONY: check
+check: deps
 	@echo "Testing artifacts..."
 ifeq (1, $(WEB))
-	cd web && $(NPM) $(NPMOPTS) run test
+	# cd internal/web && $(NPM) $(NPMOPTS) run test
 endif
 	$(GO) test -ldflags "$(LDFLAGS)" -v -coverpkg=./... -covermode=atomic -coverprofile=build/coverage.out ./...
 

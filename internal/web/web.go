@@ -10,7 +10,7 @@ import (
 	"io/fs"
 )
 
-//go:embed all:* build/*
+//go:embed all:build/*
 var docs embed.FS
 
 func Docs() (fs.FS, error) {

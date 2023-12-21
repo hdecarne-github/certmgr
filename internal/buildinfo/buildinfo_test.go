@@ -13,16 +13,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const undefined = "<dev build>"
-
 func TestVersion(t *testing.T) {
-	require.Equal(t, undefined, buildinfo.Version())
+	versionPattern := regexp.MustCompile(`^(<dev build>|\d+\.\d+\.\d+)$`)
+	require.True(t, versionPattern.MatchString(buildinfo.Version()))
 }
 func TestTimestamp(t *testing.T) {
-	require.Equal(t, undefined, buildinfo.Timestamp())
+	timestampPattern := regexp.MustCompile(`^(<dev build>|\d+)$`)
+	require.True(t, timestampPattern.MatchString(buildinfo.Timestamp()))
 }
 
 func TestFullVersion(t *testing.T) {
-	fullVersionPattern := regexp.MustCompile(`^certmgr version <dev build> \(<dev build>\) .*/.*$`)
-	require.True(t, fullVersionPattern.Match([]byte(buildinfo.FullVersion())))
+	fullVersionPattern := regexp.MustCompile(`^certmgr version (<dev build>|\d+\.\d+\.\d+) \((<dev build>|\d+)\) .*/.*$`)
+	require.True(t, fullVersionPattern.MatchString(buildinfo.FullVersion()))
 }
