@@ -13,6 +13,7 @@ import (
 
 	"github.com/hdecarne-github/certmgr"
 	"github.com/hdecarne-github/certmgr/internal/config"
+	"github.com/hdecarne-github/go-certstore/storage"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,8 +34,8 @@ func TestVersionCmd(t *testing.T) {
 }
 func TestServerCmd(t *testing.T) {
 	runner := &testRunner{}
-	// cmdline: certmgr server --config=testdata/certmgr-test.yaml
-	os.Args = []string{os.Args[0], "server", "--config=testdata/certmgr-test.yaml"}
+	// cmdline: certmgr server --config=testdata/certmgr-test.yaml --debug
+	os.Args = []string{os.Args[0], "server", "--config=testdata/certmgr-test.yaml", "--debug"}
 	err := certmgr.Run(runner)
 	require.ErrorIs(t, err, errors.ErrUnsupported)
 	require.Equal(t, 1, runner.ServerCalls)
@@ -66,12 +67,16 @@ func (runner *testRunner) Server(config *config.Server) error {
 func TestDefaults(t *testing.T) {
 	defaults := config.Defaults()
 	require.NotNil(t, defaults)
+	require.Equal(t, "fs://./store?cache_ttl=60s&version_limit=10", defaults.ServerConfig.CertStoreURI())
 }
 
 func TestLoad(t *testing.T) {
 	config, err := config.Load("./testdata/certmgr-test.yaml")
 	require.NoError(t, err)
 	require.NotNil(t, config)
+	require.True(t, strings.HasSuffix(config.ServerConfig.StatePath, "/lib"))
+	require.Equal(t, "600s", config.ServerConfig.StoreCacheTTL)
+	require.Equal(t, storage.VersionLimit(1), config.ServerConfig.StoreVersionLimit)
 }
 
 func TestLoadMissing(t *testing.T) {

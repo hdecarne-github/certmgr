@@ -6,9 +6,14 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/hdecarne-github/certmgr"
 )
 
 func main() {
-	_ = certmgr.Run(certmgr.NewDefaultRunner())
+	err := certmgr.Run(certmgr.NewDefaultRunner())
+	if err != nil {
+		fmt.Printf("certmgr command failed: %s\n", err)
+	}
 }

@@ -12,7 +12,9 @@ import (
 	"path/filepath"
 
 	"github.com/alecthomas/kong"
-	"github.com/mattn/go-isatty"
+	"github.com/hdecarne-github/go-certstore/storage"
+	"github.com/hdecarne-github/go-log"
+	"github.com/rs/zerolog"
 	"gopkg.in/yaml.v3"
 )
 
@@ -36,7 +38,6 @@ type cmdLine struct {
 	Server  serverCmd  `cmd:"" help:"Run server"`
 	Verbose bool       `help:"Enable verbose output"`
 	Debug   bool       `help:"Enable debug output"`
-	ANSI    bool       `help:"Force ANSI colored output"`
 }
 
 type versionCmd struct{}
@@ -57,6 +58,7 @@ func (cmd *serverCmd) Run(context *evalContext) error {
 		return err
 	}
 	config.applyServerCmdLine(&context.cmdLine)
+	config.applyGlobalConfig()
 	return context.runner.Server(&config.ServerConfig)
 }
 
@@ -71,15 +73,9 @@ func (cmd *serverCmd) loadConfig() (*Global, error) {
 }
 
 type Global struct {
-	Debug        bool   `yaml:"debug"`
-	Verbose      bool   `yaml:"verbose"`
-	ANSI         bool   `yaml:"ansi"`
-	ServerConfig Server `yaml:"server"`
-	CLIConfig    CLI    `yaml:"cli"`
-}
-
-func (config *Global) applyRuntimeDefaults() {
-	config.ANSI = ansiDefault(os.Stdout)
+	ServerConfig Server         `yaml:"server"`
+	CLIConfig    CLI            `yaml:"cli"`
+	Logging      log.YAMLConfig `yaml:"logging"`
 }
 
 func (config *Global) applyConfigPath(configPath string) {
@@ -90,13 +86,10 @@ func (config *Global) applyConfigPath(configPath string) {
 
 func (config *Global) applyGlobalCmdLine(cmd *cmdLine) {
 	if cmd.Verbose {
-		config.Verbose = true
+		config.Logging.LevelOption = zerolog.LevelInfoValue
 	}
 	if cmd.Debug {
-		config.Debug = true
-	}
-	if cmd.ANSI {
-		config.ANSI = true
+		config.Logging.LevelOption = zerolog.LevelDebugValue
 	}
 }
 
@@ -110,11 +103,21 @@ func (config *Global) applyServerCmdLine(cmd *cmdLine) {
 	}
 }
 
+func (config *Global) applyGlobalConfig() {
+	_ = log.SetRootLoggerFromConfig(&config.Logging)
+}
+
 type Server struct {
-	ConfigPath string `yaml:"-"`
-	ServerURL  string `yaml:"server_url"`
-	StatePath  string `yaml:"state_path"`
-	ACMEConfig string `yaml:"acme_config"`
+	ConfigPath        string               `yaml:"-"`
+	ServerURL         string               `yaml:"server_url"`
+	StatePath         string               `yaml:"state_path"`
+	StoreCacheTTL     string               `yaml:"store_cache_ttl"`
+	StoreVersionLimit storage.VersionLimit `yaml:"store_version_limit"`
+	ACMEConfig        string               `yaml:"acme_config"`
+}
+
+func (config *Server) CertStoreURI() string {
+	return fmt.Sprintf("fs://./certstore?cache_ttl=%s&version_limit=%d", config.StoreCacheTTL, config.StoreVersionLimit)
 }
 
 type CLI struct {
@@ -130,7 +133,6 @@ func Defaults() *Global {
 	if err != nil {
 		panic(err)
 	}
-	defaults.applyRuntimeDefaults()
 	return defaults
 }
 
@@ -157,8 +159,4 @@ func resolveRelativePath(basePath string, path string) string {
 		return path
 	}
 	return filepath.Join(basePath, path)
-}
-
-func ansiDefault(out *os.File) bool {
-	return isatty.IsTerminal(out.Fd()) || isatty.IsCygwinTerminal(out.Fd())
 }

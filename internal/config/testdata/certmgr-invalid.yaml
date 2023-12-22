@@ -1,11 +1,10 @@
-debug: invalid
-verbose: invalid
-ansi: invalid
-
 server:
-  server_url: false
-  state_path: false
-  acme_config: false
+  server_url:
+    invalid: true
+  state_path:
+    invalid: true
+  acme_config:
+    invalid: true
 
 cli:
   server_url: false

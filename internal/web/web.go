@@ -7,12 +7,18 @@ package web
 
 import (
 	"embed"
+	"fmt"
 	"io/fs"
+	"net/http"
 )
 
 //go:embed all:build/*
 var docs embed.FS
 
-func Docs() (fs.FS, error) {
-	return fs.Sub(docs, "build")
+func Docs() (http.FileSystem, error) {
+	docs, err := fs.Sub(docs, "build")
+	if err != nil {
+		return nil, fmt.Errorf("unexpected web document structure (cause: %w)", err)
+	}
+	return http.FS(docs), nil
 }

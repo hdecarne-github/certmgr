@@ -11,6 +11,7 @@ import (
 
 	"github.com/hdecarne-github/certmgr/internal/buildinfo"
 	"github.com/hdecarne-github/certmgr/internal/config"
+	"github.com/hdecarne-github/certmgr/internal/server"
 )
 
 func Run(runner config.Runner) error {
@@ -36,5 +37,5 @@ func (runner *defaultRunner) Version(debug bool) error {
 }
 
 func (runner *defaultRunner) Server(config *config.Server) error {
-	return nil
+	return server.Run(config)
 }

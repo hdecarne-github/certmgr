@@ -1,10 +1,8 @@
-debug: true
-verbose: true
-ansi: false
-
 server:
   server_url: "http://localhost:10509"
   state_path: "./lib"
+  store_cache_ttl: "600s"
+  store_version_limit: 1
   acme_config: "acme.yaml"
 
 cli:

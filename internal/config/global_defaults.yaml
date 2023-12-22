@@ -1,12 +1,32 @@
-# commented out values are automatically detected at runtime
-debug: false
-verbose: false
-# ansi: false
-
 server:
   server_url: "http://localhost:10509"
   state_path: "/var/lib/certmgr"
+  store_cache_ttl: "60s"
+  store_version_limit: 10
   acme_config: "acme.yaml"
 
 cli:
   server_url: "http://localhost:10509"
+
+logging:
+  level: "warn"
+  timestamp: true
+  timeFieldFormat: ""
+
+  console:
+    enabled: true
+    out: "stdout"
+    color: "auto"
+    timeformat: "2006-01-02T15:04:05Z07:00"
+
+  file:
+    enabled: false
+    filename: "/var/log/certmgr.log"
+    max_size: 0
+    max_age: 0
+    max_backups: 0
+    compress: false
+      
+  syslog:
+    enabled: false
+    cee: false
