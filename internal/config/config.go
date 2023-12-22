@@ -110,10 +110,19 @@ func (config *Global) applyGlobalConfig() {
 type Server struct {
 	ConfigPath        string               `yaml:"-"`
 	ServerURL         string               `yaml:"server_url"`
+	ServerCRT         string               `yaml:"server_crt"`
+	ServerKey         string               `yaml:"server_key"`
 	StatePath         string               `yaml:"state_path"`
 	StoreCacheTTL     string               `yaml:"store_cache_ttl"`
 	StoreVersionLimit storage.VersionLimit `yaml:"store_version_limit"`
 	ACMEConfig        string               `yaml:"acme_config"`
+}
+
+func (config *Server) ResolveConfigFile(path string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
+	return filepath.Clean(filepath.Join(config.ConfigPath, path))
 }
 
 func (config *Server) CertStoreURI() string {
@@ -158,5 +167,5 @@ func resolveRelativePath(basePath string, path string) string {
 	if filepath.IsAbs(path) {
 		return path
 	}
-	return filepath.Join(basePath, path)
+	return filepath.Clean(filepath.Join(basePath, path))
 }

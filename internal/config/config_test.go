@@ -67,7 +67,7 @@ func (runner *testRunner) Server(config *config.Server) error {
 func TestDefaults(t *testing.T) {
 	defaults := config.Defaults()
 	require.NotNil(t, defaults)
-	require.Equal(t, "fs://./store?cache_ttl=60s&version_limit=10", defaults.ServerConfig.CertStoreURI())
+	require.Equal(t, "fs://./certstore?cache_ttl=60s&version_limit=10", defaults.ServerConfig.CertStoreURI())
 }
 
 func TestLoad(t *testing.T) {

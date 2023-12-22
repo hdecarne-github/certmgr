@@ -7,6 +7,7 @@ package server
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"os"
@@ -26,7 +27,7 @@ func Run(config *config.Server) error {
 	// setup logger
 	logger := log.RootLogger().With().Str("server", config.ServerURL).Logger()
 	logger.Info().Msg("starting server...")
-	// create or open cert store
+	// create/open cert store
 	certStoreURI := config.CertStoreURI()
 	logger.Info().Msgf("using certificate store '%s'", certStoreURI)
 	registry, err := certstore.NewStoreFromURI(certStoreURI, config.StatePath)
@@ -49,7 +50,7 @@ type serverInstance struct {
 }
 
 func (server *serverInstance) setupAndListen() error {
-	_, listen, prefix, err := server.splitServerURL()
+	useTLS, listen, prefix, err := server.splitServerURL()
 	if err != nil {
 		return err
 	}
@@ -57,9 +58,18 @@ func (server *serverInstance) setupAndListen() error {
 	if err != nil {
 		return err
 	}
+	var tlsConfig *tls.Config
+	if useTLS {
+		tlsCertificate, err := server.loadTLSCertificate()
+		if err != nil {
+			return err
+		}
+		tlsConfig = &tls.Config{Certificates: []tls.Certificate{*tlsCertificate}}
+	}
 	httpServer := &http.Server{
-		Addr:    listen,
-		Handler: router,
+		Addr:      listen,
+		Handler:   router,
+		TLSConfig: tlsConfig,
 	}
 	return server.listen(httpServer)
 }
@@ -69,12 +79,11 @@ const httpsPrefix = "https://"
 
 func (server *serverInstance) splitServerURL() (bool, string, string, error) {
 	remaining := server.config.ServerURL
-	var tls bool
+	var useTLS bool
 	if strings.HasPrefix(remaining, httpPrefix) {
-		tls = false
 		remaining = strings.TrimPrefix(remaining, httpPrefix)
 	} else if strings.HasPrefix(remaining, httpsPrefix) {
-		tls = true
+		useTLS = true
 		remaining = strings.TrimPrefix(remaining, httpsPrefix)
 	} else {
 		return false, "", "", fmt.Errorf("unrecognized server URL '%s'; unknown protocol", server.config.ServerURL)
@@ -86,7 +95,7 @@ func (server *serverInstance) splitServerURL() (bool, string, string, error) {
 		prefix = prefix + remainings[1]
 	}
 	prefix = strings.TrimSuffix(prefix, "/")
-	return tls, listen, prefix, nil
+	return useTLS, listen, prefix, nil
 }
 
 func (server *serverInstance) setupRouter(prefix string) (*gin.Engine, error) {
@@ -99,6 +108,20 @@ func (server *serverInstance) setupRouter(prefix string) (*gin.Engine, error) {
 	}
 	router.NoRoute(server.webdocsMiddleware(webdocs, prefix))
 	return router, nil
+}
+
+func (server *serverInstance) loadTLSCertificate() (*tls.Certificate, error) {
+	if server.config.ServerCRT == "" {
+		return nil, fmt.Errorf("no server certificate file defined")
+	}
+	if server.config.ServerKey == "" {
+		return nil, fmt.Errorf("no server key file defined")
+	}
+	tlsCertificate, err := tls.LoadX509KeyPair(server.config.ServerCRT, server.config.ServerKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load server certificate (cause: %w)", err)
+	}
+	return &tlsCertificate, nil
 }
 
 func (server *serverInstance) listen(httpServer *http.Server) error {
