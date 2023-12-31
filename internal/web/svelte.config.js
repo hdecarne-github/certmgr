@@ -1,3 +1,4 @@
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import adapter from '@sveltejs/adapter-static';
 
 export default {
@@ -10,6 +11,11 @@ export default {
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
-	}
+		}),
+		paths: {
+			relative: true
+		}
+	},
+
+	preprocess: [vitePreprocess({})]
 };

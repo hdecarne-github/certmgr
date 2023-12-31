@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+<!-- Copyright (c) 2023 Holger de Carne, All Rights Reserved. -->
+    <defs>
+        <linearGradient id="gradient1">
+            <stop class="stop1" offset="0%" />
+            <stop class="stop2" offset="30%" />
+            <stop class="stop3" offset="70%" />
+            <stop class="stop4" offset="100%" />
+        </linearGradient>
+    </defs>
+    <style>
+        .stop1 { stop-color: gold; }
+        .stop2 { stop-color: goldenrod; }
+        .stop3 { stop-color: goldenrod; }
+        .stop4 { stop-color: gold; }
+    </style>
+    <g stroke="darkgrey" fill="none" stroke-width="10" stroke-linecap="round">
+        <path d="M 48 48 v -10 a -1 -1 0 0 1 32 0 v 10" />
+    </g>
+    <rect x="32" y="48" width="64" height="56" rx="8" ry="8" fill="url(#gradient1)" />
+    <circle cx="88" cy="104" r="24" fill="green" />
+    <g stroke="white" fill="none" stroke-width="8" stroke-linecap="round">
+        <path d="M 78 104 h 20" />
+        <path d="M 88 94 v 20" />
+    </g>
+</svg>

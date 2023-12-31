@@ -1,4 +1,4 @@
-// Copyright (C) 2015-2023 Holger de Carne and contributors
+// Copyright (C) 2015-2024 Holger de Carne and contributors
 //
 // This software may be modified and distributed under the terms
 // of the MIT license.  See the LICENSE file for details.
@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,11 @@ type serverInstance struct {
 	config   *config.Server
 	registry *certstore.Registry
 	logger   *zerolog.Logger
+}
+
+func (server *serverInstance) shutdown(c *gin.Context) {
+	syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+	c.Status(http.StatusOK)
 }
 
 func (server *serverInstance) setupAndListen() error {
@@ -106,6 +112,12 @@ func (server *serverInstance) setupRouter(prefix string) (*gin.Engine, error) {
 	if err != nil {
 		return nil, err
 	}
+	router.GET(prefix+"/api/shutdown", server.shutdown)
+	router.GET(prefix+"/api/about", server.about)
+	router.GET(prefix+"/api/entries", server.entries)
+	router.GET(prefix+"/api/cas", server.cas)
+	router.GET(prefix+"/api/issuers", server.issuers)
+	router.PUT(prefix+"/api/generate/local", server.generateLocal)
 	router.NoRoute(server.webdocsMiddleware(webdocs, prefix))
 	return router, nil
 }
@@ -130,7 +142,7 @@ func (server *serverInstance) listen(httpServer *http.Server) error {
 	sigintCtx, cancelListenAndServe := context.WithCancel(context.Background())
 	go func() {
 		<-sigint
-		server.logger.Info().Msg("SIGINT received; stopping server...")
+		server.logger.Info().Msg("signal SIGINT; stopping server...")
 		cancelListenAndServe()
 	}()
 	go func() {
@@ -153,10 +165,6 @@ func (server *serverInstance) listen(httpServer *http.Server) error {
 
 func (server *serverInstance) loggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if !server.logger.Debug().Enabled() {
-			c.Next()
-			return
-		}
 		path := c.Request.URL.Path
 		raw := c.Request.URL.RawQuery
 		if raw != "" {
@@ -168,7 +176,19 @@ func (server *serverInstance) loggerMiddleware() gin.HandlerFunc {
 		clientIP := c.ClientIP()
 		method := c.Request.Method
 		status := c.Writer.Status()
-		server.logger.Debug().Msgf("%s %s %s - %d (%s)", clientIP, method, path, status, elapsed)
+		errorTrace := ""
+		for _, errorMsg := range c.Errors {
+			errorTrace = "\n  " + errorMsg.Err.Error()
+		}
+		var event *zerolog.Event
+		if status >= 500 {
+			event = server.logger.Error()
+		} else if status >= 400 {
+			event = server.logger.Warn()
+		} else {
+			event = server.logger.Debug()
+		}
+		event.Msgf("%s %s %s - %d (%s)%s", clientIP, method, path, status, elapsed, errorTrace)
 	}
 }
 
