@@ -1,40 +1,51 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {
-		Label,
-		Input,
-		Select,
 		Button,
 		type SelectOptionType,
 		Accordion,
 		AccordionItem,
-		Toggle
+		Toggle,
+		Modal,
+		Spinner
 	} from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
-	import api, { GenerateLocal } from '$lib/api';
+	import api, { GenerateAcme, GenerateLocal, GenerateRemote } from '$lib/api';
 	import certs, { BasicConstraints, ExtKeyUsage, KeyUsage, KeyUsageFlag } from '$lib/certs';
 	import ui from '$lib/ui';
 	import SelfNav from '$lib/components/selfnav.svelte';
+	import NameInput from '$lib/components/nameinput.svelte';
+	import CaInput from '$lib/components/cainput.svelte';
 	import DnInput from '$lib/components/dninput.svelte';
 	import KeyTypeInput from '$lib/components/keytypeinput.svelte';
 	import IssuerInput from '$lib/components/issuerinput.svelte';
-	import ValidityInput from '$lib/components/validityinput.svelte';
+	import ValidFromToInput from '$lib/components/validfromtoinput.svelte';
 	import KeyUsageInput from '$lib/components/keyusageinput.svelte';
 	import ExtKeyUsageInput from '$lib/components/extkeyusageinput.svelte';
 	import BasicConstraintInput from '$lib/components/basicconstraintsinput.svelte';
+	import DomainsInput from '$lib/components/domainsinput.svelte';
 
+	// Global options
+	let generating: boolean = false;
 	let selectedName: string = '';
+	let selectedNameValid: any;
 	let cas: SelectOptionType<string>[] = [];
-	let selectedCA: string = '';
+	let selectedCa: string = '';
+	let selectedCaValid: any;
 
+	// Local options
 	let selectedLocalDn: string = '';
+	let selectedLocalDnValid: any;
 	let localKeyTypes: SelectOptionType<string>[] = certs.defaultKeyTypes.map((keyType) => {
 		return { name: keyType[0], value: keyType[1] };
 	});
 	let selectedLocalKeyType: string = '';
+	let selectedLocalKeyTypeValid: any;
 	let selectedLocalIssuer: string = '';
+	let selectedLocalIssuerValid: any;
 	let selectedLocalValidFrom: string = '';
 	let selectedLocalValidTo: string = '';
+	let selectedLocalValidFromToValid: any;
 	let localKeyUsageEnabled: boolean = false;
 	let localKeyUsage: KeyUsage = new KeyUsage();
 	let localExtKeyUsageEnabled: boolean = false;
@@ -42,32 +53,54 @@
 	let localBasicConstraintEnabled: boolean = false;
 	let localBasicConstraints: BasicConstraints = new BasicConstraints();
 
+	// Remote options
 	let selectedRemoteDn: string = '';
+	let selectedRemoteDnValid: any;
 	let remoteKeyTypes: SelectOptionType<string>[] = localKeyTypes;
 	let selectedRemoteKeyType: string = '';
+	let selectedRemoteKeyTypeValid: any;
 
+	// ACME options
+	let selectedAcmeDomains: string = '';
+	let selectedAcmeDomainsValid: any;
 	let acmeKeyTypes: SelectOptionType<string>[] = certs.acmeKeyTypes.map((keyType) => {
 		return { name: keyType[0], value: keyType[1] };
 	});
-	let selectedACMEKeyType: string = '';
+	let selectedAcmeKeyType: string = '';
+	let selectedAcmeKeyTypeValid: any;
 
 	function onGenerate() {
-		if (certs.isLocalCA(selectedCA)) {
+		let checked: boolean = selectedNameValid.check();
+		checked = selectedCaValid.check() && checked;
+		if (!checked) {
+			return;
+		}
+		if (certs.isLocalCa(selectedCa)) {
 			onGenerateLocal();
-		} else if (certs.isRemoteCA(selectedCA)) {
-		} else if (certs.isACMECA(selectedCA)) {
+		} else if (certs.isRemoteCa(selectedCa)) {
+			onGenerateRemote();
+		} else if (certs.isAcmeCa(selectedCa)) {
+			onGenerateAcme();
 		}
 	}
 
 	function onGenerateLocal() {
+		let checked: boolean = selectedLocalDnValid.check();
+		checked = selectedLocalKeyTypeValid.check() && checked;
+		checked = selectedLocalIssuerValid.check() && checked;
+		checked = selectedLocalValidFromToValid.check() && checked;
+		if (!checked) {
+			return;
+		}
+		generating = true;
 		let generate = new GenerateLocal();
-		generate.name = selectedName;
-		generate.ca = selectedCA;
-		generate.dn = selectedLocalDn;
-		generate.keyType = selectedLocalKeyType;
-		generate.issuer = selectedLocalIssuer;
-		generate.validFrom = ui.inputToDate(selectedLocalValidFrom);
-		generate.validTo = ui.inputToDate(selectedLocalValidTo);
+		generate.name = selectedName.trim();
+		generate.ca = selectedCa.trim();
+		generate.dn = selectedLocalDn.trim();
+		generate.keyType = selectedLocalKeyType.trim();
+		generate.issuer = selectedLocalIssuer === '*' ? '' : selectedLocalIssuer.trim();
+		generate.validFrom = ui.inputToDate(selectedLocalValidFrom.trim()).toJSON();
+		generate.validTo = ui.inputToDate(selectedLocalValidTo.trim()).toJSON();
 		if (localKeyUsageEnabled) {
 			generate.keyUsage = localKeyUsage.toSpec();
 		}
@@ -78,7 +111,44 @@
 			generate.basicConstraints = localBasicConstraints.toSpec();
 		}
 		api.generateLocal.put('..', generate).then((response) => {
-			console.log(response);
+			generating = false;
+			goto('..');
+		});
+	}
+
+	function onGenerateRemote() {
+		let checked: boolean = selectedRemoteDnValid.check();
+		checked = selectedRemoteKeyTypeValid.check() && checked;
+		if (!checked) {
+			return;
+		}
+		generating = true;
+		let generate = new GenerateRemote();
+		generate.name = selectedName.trim();
+		generate.ca = selectedCa.trim();
+		generate.dn = selectedRemoteDn.trim();
+		generate.keyType = selectedRemoteKeyType.trim();
+		api.generateRemote.put('..', generate).then((response) => {
+			generating = false;
+			goto('..');
+		});
+	}
+
+	function onGenerateAcme() {
+		let checked: boolean = selectedAcmeDomainsValid.check();
+		checked = selectedAcmeKeyTypeValid.check() && checked;
+		if (!checked) {
+			return;
+		}
+		generating = true;
+		let generate = new GenerateAcme();
+		generate.name = selectedName.trim();
+		generate.ca = selectedCa.trim();
+		generate.domains = selectedAcmeDomains.split(',').map(domain => domain.trim());
+		generate.keyType = selectedAcmeKeyType.trim();
+		api.generateAcme.put('..', generate).then((response) => {
+			generating = false;
+			goto('..');
 		});
 	}
 
@@ -103,24 +173,29 @@
 <SelfNav base=".." title="New Certificate" />
 <div class="p-8">
 	<div class="mb-6">
-		<Label for="name-input" class="mb-2 block">Name</Label>
-		<Input id="name-input" placeholder="Enter entry name" bind:value={selectedName} />
+		<NameInput bind:name={selectedName} bind:valid={selectedNameValid} />
 	</div>
 	<div class="mb-6">
-		<Label>
-			Select a Certificate Authority
-			<Select class="mt-2" items={cas} bind:value={selectedCA} />
-		</Label>
+		<CaInput {cas} bind:ca={selectedCa} bind:valid={selectedCaValid} />
 	</div>
-	{#if certs.isLocalCA(selectedCA)}
-		<DnInput label="Certificate DN" bind:dn={selectedLocalDn} />
-		<KeyTypeInput keyTypes={localKeyTypes} bind:keyType={selectedLocalKeyType} />
+	{#if certs.isLocalCa(selectedCa)}
+		<DnInput label="Certificate DN" bind:dn={selectedLocalDn} bind:valid={selectedLocalDnValid} />
+		<KeyTypeInput
+			keyTypes={localKeyTypes}
+			bind:keyType={selectedLocalKeyType}
+			bind:valid={selectedLocalKeyTypeValid}
+		/>
 		<IssuerInput
 			selfsigned={true}
 			keyUsage={KeyUsageFlag.KeyCertSign}
 			bind:issuer={selectedLocalIssuer}
+			bind:valid={selectedLocalIssuerValid}
 		/>
-		<ValidityInput bind:validFrom={selectedLocalValidFrom} bind:validTo={selectedLocalValidTo} />
+		<ValidFromToInput
+			bind:validFrom={selectedLocalValidFrom}
+			bind:validTo={selectedLocalValidTo}
+			bind:valid={selectedLocalValidFromToValid}
+		/>
 		<div class="mb-6">
 			<Accordion flush multiple>
 				<AccordionItem>
@@ -149,19 +224,19 @@
 			</Accordion>
 		</div>
 	{/if}
-	{#if certs.isRemoteCA(selectedCA)}
-		<DnInput label="Certificate Request DN" dn={selectedRemoteDn} />
-		<KeyTypeInput keyTypes={remoteKeyTypes} bind:keyType={selectedRemoteKeyType} />
+	{#if certs.isRemoteCa(selectedCa)}
+		<DnInput label="Certificate Request DN" dn={selectedRemoteDn} bind:valid={selectedRemoteDnValid} />
+		<KeyTypeInput keyTypes={remoteKeyTypes} bind:keyType={selectedRemoteKeyType} bind:valid={selectedRemoteKeyTypeValid} />
 	{/if}
-	{#if certs.isACMECA(selectedCA)}
-		<div class="mb-6">
-			<Label for="acmedomains-input" class="mb-2 block">Domain(s)</Label>
-			<Input id="acmedomains-input" placeholder="Enter certificate Domain(s)" />
-		</div>
-		<KeyTypeInput keyTypes={acmeKeyTypes} bind:keyType={selectedACMEKeyType} />
+	{#if certs.isAcmeCa(selectedCa)}
+		<DomainsInput bind:domains={selectedAcmeDomains} bind:valid={selectedAcmeDomainsValid} />
+		<KeyTypeInput keyTypes={acmeKeyTypes} bind:keyType={selectedAcmeKeyType} bind:valid={selectedAcmeKeyTypeValid} />
 	{/if}
 	<div class="mb-6">
 		<Button type="submit" on:click={onGenerate}>Generate</Button>
 		<Button color="alternative" on:click={onCancel}>Cancel</Button>
 	</div>
 </div>
+<Modal title="Generating..." bind:open={generating}>
+	<Spinner />
+</Modal>

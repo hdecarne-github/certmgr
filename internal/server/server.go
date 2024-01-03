@@ -115,9 +115,12 @@ func (server *serverInstance) setupRouter(prefix string) (*gin.Engine, error) {
 	router.GET(prefix+"/api/shutdown", server.shutdown)
 	router.GET(prefix+"/api/about", server.about)
 	router.GET(prefix+"/api/entries", server.entries)
+	router.GET(prefix+"/api/details/:name", server.details)
 	router.GET(prefix+"/api/cas", server.cas)
 	router.GET(prefix+"/api/issuers", server.issuers)
 	router.PUT(prefix+"/api/generate/local", server.generateLocal)
+	router.PUT(prefix+"/api/generate/remote", server.generateRemote)
+	router.PUT(prefix+"/api/generate/acme", server.generateACME)
 	router.NoRoute(server.webdocsMiddleware(webdocs, prefix))
 	return router, nil
 }

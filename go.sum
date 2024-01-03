@@ -57,8 +57,8 @@ github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/
 github.com/google/uuid v1.3.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.5.0 h1:1p67kYwdtXjb0gL0BPiP1Av9wiZPo5A8z2cWkTZ+eyU=
 github.com/google/uuid v1.5.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/hdecarne-github/go-certstore v0.0.3 h1:Y0Q07fV+JTdy1hyL47+x5Xv7QnC3LGwEtFxDAu7TNeU=
-github.com/hdecarne-github/go-certstore v0.0.3/go.mod h1:A5nDDOAiPSyro+f8oC96GjnINyfCSY30534CrgkYvUI=
+github.com/hdecarne-github/go-certstore v0.0.5 h1:GmNtfi/UnCZao2EaVuXw6GJBDd6YylpIITWh0RKQ/hY=
+github.com/hdecarne-github/go-certstore v0.0.5/go.mod h1:A5nDDOAiPSyro+f8oC96GjnINyfCSY30534CrgkYvUI=
 github.com/hdecarne-github/go-log v0.1.1 h1:NdulGj/dIJRzvjojhxIn6iF+z3MT3mE49+S5pKuaZEc=
 github.com/hdecarne-github/go-log v0.1.1/go.mod h1:SiDkRhofipsXivABWvQya4ACsZrcpxelWyaqlDvcO1s=
 github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=

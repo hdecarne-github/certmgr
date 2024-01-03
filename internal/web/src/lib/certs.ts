@@ -1,14 +1,14 @@
 import { KeyUsageSpec, BasicConstraintsSpec, ExtKeyUsageSpec } from "./api";
 
-function isLocalCA(ca: string): boolean {
+function isLocalCa(ca: string): boolean {
     return ca == 'Local';
 }
 
-function isRemoteCA(ca: string): boolean {
+function isRemoteCa(ca: string): boolean {
     return ca == 'Remote';
 }
 
-function isACMECA(ca: string): boolean {
+function isAcmeCa(ca: string): boolean {
     return (ca ?? '').startsWith('ACME:');
 }
 
@@ -20,7 +20,8 @@ const defaultKeyTypes: string[][] = [
     ['ED25519', 'ED25519'],
     ['RSA 2048', 'RSA2048'],
     ['RSA 3072', 'RSA3072'],
-    ['RSA 4092', 'RSA4092'],
+    ['RSA 4096', 'RSA4096'],
+    ['RSA 8192', 'RSA8192'],
 ];
 
 const acmeKeyTypes: string[][] = [
@@ -28,7 +29,7 @@ const acmeKeyTypes: string[][] = [
     ['ECDSA P-384', 'ECDSA384'],
     ['RSA 2048', 'RSA2048'],
     ['RSA 3072', 'RSA3072'],
-    ['RSA 4092', 'RSA4092'],
+    ['RSA 4096', 'RSA4096'],
 ];
 
 export enum KeyUsageFlag {
@@ -173,9 +174,9 @@ export class BasicConstraints {
 }
 
 const certs = {
-    isLocalCA,
-    isRemoteCA,
-    isACMECA,
+    isLocalCa,
+    isRemoteCa,
+    isAcmeCa,
     defaultKeyTypes,
     acmeKeyTypes,
 };

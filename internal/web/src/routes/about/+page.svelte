@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Img, Heading, P } from 'flowbite-svelte';
+	import { Img, Heading, P, A } from 'flowbite-svelte';
 	import MainNav from '$lib/components/mainnav.svelte';
 	import api, { type AboutInfo } from '$lib/api';
 
@@ -42,8 +42,7 @@
 	OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 </P>
 <P class="px-8 py-4">
-	You should have received a copy of the license along with this program. If not, see <a
-		href="https://raw.githubusercontent.com/hdecarne-github/certmgr/next/LICENSE"
-		>online LICENSE file</a
-	>.
+	You should have received a copy of the license along with this program. If not, see online <A
+		href="https://raw.githubusercontent.com/hdecarne-github/certmgr/next/LICENSE">LICENSE</A
+	> file.
 </P>

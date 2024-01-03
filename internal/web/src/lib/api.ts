@@ -48,21 +48,22 @@ const entries = {
 };
 
 // /details/${name}
-
-export class EntryDetails extends Entry {
-	crt_details: CRTDetails = new CRTDetails();
+export class EntryDetails {
+	name: string = "";
+	groups: EntryDetailsGroup[] = [];
 }
 
-export class CRTDetails {
-	version: number = -1;
-	serial: string = '';
-	keyType: string = '';
-	issuer: string = '';
-	sigAlg: string = '';
-	extensions: string[2][] = [];
+export class EntryDetailsGroup {
+	title: string = "";
+	attributes: EntryDetailsAttribute[] = [];
 }
 
-const entryDetails = {
+export class EntryDetailsAttribute {
+	key: string = "";
+	value: string = "";
+}
+
+const details = {
 	get: (base: string, name: string) => request.get<EntryDetails>(`${base}/api/details/${name}`)
 };
 
@@ -130,8 +131,8 @@ export class GenerateLocal extends Generate {
 	dn: string = '';
 	keyType: string = '';
 	issuer: string = '';
-	validFrom: Date = new Date(0);
-	validTo: Date = new Date(0);
+	validFrom: string = new Date(0).toJSON();
+	validTo: string = new Date(0).toJSON();
 	keyUsage: KeyUsageSpec = new KeyUsageSpec();
 	extKeyUsage: ExtKeyUsageSpec = new ExtKeyUsageSpec();
 	basicConstraints: BasicConstraintsSpec = new BasicConstraintsSpec();
@@ -141,33 +142,33 @@ const generateLocal = {
 	put: (base: string, body: GenerateLocal) => request.put<Entry>(`${base}/api/generate/local`, body)
 };
 
-export class StoreRemoteGenerate extends Generate {
+export class GenerateRemote extends Generate {
 	dn: string = '';
-	key_type: string = '';
+	keyType: string = '';
 }
 
-const storeRemoteGenerate = {
-	put: (base: string, body: StoreRemoteGenerate) => request.put<void>(`${base}/api/store/remote/generate`, body)
+const generateRemote = {
+	put: (base: string, body: GenerateRemote) => request.put<void>(`${base}/api/generate/remote`, body)
 };
 
-export class StoreACMEGenerate extends Generate {
+export class GenerateAcme extends Generate {
 	domains: string[] = [];
-	key_type: string = '';
+	keyType: string = '';
 }
 
-const storeACMEGenerate = {
-	put: (base: string, body: StoreRemoteGenerate) => request.put<void>(`${base}/api/store/acme/generate`, body)
+const generateAcme = {
+	put: (base: string, body: GenerateAcme) => request.put<void>(`${base}/api/generate/acme`, body)
 };
 
 const api = {
 	about,
 	entries,
-	entryDetails,
+	details,
 	cas,
 	issuers,
 	generateLocal,
-	storeRemoteGenerate,
-	storeACMEGenerate
+	generateRemote,
+	generateAcme,
 };
 
 export default api;

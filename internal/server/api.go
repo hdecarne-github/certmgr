@@ -6,8 +6,11 @@
 package server
 
 import (
+	"crypto"
 	"crypto/x509"
+	"encoding/asn1"
 	"math/big"
+	"strconv"
 	"time"
 
 	"github.com/hdecarne-github/go-certstore"
@@ -34,69 +37,41 @@ type Entries struct {
 }
 
 type Entry struct {
-	Name      string    `json:"name"`
-	DN        string    `json:"dn"`
-	Serial    *big.Int  `json:"serial"`
-	KeyType   string    `json:"keyType"`
-	Key       bool      `json:"key"`
-	CRT       bool      `json:"crt"`
-	CSR       bool      `json:"csr"`
-	CRL       bool      `json:"crl"`
-	CA        bool      `json:"ca"`
-	ValidFrom time.Time `json:"validFrom"`
-	ValidTo   time.Time `json:"validTo"`
+	Name      string   `json:"name"`
+	DN        string   `json:"dn"`
+	Serial    *big.Int `json:"serial"`
+	KeyType   string   `json:"keyType"`
+	Key       bool     `json:"key"`
+	CRT       bool     `json:"crt"`
+	CSR       bool     `json:"csr"`
+	CRL       bool     `json:"crl"`
+	CA        bool     `json:"ca"`
+	ValidFrom string   `json:"validFrom"`
+	ValidTo   string   `json:"validTo"`
 }
 
 func newEntry(entry *certstore.RegistryEntry) *Entry {
-	dn := ""
-	serial := big.NewInt(0)
-	keyType := ""
-	ca := false
-	validFrom := time.Time{}
-	validTo := time.Time{}
-	if entry.HasCertificate() {
-		certificate := entry.Certificate()
-		dn = certificate.Subject.String()
-		serial = certificate.SerialNumber
-		keyAlg, _ := keys.AlgorithmFromKey(certificate.PublicKey)
-		keyType = keyAlg.String()
-		ca = certificate.BasicConstraintsValid && certificate.IsCA
-		validFrom = certificate.NotBefore
-		validTo = certificate.NotAfter
-	} else if entry.HasCertificateRequest() {
-		certificateRequest := entry.CertificateRequest()
-		dn = certificateRequest.Subject.String()
-		keyAlg, _ := keys.AlgorithmFromKey(certificateRequest.PublicKey)
-		keyType = keyAlg.String()
-	}
-	return &Entry{
-		Name:      entry.Name(),
-		DN:        dn,
-		Serial:    serial,
-		KeyType:   keyType,
-		Key:       entry.HasKey(),
-		CRT:       entry.HasCertificate(),
-		CSR:       entry.HasCertificateRequest(),
-		CRL:       entry.HasRevocationList(),
-		CA:        ca,
-		ValidFrom: validFrom,
-		ValidTo:   validTo,
-	}
+	return populateEntry(&Entry{}, entry)
 }
 
 // <- /api/details/:name
 type EntryDetails struct {
-	Entry
-	CRT CRTDetails `json:"crt"`
+	Name   string              `json:"name"`
+	Groups []EntryDetailsGroup `json:"groups"`
 }
 
-type CRTDetails struct {
-	Version    int         `json:"version"`
-	Serial     string      `json:"serial"`
-	KeyType    string      `json:"key_type"`
-	Issuer     string      `json:"issuer"`
-	SigAlg     string      `json:"sig_alg"`
-	Extensions [][2]string `json:"extensions"`
+func newDetails(entry *certstore.RegistryEntry) *EntryDetails {
+	return populateEntryDetails(&EntryDetails{}, entry)
+}
+
+type EntryDetailsGroup struct {
+	Title      string                  `json:"title"`
+	Attributes []EntryDetailsAttribute `json:"attributes"`
+}
+
+type EntryDetailsAttribute struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 // <- /api/cas
@@ -265,21 +240,179 @@ func (spec *BasicConstraintsSpec) applyToCertificate(certificate *x509.Certifica
 	}
 }
 
-// <- /api/remote/generate
-type StoreGenerateRemoteRequest struct {
+// <- /api/generate/remote
+type GenerateRemote struct {
 	Generate
 	DN      string `json:"dn"`
-	KeyType string `json:"key_type"`
+	KeyType string `json:"keyType"`
 }
 
-// <- /api/acme/generate
-type StoreGenerateACMERequest struct {
+func (generate *GenerateRemote) validate() error {
+	err := generate.Generate.validate()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (generate *GenerateRemote) toTemplate() (*x509.CertificateRequest, error) {
+	dn, err := certs.ParseDN(generate.DN)
+	if err != nil {
+		return nil, err
+	}
+	template := &x509.CertificateRequest{
+		Version: 3,
+		Subject: *dn,
+	}
+	return template, nil
+}
+
+// <- /api/generate/acme
+type GenerateACME struct {
 	Generate
 	Domains []string `json:"domains"`
-	KeyType string   `json:"key_type"`
+	KeyType string   `json:"keyType"`
+}
+
+func (generate *GenerateACME) validate() error {
+	err := generate.Generate.validate()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // <- /api/*
-type ServerErrorResponse struct {
+type ErrorResponse struct {
 	Message string `json:"message"`
+}
+
+// helper
+func populateEntry(apiEntry *Entry, registryEntry *certstore.RegistryEntry) *Entry {
+	apiEntry.Name = registryEntry.Name()
+	apiEntry.Key = registryEntry.HasKey()
+	apiEntry.CRT = registryEntry.HasCertificate()
+	apiEntry.CSR = registryEntry.HasCertificateRequest()
+	apiEntry.CRL = registryEntry.HasRevocationList()
+	if apiEntry.CRT {
+		certificate := registryEntry.Certificate()
+		apiEntry.DN = certificate.Subject.String()
+		apiEntry.Serial = certificate.SerialNumber
+		keyAlg, _ := keys.AlgorithmFromKey(certificate.PublicKey)
+		apiEntry.KeyType = keyAlg.String()
+		apiEntry.CA = certificate.BasicConstraintsValid && certificate.IsCA
+		apiEntry.ValidFrom = certificate.NotBefore.Format(time.RFC3339)
+		apiEntry.ValidTo = certificate.NotAfter.Format(time.RFC3339)
+	} else if apiEntry.CSR {
+		certificateRequest := registryEntry.CertificateRequest()
+		apiEntry.DN = certificateRequest.Subject.String()
+		apiEntry.Serial = big.NewInt(0)
+		keyAlg, _ := keys.AlgorithmFromKey(certificateRequest.PublicKey)
+		apiEntry.KeyType = keyAlg.String()
+	}
+	return apiEntry
+}
+
+func populateEntryDetails(details *EntryDetails, registryEntry *certstore.RegistryEntry) *EntryDetails {
+	details.Name = registryEntry.Name()
+	details.Groups = append(details.Groups, *populateEntryDetailsKey(&EntryDetailsGroup{Title: "Key"}, registryEntry))
+	if registryEntry.HasCertificate() {
+		certificate := registryEntry.Certificate()
+		details.Groups = append(details.Groups, *populateEntryDetailsCertificate(&EntryDetailsGroup{Title: "Certificate"}, certificate))
+		details.Groups = append(details.Groups, *populateEntryDetailsCertificateExtensions(&EntryDetailsGroup{Title: "Extensions"}, certificate))
+	}
+	if registryEntry.HasCertificateRequest() {
+		certificateRequest := registryEntry.CertificateRequest()
+		details.Groups = append(details.Groups, *populateEntryDetailsCertificateRequest(&EntryDetailsGroup{Title: "Certificate request"}, certificateRequest))
+	}
+	return details
+}
+
+func populateEntryDetailsKey(group *EntryDetailsGroup, registryEntry *certstore.RegistryEntry) *EntryDetailsGroup {
+	keyType := keys.UnknownAlgorithm.String()
+	if registryEntry.HasCertificate() {
+		certificate := registryEntry.Certificate()
+		keyType = keyTypeString(certificate.PublicKey, certificate.PublicKeyAlgorithm)
+	} else if registryEntry.HasCertificateRequest() {
+		certificateRequest := registryEntry.CertificateRequest()
+		keyType = keyTypeString(certificateRequest.PublicKey, certificateRequest.PublicKeyAlgorithm)
+	}
+	privateKey := "no"
+	if registryEntry.HasKey() {
+		privateKey = "yes"
+	}
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Key type", Value: keyType})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Private key", Value: privateKey})
+	return group
+}
+
+func keyTypeString(publicKey crypto.PublicKey, defaultType x509.PublicKeyAlgorithm) string {
+	keyAlg, _ := keys.AlgorithmFromKey(publicKey)
+	// for imported certificate objects we may encounter an unknown algorithm
+	if keyAlg == keys.UnknownAlgorithm {
+		return defaultType.String()
+	}
+	return keyAlg.String()
+}
+
+func populateEntryDetailsCertificate(group *EntryDetailsGroup, certificate *x509.Certificate) *EntryDetailsGroup {
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Version", Value: strconv.Itoa(certificate.Version)})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "DN", Value: certificate.Subject.String()})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Serial", Value: certificate.SerialNumber.String()})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Issuer DN", Value: certificate.Issuer.String()})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Signature type", Value: certificate.SignatureAlgorithm.String()})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Valid from", Value: certificate.NotBefore.Format(time.RFC3339)})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Valid to", Value: certificate.NotAfter.Format(time.RFC3339)})
+	return group
+}
+
+func populateEntryDetailsCertificateExtensions(group *EntryDetailsGroup, certificate *x509.Certificate) *EntryDetailsGroup {
+	populateEntryDetailsKeyUsage(group, certificate.KeyUsage)
+	populateEntryDetailsExtKeyUsage(group, certificate.ExtKeyUsage, certificate.UnknownExtKeyUsage)
+	if certificate.BasicConstraintsValid {
+		populateEntryDetailsBasicConstraints(group, certificate.IsCA, certificate.MaxPathLen, certificate.MaxPathLenZero)
+	}
+	populateEntryDetailsSubjectKeyId(group, certificate.SubjectKeyId)
+	populateEntryDetailsAuthorityKeyId(group, certificate.AuthorityKeyId)
+	return group
+}
+
+func populateEntryDetailsKeyUsage(group *EntryDetailsGroup, keyUsage x509.KeyUsage) *EntryDetailsGroup {
+	if keyUsage != 0 {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Key usage", Value: certs.KeyUsageString(keyUsage)})
+	}
+	return group
+}
+
+func populateEntryDetailsExtKeyUsage(group *EntryDetailsGroup, extKeyUsage []x509.ExtKeyUsage, unknownExtKeyUsage []asn1.ObjectIdentifier) *EntryDetailsGroup {
+	if len(extKeyUsage) > 0 || len(unknownExtKeyUsage) > 0 {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Extended key usage", Value: certs.ExtKeyUsageString(extKeyUsage, unknownExtKeyUsage)})
+	}
+	return group
+}
+
+func populateEntryDetailsBasicConstraints(group *EntryDetailsGroup, isCA bool, maxPathLen int, maxPathLenZero bool) *EntryDetailsGroup {
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Basic constraints", Value: certs.BasicConstraintsString(isCA, maxPathLen, maxPathLenZero)})
+	return group
+}
+
+func populateEntryDetailsSubjectKeyId(group *EntryDetailsGroup, keyId []byte) *EntryDetailsGroup {
+	if len(keyId) > 0 {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Subject key id", Value: certs.KeyIdentifierString(keyId)})
+	}
+	return group
+}
+
+func populateEntryDetailsAuthorityKeyId(group *EntryDetailsGroup, keyId []byte) *EntryDetailsGroup {
+	if len(keyId) > 0 {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Authority key id", Value: certs.KeyIdentifierString(keyId)})
+	}
+	return group
+}
+
+func populateEntryDetailsCertificateRequest(group *EntryDetailsGroup, certificateRequest *x509.CertificateRequest) *EntryDetailsGroup {
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Version", Value: strconv.Itoa(certificateRequest.Version)})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "DN", Value: certificateRequest.Subject.String()})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Signature type", Value: certificateRequest.SignatureAlgorithm.String()})
+	return group
 }

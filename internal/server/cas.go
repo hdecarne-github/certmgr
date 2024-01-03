@@ -9,12 +9,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hdecarne-github/go-certstore/certs/acme"
 )
 
 const localCAName string = "Local"
 const remoteCAName string = "Remote"
-const acmeCAPrefix string = "ACME:"
 
 func (server *serverInstance) cas(c *gin.Context) {
 	response := &CAs{
@@ -22,15 +20,13 @@ func (server *serverInstance) cas(c *gin.Context) {
 	}
 	response.CAs = append(response.CAs, CA{Name: localCAName})
 	response.CAs = append(response.CAs, CA{Name: remoteCAName})
-	acmeConfigPath := server.config.ResolveConfigFile(server.config.ACMEConfig)
-	server.logger.Debug().Msgf("using ACME config '%s'", acmeConfigPath)
-	acmeConfig, err := acme.LoadConfig(acmeConfigPath)
+	acmeConfig, err := server.loadACMEConfig()
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 	for _, acmeProvider := range acmeConfig.Providers {
-		response.CAs = append(response.CAs, CA{Name: acmeCAPrefix + acmeProvider.Name})
+		response.CAs = append(response.CAs, CA{Name: server.caFromACMEProvider(acmeProvider.Name)})
 	}
 	c.JSON(http.StatusOK, response)
 }

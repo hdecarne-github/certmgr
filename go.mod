@@ -53,7 +53,7 @@ require (
 	github.com/alecthomas/kong v0.8.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gin-gonic/gin v1.9.1
-	github.com/hdecarne-github/go-certstore v0.0.3
+	github.com/hdecarne-github/go-certstore v0.0.5
 	github.com/hdecarne-github/go-log v0.1.1
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
