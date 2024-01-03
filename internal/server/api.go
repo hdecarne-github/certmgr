@@ -124,7 +124,6 @@ func (generate *GenerateLocal) toTemplate() (*x509.Certificate, error) {
 		return nil, err
 	}
 	template := &x509.Certificate{
-		Version:   3,
 		Subject:   *dn,
 		NotBefore: generate.ValidFrom,
 		NotAfter:  generate.ValidTo,
@@ -261,7 +260,6 @@ func (generate *GenerateRemote) toTemplate() (*x509.CertificateRequest, error) {
 		return nil, err
 	}
 	template := &x509.CertificateRequest{
-		Version: 3,
 		Subject: *dn,
 	}
 	return template, nil

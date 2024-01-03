@@ -26,7 +26,9 @@ func (server *serverInstance) cas(c *gin.Context) {
 		return
 	}
 	for _, acmeProvider := range acmeConfig.Providers {
-		response.CAs = append(response.CAs, CA{Name: server.caFromACMEProvider(acmeProvider.Name)})
+		if acmeProvider.Enabled {
+			response.CAs = append(response.CAs, CA{Name: server.caFromACMEProvider(acmeProvider.Name)})
+		}
 	}
 	c.JSON(http.StatusOK, response)
 }

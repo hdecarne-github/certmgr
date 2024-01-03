@@ -68,6 +68,7 @@ func (server *serverInstance) generateRemote(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	fmt.Printf("Request: %v", request)
 	err = request.validate()
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -78,6 +79,7 @@ func (server *serverInstance) generateRemote(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	fmt.Printf("Template: %v\n", template)
 	keyPairFactory, err := server.resolveKeyPairFactory(request.KeyType)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
@@ -94,6 +96,7 @@ func (server *serverInstance) generateRemote(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	fmt.Printf("Certificate request: %v\n", entry.CertificateRequest())
 	response := newEntry(entry)
 	c.JSON(http.StatusOK, response)
 }

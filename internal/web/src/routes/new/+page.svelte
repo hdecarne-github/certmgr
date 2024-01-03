@@ -225,7 +225,7 @@
 		</div>
 	{/if}
 	{#if certs.isRemoteCa(selectedCa)}
-		<DnInput label="Certificate Request DN" dn={selectedRemoteDn} bind:valid={selectedRemoteDnValid} />
+		<DnInput label="Certificate Request DN" bind:dn={selectedRemoteDn} bind:valid={selectedRemoteDnValid} />
 		<KeyTypeInput keyTypes={remoteKeyTypes} bind:keyType={selectedRemoteKeyType} bind:valid={selectedRemoteKeyTypeValid} />
 	{/if}
 	{#if certs.isAcmeCa(selectedCa)}
