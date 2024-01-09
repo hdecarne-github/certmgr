@@ -32,7 +32,7 @@
 	<Button color="alternative" size="xs" on:click={() => (navHidden = false)}
 		><BarsOutline size="xs" /></Button
 	>
-	<BreadcrumbItem href="/" home>
+	<BreadcrumbItem href=".." home>
 		<svelte:fragment slot="icon">
 			<img src="../images/certmgr.svg" class="me-3 h-6 sm:h-9" alt="CertMgr Logo" />
 		</svelte:fragment>Certificates</BreadcrumbItem
