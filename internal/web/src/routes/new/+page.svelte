@@ -2,18 +2,21 @@
 	import { onMount } from 'svelte';
 	import {
 		Button,
-		type SelectOptionType,
 		Accordion,
 		AccordionItem,
 		Toggle,
 		Modal,
-		Spinner
+		Spinner,
+		Breadcrumb,
+		BreadcrumbItem,
+		DarkMode,
+		type SelectOptionType
 	} from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
 	import api, { GenerateAcme, GenerateLocal, GenerateRemote } from '$lib/api';
 	import certs, { BasicConstraints, ExtKeyUsage, KeyUsage, KeyUsageFlag } from '$lib/certs';
 	import ui from '$lib/ui';
-	import SelfNav from '$lib/components/selfnav.svelte';
+	import NavDrawer from '$lib/components/navdrawer.svelte';
 	import NameInput from '$lib/components/nameinput.svelte';
 	import CaInput from '$lib/components/cainput.svelte';
 	import DnInput from '$lib/components/dninput.svelte';
@@ -24,6 +27,9 @@
 	import ExtKeyUsageInput from '$lib/components/extkeyusageinput.svelte';
 	import BasicConstraintInput from '$lib/components/basicconstraintsinput.svelte';
 	import DomainsInput from '$lib/components/domainsinput.svelte';
+	import { BarsOutline } from 'flowbite-svelte-icons';
+
+	let navHidden: boolean;
 
 	// Global options
 	let generating: boolean = false;
@@ -144,7 +150,7 @@
 		let generate = new GenerateAcme();
 		generate.name = selectedName.trim();
 		generate.ca = selectedCa.trim();
-		generate.domains = selectedAcmeDomains.split(',').map(domain => domain.trim());
+		generate.domains = selectedAcmeDomains.split(',').map((domain) => domain.trim());
 		generate.keyType = selectedAcmeKeyType.trim();
 		api.generateAcme.put('..', generate).then((response) => {
 			generating = false;
@@ -170,7 +176,21 @@
 	});
 </script>
 
-<SelfNav base=".." title="New Certificate" />
+<Breadcrumb aria-label="New certificate" solid>
+	<Button color="alternative" size="xs" on:click={() => (navHidden = false)}
+		><BarsOutline size="xs" /></Button
+	>
+	<BreadcrumbItem href="/" home>
+		<svelte:fragment slot="icon">
+			<img src="../images/certmgr.svg" class="me-3 h-6 sm:h-9" alt="CertMgr Logo" />
+		</svelte:fragment>Certificates</BreadcrumbItem
+	>
+	<BreadcrumbItem>New</BreadcrumbItem>
+	<div class="absolute right-2">
+		<DarkMode />
+	</div>
+</Breadcrumb>
+<NavDrawer base=".." bind:hidden={navHidden} />
 <div class="p-8">
 	<div class="mb-6">
 		<NameInput bind:name={selectedName} bind:valid={selectedNameValid} />
@@ -225,12 +245,24 @@
 		</div>
 	{/if}
 	{#if certs.isRemoteCa(selectedCa)}
-		<DnInput label="Certificate Request DN" bind:dn={selectedRemoteDn} bind:valid={selectedRemoteDnValid} />
-		<KeyTypeInput keyTypes={remoteKeyTypes} bind:keyType={selectedRemoteKeyType} bind:valid={selectedRemoteKeyTypeValid} />
+		<DnInput
+			label="Certificate Request DN"
+			bind:dn={selectedRemoteDn}
+			bind:valid={selectedRemoteDnValid}
+		/>
+		<KeyTypeInput
+			keyTypes={remoteKeyTypes}
+			bind:keyType={selectedRemoteKeyType}
+			bind:valid={selectedRemoteKeyTypeValid}
+		/>
 	{/if}
 	{#if certs.isAcmeCa(selectedCa)}
 		<DomainsInput bind:domains={selectedAcmeDomains} bind:valid={selectedAcmeDomainsValid} />
-		<KeyTypeInput keyTypes={acmeKeyTypes} bind:keyType={selectedAcmeKeyType} bind:valid={selectedAcmeKeyTypeValid} />
+		<KeyTypeInput
+			keyTypes={acmeKeyTypes}
+			bind:keyType={selectedAcmeKeyType}
+			bind:valid={selectedAcmeKeyTypeValid}
+		/>
 	{/if}
 	<div class="mb-6">
 		<Button type="submit" on:click={onGenerate}>Generate</Button>

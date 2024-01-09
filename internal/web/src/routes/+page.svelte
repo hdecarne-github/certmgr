@@ -1,13 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {
-		Sidebar,
-		SidebarGroup,
-		SidebarItem,
-		SidebarWrapper,
 		Button,
-		Search,
-		Toggle,
 		Table,
 		TableHead,
 		TableHeadCell,
@@ -17,27 +11,20 @@
 		TableBody,
 		Modal,
 		Hr,
-		Drawer,
-		CloseButton
+		Breadcrumb,
+		BreadcrumbItem,
+		DarkMode
 	} from 'flowbite-svelte';
 	import {
-		ChevronDoubleRightOutline,
-		CirclePlusOutline,
+	BarsOutline,
 		DotsHorizontalOutline,
-		FileCirclePlusOutline,
 		InfoCircleOutline
 	} from 'flowbite-svelte-icons';
-	import MainNav from '$lib/components/mainnav.svelte';
 	import api, { Entries, EntriesFilter, EntryDetails } from '$lib/api';
 	import ui from '$lib/ui';
-	import { sineIn } from 'svelte/easing';
+	import NavDrawer from '$lib/components/navdrawer.svelte';
 
-	let drawerHidden = true;
-	let drawerTransition = {
-		x: -320,
-		duration: 200,
-		easing: sineIn
-	};
+	let navHidden = true;
 
 	let entries: Entries = new Entries();
 	let entryDetails: EntryDetails = new EntryDetails();
@@ -62,52 +49,24 @@
 	function onActions(name: string) {}
 </script>
 
-<MainNav base="." />
-<Drawer transitionType="fly" transitionParams={drawerTransition} bind:hidden={drawerHidden} id="sidebar2">
-	<div class="flex items-center">
-		<h5
-			id="drawer-navigation-label-3"
-			class="text-base font-semibold uppercase text-gray-500 dark:text-gray-400"
-		>
-			Menu
-		</h5>
-		<CloseButton on:click={() => (drawerHidden = true)} class="mb-4 dark:text-white" />
+<Breadcrumb aria-label="Certificates" solid>
+	<Button color="alternative" size="xs" on:click={() => (navHidden = false)}
+		><BarsOutline size="xs" /></Button
+	>
+	<BreadcrumbItem href="/" home>
+		<svelte:fragment slot="icon">
+			<img src="./images/certmgr.svg" class="me-3 h-6 sm:h-9" alt="CertMgr Logo" />
+		</svelte:fragment>Certificates</BreadcrumbItem
+	>
+	<div class="absolute right-2">
+		<DarkMode />
 	</div>
-	<Sidebar>
-		<SidebarWrapper>
-			<SidebarGroup>
-				<SidebarItem label="New certificate" href="./new">
-					<svelte:fragment slot="icon">
-						<CirclePlusOutline
-							class="h-5 w-5 text-gray-500 transition duration-75 group-hover:text-gray-800 dark:text-gray-400 dark:group-hover:text-white"
-						/>
-					</svelte:fragment>
-				</SidebarItem>
-				<SidebarItem label="Import certificate(s)" href="./import">
-					<svelte:fragment slot="icon">
-						<FileCirclePlusOutline
-							class="h-5 w-5 text-gray-500 transition duration-75 group-hover:text-gray-800 dark:text-gray-400 dark:group-hover:text-white"
-						/>
-					</svelte:fragment>
-				</SidebarItem>
-			</SidebarGroup>
-			<SidebarGroup border>
-				<Search>
-					<Button>Search</Button>
-				</Search>
-			</SidebarGroup>
-			<SidebarGroup border>
-				<Toggle size="small" checked={true}>Active only</Toggle>
-				<Toggle size="small" checked={false}>CA only</Toggle>
-			</SidebarGroup>
-		</SidebarWrapper>
-	</Sidebar>
-</Drawer>
+</Breadcrumb>
+<NavDrawer base="." bind:hidden={navHidden} />
 <div class="flex-auto overflow-scroll">
 	<Table>
 		<TableHead>
-			<TableHeadCell colspan="2"
-				><Button size="xs" on:click={() => (drawerHidden = false)}><ChevronDoubleRightOutline size="xs"/></Button></TableHeadCell
+			<TableHeadCell colspan="2"></TableHeadCell
 			>
 			<TableHeadCell>Name</TableHeadCell>
 			<TableHeadCell>Type</TableHeadCell>
@@ -121,7 +80,7 @@
 			{#each entries.entries as entry}
 				<TableBodyRow>
 					<TableBodyCell>
-						<InfoCircleOutline on:click={() => onDetails(entry.name)} />
+						<InfoCircleOutline size="sm" on:click={() => onDetails(entry.name)} />
 					</TableBodyCell>
 					<TableBodyCell>
 						<DotsHorizontalOutline on:click={() => onActions(entry.name)} />

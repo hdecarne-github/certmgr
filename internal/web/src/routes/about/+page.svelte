@@ -1,8 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Img, Heading, P, A } from 'flowbite-svelte';
-	import MainNav from '$lib/components/mainnav.svelte';
+	import {
+		Img,
+		Heading,
+		P,
+		A,
+		Breadcrumb,
+		DarkMode,
+		BreadcrumbItem,
+		Button
+	} from 'flowbite-svelte';
 	import api, { type AboutInfo } from '$lib/api';
+	import NavDrawer from '$lib/components/navdrawer.svelte';
+	import { BarsOutline } from 'flowbite-svelte-icons';
+
+	let navHidden: boolean;
 
 	let aboutInfo: AboutInfo = {
 		version: 'n/a',
@@ -16,7 +28,21 @@
 	});
 </script>
 
-<MainNav base=".." />
+<Breadcrumb aria-label="About" solid>
+	<Button color="alternative" size="xs" on:click={() => (navHidden = false)}
+		><BarsOutline size="xs" /></Button
+	>
+	<BreadcrumbItem href="/" home>
+		<svelte:fragment slot="icon">
+			<img src="../images/certmgr.svg" class="me-3 h-6 sm:h-9" alt="CertMgr Logo" />
+		</svelte:fragment>Certificates</BreadcrumbItem
+	>
+	<BreadcrumbItem>New</BreadcrumbItem>
+	<div class="absolute right-2">
+		<DarkMode />
+	</div>
+</Breadcrumb>
+<NavDrawer base=".." bind:hidden={navHidden} />
 <Img src="../images/certmgr.svg" alt="CertMgr logo" size="max-w-lg" alignment="mx-auto" />
 <Heading class="p-8" tag="h1" customSize="text-3xl">About CertMgr</Heading>
 <P class="px-8 py-4">

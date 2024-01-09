@@ -8,8 +8,11 @@ package server
 import (
 	"crypto"
 	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/asn1"
 	"math/big"
+	"net"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -67,6 +70,10 @@ func newDetails(entry *certstore.RegistryEntry) *EntryDetails {
 type EntryDetailsGroup struct {
 	Title      string                  `json:"title"`
 	Attributes []EntryDetailsAttribute `json:"attributes"`
+}
+
+func (group *EntryDetailsGroup) Empty() bool {
+	return len(group.Attributes) == 0
 }
 
 type EntryDetailsAttribute struct {
@@ -317,11 +324,18 @@ func populateEntryDetails(details *EntryDetails, registryEntry *certstore.Regist
 	if registryEntry.HasCertificate() {
 		certificate := registryEntry.Certificate()
 		details.Groups = append(details.Groups, *populateEntryDetailsCertificate(&EntryDetailsGroup{Title: "Certificate"}, certificate))
-		details.Groups = append(details.Groups, *populateEntryDetailsCertificateExtensions(&EntryDetailsGroup{Title: "Extensions"}, certificate))
+		extensionGroup := populateEntryDetailsCertificateExtensions(&EntryDetailsGroup{Title: "Certificate extensions"}, certificate)
+		if !extensionGroup.Empty() {
+			details.Groups = append(details.Groups, *extensionGroup)
+		}
 	}
 	if registryEntry.HasCertificateRequest() {
 		certificateRequest := registryEntry.CertificateRequest()
 		details.Groups = append(details.Groups, *populateEntryDetailsCertificateRequest(&EntryDetailsGroup{Title: "Certificate request"}, certificateRequest))
+		extensionGroup := populateEntryDetailsCertificateRequestExtensions(&EntryDetailsGroup{Title: "Certificate request extensions"}, certificateRequest)
+		if !extensionGroup.Empty() {
+			details.Groups = append(details.Groups, *extensionGroup)
+		}
 	}
 	return details
 }
@@ -372,6 +386,23 @@ func populateEntryDetailsCertificateExtensions(group *EntryDetailsGroup, certifi
 	}
 	populateEntryDetailsSubjectKeyId(group, certificate.SubjectKeyId)
 	populateEntryDetailsAuthorityKeyId(group, certificate.AuthorityKeyId)
+	populateEntryDetailsSubjectAlternativeNames(group, certificate.DNSNames, certificate.EmailAddresses, certificate.IPAddresses, certificate.URIs)
+	populateEntryDetailsExtensions(group, certificate.Extensions, certificateInlinExtensions)
+	populateEntryDetailsExtensions(group, certificate.ExtraExtensions, certificateInlinExtensions)
+	return group
+}
+
+func populateEntryDetailsCertificateRequest(group *EntryDetailsGroup, certificateRequest *x509.CertificateRequest) *EntryDetailsGroup {
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Version", Value: strconv.Itoa(certificateRequest.Version)})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "DN", Value: certificateRequest.Subject.String()})
+	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Signature type", Value: certificateRequest.SignatureAlgorithm.String()})
+	return group
+}
+
+func populateEntryDetailsCertificateRequestExtensions(group *EntryDetailsGroup, certificateRequest *x509.CertificateRequest) *EntryDetailsGroup {
+	populateEntryDetailsSubjectAlternativeNames(group, certificateRequest.DNSNames, certificateRequest.EmailAddresses, certificateRequest.IPAddresses, certificateRequest.URIs)
+	populateEntryDetailsExtensions(group, certificateRequest.Extensions, certificateRequestInlinExtensions)
+	populateEntryDetailsExtensions(group, certificateRequest.ExtraExtensions, certificateRequestInlinExtensions)
 	return group
 }
 
@@ -408,9 +439,59 @@ func populateEntryDetailsAuthorityKeyId(group *EntryDetailsGroup, keyId []byte) 
 	return group
 }
 
-func populateEntryDetailsCertificateRequest(group *EntryDetailsGroup, certificateRequest *x509.CertificateRequest) *EntryDetailsGroup {
-	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Version", Value: strconv.Itoa(certificateRequest.Version)})
-	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "DN", Value: certificateRequest.Subject.String()})
-	group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: "Signature type", Value: certificateRequest.SignatureAlgorithm.String()})
+func populateEntryDetailsSubjectAlternativeNames(group *EntryDetailsGroup, dnsNames []string, emailAddresses []string, ipAddresses []net.IP, uris []*url.URL) *EntryDetailsGroup {
+	nextKey := "Subject alternative name"
+	for _, dnsName := range dnsNames {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: nextKey, Value: "DNS:" + dnsName})
+		nextKey = ""
+	}
+	for _, emailAddress := range emailAddresses {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: nextKey, Value: "EMAIL:" + emailAddress})
+		nextKey = ""
+	}
+	for _, ipAddress := range ipAddresses {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: nextKey, Value: "IP:" + ipAddress.String()})
+		nextKey = ""
+	}
+	for _, uri := range uris {
+		group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: nextKey, Value: "URI:" + uri.String()})
+		nextKey = ""
+	}
+	return group
+}
+
+var extensionNames map[string]string = map[string]string{
+	certs.KeyUsageExtensionOID:               certs.KeyUsageExtensionName,
+	certs.ExtKeyUsageExtensionOID:            certs.ExtKeyUsageExtensionName,
+	certs.BasicConstraintsExtensionOID:       certs.BasicConstraintsExtensionName,
+	certs.SubjectKeyIdentifierExtensionOID:   certs.SubjectKeyIdentifierExtensionName,
+	certs.AuthorityKeyIdentifierExtensionOID: certs.AuthorityKeyIdentifierExtensionName,
+	"2.5.29.17":                              "SubjectAlternativeName",
+}
+
+var certificateInlinExtensions map[string]string = map[string]string{
+	certs.KeyUsageExtensionOID:               certs.KeyUsageExtensionName,
+	certs.ExtKeyUsageExtensionOID:            certs.ExtKeyUsageExtensionName,
+	certs.BasicConstraintsExtensionOID:       certs.BasicConstraintsExtensionName,
+	certs.SubjectKeyIdentifierExtensionOID:   certs.SubjectKeyIdentifierExtensionName,
+	certs.AuthorityKeyIdentifierExtensionOID: certs.AuthorityKeyIdentifierExtensionName,
+	"2.5.29.17":                              "SubjectAlternativeName",
+}
+
+var certificateRequestInlinExtensions map[string]string = map[string]string{
+	"2.5.29.17": "SubjectAlternativeName",
+}
+
+func populateEntryDetailsExtensions(group *EntryDetailsGroup, extensions []pkix.Extension, ignore map[string]string) *EntryDetailsGroup {
+	for _, extension := range extensions {
+		extensionOID := extension.Id.String()
+		if ignore[extensionOID] == "" {
+			extensionName := extensionNames[extensionOID]
+			if extensionName == "" {
+				extensionName = extensionOID
+			}
+			group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: extensionName, Value: "xxx"})
+		}
+	}
 	return group
 }
