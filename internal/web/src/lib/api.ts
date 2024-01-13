@@ -39,8 +39,8 @@ export class Entry {
 	csr: boolean = false;
 	crl: boolean = false;
 	ca: boolean = false;
-	validFrom: Date = new Date(0);
-	validTo: Date = new Date(0);
+	validFrom: string = "";
+	validTo: string = "";
 }
 
 const entries = {

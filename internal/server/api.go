@@ -490,7 +490,7 @@ func populateEntryDetailsExtensions(group *EntryDetailsGroup, extensions []pkix.
 			if extensionName == "" {
 				extensionName = extensionOID
 			}
-			group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: extensionName, Value: "xxx"})
+			group.Attributes = append(group.Attributes, EntryDetailsAttribute{Key: extensionName, Value: certs.RawExtensionString(extension.Value)})
 		}
 	}
 	return group

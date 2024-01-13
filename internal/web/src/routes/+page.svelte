@@ -13,16 +13,18 @@
 		Hr,
 		Breadcrumb,
 		BreadcrumbItem,
-		DarkMode
+		DarkMode,
+		Dropdown,
+		DropdownItem
 	} from 'flowbite-svelte';
 	import {
-	BarsOutline,
+		BarsOutline,
 		DotsHorizontalOutline,
 		InfoCircleOutline
 	} from 'flowbite-svelte-icons';
 	import api, { Entries, EntriesFilter, EntryDetails } from '$lib/api';
-	import ui from '$lib/ui';
 	import NavDrawer from '$lib/components/navdrawer.svelte';
+	import ui from '$lib/ui';
 
 	let navHidden = true;
 
@@ -46,7 +48,16 @@
 		});
 	}
 
-	function onActions(name: string) {}
+	function expiryColor(date: Date): 'red' | 'yellow' | 'none' {
+		const now = Date.now();
+		if (date.getTime() < now) {
+			return 'red';
+		}
+		if (date.getTime() < now + 7 * 24 * 60 * 60 * 1000) {
+			return 'yellow';
+		}
+		return 'none';
+	}
 </script>
 
 <Breadcrumb aria-label="Certificates" solid>
@@ -56,7 +67,7 @@
 	<BreadcrumbItem href="." home>
 		<svelte:fragment slot="icon">
 			<img src="./images/certmgr.svg" class="me-3 h-6 sm:h-9" alt="CertMgr Logo" />
-		</svelte:fragment>Certificates</BreadcrumbItem
+		</svelte:fragment>CertMgr</BreadcrumbItem
 	>
 	<div class="absolute right-2">
 		<DarkMode />
@@ -66,15 +77,12 @@
 <div class="flex-auto overflow-scroll">
 	<Table>
 		<TableHead>
-			<TableHeadCell colspan="2"></TableHeadCell
-			>
+			<TableHeadCell colspan="2"></TableHeadCell>
 			<TableHeadCell>Name</TableHeadCell>
 			<TableHeadCell>Type</TableHeadCell>
-			<TableHeadCell>Key</TableHeadCell>
 			<TableHeadCell>DN</TableHeadCell>
 			<TableHeadCell>Serial</TableHeadCell>
-			<TableHeadCell>Valid from</TableHeadCell>
-			<TableHeadCell>Valid to</TableHeadCell>
+			<TableHeadCell>Expires</TableHeadCell>
 		</TableHead>
 		<TableBody>
 			{#each entries.entries as entry}
@@ -83,7 +91,10 @@
 						<InfoCircleOutline size="sm" on:click={() => onDetails(entry.name)} />
 					</TableBodyCell>
 					<TableBodyCell>
-						<DotsHorizontalOutline on:click={() => onActions(entry.name)} />
+						<DotsHorizontalOutline class="dots-menu dark:text-white" />
+						<Dropdown triggeredBy=".dots-menu">
+							<DropdownItem>Delete</DropdownItem>
+						</Dropdown>
 					</TableBodyCell>
 					<TableBodyCell>{entry.name}</TableBodyCell>
 					<TableBodyCell>
@@ -103,17 +114,13 @@
 							<Badge>CA</Badge>
 						{/if}
 					</TableBodyCell>
-					<TableBodyCell>{entry.keyType}</TableBodyCell>
 					<TableBodyCell>{entry.dn}</TableBodyCell>
 					<TableBodyCell>{entry.serial}</TableBodyCell>
 					<TableBodyCell>
 						{#if entry.crt}
-							{ui.dateToInput(new Date(entry.validFrom))}
-						{/if}
-					</TableBodyCell>
-					<TableBodyCell>
-						{#if entry.crt}
-							{ui.dateToInput(new Date(entry.validFrom))}
+							<Badge color={expiryColor(new Date(entry.validTo))}
+								>{ui.dateTimeFormat.format(new Date(entry.validTo))}</Badge
+							>
 						{/if}
 					</TableBodyCell>
 				</TableBodyRow>

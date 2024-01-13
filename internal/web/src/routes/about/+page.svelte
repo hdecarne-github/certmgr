@@ -35,9 +35,9 @@
 	<BreadcrumbItem href=".." home>
 		<svelte:fragment slot="icon">
 			<img src="../images/certmgr.svg" class="me-3 h-6 sm:h-9" alt="CertMgr Logo" />
-		</svelte:fragment>Certificates</BreadcrumbItem
+		</svelte:fragment>CertMgr</BreadcrumbItem
 	>
-	<BreadcrumbItem>New</BreadcrumbItem>
+	<BreadcrumbItem>About</BreadcrumbItem>
 	<div class="absolute right-2">
 		<DarkMode />
 	</div>
