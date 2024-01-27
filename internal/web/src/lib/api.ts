@@ -4,7 +4,8 @@ const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
 const request = {
 	get: <T>(url: string, params?: object) => axios.get<T>(url, { params: params }).then(responseBody),
-	put: <T>(url: string, body: object) => axios.put<T>(url, body).then(responseBody)
+	put: <T>(url: string, body: object) => axios.put<T>(url, body).then(responseBody),
+	delete:  <T>(url: string, params?: object) => axios.delete<T>(url, { params: params }).then(responseBody)
 };
 
 // /api/about
@@ -65,6 +66,11 @@ export class EntryDetailsAttribute {
 
 const details = {
 	get: (base: string, name: string) => request.get<EntryDetails>(`${base}/api/details/${name}`)
+};
+
+// /delete/${name}
+const del = {
+	delete: (base: string, name: string) => request.delete<EntryDetails>(`${base}/api/delete/${name}`)
 };
 
 // /api/cas
@@ -164,6 +170,7 @@ const api = {
 	about,
 	entries,
 	details,
+	del,
 	cas,
 	issuers,
 	generateLocal,

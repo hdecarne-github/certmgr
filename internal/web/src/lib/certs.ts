@@ -1,5 +1,16 @@
 import { KeyUsageSpec, BasicConstraintsSpec, ExtKeyUsageSpec } from "./api";
 
+function checkValidTo(date: Date): 'valid' | 'expiring' | 'expired' {
+    const now = Date.now();
+    if (date.getTime() < now) {
+        return 'expired';
+    }
+    if (date.getTime() < now + 7 * 24 * 60 * 60 * 1000) {
+        return 'expiring';
+    }
+    return 'valid';
+}
+
 function isLocalCa(ca: string): boolean {
     return ca == 'Local';
 }
@@ -12,24 +23,24 @@ function isAcmeCa(ca: string): boolean {
     return (ca ?? '').startsWith('ACME:');
 }
 
-const defaultKeyTypes: string[][] = [
-    ['ECDSA P-224', 'ECDSA224'],
-    ['ECDSA P-256', 'ECDSA256'],
-    ['ECDSA P-384', 'ECDSA384'],
-    ['ECDSA P-521', 'ECDSA521'],
-    ['ED25519', 'ED25519'],
-    ['RSA 2048', 'RSA2048'],
-    ['RSA 3072', 'RSA3072'],
-    ['RSA 4096', 'RSA4096'],
-    ['RSA 8192', 'RSA8192'],
+const defaultKeyTypes: string[] = [
+    'ECDSA224',
+    'ECDSA256',
+    'ECDSA384',
+    'ECDSA521',
+    'ED25519',
+    'RSA2048',
+    'RSA3072',
+    'RSA4096',
+    'RSA8192',
 ];
 
-const acmeKeyTypes: string[][] = [
-    ['ECDSA P-256', 'ECDSA256'],
-    ['ECDSA P-384', 'ECDSA384'],
-    ['RSA 2048', 'RSA2048'],
-    ['RSA 3072', 'RSA3072'],
-    ['RSA 4096', 'RSA4096'],
+const acmeKeyTypes: string[] = [
+    'ECDSA256',
+    'ECDSA384',
+    'RSA2048',
+    'RSA3072',
+    'RSA4096',
 ];
 
 export enum KeyUsageFlag {
@@ -174,6 +185,7 @@ export class BasicConstraints {
 }
 
 const certs = {
+    checkValidTo,
     isLocalCa,
     isRemoteCa,
     isAcmeCa,

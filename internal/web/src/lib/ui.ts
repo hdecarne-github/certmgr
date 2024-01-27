@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import type { Entry } from "./api";
 
 const selectedEntry = writable('');
 
@@ -12,11 +13,16 @@ function inputToDate(input: string): Date {
     return new Date(input);    
 }
 
+function entryString(entry: Entry): string {
+    return `${entry.name} (DN: ${entry.dn}, Serial: ${entry.serial}, Key: ${entry.keyType})`;
+}
+
 const ui = {
     selectedEntry,
     dateTimeFormat,
     dateToInput,
     inputToDate,
+    entryString,
 }
 
 export default ui;

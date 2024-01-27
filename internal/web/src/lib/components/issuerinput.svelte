@@ -2,9 +2,9 @@
 	import { onMount } from 'svelte';
 	import { Helper, Label, Select, type SelectOptionType } from 'flowbite-svelte';
 	import api from '$lib/api';
+	import ui from '$lib/ui';
 
 	export let label: string = 'Issuer';
-	export let selfsigned: boolean;
 	export let issuer: string;
 	export let keyUsage: number;
 	export const valid = {
@@ -22,15 +22,14 @@
 	let checkResult: boolean = true;
 	let checkMessage: string = '';
 
-	let issuers: SelectOptionType<string>[] = selfsigned
-		? [{ name: '<self signed>', value: '*' }]
-		: [];
+	let issuers: SelectOptionType<string>[] = [];
 
 	onMount(() => {
 		api.issuers.get('..', { keyUsage: keyUsage }).then((response) => {
+			issuers = [{ name: '<self signed>', value: '*' }];
 			issuers = issuers.concat(
 				response.entries.map((entry) => {
-					return { name: entry.name, value: entry.name };
+					return { name: ui.entryString(entry), value: entry.name };
 				})
 			);
 		});

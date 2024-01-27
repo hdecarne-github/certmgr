@@ -43,7 +43,7 @@
 	let selectedLocalDn: string = '';
 	let selectedLocalDnValid: any;
 	let localKeyTypes: SelectOptionType<string>[] = certs.defaultKeyTypes.map((keyType) => {
-		return { name: keyType[0], value: keyType[1] };
+		return { name: keyType, value: keyType };
 	});
 	let selectedLocalKeyType: string = '';
 	let selectedLocalKeyTypeValid: any;
@@ -70,7 +70,7 @@
 	let selectedAcmeDomains: string = '';
 	let selectedAcmeDomainsValid: any;
 	let acmeKeyTypes: SelectOptionType<string>[] = certs.acmeKeyTypes.map((keyType) => {
-		return { name: keyType[0], value: keyType[1] };
+		return { name: keyType, value: keyType };
 	});
 	let selectedAcmeKeyType: string = '';
 	let selectedAcmeKeyTypeValid: any;
@@ -206,7 +206,6 @@
 			bind:valid={selectedLocalKeyTypeValid}
 		/>
 		<IssuerInput
-			selfsigned={true}
 			keyUsage={KeyUsageFlag.KeyCertSign}
 			bind:issuer={selectedLocalIssuer}
 			bind:valid={selectedLocalIssuerValid}

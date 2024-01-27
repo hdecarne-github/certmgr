@@ -12,6 +12,9 @@ export default {
 			precompress: false,
 			strict: true
 		}),
+		prerender: {
+			entries: [ '/about', '/new', '/import', '/export/dummy' ]
+		},
 		paths: {
 			relative: true
 		}

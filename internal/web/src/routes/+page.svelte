@@ -9,54 +9,72 @@
 		TableBodyCell,
 		Badge,
 		TableBody,
-		Modal,
-		Hr,
 		Breadcrumb,
 		BreadcrumbItem,
 		DarkMode,
 		Dropdown,
-		DropdownItem
+		DropdownItem,
+		A
 	} from 'flowbite-svelte';
-	import {
-		BarsOutline,
-		DotsHorizontalOutline,
-		InfoCircleOutline
-	} from 'flowbite-svelte-icons';
-	import api, { Entries, EntriesFilter, EntryDetails } from '$lib/api';
+	import { BarsOutline, DotsVerticalOutline } from 'flowbite-svelte-icons';
+	import { goto } from '$app/navigation';
 	import NavDrawer from '$lib/components/navdrawer.svelte';
+	import EntryDetailsModal from '$lib/components/entrydetailsmodal.svelte';
+	import api, { Entries, EntriesFilter, EntryDetails } from '$lib/api';
+	import certs from '$lib/certs';
 	import ui from '$lib/ui';
+	import { applyAction } from '$app/forms';
+
+	const base: string = '.';
 
 	let navHidden = true;
 
 	let entries: Entries = new Entries();
+
 	let entryDetails: EntryDetails = new EntryDetails();
-	let displayDetails: boolean = false;
+	let openDetails: boolean = false;
 
 	onMount(() => {
+		reload();
+	});
+
+	function reload() {
 		let entriesRange = new EntriesFilter();
 		entriesRange.start = 0;
 		entriesRange.limit = 100;
-		api.entries.get('.', entriesRange).then((response) => {
+		api.entries.get(base, entriesRange).then((response) => {
 			entries = response;
 		});
-	});
+	}
 
 	function onDetails(name: string) {
-		api.details.get('.', name).then((response) => {
+		api.details.get(base, name).then((response) => {
 			entryDetails = response;
-			displayDetails = true;
+			openDetails = true;
+		});
+	}
+	
+	function onExport(name: string) {
+		goto(base + '/export/' + name);
+	}
+
+
+	function onDelete(name: string) {
+		api.del.delete(base, name).then((response) => {
+			reload();
+			goto(base);
 		});
 	}
 
 	function expiryColor(date: Date): 'red' | 'yellow' | 'none' {
-		const now = Date.now();
-		if (date.getTime() < now) {
-			return 'red';
+		switch (certs.checkValidTo(date)) {
+			case 'expired':
+				return 'red';
+			case 'expiring':
+				return 'yellow';
+			default:
+				return 'none';
 		}
-		if (date.getTime() < now + 7 * 24 * 60 * 60 * 1000) {
-			return 'yellow';
-		}
-		return 'none';
 	}
 </script>
 
@@ -64,7 +82,7 @@
 	<Button color="alternative" size="xs" on:click={() => (navHidden = false)}
 		><BarsOutline size="xs" /></Button
 	>
-	<BreadcrumbItem href="." home>
+	<BreadcrumbItem href="{base}" home>
 		<svelte:fragment slot="icon">
 			<img src="./images/certmgr.svg" class="me-3 h-6 sm:h-9" alt="CertMgr Logo" />
 		</svelte:fragment>CertMgr</BreadcrumbItem
@@ -73,11 +91,11 @@
 		<DarkMode />
 	</div>
 </Breadcrumb>
-<NavDrawer base="." bind:hidden={navHidden} />
+<NavDrawer base="{base}" bind:hidden={navHidden} />
 <div class="flex-auto overflow-scroll">
 	<Table>
 		<TableHead>
-			<TableHeadCell colspan="2"></TableHeadCell>
+			<TableHeadCell>&nbsp;</TableHeadCell>
 			<TableHeadCell>Name</TableHeadCell>
 			<TableHeadCell>Type</TableHeadCell>
 			<TableHeadCell>DN</TableHeadCell>
@@ -85,18 +103,17 @@
 			<TableHeadCell>Expires</TableHeadCell>
 		</TableHead>
 		<TableBody>
-			{#each entries.entries as entry}
+			{#each entries.entries as entry, entryIndex}
 				<TableBodyRow>
 					<TableBodyCell>
-						<InfoCircleOutline size="sm" on:click={() => onDetails(entry.name)} />
-					</TableBodyCell>
-					<TableBodyCell>
-						<DotsHorizontalOutline class="dots-menu dark:text-white" />
-						<Dropdown triggeredBy=".dots-menu">
-							<DropdownItem>Delete</DropdownItem>
+						<DotsVerticalOutline class="dots-menu{entryIndex} dark:text-white" />
+						<Dropdown placement="right" triggeredBy=".dots-menu{entryIndex}">
+							<DropdownItem on:click={() => onDetails(entry.name)}>Details</DropdownItem>
+							<DropdownItem on:click={() => onExport(entry.name)}>Export</DropdownItem>
+							<DropdownItem on:click={() => onDelete(entry.name)}>Delete</DropdownItem>
 						</Dropdown>
 					</TableBodyCell>
-					<TableBodyCell>{entry.name}</TableBodyCell>
+					<TableBodyCell on:click={() => onDetails(entry.name)}>{entry.name}</TableBodyCell>
 					<TableBodyCell>
 						{#if entry.key}
 							<Badge color="green">Key</Badge>
@@ -128,21 +145,4 @@
 		</TableBody>
 	</Table>
 </div>
-<Modal title={entryDetails.name} bind:open={displayDetails} autoclose outsideclose>
-	<Table noborder={true}>
-		<TableBody>
-			{#each entryDetails.groups as group}
-				<TableBodyRow>
-					<TableBodyCell class="py-2 text-right">{group.title}</TableBodyCell>
-					<TableBodyCell class="py-2"><Hr hrClass="my-2" /></TableBodyCell>
-				</TableBodyRow>
-				{#each group.attributes as attribute}
-					<TableBodyRow>
-						<TableBodyCell class="py-1 text-right">{attribute.key}</TableBodyCell>
-						<TableBodyCell class="py-1">{attribute.value}</TableBodyCell>
-					</TableBodyRow>
-				{/each}
-			{/each}
-		</TableBody>
-	</Table>
-</Modal>
+<EntryDetailsModal bind:details={entryDetails} bind:open={openDetails} />
